@@ -1,0 +1,3 @@
+(function() {var implementors = {
+"servers":[["impl <a class=\"trait\" href=\"https://docs.rs/postgres-types/0.2/postgres_types/trait.ToSql.html\" title=\"trait postgres_types::ToSql\">ToSql</a> for <a class=\"struct\" href=\"servers/postgres/types/interval/struct.PgInterval.html\" title=\"struct servers::postgres::types::interval::PgInterval\">PgInterval</a>"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

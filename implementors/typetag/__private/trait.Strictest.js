@@ -1,0 +1,3 @@
+(function() {var implementors = {
+"meta_srv":[["impl <a class=\"trait\" href=\"https://docs.rs/typetag/0.2.12/typetag/__private/trait.Strictest.html\" title=\"trait typetag::__private::Strictest\">Strictest</a> for dyn <a class=\"trait\" href=\"meta_srv/procedure/region_failover/trait.State.html\" title=\"trait meta_srv::procedure::region_failover::State\">State</a>"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["build_calc_fn","build_struct","extract_arg_map","extract_input_types","get_ident","process_range_fn"],"macro":["ok"]};

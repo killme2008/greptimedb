@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["column_qualified_name","create_add_columns_operation","create_alter_operation","table_manifest_dir"],"mod":["test_util"],"struct":["MitoTable"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["check_req","find_partitioning_values","partition_values","split_insert_request"],"struct":["WriteSplitter"],"type":["DeleteRequestSplit","InsertRequestSplit"]};

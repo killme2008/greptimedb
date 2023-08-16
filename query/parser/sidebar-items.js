@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["ANALYZE_NODE_NAME","DEFAULT_LOOKBACK","DEFAULT_LOOKBACK_STRING","EXPLAIN_NODE_NAME"],"enum":["QueryStatement"],"macro":["define_node_ast_extension"],"struct":["Analyze","AnalyzeExpr","Explain","ExplainExpr","PromQuery","QueryLanguageParser"]};

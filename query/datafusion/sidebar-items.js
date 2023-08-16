@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["convert_filter_to_df_filter","execute_show_with_filter"],"mod":["error","planner"],"struct":["DatafusionQueryEngine","DfContextProviderAdapter"]};

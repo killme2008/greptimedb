@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["pow","rate"],"struct":["MathFunction","PowFunction","RangeFunction","RateFunction"]};

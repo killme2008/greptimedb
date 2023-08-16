@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["AuthScheme"],"fn":["auth_header","decode_basic","extract_catalog_and_schema","extract_db_from_query","extract_influxdb_user_from_query","extract_username_and_password","get_influxdb_credentials","need_auth","unauthorized_resp"],"struct":["HttpAuth"],"type":["Credential","Password","Username"]};

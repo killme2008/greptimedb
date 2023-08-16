@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Application","SubCommand"],"fn":["full_version","log_env_flags","main","print_version","short_version"],"static":["ALLOC"],"struct":["Command"]};

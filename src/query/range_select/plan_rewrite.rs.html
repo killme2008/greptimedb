@@ -1,0 +1,955 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/query/src/range_select/plan_rewrite.rs`."><title>plan_rewrite.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="query" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../query/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<a href="#2" id="2">2</a>
+<a href="#3" id="3">3</a>
+<a href="#4" id="4">4</a>
+<a href="#5" id="5">5</a>
+<a href="#6" id="6">6</a>
+<a href="#7" id="7">7</a>
+<a href="#8" id="8">8</a>
+<a href="#9" id="9">9</a>
+<a href="#10" id="10">10</a>
+<a href="#11" id="11">11</a>
+<a href="#12" id="12">12</a>
+<a href="#13" id="13">13</a>
+<a href="#14" id="14">14</a>
+<a href="#15" id="15">15</a>
+<a href="#16" id="16">16</a>
+<a href="#17" id="17">17</a>
+<a href="#18" id="18">18</a>
+<a href="#19" id="19">19</a>
+<a href="#20" id="20">20</a>
+<a href="#21" id="21">21</a>
+<a href="#22" id="22">22</a>
+<a href="#23" id="23">23</a>
+<a href="#24" id="24">24</a>
+<a href="#25" id="25">25</a>
+<a href="#26" id="26">26</a>
+<a href="#27" id="27">27</a>
+<a href="#28" id="28">28</a>
+<a href="#29" id="29">29</a>
+<a href="#30" id="30">30</a>
+<a href="#31" id="31">31</a>
+<a href="#32" id="32">32</a>
+<a href="#33" id="33">33</a>
+<a href="#34" id="34">34</a>
+<a href="#35" id="35">35</a>
+<a href="#36" id="36">36</a>
+<a href="#37" id="37">37</a>
+<a href="#38" id="38">38</a>
+<a href="#39" id="39">39</a>
+<a href="#40" id="40">40</a>
+<a href="#41" id="41">41</a>
+<a href="#42" id="42">42</a>
+<a href="#43" id="43">43</a>
+<a href="#44" id="44">44</a>
+<a href="#45" id="45">45</a>
+<a href="#46" id="46">46</a>
+<a href="#47" id="47">47</a>
+<a href="#48" id="48">48</a>
+<a href="#49" id="49">49</a>
+<a href="#50" id="50">50</a>
+<a href="#51" id="51">51</a>
+<a href="#52" id="52">52</a>
+<a href="#53" id="53">53</a>
+<a href="#54" id="54">54</a>
+<a href="#55" id="55">55</a>
+<a href="#56" id="56">56</a>
+<a href="#57" id="57">57</a>
+<a href="#58" id="58">58</a>
+<a href="#59" id="59">59</a>
+<a href="#60" id="60">60</a>
+<a href="#61" id="61">61</a>
+<a href="#62" id="62">62</a>
+<a href="#63" id="63">63</a>
+<a href="#64" id="64">64</a>
+<a href="#65" id="65">65</a>
+<a href="#66" id="66">66</a>
+<a href="#67" id="67">67</a>
+<a href="#68" id="68">68</a>
+<a href="#69" id="69">69</a>
+<a href="#70" id="70">70</a>
+<a href="#71" id="71">71</a>
+<a href="#72" id="72">72</a>
+<a href="#73" id="73">73</a>
+<a href="#74" id="74">74</a>
+<a href="#75" id="75">75</a>
+<a href="#76" id="76">76</a>
+<a href="#77" id="77">77</a>
+<a href="#78" id="78">78</a>
+<a href="#79" id="79">79</a>
+<a href="#80" id="80">80</a>
+<a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
+<a href="#91" id="91">91</a>
+<a href="#92" id="92">92</a>
+<a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
+<a href="#104" id="104">104</a>
+<a href="#105" id="105">105</a>
+<a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
+<a href="#116" id="116">116</a>
+<a href="#117" id="117">117</a>
+<a href="#118" id="118">118</a>
+<a href="#119" id="119">119</a>
+<a href="#120" id="120">120</a>
+<a href="#121" id="121">121</a>
+<a href="#122" id="122">122</a>
+<a href="#123" id="123">123</a>
+<a href="#124" id="124">124</a>
+<a href="#125" id="125">125</a>
+<a href="#126" id="126">126</a>
+<a href="#127" id="127">127</a>
+<a href="#128" id="128">128</a>
+<a href="#129" id="129">129</a>
+<a href="#130" id="130">130</a>
+<a href="#131" id="131">131</a>
+<a href="#132" id="132">132</a>
+<a href="#133" id="133">133</a>
+<a href="#134" id="134">134</a>
+<a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
+<a href="#137" id="137">137</a>
+<a href="#138" id="138">138</a>
+<a href="#139" id="139">139</a>
+<a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
+<a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
+<a href="#160" id="160">160</a>
+<a href="#161" id="161">161</a>
+<a href="#162" id="162">162</a>
+<a href="#163" id="163">163</a>
+<a href="#164" id="164">164</a>
+<a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
+<a href="#168" id="168">168</a>
+<a href="#169" id="169">169</a>
+<a href="#170" id="170">170</a>
+<a href="#171" id="171">171</a>
+<a href="#172" id="172">172</a>
+<a href="#173" id="173">173</a>
+<a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
+<a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
+<a href="#182" id="182">182</a>
+<a href="#183" id="183">183</a>
+<a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
+<a href="#186" id="186">186</a>
+<a href="#187" id="187">187</a>
+<a href="#188" id="188">188</a>
+<a href="#189" id="189">189</a>
+<a href="#190" id="190">190</a>
+<a href="#191" id="191">191</a>
+<a href="#192" id="192">192</a>
+<a href="#193" id="193">193</a>
+<a href="#194" id="194">194</a>
+<a href="#195" id="195">195</a>
+<a href="#196" id="196">196</a>
+<a href="#197" id="197">197</a>
+<a href="#198" id="198">198</a>
+<a href="#199" id="199">199</a>
+<a href="#200" id="200">200</a>
+<a href="#201" id="201">201</a>
+<a href="#202" id="202">202</a>
+<a href="#203" id="203">203</a>
+<a href="#204" id="204">204</a>
+<a href="#205" id="205">205</a>
+<a href="#206" id="206">206</a>
+<a href="#207" id="207">207</a>
+<a href="#208" id="208">208</a>
+<a href="#209" id="209">209</a>
+<a href="#210" id="210">210</a>
+<a href="#211" id="211">211</a>
+<a href="#212" id="212">212</a>
+<a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
+<a href="#216" id="216">216</a>
+<a href="#217" id="217">217</a>
+<a href="#218" id="218">218</a>
+<a href="#219" id="219">219</a>
+<a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
+<a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
+<a href="#224" id="224">224</a>
+<a href="#225" id="225">225</a>
+<a href="#226" id="226">226</a>
+<a href="#227" id="227">227</a>
+<a href="#228" id="228">228</a>
+<a href="#229" id="229">229</a>
+<a href="#230" id="230">230</a>
+<a href="#231" id="231">231</a>
+<a href="#232" id="232">232</a>
+<a href="#233" id="233">233</a>
+<a href="#234" id="234">234</a>
+<a href="#235" id="235">235</a>
+<a href="#236" id="236">236</a>
+<a href="#237" id="237">237</a>
+<a href="#238" id="238">238</a>
+<a href="#239" id="239">239</a>
+<a href="#240" id="240">240</a>
+<a href="#241" id="241">241</a>
+<a href="#242" id="242">242</a>
+<a href="#243" id="243">243</a>
+<a href="#244" id="244">244</a>
+<a href="#245" id="245">245</a>
+<a href="#246" id="246">246</a>
+<a href="#247" id="247">247</a>
+<a href="#248" id="248">248</a>
+<a href="#249" id="249">249</a>
+<a href="#250" id="250">250</a>
+<a href="#251" id="251">251</a>
+<a href="#252" id="252">252</a>
+<a href="#253" id="253">253</a>
+<a href="#254" id="254">254</a>
+<a href="#255" id="255">255</a>
+<a href="#256" id="256">256</a>
+<a href="#257" id="257">257</a>
+<a href="#258" id="258">258</a>
+<a href="#259" id="259">259</a>
+<a href="#260" id="260">260</a>
+<a href="#261" id="261">261</a>
+<a href="#262" id="262">262</a>
+<a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
+<a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
+<a href="#308" id="308">308</a>
+<a href="#309" id="309">309</a>
+<a href="#310" id="310">310</a>
+<a href="#311" id="311">311</a>
+<a href="#312" id="312">312</a>
+<a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
+<a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
+<a href="#325" id="325">325</a>
+<a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
+<a href="#330" id="330">330</a>
+<a href="#331" id="331">331</a>
+<a href="#332" id="332">332</a>
+<a href="#333" id="333">333</a>
+<a href="#334" id="334">334</a>
+<a href="#335" id="335">335</a>
+<a href="#336" id="336">336</a>
+<a href="#337" id="337">337</a>
+<a href="#338" id="338">338</a>
+<a href="#339" id="339">339</a>
+<a href="#340" id="340">340</a>
+<a href="#341" id="341">341</a>
+<a href="#342" id="342">342</a>
+<a href="#343" id="343">343</a>
+<a href="#344" id="344">344</a>
+<a href="#345" id="345">345</a>
+<a href="#346" id="346">346</a>
+<a href="#347" id="347">347</a>
+<a href="#348" id="348">348</a>
+<a href="#349" id="349">349</a>
+<a href="#350" id="350">350</a>
+<a href="#351" id="351">351</a>
+<a href="#352" id="352">352</a>
+<a href="#353" id="353">353</a>
+<a href="#354" id="354">354</a>
+<a href="#355" id="355">355</a>
+<a href="#356" id="356">356</a>
+<a href="#357" id="357">357</a>
+<a href="#358" id="358">358</a>
+<a href="#359" id="359">359</a>
+<a href="#360" id="360">360</a>
+<a href="#361" id="361">361</a>
+<a href="#362" id="362">362</a>
+<a href="#363" id="363">363</a>
+<a href="#364" id="364">364</a>
+<a href="#365" id="365">365</a>
+<a href="#366" id="366">366</a>
+<a href="#367" id="367">367</a>
+<a href="#368" id="368">368</a>
+<a href="#369" id="369">369</a>
+<a href="#370" id="370">370</a>
+<a href="#371" id="371">371</a>
+<a href="#372" id="372">372</a>
+<a href="#373" id="373">373</a>
+<a href="#374" id="374">374</a>
+<a href="#375" id="375">375</a>
+<a href="#376" id="376">376</a>
+<a href="#377" id="377">377</a>
+<a href="#378" id="378">378</a>
+<a href="#379" id="379">379</a>
+<a href="#380" id="380">380</a>
+<a href="#381" id="381">381</a>
+<a href="#382" id="382">382</a>
+<a href="#383" id="383">383</a>
+<a href="#384" id="384">384</a>
+<a href="#385" id="385">385</a>
+<a href="#386" id="386">386</a>
+<a href="#387" id="387">387</a>
+<a href="#388" id="388">388</a>
+<a href="#389" id="389">389</a>
+<a href="#390" id="390">390</a>
+<a href="#391" id="391">391</a>
+<a href="#392" id="392">392</a>
+<a href="#393" id="393">393</a>
+<a href="#394" id="394">394</a>
+<a href="#395" id="395">395</a>
+<a href="#396" id="396">396</a>
+<a href="#397" id="397">397</a>
+<a href="#398" id="398">398</a>
+<a href="#399" id="399">399</a>
+<a href="#400" id="400">400</a>
+<a href="#401" id="401">401</a>
+<a href="#402" id="402">402</a>
+<a href="#403" id="403">403</a>
+<a href="#404" id="404">404</a>
+<a href="#405" id="405">405</a>
+<a href="#406" id="406">406</a>
+<a href="#407" id="407">407</a>
+<a href="#408" id="408">408</a>
+<a href="#409" id="409">409</a>
+<a href="#410" id="410">410</a>
+<a href="#411" id="411">411</a>
+<a href="#412" id="412">412</a>
+<a href="#413" id="413">413</a>
+<a href="#414" id="414">414</a>
+<a href="#415" id="415">415</a>
+<a href="#416" id="416">416</a>
+<a href="#417" id="417">417</a>
+<a href="#418" id="418">418</a>
+<a href="#419" id="419">419</a>
+<a href="#420" id="420">420</a>
+<a href="#421" id="421">421</a>
+<a href="#422" id="422">422</a>
+<a href="#423" id="423">423</a>
+<a href="#424" id="424">424</a>
+<a href="#425" id="425">425</a>
+<a href="#426" id="426">426</a>
+<a href="#427" id="427">427</a>
+<a href="#428" id="428">428</a>
+<a href="#429" id="429">429</a>
+<a href="#430" id="430">430</a>
+<a href="#431" id="431">431</a>
+<a href="#432" id="432">432</a>
+<a href="#433" id="433">433</a>
+<a href="#434" id="434">434</a>
+<a href="#435" id="435">435</a>
+<a href="#436" id="436">436</a>
+<a href="#437" id="437">437</a>
+<a href="#438" id="438">438</a>
+<a href="#439" id="439">439</a>
+<a href="#440" id="440">440</a>
+<a href="#441" id="441">441</a>
+<a href="#442" id="442">442</a>
+<a href="#443" id="443">443</a>
+<a href="#444" id="444">444</a>
+<a href="#445" id="445">445</a>
+<a href="#446" id="446">446</a>
+<a href="#447" id="447">447</a>
+<a href="#448" id="448">448</a>
+<a href="#449" id="449">449</a>
+<a href="#450" id="450">450</a>
+<a href="#451" id="451">451</a>
+<a href="#452" id="452">452</a>
+<a href="#453" id="453">453</a>
+<a href="#454" id="454">454</a>
+<a href="#455" id="455">455</a>
+<a href="#456" id="456">456</a>
+<a href="#457" id="457">457</a>
+<a href="#458" id="458">458</a>
+<a href="#459" id="459">459</a>
+<a href="#460" id="460">460</a>
+<a href="#461" id="461">461</a>
+<a href="#462" id="462">462</a>
+<a href="#463" id="463">463</a>
+<a href="#464" id="464">464</a>
+<a href="#465" id="465">465</a>
+<a href="#466" id="466">466</a>
+<a href="#467" id="467">467</a>
+<a href="#468" id="468">468</a>
+<a href="#469" id="469">469</a>
+<a href="#470" id="470">470</a>
+<a href="#471" id="471">471</a>
+<a href="#472" id="472">472</a>
+<a href="#473" id="473">473</a>
+<a href="#474" id="474">474</a>
+<a href="#475" id="475">475</a>
+<a href="#476" id="476">476</a>
+<a href="#477" id="477">477</a>
+</pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
+//
+// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+</span><span class="kw">use </span>std::str::FromStr;
+<span class="kw">use </span>std::sync::Arc;
+<span class="kw">use </span>std::time::Duration;
+
+<span class="kw">use </span>async_recursion::async_recursion;
+<span class="kw">use </span>catalog::table_source::DfTableSourceProvider;
+<span class="kw">use </span>datafusion::datasource::DefaultTableSource;
+<span class="kw">use </span>datafusion::prelude::Column;
+<span class="kw">use </span>datafusion::scalar::ScalarValue;
+<span class="kw">use </span>datafusion_common::tree_node::{TreeNode, TreeNodeRewriter, VisitRecursion};
+<span class="kw">use </span>datafusion_common::{DFSchema, DataFusionError, <span class="prelude-ty">Result </span><span class="kw">as </span>DFResult};
+<span class="kw">use </span>datafusion_expr::expr::{AggregateFunction, AggregateUDF, ScalarUDF};
+<span class="kw">use </span>datafusion_expr::{
+    AggregateFunction <span class="kw">as </span>AggregateFn, Expr, Extension, LogicalPlan, LogicalPlanBuilder, Projection,
+};
+<span class="kw">use </span>datafusion_sql::planner::ContextProvider;
+<span class="kw">use </span>datatypes::prelude::ConcreteDataType;
+<span class="kw">use </span>promql_parser::util::parse_duration;
+<span class="kw">use </span>snafu::{OptionExt, ResultExt};
+<span class="kw">use </span>table::table::adapter::DfTableProviderAdapter;
+
+<span class="kw">use </span><span class="kw">crate</span>::error::{
+    CatalogSnafu, DataFusionSnafu, <span class="prelude-ty">Result</span>, TimeIndexNotFoundSnafu, UnknownTableSnafu,
+};
+<span class="kw">use </span><span class="kw">crate</span>::range_select::plan::{RangeFn, RangeSelect};
+<span class="kw">use </span><span class="kw">crate</span>::DfContextProviderAdapter;
+
+<span class="doccomment">/// `RangeExprRewriter` will recursively search certain `Expr`, find all `range_fn` scalar udf contained in `Expr`,
+/// and collect the information required by the RangeSelect query,
+/// and finally modify the `range_fn` scalar udf to an ordinary column field.
+</span><span class="kw">pub struct </span>RangeExprRewriter&lt;<span class="lifetime">&#39;a</span>&gt; {
+    align: Duration,
+    by: Vec&lt;Expr&gt;,
+    range_fn: Vec&lt;RangeFn&gt;,
+    context_provider: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>DfContextProviderAdapter,
+}
+
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; RangeExprRewriter&lt;<span class="lifetime">&#39;a</span>&gt; {
+    <span class="kw">pub fn </span>gen_range_expr(<span class="kw-2">&amp;</span><span class="self">self</span>, func_name: <span class="kw-2">&amp;</span>str, args: Vec&lt;Expr&gt;) -&gt; DFResult&lt;Expr&gt; {
+        <span class="kw">match </span>AggregateFn::from_str(func_name) {
+            <span class="prelude-val">Ok</span>(agg_fn) =&gt; <span class="prelude-val">Ok</span>(Expr::AggregateFunction(AggregateFunction::new(
+                agg_fn, args, <span class="bool-val">false</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>,
+            ))),
+            <span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; <span class="kw">match </span><span class="self">self</span>.context_provider.get_aggregate_meta(func_name) {
+                <span class="prelude-val">Some</span>(agg_udf) =&gt; <span class="prelude-val">Ok</span>(Expr::AggregateUDF(AggregateUDF::new(
+                    agg_udf, args, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>,
+                ))),
+                <span class="prelude-val">None </span>=&gt; <span class="prelude-val">Err</span>(DataFusionError::Plan(<span class="macro">format!</span>(
+                    <span class="string">&quot;{} is not a Aggregate function or a Aggregate UDF&quot;</span>,
+                    func_name
+                ))),
+            },
+        }
+    }
+}
+
+<span class="kw">fn </span>parse_str_expr(args: <span class="kw-2">&amp;</span>[Expr], i: usize) -&gt; DFResult&lt;<span class="kw-2">&amp;</span>str&gt; {
+    <span class="kw">match </span>args.get(i) {
+        <span class="prelude-val">Some</span>(Expr::Literal(ScalarValue::Utf8(<span class="prelude-val">Some</span>(str)))) =&gt; <span class="prelude-val">Ok</span>(str.as_str()),
+        <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(DataFusionError::Plan(<span class="string">&quot;Illegal str expr in range_fn&quot;</span>.into())),
+    }
+}
+
+<span class="kw">fn </span>parse_expr_list(args: <span class="kw-2">&amp;</span>[Expr], start: usize, len: usize) -&gt; DFResult&lt;Vec&lt;Expr&gt;&gt; {
+    <span class="kw">let </span><span class="kw-2">mut </span>outs = Vec::with_capacity(len);
+    <span class="kw">for </span>i <span class="kw">in </span>start..start + len {
+        outs.push(<span class="kw">match </span><span class="kw-2">&amp;</span>args.get(i) {
+            <span class="prelude-val">Some</span>(Expr::Column(<span class="kw">_</span>)) | <span class="prelude-val">Some</span>(Expr::BinaryExpr(<span class="kw">_</span>)) =&gt; args[i].clone(),
+            <span class="kw">_ </span>=&gt; <span class="kw">return </span><span class="prelude-val">Err</span>(DataFusionError::Plan(<span class="string">&quot;Illegal expr in range_fn&quot;</span>.into())),
+        });
+    }
+    <span class="prelude-val">Ok</span>(outs)
+}
+
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; TreeNodeRewriter <span class="kw">for </span>RangeExprRewriter&lt;<span class="lifetime">&#39;a</span>&gt; {
+    <span class="kw">type </span>N = Expr;
+
+    <span class="kw">fn </span>mutate(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: Expr) -&gt; DFResult&lt;Expr&gt; {
+        <span class="kw">if let </span>Expr::ScalarUDF(func) = <span class="kw-2">&amp;</span>node {
+            <span class="kw">if </span>func.fun.name == <span class="string">&quot;range_fn&quot; </span>{
+                <span class="comment">// `range_fn(func_name, argc, [argv], range, fill, byc, [byv], align)`
+                // `argsv` and `byv` are variadic arguments, argc/byc indicate the length of arguments
+                </span><span class="kw">let </span>func_name = parse_str_expr(<span class="kw-2">&amp;</span>func.args, <span class="number">0</span>)<span class="question-mark">?</span>;
+                <span class="kw">let </span>argc = str::parse::&lt;usize&gt;(parse_str_expr(<span class="kw-2">&amp;</span>func.args, <span class="number">1</span>)<span class="question-mark">?</span>)
+                    .map_err(|e| DataFusionError::Plan(e.to_string()))<span class="question-mark">?</span>;
+                <span class="kw">let </span>byc = str::parse::&lt;usize&gt;(parse_str_expr(<span class="kw-2">&amp;</span>func.args, argc + <span class="number">4</span>)<span class="question-mark">?</span>)
+                    .map_err(|e| DataFusionError::Plan(e.to_string()))<span class="question-mark">?</span>;
+                <span class="kw">let </span><span class="kw-2">mut </span>range_fn = RangeFn {
+                    expr: Expr::Wildcard,
+                    range: parse_duration(parse_str_expr(<span class="kw-2">&amp;</span>func.args, argc + <span class="number">2</span>)<span class="question-mark">?</span>)
+                        .map_err(DataFusionError::Plan)<span class="question-mark">?</span>,
+                    fill: parse_str_expr(<span class="kw-2">&amp;</span>func.args, argc + <span class="number">3</span>)<span class="question-mark">?</span>.to_string(),
+                };
+                <span class="kw">let </span>args = parse_expr_list(<span class="kw-2">&amp;</span>func.args, <span class="number">2</span>, argc)<span class="question-mark">?</span>;
+                <span class="kw">let </span>by = parse_expr_list(<span class="kw-2">&amp;</span>func.args, argc + <span class="number">5</span>, byc)<span class="question-mark">?</span>;
+                <span class="kw">let </span>align = parse_duration(parse_str_expr(<span class="kw-2">&amp;</span>func.args, argc + byc + <span class="number">5</span>)<span class="question-mark">?</span>)
+                    .map_err(DataFusionError::Plan)<span class="question-mark">?</span>;
+                <span class="kw">if </span>!<span class="self">self</span>.by.is_empty() &amp;&amp; <span class="self">self</span>.by != by {
+                    <span class="kw">return </span><span class="prelude-val">Err</span>(DataFusionError::Plan(
+                        <span class="string">&quot;Inconsistent by given in Range Function Rewrite&quot;</span>.into(),
+                    ));
+                } <span class="kw">else </span>{
+                    <span class="self">self</span>.by = by;
+                }
+                <span class="kw">if </span><span class="self">self</span>.align != Duration::default() &amp;&amp; <span class="self">self</span>.align != align {
+                    <span class="kw">return </span><span class="prelude-val">Err</span>(DataFusionError::Plan(
+                        <span class="string">&quot;Inconsistent align given in Range Function Rewrite&quot;</span>.into(),
+                    ));
+                } <span class="kw">else </span>{
+                    <span class="self">self</span>.align = align;
+                }
+                range_fn.expr = <span class="self">self</span>.gen_range_expr(func_name, args)<span class="question-mark">?</span>;
+                <span class="kw">let </span>alias = Expr::Column(Column::from_name(range_fn.expr.display_name()<span class="question-mark">?</span>));
+                <span class="self">self</span>.range_fn.push(range_fn);
+                <span class="kw">return </span><span class="prelude-val">Ok</span>(alias);
+            }
+        }
+        <span class="prelude-val">Ok</span>(node)
+    }
+}
+
+<span class="doccomment">/// In order to implement RangeSelect query like `avg(field_0) RANGE &#39;5m&#39; FILL NULL`,
+/// All RangeSelect query items are converted into udf scalar function in sql parse stage, with format like `range_fn(&#39;avg&#39;, .....)`.
+/// `range_fn` contains all the parameters we need to execute RangeSelect.
+/// In order to correctly execute the query process of range select, we need to modify the query plan generated by datafusion.
+/// We need to recursively find the entire LogicalPlan, and find all `range_fn` scalar udf contained in the project plan,
+/// collecting info we need to generate RangeSelect Query LogicalPlan and rewrite th original LogicalPlan.
+</span><span class="kw">pub struct </span>RangePlanRewriter {
+    table_provider: DfTableSourceProvider,
+    context_provider: DfContextProviderAdapter,
+}
+
+<span class="kw">impl </span>RangePlanRewriter {
+    <span class="kw">pub fn </span>new(
+        table_provider: DfTableSourceProvider,
+        context_provider: DfContextProviderAdapter,
+    ) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            table_provider,
+            context_provider,
+        }
+    }
+
+    <span class="kw">pub async fn </span>rewrite(<span class="kw-2">&amp;mut </span><span class="self">self</span>, plan: LogicalPlan) -&gt; <span class="prelude-ty">Result</span>&lt;LogicalPlan&gt; {
+        <span class="kw">match </span><span class="self">self</span>.rewrite_logical_plan(<span class="kw-2">&amp;</span>plan).<span class="kw">await</span><span class="question-mark">? </span>{
+            <span class="prelude-val">Some</span>(new_plan) =&gt; <span class="prelude-val">Ok</span>(new_plan),
+            <span class="prelude-val">None </span>=&gt; <span class="prelude-val">Ok</span>(plan),
+        }
+    }
+
+    <span class="attr">#[async_recursion]
+    </span><span class="kw">async fn </span>rewrite_logical_plan(<span class="kw-2">&amp;mut </span><span class="self">self</span>, plan: <span class="kw-2">&amp;</span>LogicalPlan) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;LogicalPlan&gt;&gt; {
+        <span class="kw">let </span>inputs = plan.inputs();
+        <span class="kw">let </span><span class="kw-2">mut </span>new_inputs = Vec::with_capacity(inputs.len());
+        <span class="kw">for </span>input <span class="kw">in </span><span class="kw-2">&amp;</span>inputs {
+            new_inputs.push(<span class="self">self</span>.rewrite_logical_plan(input).<span class="kw">await</span><span class="question-mark">?</span>)
+        }
+        <span class="kw">match </span>plan {
+            LogicalPlan::Projection(Projection { expr, input, .. })
+                <span class="kw">if </span>have_range_in_exprs(expr) =&gt;
+            {
+                <span class="kw">let </span>input = <span class="kw">if let </span><span class="prelude-val">Some</span>(new_input) = new_inputs[<span class="number">0</span>].take() {
+                    Arc::new(new_input)
+                } <span class="kw">else </span>{
+                    input.clone()
+                };
+                <span class="kw">let </span>(time_index, default_by) = <span class="self">self</span>.get_index_by(input.schema().clone()).<span class="kw">await</span><span class="question-mark">?</span>;
+                <span class="kw">let </span><span class="kw-2">mut </span>range_rewriter = RangeExprRewriter {
+                    align: Duration::default(),
+                    by: <span class="macro">vec!</span>[],
+                    range_fn: <span class="macro">vec!</span>[],
+                    context_provider: <span class="kw-2">&amp;</span><span class="self">self</span>.context_provider,
+                };
+                <span class="kw">let </span>new_expr = expr
+                    .iter()
+                    .map(|expr| expr.clone().rewrite(<span class="kw-2">&amp;mut </span>range_rewriter))
+                    .collect::&lt;DFResult&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;&gt;()
+                    .context(DataFusionSnafu)<span class="question-mark">?</span>;
+                <span class="kw">if </span>range_rewriter.by.is_empty() {
+                    range_rewriter.by = default_by;
+                }
+                <span class="kw">let </span>range_plan = LogicalPlan::Extension(Extension {
+                    node: Arc::new(RangeSelect::try_new(
+                        input.clone(),
+                        range_rewriter.range_fn,
+                        range_rewriter.align,
+                        time_index,
+                        range_rewriter.by,
+                    )<span class="question-mark">?</span>),
+                });
+                <span class="comment">// If the result of the project plan happens to be the schema of the range plan, no project plan is required
+                // that need project is identical to range plan schema.
+                // 1. all exprs in project must belong to range schema
+                // 2. range schema and project exprs must have same size
+                </span><span class="kw">let </span>all_in_range_schema = new_expr.iter().all(|expr| {
+                    <span class="kw">if let </span>Expr::Column(column) = expr {
+                        range_plan.schema().has_column(column)
+                    } <span class="kw">else </span>{
+                        <span class="bool-val">false
+                    </span>}
+                });
+                <span class="kw">let </span>no_additional_project =
+                    all_in_range_schema &amp;&amp; new_expr.len() == range_plan.schema().fields().len();
+                <span class="kw">if </span>no_additional_project {
+                    <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(range_plan))
+                } <span class="kw">else </span>{
+                    <span class="kw">let </span>project_plan = LogicalPlanBuilder::from(range_plan)
+                        .project(new_expr)
+                        .context(DataFusionSnafu)<span class="question-mark">?
+                        </span>.build()
+                        .context(DataFusionSnafu)<span class="question-mark">?</span>;
+                    <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(project_plan))
+                }
+            }
+            <span class="kw">_ </span>=&gt; {
+                <span class="kw">if </span>new_inputs.iter().any(|x| x.is_some()) {
+                    <span class="kw">let </span>inputs: Vec&lt;LogicalPlan&gt; = new_inputs
+                        .into_iter()
+                        .zip(inputs)
+                        .map(|(x, y)| <span class="kw">match </span>x {
+                            <span class="prelude-val">Some</span>(plan) =&gt; plan,
+                            <span class="prelude-val">None </span>=&gt; y.clone(),
+                        })
+                        .collect();
+                    <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(
+                        plan.with_new_inputs(<span class="kw-2">&amp;</span>inputs).context(DataFusionSnafu)<span class="question-mark">?</span>,
+                    ))
+                } <span class="kw">else </span>{
+                    <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
+                }
+            }
+        }
+    }
+
+    <span class="doccomment">/// this function use to find the time_index column and row columns from input schema,
+    /// return `(time_index, [row_columns])` to the rewriter.
+    /// If the user does not explicitly use the `by` keyword to indicate time series,
+    /// `[row_columns]` will be use as default time series
+    </span><span class="kw">async fn </span>get_index_by(<span class="kw-2">&amp;mut </span><span class="self">self</span>, schema: Arc&lt;DFSchema&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;(Expr, Vec&lt;Expr&gt;)&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>time_index_expr = Expr::Wildcard;
+        <span class="kw">let </span><span class="kw-2">mut </span>default_by = <span class="macro">vec!</span>[];
+        <span class="kw">for </span>field <span class="kw">in </span>schema.fields() {
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(table_ref) = field.qualifier() {
+                <span class="kw">let </span>table = <span class="self">self
+                    </span>.table_provider
+                    .resolve_table(table_ref.clone())
+                    .<span class="kw">await
+                    </span>.context(CatalogSnafu)<span class="question-mark">?
+                    </span>.as_any()
+                    .downcast_ref::&lt;DefaultTableSource&gt;()
+                    .context(UnknownTableSnafu)<span class="question-mark">?
+                    </span>.table_provider
+                    .as_any()
+                    .downcast_ref::&lt;DfTableProviderAdapter&gt;()
+                    .context(UnknownTableSnafu)<span class="question-mark">?
+                    </span>.table();
+                <span class="kw">let </span>schema = table.schema();
+                <span class="kw">let </span>time_index_column =
+                    schema
+                        .timestamp_column()
+                        .with_context(|| TimeIndexNotFoundSnafu {
+                            table: table_ref.to_string(),
+                        })<span class="question-mark">?</span>;
+                <span class="comment">// assert time_index&#39;s datatype is timestamp
+                </span><span class="kw">if let </span>ConcreteDataType::Timestamp(datatypes::types::TimestampType::Millisecond(
+                    <span class="kw">_</span>,
+                )) = time_index_column.data_type
+                {
+                    default_by = table
+                        .table_info()
+                        .meta
+                        .row_key_column_names()
+                        .map(|key| Expr::Column(Column::new(<span class="prelude-val">Some</span>(table_ref.clone()), key)))
+                        .collect();
+                    time_index_expr = Expr::Column(Column::new(
+                        <span class="prelude-val">Some</span>(table_ref.clone()),
+                        time_index_column.name.clone(),
+                    ));
+                }
+            }
+        }
+        <span class="kw">if </span>time_index_expr == Expr::Wildcard {
+            TimeIndexNotFoundSnafu {
+                table: schema.to_string(),
+            }
+            .fail()
+        } <span class="kw">else </span>{
+            <span class="prelude-val">Ok</span>((time_index_expr, default_by))
+        }
+    }
+}
+
+<span class="kw">fn </span>have_range_in_exprs(exprs: <span class="kw-2">&amp;</span>Vec&lt;Expr&gt;) -&gt; bool {
+    <span class="kw">let </span><span class="kw-2">mut </span>have = <span class="bool-val">false</span>;
+    <span class="kw">for </span>expr <span class="kw">in </span>exprs {
+        <span class="kw">let _ </span>= expr.apply(<span class="kw-2">&amp;mut </span>|expr| {
+            <span class="kw">if let </span>Expr::ScalarUDF(ScalarUDF { fun, .. }) = expr {
+                <span class="kw">if </span>fun.name == <span class="string">&quot;range_fn&quot; </span>{
+                    have = <span class="bool-val">true</span>;
+                    <span class="kw">return </span><span class="prelude-val">Ok</span>(VisitRecursion::Stop);
+                }
+            }
+            <span class="prelude-val">Ok</span>(VisitRecursion::Continue)
+        });
+        <span class="kw">if </span>have {
+            <span class="kw">break</span>;
+        }
+    }
+    have
+}
+
+<span class="attr">#[cfg(test)]
+</span><span class="kw">mod </span>test {
+
+    <span class="kw">use </span>catalog::local::MemoryCatalogManager;
+    <span class="kw">use </span>catalog::{CatalogManager, RegisterTableRequest};
+    <span class="kw">use </span>common_catalog::consts::{DEFAULT_CATALOG_NAME, DEFAULT_SCHEMA_NAME};
+    <span class="kw">use </span>datatypes::prelude::ConcreteDataType;
+    <span class="kw">use </span>datatypes::schema::{ColumnSchema, Schema};
+    <span class="kw">use </span>session::context::QueryContext;
+    <span class="kw">use </span>table::metadata::{TableInfoBuilder, TableMetaBuilder};
+    <span class="kw">use </span>table::test_util::EmptyTable;
+
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use </span><span class="kw">crate</span>::parser::QueryLanguageParser;
+    <span class="kw">use </span><span class="kw">crate</span>::plan::LogicalPlan <span class="kw">as </span>GreptimeLogicalPlan;
+    <span class="kw">use crate</span>::{QueryEngineFactory, QueryEngineRef};
+
+    <span class="kw">async fn </span>create_test_engine() -&gt; QueryEngineRef {
+        <span class="kw">let </span>table_name = <span class="string">&quot;test&quot;</span>.to_string();
+        <span class="kw">let </span><span class="kw-2">mut </span>columns = <span class="macro">vec!</span>[];
+        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="number">5 </span>{
+            columns.push(ColumnSchema::new(
+                <span class="macro">format!</span>(<span class="string">&quot;tag_{i}&quot;</span>),
+                ConcreteDataType::string_datatype(),
+                <span class="bool-val">false</span>,
+            ));
+        }
+        columns.push(
+            ColumnSchema::new(
+                <span class="string">&quot;timestamp&quot;</span>.to_string(),
+                ConcreteDataType::timestamp_millisecond_datatype(),
+                <span class="bool-val">false</span>,
+            )
+            .with_time_index(<span class="bool-val">true</span>),
+        );
+        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="number">5 </span>{
+            columns.push(ColumnSchema::new(
+                <span class="macro">format!</span>(<span class="string">&quot;field_{i}&quot;</span>),
+                ConcreteDataType::float64_datatype(),
+                <span class="bool-val">true</span>,
+            ));
+        }
+        <span class="kw">let </span>schema = Arc::new(Schema::new(columns));
+        <span class="kw">let </span>table_meta = TableMetaBuilder::default()
+            .schema(schema)
+            .primary_key_indices((<span class="number">0</span>..<span class="number">5</span>).collect())
+            .value_indices((<span class="number">6</span>..<span class="number">11</span>).collect())
+            .next_column_id(<span class="number">1024</span>)
+            .build()
+            .unwrap();
+        <span class="kw">let </span>table_info = TableInfoBuilder::default()
+            .name(<span class="kw-2">&amp;</span>table_name)
+            .meta(table_meta)
+            .build()
+            .unwrap();
+        <span class="kw">let </span>table = Arc::new(EmptyTable::from_table_info(<span class="kw-2">&amp;</span>table_info));
+        <span class="kw">let </span>catalog_list = MemoryCatalogManager::with_default_setup();
+        <span class="macro">assert!</span>(catalog_list
+            .register_table(RegisterTableRequest {
+                catalog: DEFAULT_CATALOG_NAME.to_string(),
+                schema: DEFAULT_SCHEMA_NAME.to_string(),
+                table_name,
+                table_id: <span class="number">1024</span>,
+                table,
+            })
+            .<span class="kw">await
+            </span>.is_ok());
+        QueryEngineFactory::new(catalog_list, <span class="bool-val">false</span>).query_engine()
+    }
+
+    <span class="kw">async fn </span>query_plan_compare(sql: <span class="kw-2">&amp;</span>str, expected: String) {
+        <span class="kw">let </span>stmt = QueryLanguageParser::parse_sql(sql).unwrap();
+        <span class="kw">let </span>engine = create_test_engine().<span class="kw">await</span>;
+        <span class="kw">let </span>GreptimeLogicalPlan::DfPlan(plan) = engine
+            .planner()
+            .plan(stmt, QueryContext::arc())
+            .<span class="kw">await
+            </span>.unwrap();
+        <span class="macro">assert_eq!</span>(plan.display_indent_schema().to_string(), expected);
+    }
+
+    <span class="attr">#[tokio::test]
+    </span><span class="kw">async fn </span>range_no_project() {
+        <span class="kw">let </span>query = <span class="string">r#&quot;SELECT timestamp, tag_0, tag_1, avg(field_0 + field_1) RANGE &#39;5m&#39; FROM test ALIGN &#39;1h&#39; by (tag_0,tag_1);&quot;#</span>;
+        <span class="kw">let </span>expected = String::from(
+            <span class="string">&quot;RangeSelect: range_exprs=[RangeFn { expr:AVG(test.field_0 + test.field_1) range:300s fill: }], align=3600s time_index=timestamp [AVG(test.field_0 + test.field_1):Float64;N, timestamp:Timestamp(Millisecond, None), tag_0:Utf8, tag_1:Utf8]\
+            \n  TableScan: test [tag_0:Utf8, tag_1:Utf8, tag_2:Utf8, tag_3:Utf8, tag_4:Utf8, timestamp:Timestamp(Millisecond, None), field_0:Float64;N, field_1:Float64;N, field_2:Float64;N, field_3:Float64;N, field_4:Float64;N]&quot;
+        </span>);
+        query_plan_compare(query, expected).<span class="kw">await</span>;
+    }
+
+    <span class="attr">#[tokio::test]
+    </span><span class="kw">async fn </span>range_expr_calculation() {
+        <span class="kw">let </span>query =
+            <span class="string">r#&quot;SELECT avg(field_0 + field_1)/4 RANGE &#39;5m&#39; FROM test ALIGN &#39;1h&#39; by (tag_0,tag_1);&quot;#</span>;
+        <span class="kw">let </span>expected = String::from(
+            <span class="string">&quot;Projection: AVG(test.field_0 + test.field_1) / Int64(4) [AVG(test.field_0 + test.field_1) / Int64(4):Float64;N]\
+            \n  RangeSelect: range_exprs=[RangeFn { expr:AVG(test.field_0 + test.field_1) range:300s fill: }], align=3600s time_index=timestamp [AVG(test.field_0 + test.field_1):Float64;N, timestamp:Timestamp(Millisecond, None), tag_0:Utf8, tag_1:Utf8]\
+            \n    TableScan: test [tag_0:Utf8, tag_1:Utf8, tag_2:Utf8, tag_3:Utf8, tag_4:Utf8, timestamp:Timestamp(Millisecond, None), field_0:Float64;N, field_1:Float64;N, field_2:Float64;N, field_3:Float64;N, field_4:Float64;N]&quot;
+        </span>);
+        query_plan_compare(query, expected).<span class="kw">await</span>;
+    }
+
+    <span class="attr">#[tokio::test]
+    </span><span class="kw">async fn </span>range_multi_args() {
+        <span class="kw">let </span>query =
+            <span class="string">r#&quot;SELECT covar(field_0 + field_1, field_1)/4 RANGE &#39;5m&#39; FROM test ALIGN &#39;1h&#39;;&quot;#</span>;
+        <span class="kw">let </span>expected = String::from(
+            <span class="string">&quot;Projection: COVARIANCE(test.field_0 + test.field_1,test.field_1) / Int64(4) [COVARIANCE(test.field_0 + test.field_1,test.field_1) / Int64(4):Float64;N]\
+            \n  RangeSelect: range_exprs=[RangeFn { expr:COVARIANCE(test.field_0 + test.field_1,test.field_1) range:300s fill: }], align=3600s time_index=timestamp [COVARIANCE(test.field_0 + test.field_1,test.field_1):Float64;N, timestamp:Timestamp(Millisecond, None), tag_0:Utf8, tag_1:Utf8, tag_2:Utf8, tag_3:Utf8, tag_4:Utf8]\
+            \n    TableScan: test [tag_0:Utf8, tag_1:Utf8, tag_2:Utf8, tag_3:Utf8, tag_4:Utf8, timestamp:Timestamp(Millisecond, None), field_0:Float64;N, field_1:Float64;N, field_2:Float64;N, field_3:Float64;N, field_4:Float64;N]&quot;
+        </span>);
+        query_plan_compare(query, expected).<span class="kw">await</span>;
+    }
+
+    <span class="attr">#[tokio::test]
+    </span><span class="kw">async fn </span>range_calculation() {
+        <span class="kw">let </span>query = <span class="string">r#&quot;SELECT (avg(field_0)+sum(field_1))/4 RANGE &#39;5m&#39; FROM test ALIGN &#39;1h&#39; by (tag_0,tag_1) FILL NULL;&quot;#</span>;
+        <span class="kw">let </span>expected = String::from(
+            <span class="string">&quot;Projection: (AVG(test.field_0) + SUM(test.field_1)) / Int64(4) [AVG(test.field_0) + SUM(test.field_1) / Int64(4):Float64;N]\
+            \n  RangeSelect: range_exprs=[RangeFn { expr:AVG(test.field_0) range:300s fill:NULL }, RangeFn { expr:SUM(test.field_1) range:300s fill:NULL }], align=3600s time_index=timestamp [AVG(test.field_0):Float64;N, SUM(test.field_1):Float64;N, timestamp:Timestamp(Millisecond, None), tag_0:Utf8, tag_1:Utf8]\
+            \n    TableScan: test [tag_0:Utf8, tag_1:Utf8, tag_2:Utf8, tag_3:Utf8, tag_4:Utf8, timestamp:Timestamp(Millisecond, None), field_0:Float64;N, field_1:Float64;N, field_2:Float64;N, field_3:Float64;N, field_4:Float64;N]&quot;
+        </span>);
+        query_plan_compare(query, expected).<span class="kw">await</span>;
+    }
+
+    <span class="attr">#[tokio::test]
+    </span><span class="kw">async fn </span>range_as_sub_query() {
+        <span class="kw">let </span>query = <span class="string">r#&quot;SELECT foo + 1 from (SELECT (avg(field_0)+sum(field_1))/4 RANGE &#39;5m&#39; as foo FROM test ALIGN &#39;1h&#39; by (tag_0,tag_1) FILL NULL) where foo &gt; 1;&quot;#</span>;
+        <span class="kw">let </span>expected = String::from(
+            <span class="string">&quot;Projection: foo + Int64(1) [foo + Int64(1):Float64;N]\
+            \n  Filter: foo &gt; Int64(1) [foo:Float64;N]\
+            \n    Projection: (AVG(test.field_0) + SUM(test.field_1)) / Int64(4) AS foo [foo:Float64;N]\
+            \n      RangeSelect: range_exprs=[RangeFn { expr:AVG(test.field_0) range:300s fill:NULL }, RangeFn { expr:SUM(test.field_1) range:300s fill:NULL }], align=3600s time_index=timestamp [AVG(test.field_0):Float64;N, SUM(test.field_1):Float64;N, timestamp:Timestamp(Millisecond, None), tag_0:Utf8, tag_1:Utf8]\
+            \n        TableScan: test [tag_0:Utf8, tag_1:Utf8, tag_2:Utf8, tag_3:Utf8, tag_4:Utf8, timestamp:Timestamp(Millisecond, None), field_0:Float64;N, field_1:Float64;N, field_2:Float64;N, field_3:Float64;N, field_4:Float64;N]&quot;
+        </span>);
+        query_plan_compare(query, expected).<span class="kw">await</span>;
+    }
+
+    <span class="attr">#[tokio::test]
+    </span><span class="kw">async fn </span>range_from_nest_query() {
+        <span class="kw">let </span>query = <span class="string">r#&quot;SELECT (avg(a)+sum(b))/4 RANGE &#39;5m&#39; FROM (SELECT field_0 as a, field_1 as b, tag_0 as c, tag_1 as d, timestamp from test where field_0 &gt; 1.0) ALIGN &#39;1h&#39; by (c, d) FILL NULL;&quot;#</span>;
+        <span class="kw">let </span>expected = String::from(
+            <span class="string">&quot;Projection: (AVG(a) + SUM(b)) / Int64(4) [AVG(a) + SUM(b) / Int64(4):Float64;N]\
+            \n  RangeSelect: range_exprs=[RangeFn { expr:AVG(a) range:300s fill:NULL }, RangeFn { expr:SUM(b) range:300s fill:NULL }], align=3600s time_index=timestamp [AVG(a):Float64;N, SUM(b):Float64;N, timestamp:Timestamp(Millisecond, None), c:Utf8, d:Utf8]\
+            \n    Projection: test.field_0 AS a, test.field_1 AS b, test.tag_0 AS c, test.tag_1 AS d, test.timestamp [a:Float64;N, b:Float64;N, c:Utf8, d:Utf8, timestamp:Timestamp(Millisecond, None)]\
+            \n      Filter: test.field_0 &gt; Float64(1) [tag_0:Utf8, tag_1:Utf8, tag_2:Utf8, tag_3:Utf8, tag_4:Utf8, timestamp:Timestamp(Millisecond, None), field_0:Float64;N, field_1:Float64;N, field_2:Float64;N, field_3:Float64;N, field_4:Float64;N]\
+            \n        TableScan: test [tag_0:Utf8, tag_1:Utf8, tag_2:Utf8, tag_3:Utf8, tag_4:Utf8, timestamp:Timestamp(Millisecond, None), field_0:Float64;N, field_1:Float64;N, field_2:Float64;N, field_3:Float64;N, field_4:Float64;N]&quot;
+        </span>);
+        query_plan_compare(query, expected).<span class="kw">await</span>;
+    }
+}
+</code></pre></div></section></main></body></html>

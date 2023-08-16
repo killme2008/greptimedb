@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"trait":["GrpcQueryInterceptor","PromQueryInterceptor","SqlQueryInterceptor"],"type":["GrpcQueryInterceptorRef","PromQueryInterceptorRef","SqlQueryInterceptorRef"]};

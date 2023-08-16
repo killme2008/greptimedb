@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["ENGINE","MAXVALUE"],"fn":["ensure_partition_columns_defined","ensure_partition_names_no_duplicate","ensure_value_list_len_matches_columns","ensure_value_lists_bounded_by_maxvalue","ensure_value_lists_strictly_increased","validate_create","validate_partitions","validate_time_index"],"static":["LESS","THAN"]};

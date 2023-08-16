@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["IMMUTABLE_MANIFEST_FILE","INIT_META_VERSION"],"fn":["decode_metadata","delete_table_manifest","encode_metadata","manifest_path","read_table_manifest","write_table_manifest"],"struct":["ImmutableMetadata"],"type":["MetadataVersion"]};

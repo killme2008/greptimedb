@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Error"],"struct":["CastVectorSnafu","ColumnNotExistsSnafu","CreateRecordBatchesSnafu","DataTypesSnafu","ExternalSnafu","FormatSnafu","InitRecordbatchStreamSnafu","NewDfRecordBatchSnafu","PollStreamSnafu","ProjectArrowRecordBatchSnafu","SchemaConversionSnafu"],"type":["Result"]};

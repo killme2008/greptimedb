@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["BatchDeleteRequest","BatchDeleteResponse","BatchGetRequest","BatchGetResponse","BatchPutRequest","BatchPutResponse","CompareAndPutRequest","CompareAndPutResponse","DeleteRangeRequest","DeleteRangeResponse","MoveValueRequest","MoveValueResponse","PutRequest","PutResponse","RangeRequest","RangeResponse"]};

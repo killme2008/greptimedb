@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["METRIC_JEMALLOC_ALLOCATED","METRIC_JEMALLOC_RESIDENT"],"mod":["error"],"static":["JEMALLOC_COLLECTOR"],"struct":["JemallocCollector"]};

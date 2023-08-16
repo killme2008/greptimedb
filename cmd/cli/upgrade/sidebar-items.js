@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["PAGE_SIZE"],"struct":["MigrateTableMetadata","UpgradeCommand"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["RegionChange"],"struct":["DummyCatalogList","RegionServer"]};

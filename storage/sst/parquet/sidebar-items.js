@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["decode_timestamp_range","decode_timestamp_range_inner"],"struct":["ChunkStream","ParquetReader","ParquetWriter"],"type":["SendableChunkStream"]};

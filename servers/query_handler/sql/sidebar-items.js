@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["ServerSqlQueryHandlerAdaptor"],"trait":["SqlQueryHandler"],"type":["ServerSqlQueryHandlerRef","SqlQueryHandlerRef"]};

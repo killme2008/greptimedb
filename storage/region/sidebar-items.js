@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["writer"],"struct":["AlterContext","RegionImpl","RegionInner","RegionWriter","SharedData","StoreConfig","WriterCompactRequest","WriterContext"],"type":["RecoveredMetadata","RecoveredMetadataMap","RegionWriterRef","SharedDataRef"]};

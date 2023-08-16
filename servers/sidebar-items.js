@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Mode"],"mod":["configurator","error","grpc","heartbeat_options","http","influxdb","interceptor","line_writer","metrics","metrics_handler","mysql","opentsdb","otlp","postgres","prom_store","prometheus","query_handler","server","shutdown","tls"],"struct":["SqlPlan"]};

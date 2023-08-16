@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["default_ddl_timeout_millis"],"mod":["client","error"],"struct":["MetaClientOptions"]};

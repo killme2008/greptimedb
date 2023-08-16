@@ -1,0 +1,3 @@
+(function() {var implementors = {
+"storage":[["impl&lt;M: MetaAction&lt;Error = <a class=\"enum\" href=\"storage/error/enum.Error.html\" title=\"enum storage::error::Error\">Error</a>&gt;&gt; MetaActionIterator for <a class=\"struct\" href=\"storage/manifest/impl_/struct.MetaActionIteratorImpl.html\" title=\"struct storage::manifest::impl_::MetaActionIteratorImpl\">MetaActionIteratorImpl</a>&lt;M&gt;"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

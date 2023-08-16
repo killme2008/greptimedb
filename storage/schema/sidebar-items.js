@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["compat","projected","region","store"],"struct":["ProjectedSchema","RegionSchema","StoreSchema"],"type":["ProjectedSchemaRef","RegionSchemaRef","StoreSchemaRef"]};

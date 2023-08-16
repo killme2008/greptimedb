@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["is_source_column_compatible"],"struct":["ReadAdapter"],"trait":["CompatWrite"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Error"],"struct":["AskLeaderSnafu","ConvertMetaRequestSnafu","ConvertMetaResponseSnafu","CreateChannelSnafu","CreateHeartbeatStreamSnafu","IllegalGrpcClientStateSnafu","InvalidResponseHeaderSnafu","NoLeaderSnafu","NotStartedSnafu","SendHeartbeatSnafu","TonicStatusSnafu"],"type":["Result"]};

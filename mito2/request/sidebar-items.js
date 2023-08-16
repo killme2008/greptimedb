@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["WorkerRequest"],"fn":["validate_proto_value"],"struct":["CloseRequest","CreateRequest","OpenRequest","RegionOptions","RegionTask","RequestValidator","SenderWriteRequest","WriteRequest"]};

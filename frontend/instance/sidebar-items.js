@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["check_permission","parse_stmt","validate_insert_request","validate_param"],"mod":["distributed","grpc","influxdb","opentsdb","otlp","prom_store","script","standalone"],"struct":["Instance"],"trait":["FrontendInstance"],"type":["FrontendInstanceRef","StatementExecutorRef"]};

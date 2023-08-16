@@ -1,0 +1,3 @@
+(function() {var implementors = {
+"storage":[["impl&lt;S: 'static + Checkpoint&lt;Error = <a class=\"enum\" href=\"storage/error/enum.Error.html\" title=\"enum storage::error::Error\">Error</a>&gt;, M: 'static + MetaAction&lt;Error = <a class=\"enum\" href=\"storage/error/enum.Error.html\" title=\"enum storage::error::Error\">Error</a>&gt;&gt; Manifest for <a class=\"struct\" href=\"storage/manifest/impl_/struct.ManifestImpl.html\" title=\"struct storage::manifest::impl_::ManifestImpl\">ManifestImpl</a>&lt;S, M&gt;"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

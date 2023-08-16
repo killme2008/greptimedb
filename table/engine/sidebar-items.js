@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["CloseTableResult"],"fn":["region_name","table_dir"],"mod":["manager"],"struct":["EngineContext","TableReference"],"trait":["TableEngine","TableEngineProcedure"],"type":["TableEngineProcedureRef","TableEngineRef"]};

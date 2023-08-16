@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["static_user_provider"],"trait":["UserProvider"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["DdlTask"],"struct":["AlterTableTask","CreateTableTask","DropTableTask","SubmitDdlTaskRequest","SubmitDdlTaskResponse","TruncateTableTask"]};

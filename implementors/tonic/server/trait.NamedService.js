@@ -1,0 +1,3 @@
+(function() {var implementors = {
+"meta_srv":[["impl <a class=\"trait\" href=\"https://docs.rs/tonic/0.9.2/tonic/server/trait.NamedService.html\" title=\"trait tonic::server::NamedService\">NamedService</a> for <a class=\"struct\" href=\"meta_srv/service/admin/struct.Admin.html\" title=\"struct meta_srv::service::admin::Admin\">Admin</a>"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

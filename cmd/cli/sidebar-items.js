@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Instance","SubCommand"],"mod":["bench","cmd","helper","repl","upgrade"],"struct":["AttachCommand","Command","Repl"],"trait":["Tool"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["DEFAULT_CATALOG_NAME","DEFAULT_SCHEMA_NAME"],"fn":["from_grpc_response"],"mod":["client","client_manager","database","error","load_balance","metrics","stream_insert"],"struct":["Client","Database","StreamInserter"]};

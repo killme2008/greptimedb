@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["MAX_TXN_SIZE"],"struct":["BatchDelete","BatchGet","BatchPut","CompareAndPut","Delete","EtcdStore","Get","MoveValue","Put"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["SelectorType"],"mod":["lease_based","load_based"],"trait":["Selector"],"type":["Namespace"]};

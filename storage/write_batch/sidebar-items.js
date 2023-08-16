@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["MAX_BATCH_SIZE"],"fn":["first_vector_len","new_column_with_default_value","validate_column"],"mod":["codec","compat"],"struct":["Mutation","NameToVector","Payload","WriteBatch"]};

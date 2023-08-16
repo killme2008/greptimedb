@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["KvBackendAdapter"],"trait":["ResettableKvStore"],"type":["KvStoreRef","ResettableKvStoreRef"]};

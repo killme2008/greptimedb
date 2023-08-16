@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["SubCommand"],"fn":["build_frontend"],"struct":["Command","Instance","StandaloneOptions","StartCommand"]};

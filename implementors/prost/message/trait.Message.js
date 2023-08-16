@@ -1,0 +1,3 @@
+(function() {var implementors = {
+"storage":[["impl <a class=\"trait\" href=\"https://docs.rs/prost/0.11.9/prost/message/trait.Message.html\" title=\"trait prost::message::Message\">Message</a> for <a class=\"struct\" href=\"storage/proto/wal/struct.WalHeader.html\" title=\"struct storage::proto::wal::WalHeader\">WalHeader</a>"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

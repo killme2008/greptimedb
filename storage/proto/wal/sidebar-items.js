@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["MutationType"],"fn":["gen_mutation_types"],"struct":["WalHeader"]};

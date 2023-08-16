@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["build_ddl_manager","build_default_meta_peer_client","build_leader_cached_kv_store","build_mailbox","build_procedure_manager","build_table_metadata_manager"],"struct":["CheckLeaderByElection","MetaSrvBuilder"]};
