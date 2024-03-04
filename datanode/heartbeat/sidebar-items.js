@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["resolve_addr"],"mod":["handler"],"struct":["HeartbeatTask"]};
+window.SIDEBAR_ITEMS = {"fn":["new_metasrv_client","resolve_addr"],"mod":["handler","task_tracker"],"struct":["HeartbeatTask"]};

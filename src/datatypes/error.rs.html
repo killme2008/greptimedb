@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/datatypes/src/error.rs`."><title>error.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="datatypes" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../datatypes/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/datatypes/src/error.rs`."><title>error.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="datatypes" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -129,16 +130,40 @@
 <a href="#129" id="129">129</a>
 <a href="#130" id="130">130</a>
 <a href="#131" id="131">131</a>
+<a href="#132" id="132">132</a>
+<a href="#133" id="133">133</a>
+<a href="#134" id="134">134</a>
+<a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
+<a href="#137" id="137">137</a>
+<a href="#138" id="138">138</a>
+<a href="#139" id="139">139</a>
+<a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -147,105 +172,129 @@
 
 <span class="kw">use </span>common_error::ext::ErrorExt;
 <span class="kw">use </span>common_error::status_code::StatusCode;
+<span class="kw">use </span>common_macro::stack_trace_debug;
 <span class="kw">use </span>snafu::{Location, Snafu};
 
-<span class="attr">#[derive(Debug, Snafu)]
+<span class="attr">#[derive(Snafu)]
 #[snafu(visibility(<span class="kw">pub</span>))]
+#[stack_trace_debug]
 </span><span class="kw">pub enum </span>Error {
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to serialize data, source: {}&quot;</span>, source))]
+    <span class="attr">#[snafu(display(<span class="string">"Failed to serialize data"</span>))]
     </span>Serialize {
-        source: serde_json::Error,
+        <span class="attr">#[snafu(source)]
+        </span>error: serde_json::Error,
         location: Location,
     },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to deserialize data, source: {}, json: {}&quot;</span>, source, json))]
+    <span class="attr">#[snafu(display(<span class="string">"Failed to deserialize data, json: {}"</span>, json))]
     </span>Deserialize {
-        source: serde_json::Error,
+        <span class="attr">#[snafu(source)]
+        </span>error: serde_json::Error,
         location: Location,
         json: String,
     },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to convert datafusion type: {}&quot;</span>, from))]
+    <span class="attr">#[snafu(display(<span class="string">"Failed to convert datafusion type: {}"</span>, from))]
     </span>Conversion { from: String, location: Location },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Bad array access, Index out of bounds: {}, size: {}&quot;</span>, index, size))]
+    <span class="attr">#[snafu(display(<span class="string">"Bad array access, Index out of bounds: {}, size: {}"</span>, index, size))]
     </span>BadArrayAccess {
         index: usize,
         size: usize,
         location: Location,
     },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Unknown vector, {}&quot;</span>, msg))]
+    <span class="attr">#[snafu(display(<span class="string">"Unknown vector, {}"</span>, msg))]
     </span>UnknownVector { msg: String, location: Location },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Unsupported arrow data type, type: {:?}&quot;</span>, arrow_type))]
+    <span class="attr">#[snafu(display(<span class="string">"Unsupported arrow data type, type: {:?}"</span>, arrow_type))]
     </span>UnsupportedArrowType {
         arrow_type: arrow::datatypes::DataType,
         location: Location,
     },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Unsupported operation: {} for vector: {}&quot;</span>, op, vector_type))]
+    <span class="attr">#[snafu(display(<span class="string">"Unsupported operation: {} for vector: {}"</span>, op, vector_type))]
     </span>UnsupportedOperation {
         op: String,
         vector_type: String,
         location: Location,
     },
 
-    <span class="attr">#[snafu(display(
-        <span class="string">&quot;Failed to parse version in schema meta, value: {}, source: {}&quot;</span>,
-        value,
-        source
-    ))]
+    <span class="attr">#[snafu(display(<span class="string">"Failed to parse version in schema meta, value: {}"</span>, value))]
     </span>ParseSchemaVersion {
         value: String,
-        source: std::num::ParseIntError,
+        <span class="attr">#[snafu(source)]
+        </span>error: std::num::ParseIntError,
         location: Location,
     },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Invalid timestamp index: {}&quot;</span>, index))]
+    <span class="attr">#[snafu(display(<span class="string">"Invalid timestamp index: {}"</span>, index))]
     </span>InvalidTimestampIndex { index: usize, location: Location },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;{}&quot;</span>, msg))]
+    <span class="attr">#[snafu(display(<span class="string">"{}"</span>, msg))]
     </span>CastType { msg: String, location: Location },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to cast arrow time i32 type into i64&quot;</span>))]
+    <span class="attr">#[snafu(display(<span class="string">"Failed to cast arrow time i32 type into i64"</span>))]
     </span>CastTimeType {
-        source: std::num::TryFromIntError,
+        <span class="attr">#[snafu(source)]
+        </span>error: std::num::TryFromIntError,
         location: Location,
     },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Arrow failed to compute, source: {}&quot;</span>, source))]
+    <span class="attr">#[snafu(display(<span class="string">"Arrow failed to compute"</span>))]
     </span>ArrowCompute {
-        source: arrow::error::ArrowError,
+        <span class="attr">#[snafu(source)]
+        </span>error: arrow::error::ArrowError,
         location: Location,
     },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to project arrow schema, source: {}&quot;</span>, source))]
+    <span class="attr">#[snafu(display(<span class="string">"Failed to project arrow schema"</span>))]
     </span>ProjectArrowSchema {
-        source: arrow::error::ArrowError,
+        <span class="attr">#[snafu(source)]
+        </span>error: arrow::error::ArrowError,
         location: Location,
     },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Unsupported column default constraint expression: {}&quot;</span>, expr))]
+    <span class="attr">#[snafu(display(<span class="string">"Unsupported column default constraint expression: {}"</span>, expr))]
     </span>UnsupportedDefaultExpr { expr: String, location: Location },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Default value should not be null for non null column&quot;</span>))]
+    <span class="attr">#[snafu(display(<span class="string">"Default value should not be null for non null column"</span>))]
     </span>NullDefault { location: Location },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Incompatible default value type, reason: {}&quot;</span>, reason))]
+    <span class="attr">#[snafu(display(<span class="string">"Incompatible default value type, reason: {}"</span>, reason))]
     </span>DefaultValueType { reason: String, location: Location },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Duplicated metadata for {}&quot;</span>, key))]
+    <span class="attr">#[snafu(display(<span class="string">"Duplicated metadata for {}"</span>, key))]
     </span>DuplicateMeta { key: String, location: Location },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to convert value into scalar value, reason: {}&quot;</span>, reason))]
+    <span class="attr">#[snafu(display(<span class="string">"Failed to convert value into scalar value, reason: {}"</span>, reason))]
     </span>ToScalarValue { reason: String, location: Location },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Invalid timestamp precision: {}&quot;</span>, precision))]
+    <span class="attr">#[snafu(display(<span class="string">"Invalid timestamp precision: {}"</span>, precision))]
     </span>InvalidTimestampPrecision { precision: u64, location: Location },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Column {} already exists&quot;</span>, column))]
+    <span class="attr">#[snafu(display(<span class="string">"Column {} already exists"</span>, column))]
     </span>DuplicateColumn { column: String, location: Location },
+
+    <span class="attr">#[snafu(display(<span class="string">"Failed to unpack value to given type: {}"</span>, reason))]
+    </span>TryFromValue { reason: String, location: Location },
+
+    <span class="attr">#[snafu(display(<span class="string">"Failed to specify the precision {} and scale {}"</span>, precision, scale))]
+    </span>InvalidPrecisionOrScale {
+        precision: u8,
+        scale: i8,
+        <span class="attr">#[snafu(source)]
+        </span>error: arrow::error::ArrowError,
+        location: Location,
+    },
+
+    <span class="attr">#[snafu(display(<span class="string">"Value exceeds the precision {} bound"</span>, precision))]
+    </span>ValueExceedsPrecision {
+        precision: u8,
+        <span class="attr">#[snafu(source)]
+        </span>error: arrow::error::ArrowError,
+        location: Location,
+    },
 }
 
 <span class="kw">impl </span>ErrorExt <span class="kw">for </span>Error {

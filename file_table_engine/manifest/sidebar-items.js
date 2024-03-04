@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["table_manifest_dir"],"mod":["immutable"]};

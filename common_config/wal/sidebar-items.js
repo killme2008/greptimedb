@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["WAL_OPTIONS_KEY"],"enum":["StandaloneWalConfig","WalConfig","WalOptions"],"mod":["kafka","prefix_wal_kafka","raft_engine"]};

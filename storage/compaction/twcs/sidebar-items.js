@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["assign_to_windows","find_latest_window_in_seconds"],"struct":["TwcsPicker"]};

@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/datatypes/src/vectors/list.rs`."><title>list.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="datatypes" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../datatypes/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/datatypes/src/vectors/list.rs`."><title>list.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="datatypes" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -740,16 +741,61 @@
 <a href="#740" id="740">740</a>
 <a href="#741" id="741">741</a>
 <a href="#742" id="742">742</a>
+<a href="#743" id="743">743</a>
+<a href="#744" id="744">744</a>
+<a href="#745" id="745">745</a>
+<a href="#746" id="746">746</a>
+<a href="#747" id="747">747</a>
+<a href="#748" id="748">748</a>
+<a href="#749" id="749">749</a>
+<a href="#750" id="750">750</a>
+<a href="#751" id="751">751</a>
+<a href="#752" id="752">752</a>
+<a href="#753" id="753">753</a>
+<a href="#754" id="754">754</a>
+<a href="#755" id="755">755</a>
+<a href="#756" id="756">756</a>
+<a href="#757" id="757">757</a>
+<a href="#758" id="758">758</a>
+<a href="#759" id="759">759</a>
+<a href="#760" id="760">760</a>
+<a href="#761" id="761">761</a>
+<a href="#762" id="762">762</a>
+<a href="#763" id="763">763</a>
+<a href="#764" id="764">764</a>
+<a href="#765" id="765">765</a>
+<a href="#766" id="766">766</a>
+<a href="#767" id="767">767</a>
+<a href="#768" id="768">768</a>
+<a href="#769" id="769">769</a>
+<a href="#770" id="770">770</a>
+<a href="#771" id="771">771</a>
+<a href="#772" id="772">772</a>
+<a href="#773" id="773">773</a>
+<a href="#774" id="774">774</a>
+<a href="#775" id="775">775</a>
+<a href="#776" id="776">776</a>
+<a href="#777" id="777">777</a>
+<a href="#778" id="778">778</a>
+<a href="#779" id="779">779</a>
+<a href="#780" id="780">780</a>
+<a href="#781" id="781">781</a>
+<a href="#782" id="782">782</a>
+<a href="#783" id="783">783</a>
+<a href="#784" id="784">784</a>
+<a href="#785" id="785">785</a>
+<a href="#786" id="786">786</a>
+<a href="#787" id="787">787</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -760,7 +806,7 @@
 <span class="kw">use </span>arrow::array::{
     Array, ArrayData, ArrayRef, BooleanBufferBuilder, Int32BufferBuilder, ListArray,
 };
-<span class="kw">use </span>arrow::buffer::Buffer;
+<span class="kw">use </span>arrow::buffer::{Buffer, NullBuffer};
 <span class="kw">use </span>arrow::datatypes::DataType <span class="kw">as </span>ArrowDataType;
 <span class="kw">use </span>serde_json::Value <span class="kw">as </span>JsonValue;
 
@@ -772,7 +818,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::value::{ListValue, ListValueRef, Value, ValueRef};
 <span class="kw">use </span><span class="kw">crate</span>::vectors::{<span class="self">self</span>, Helper, MutableVector, Validity, Vector, VectorRef};
 
-<span class="doccomment">/// Vector of Lists, basically backed by Arrow&#39;s `ListArray`.
+<span class="doccomment">/// Vector of Lists, basically backed by Arrow's `ListArray`.
 </span><span class="attr">#[derive(Debug, PartialEq)]
 </span><span class="kw">pub struct </span>ListVector {
     array: ListArray,
@@ -782,21 +828,10 @@
 
 <span class="kw">impl </span>ListVector {
     <span class="doccomment">/// Iterate elements as [VectorRef].
-    </span><span class="kw">pub fn </span>values_iter(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;VectorRef&gt;&gt;&gt; + <span class="lifetime">&#39;_ </span>{
+    </span><span class="kw">pub fn </span>values_iter(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;VectorRef&gt;&gt;&gt; + <span class="lifetime">'_ </span>{
         <span class="self">self</span>.array
             .iter()
             .map(|value_opt| value_opt.map(Helper::try_into_vector).transpose())
-    }
-
-    <span class="kw">fn </span>to_array_data(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; ArrayData {
-        <span class="self">self</span>.array.to_data()
-    }
-
-    <span class="kw">fn </span>from_array_data_and_type(data: ArrayData, item_type: ConcreteDataType) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
-            array: ListArray::from(data),
-            item_type,
-        }
     }
 
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>as_arrow(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="kw">dyn </span>Array {
@@ -810,7 +845,7 @@
     }
 
     <span class="kw">fn </span>vector_type_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
-        <span class="string">&quot;ListVector&quot;</span>.to_string()
+        <span class="string">"ListVector"</span>.to_string()
     }
 
     <span class="kw">fn </span>as_any(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="kw">dyn </span>Any {
@@ -822,13 +857,11 @@
     }
 
     <span class="kw">fn </span>to_arrow_array(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; ArrayRef {
-        <span class="kw">let </span>data = <span class="self">self</span>.to_array_data();
-        Arc::new(ListArray::from(data))
+        Arc::new(<span class="self">self</span>.array.clone())
     }
 
     <span class="kw">fn </span>to_boxed_arrow_array(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Box&lt;<span class="kw">dyn </span>Array&gt; {
-        <span class="kw">let </span>data = <span class="self">self</span>.to_array_data();
-        Box::new(ListArray::from(data))
+        Box::new(<span class="self">self</span>.array.clone())
     }
 
     <span class="kw">fn </span>validity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Validity {
@@ -848,8 +881,10 @@
     }
 
     <span class="kw">fn </span>slice(<span class="kw-2">&amp;</span><span class="self">self</span>, offset: usize, length: usize) -&gt; VectorRef {
-        <span class="kw">let </span>data = <span class="self">self</span>.array.to_data().slice(offset, length);
-        Arc::new(<span class="self">Self</span>::from_array_data_and_type(data, <span class="self">self</span>.item_type.clone()))
+        Arc::new(<span class="self">Self </span>{
+            array: <span class="self">self</span>.array.slice(offset, length),
+            item_type: <span class="self">self</span>.item_type.clone(),
+        })
     }
 
     <span class="kw">fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, index: usize) -&gt; Value {
@@ -860,7 +895,7 @@
         <span class="kw">let </span>array = <span class="kw-2">&amp;</span><span class="self">self</span>.array.value(index);
         <span class="kw">let </span>vector = Helper::try_into_vector(array).unwrap_or_else(|<span class="kw">_</span>| {
             <span class="macro">panic!</span>(
-                <span class="string">&quot;arrow array with datatype {:?} cannot converted to our vector&quot;</span>,
+                <span class="string">"arrow array with datatype {:?} cannot converted to our vector"</span>,
                 array.data_type()
             )
         });
@@ -899,7 +934,7 @@
     <span class="kw">fn </span>from(array: ListArray) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span>item_type = ConcreteDataType::from_arrow_type(<span class="kw">match </span>array.data_type() {
             ArrowDataType::List(field) =&gt; field.data_type(),
-            other =&gt; <span class="macro">panic!</span>(<span class="string">&quot;Try to create ListVector from an arrow array with type {other:?}&quot;</span>),
+            other =&gt; <span class="macro">panic!</span>(<span class="string">"Try to create ListVector from an arrow array with type {other:?}"</span>),
         });
         <span class="self">Self </span>{ array, item_type }
     }
@@ -907,19 +942,19 @@
 
 <span class="macro">vectors::impl_try_from_arrow_array_for_vector!</span>(ListArray, ListVector);
 
-<span class="kw">pub struct </span>ListIter&lt;<span class="lifetime">&#39;a</span>&gt; {
-    vector: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>ListVector,
+<span class="kw">pub struct </span>ListIter&lt;<span class="lifetime">'a</span>&gt; {
+    vector: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>ListVector,
     idx: usize,
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; ListIter&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">fn </span>new(vector: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>ListVector) -&gt; ListIter {
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; ListIter&lt;<span class="lifetime">'a</span>&gt; {
+    <span class="kw">fn </span>new(vector: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>ListVector) -&gt; ListIter {
         ListIter { vector, idx: <span class="number">0 </span>}
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Iterator <span class="kw">for </span>ListIter&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">type </span>Item = <span class="prelude-ty">Option</span>&lt;ListValueRef&lt;<span class="lifetime">&#39;a</span>&gt;&gt;;
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; Iterator <span class="kw">for </span>ListIter&lt;<span class="lifetime">'a</span>&gt; {
+    <span class="kw">type </span>Item = <span class="prelude-ty">Option</span>&lt;ListValueRef&lt;<span class="lifetime">'a</span>&gt;&gt;;
 
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt; {
@@ -948,11 +983,11 @@
 
 <span class="kw">impl </span>ScalarVector <span class="kw">for </span>ListVector {
     <span class="kw">type </span>OwnedItem = ListValue;
-    <span class="kw">type </span>RefItem&lt;<span class="lifetime">&#39;a</span>&gt; = ListValueRef&lt;<span class="lifetime">&#39;a</span>&gt;;
-    <span class="kw">type </span>Iter&lt;<span class="lifetime">&#39;a</span>&gt; = ListIter&lt;<span class="lifetime">&#39;a</span>&gt;;
+    <span class="kw">type </span>RefItem&lt;<span class="lifetime">'a</span>&gt; = ListValueRef&lt;<span class="lifetime">'a</span>&gt;;
+    <span class="kw">type </span>Iter&lt;<span class="lifetime">'a</span>&gt; = ListIter&lt;<span class="lifetime">'a</span>&gt;;
     <span class="kw">type </span>Builder = ListVectorBuilder;
 
-    <span class="kw">fn </span>get_data(<span class="kw-2">&amp;</span><span class="self">self</span>, idx: usize) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::RefItem&lt;<span class="lifetime">&#39;_</span>&gt;&gt; {
+    <span class="kw">fn </span>get_data(<span class="kw-2">&amp;</span><span class="self">self</span>, idx: usize) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::RefItem&lt;<span class="lifetime">'_</span>&gt;&gt; {
         <span class="kw">if </span><span class="self">self</span>.array.is_valid(idx) {
             <span class="prelude-val">Some</span>(ListValueRef::Indexed { vector: <span class="self">self</span>, idx })
         } <span class="kw">else </span>{
@@ -960,12 +995,12 @@
         </span>}
     }
 
-    <span class="kw">fn </span>iter_data(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::Iter&lt;<span class="lifetime">&#39;_</span>&gt; {
+    <span class="kw">fn </span>iter_data(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::Iter&lt;<span class="lifetime">'_</span>&gt; {
         ListIter::new(<span class="self">self</span>)
     }
 }
 
-<span class="comment">// Ports from arrow&#39;s GenericListBuilder.
+<span class="comment">// Ports from arrow's GenericListBuilder.
 // See https://github.com/apache/arrow-rs/blob/94565bca99b5d9932a3e9a8e094aaf4e4384b1e5/arrow-array/src/builder/generic_list_builder.rs
 </span><span class="doccomment">/// [ListVector] builder.
 </span><span class="kw">pub struct </span>ListVectorBuilder {
@@ -1034,6 +1069,10 @@
         Arc::new(<span class="self">self</span>.finish())
     }
 
+    <span class="kw">fn </span>to_vector_cloned(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; VectorRef {
+        Arc::new(<span class="self">self</span>.finish_cloned())
+    }
+
     <span class="kw">fn </span>try_push_value_ref(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: ValueRef) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="kw">if let </span><span class="prelude-val">Some</span>(list_ref) = value.as_list()<span class="question-mark">? </span>{
             <span class="kw">match </span>list_ref {
@@ -1068,16 +1107,16 @@
     <span class="kw">type </span>VectorType = ListVector;
 
     <span class="kw">fn </span>with_capacity(_capacity: usize) -&gt; <span class="self">Self </span>{
-        <span class="macro">panic!</span>(<span class="string">&quot;Must use ListVectorBuilder::with_type_capacity()&quot;</span>);
+        <span class="macro">panic!</span>(<span class="string">"Must use ListVectorBuilder::with_type_capacity()"</span>);
     }
 
-    <span class="kw">fn </span>push(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: <span class="prelude-ty">Option</span>&lt;&lt;<span class="self">Self</span>::VectorType <span class="kw">as </span>ScalarVector&gt;::RefItem&lt;<span class="lifetime">&#39;_</span>&gt;&gt;) {
+    <span class="kw">fn </span>push(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: <span class="prelude-ty">Option</span>&lt;&lt;<span class="self">Self</span>::VectorType <span class="kw">as </span>ScalarVector&gt;::RefItem&lt;<span class="lifetime">'_</span>&gt;&gt;) {
         <span class="comment">// We expect the input ListValue has the same inner type as the builder when using
         // push(), so just panic if `push_value_ref()` returns error, which indicate an
         // invalid input value type.
         </span><span class="self">self</span>.try_push_value_ref(value.into()).unwrap_or_else(|e| {
             <span class="macro">panic!</span>(
-                <span class="string">&quot;Failed to push value, expect value type {:?}, err:{}&quot;</span>,
+                <span class="string">"Failed to push value, expect value type {:?}, err:{}"</span>,
                 <span class="self">self</span>.item_type, e
             );
         });
@@ -1099,6 +1138,32 @@
             .add_buffer(offset_buffer)
             .add_child_data(values_data)
             .null_bit_buffer(null_bit_buffer);
+
+        <span class="kw">let </span>array_data = <span class="kw">unsafe </span>{ array_data_builder.build_unchecked() };
+        <span class="kw">let </span>array = ListArray::from(array_data);
+
+        ListVector {
+            array,
+            item_type: <span class="self">self</span>.item_type.clone(),
+        }
+    }
+
+    <span class="comment">// Port from https://github.com/apache/arrow-rs/blob/ef6932f31e243d8545e097569653c8d3f1365b4d/arrow-array/src/builder/generic_list_builder.rs#L302-L325
+    </span><span class="kw">fn </span>finish_cloned(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::VectorType {
+        <span class="kw">let </span>len = <span class="self">self</span>.len();
+        <span class="kw">let </span>values_vector = <span class="self">self</span>.values_builder.to_vector_cloned();
+        <span class="kw">let </span>values_arr = values_vector.to_arrow_array();
+        <span class="kw">let </span>values_data = values_arr.to_data();
+
+        <span class="kw">let </span>offset_buffer = Buffer::from_slice_ref(<span class="self">self</span>.offsets_builder.as_slice());
+        <span class="kw">let </span>nulls = <span class="self">self</span>.null_buffer_builder.finish_cloned();
+
+        <span class="kw">let </span>data_type = ConcreteDataType::list_datatype(<span class="self">self</span>.item_type.clone()).as_arrow_type();
+        <span class="kw">let </span>array_data_builder = ArrayData::builder(data_type)
+            .len(len)
+            .add_buffer(offset_buffer)
+            .add_child_data(values_data)
+            .nulls(nulls);
 
         <span class="kw">let </span>array_data = <span class="kw">unsafe </span>{ array_data_builder.build_unchecked() };
         <span class="kw">let </span>array = ListArray::from(array_data);
@@ -1180,6 +1245,12 @@
         buf
     }
 
+    <span class="doccomment">/// Builds the [NullBuffer] without resetting the builder.
+    </span><span class="kw">fn </span>finish_cloned(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;NullBuffer&gt; {
+        <span class="kw">let </span>buffer = <span class="self">self</span>.bitmap_builder.as_ref()<span class="question-mark">?</span>.finish_cloned();
+        <span class="prelude-val">Some</span>(NullBuffer::new(buffer))
+    }
+
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>materialize_if_needed(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
         <span class="kw">if </span><span class="self">self</span>.bitmap_builder.is_none() {
@@ -1256,7 +1327,7 @@
             ConcreteDataType::List(ListType::new(ConcreteDataType::int32_datatype())),
             list_vector.data_type()
         );
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;ListVector&quot;</span>, list_vector.vector_type_name());
+        <span class="macro">assert_eq!</span>(<span class="string">"ListVector"</span>, list_vector.vector_type_name());
         <span class="macro">assert_eq!</span>(<span class="number">3</span>, list_vector.len());
         <span class="macro">assert!</span>(!list_vector.is_null(<span class="number">0</span>));
         <span class="macro">assert!</span>(list_vector.is_null(<span class="number">1</span>));
@@ -1480,6 +1551,26 @@
             </span>},
             iter.nth(<span class="number">1</span>).unwrap().unwrap()
         );
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_list_vector_builder_finish_cloned() {
+        <span class="kw">let </span><span class="kw-2">mut </span>builder =
+            ListVectorBuilder::with_type_capacity(ConcreteDataType::int32_datatype(), <span class="number">2</span>);
+        builder.push(<span class="prelude-val">None</span>);
+        builder.push(<span class="prelude-val">Some</span>(ListValueRef::Ref {
+            val: <span class="kw-2">&amp;</span>ListValue::new(
+                <span class="prelude-val">Some</span>(Box::new(<span class="macro">vec!</span>[
+                    Value::Int32(<span class="number">4</span>),
+                    Value::Null,
+                    Value::Int32(<span class="number">6</span>),
+                ])),
+                ConcreteDataType::int32_datatype(),
+            ),
+        }));
+        <span class="kw">let </span>vector = builder.finish_cloned();
+        <span class="macro">assert_eq!</span>(vector.len(), <span class="number">2</span>);
+        <span class="macro">assert_eq!</span>(builder.len(), <span class="number">2</span>);
     }
 }
 </code></pre></div></section></main></body></html>

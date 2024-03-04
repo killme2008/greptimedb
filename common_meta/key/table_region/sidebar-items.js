@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["TableRegionKey","TableRegionManager","TableRegionValue"],"type":["RegionDistribution"]};
+window.SIDEBAR_ITEMS = {"struct":["TableRegionKey","TableRegionValue"],"type":["RegionDistribution"]};

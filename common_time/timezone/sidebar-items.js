@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["TimeZone"],"fn":["system_time_zone_name"]};
+window.SIDEBAR_ITEMS = {"enum":["Timezone"],"fn":["get_timezone","set_default_timezone","system_timezone_name"],"static":["DEFAULT_TIMEZONE"]};

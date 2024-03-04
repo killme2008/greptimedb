@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `tests-integration/src/grpc.rs`."><title>grpc.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="tests_integration" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../tests_integration/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `tests-integration/src/grpc.rs`."><title>grpc.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="tests_integration" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -805,114 +806,16 @@
 <a href="#805" id="805">805</a>
 <a href="#806" id="806">806</a>
 <a href="#807" id="807">807</a>
-<a href="#808" id="808">808</a>
-<a href="#809" id="809">809</a>
-<a href="#810" id="810">810</a>
-<a href="#811" id="811">811</a>
-<a href="#812" id="812">812</a>
-<a href="#813" id="813">813</a>
-<a href="#814" id="814">814</a>
-<a href="#815" id="815">815</a>
-<a href="#816" id="816">816</a>
-<a href="#817" id="817">817</a>
-<a href="#818" id="818">818</a>
-<a href="#819" id="819">819</a>
-<a href="#820" id="820">820</a>
-<a href="#821" id="821">821</a>
-<a href="#822" id="822">822</a>
-<a href="#823" id="823">823</a>
-<a href="#824" id="824">824</a>
-<a href="#825" id="825">825</a>
-<a href="#826" id="826">826</a>
-<a href="#827" id="827">827</a>
-<a href="#828" id="828">828</a>
-<a href="#829" id="829">829</a>
-<a href="#830" id="830">830</a>
-<a href="#831" id="831">831</a>
-<a href="#832" id="832">832</a>
-<a href="#833" id="833">833</a>
-<a href="#834" id="834">834</a>
-<a href="#835" id="835">835</a>
-<a href="#836" id="836">836</a>
-<a href="#837" id="837">837</a>
-<a href="#838" id="838">838</a>
-<a href="#839" id="839">839</a>
-<a href="#840" id="840">840</a>
-<a href="#841" id="841">841</a>
-<a href="#842" id="842">842</a>
-<a href="#843" id="843">843</a>
-<a href="#844" id="844">844</a>
-<a href="#845" id="845">845</a>
-<a href="#846" id="846">846</a>
-<a href="#847" id="847">847</a>
-<a href="#848" id="848">848</a>
-<a href="#849" id="849">849</a>
-<a href="#850" id="850">850</a>
-<a href="#851" id="851">851</a>
-<a href="#852" id="852">852</a>
-<a href="#853" id="853">853</a>
-<a href="#854" id="854">854</a>
-<a href="#855" id="855">855</a>
-<a href="#856" id="856">856</a>
-<a href="#857" id="857">857</a>
-<a href="#858" id="858">858</a>
-<a href="#859" id="859">859</a>
-<a href="#860" id="860">860</a>
-<a href="#861" id="861">861</a>
-<a href="#862" id="862">862</a>
-<a href="#863" id="863">863</a>
-<a href="#864" id="864">864</a>
-<a href="#865" id="865">865</a>
-<a href="#866" id="866">866</a>
-<a href="#867" id="867">867</a>
-<a href="#868" id="868">868</a>
-<a href="#869" id="869">869</a>
-<a href="#870" id="870">870</a>
-<a href="#871" id="871">871</a>
-<a href="#872" id="872">872</a>
-<a href="#873" id="873">873</a>
-<a href="#874" id="874">874</a>
-<a href="#875" id="875">875</a>
-<a href="#876" id="876">876</a>
-<a href="#877" id="877">877</a>
-<a href="#878" id="878">878</a>
-<a href="#879" id="879">879</a>
-<a href="#880" id="880">880</a>
-<a href="#881" id="881">881</a>
-<a href="#882" id="882">882</a>
-<a href="#883" id="883">883</a>
-<a href="#884" id="884">884</a>
-<a href="#885" id="885">885</a>
-<a href="#886" id="886">886</a>
-<a href="#887" id="887">887</a>
-<a href="#888" id="888">888</a>
-<a href="#889" id="889">889</a>
-<a href="#890" id="890">890</a>
-<a href="#891" id="891">891</a>
-<a href="#892" id="892">892</a>
-<a href="#893" id="893">893</a>
-<a href="#894" id="894">894</a>
-<a href="#895" id="895">895</a>
-<a href="#896" id="896">896</a>
-<a href="#897" id="897">897</a>
-<a href="#898" id="898">898</a>
-<a href="#899" id="899">899</a>
-<a href="#900" id="900">900</a>
-<a href="#901" id="901">901</a>
-<a href="#902" id="902">902</a>
-<a href="#903" id="903">903</a>
-<a href="#904" id="904">904</a>
-<a href="#905" id="905">905</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -925,40 +828,44 @@
     <span class="kw">use </span>api::v1::ddl_request::Expr <span class="kw">as </span>DdlExpr;
     <span class="kw">use </span>api::v1::greptime_request::Request;
     <span class="kw">use </span>api::v1::query_request::Query;
+    <span class="kw">use </span>api::v1::region::QueryRequest <span class="kw">as </span>RegionQueryRequest;
     <span class="kw">use </span>api::v1::{
         alter_expr, AddColumn, AddColumns, AlterExpr, Column, ColumnDataType, ColumnDef,
         CreateDatabaseExpr, CreateTableExpr, DdlRequest, DeleteRequest, DeleteRequests,
-        DropTableExpr, FlushTableExpr, InsertRequest, InsertRequests, QueryRequest, SemanticType,
+        DropTableExpr, InsertRequest, InsertRequests, QueryRequest, SemanticType,
     };
     <span class="kw">use </span>common_catalog::consts::MITO_ENGINE;
+    <span class="kw">use </span>common_meta::rpc::router::region_distribution;
     <span class="kw">use </span>common_query::Output;
     <span class="kw">use </span>common_recordbatch::RecordBatches;
     <span class="kw">use </span>frontend::instance::Instance;
-    <span class="kw">use </span>frontend::table::DistTable;
     <span class="kw">use </span>query::parser::QueryLanguageParser;
+    <span class="kw">use </span>query::plan::LogicalPlan;
     <span class="kw">use </span>servers::query_handler::grpc::GrpcQueryHandler;
     <span class="kw">use </span>session::context::QueryContext;
-    <span class="kw">use </span>store_api::storage::RegionNumber;
-    <span class="kw">use </span>table::Table;
-    <span class="kw">use </span>tests::{has_parquet_file, test_region_dir};
+    <span class="kw">use </span>store_api::storage::RegionId;
+    <span class="kw">use </span>substrait::{DFLogicalSubstraitConvertor, SubstraitPlan};
 
+    <span class="kw">use </span><span class="kw">crate</span>::standalone::GreptimeDbStandaloneBuilder;
     <span class="kw">use </span><span class="kw">crate</span>::tests;
     <span class="kw">use </span><span class="kw">crate</span>::tests::MockDistributedInstance;
 
-    <span class="attr">#[tokio::test(flavor = <span class="string">&quot;multi_thread&quot;</span>)]
+    <span class="attr">#[tokio::test(flavor = <span class="string">"multi_thread"</span>)]
     </span><span class="kw">async fn </span>test_distributed_handle_ddl_request() {
+        common_telemetry::init_default_ut_logging();
         <span class="kw">let </span>instance =
-            tests::create_distributed_instance(<span class="string">&quot;test_distributed_handle_ddl_request&quot;</span>).<span class="kw">await</span>;
+            tests::create_distributed_instance(<span class="string">"test_distributed_handle_ddl_request"</span>).<span class="kw">await</span>;
 
         test_handle_ddl_request(instance.frontend().as_ref()).<span class="kw">await</span>;
 
         verify_table_is_dropped(<span class="kw-2">&amp;</span>instance).<span class="kw">await</span>;
     }
 
-    <span class="attr">#[tokio::test(flavor = <span class="string">&quot;multi_thread&quot;</span>)]
+    <span class="attr">#[tokio::test(flavor = <span class="string">"multi_thread"</span>)]
     </span><span class="kw">async fn </span>test_standalone_handle_ddl_request() {
-        <span class="kw">let </span>standalone =
-            tests::create_standalone_instance(<span class="string">&quot;test_standalone_handle_ddl_request&quot;</span>).<span class="kw">await</span>;
+        <span class="kw">let </span>standalone = GreptimeDbStandaloneBuilder::new(<span class="string">"test_standalone_handle_ddl_request"</span>)
+            .build()
+            .<span class="kw">await</span>;
         <span class="kw">let </span>instance = <span class="kw-2">&amp;</span>standalone.instance;
 
         test_handle_ddl_request(instance.as_ref()).<span class="kw">await</span>;
@@ -973,8 +880,9 @@
     <span class="kw">async fn </span>test_handle_ddl_request(instance: <span class="kw-2">&amp;</span>Instance) {
         <span class="kw">let </span>request = Request::Ddl(DdlRequest {
             expr: <span class="prelude-val">Some</span>(DdlExpr::CreateDatabase(CreateDatabaseExpr {
-                database_name: <span class="string">&quot;database_created_through_grpc&quot;</span>.to_string(),
+                database_name: <span class="string">"database_created_through_grpc"</span>.to_string(),
                 create_if_not_exists: <span class="bool-val">true</span>,
+                options: Default::default(),
             })),
         });
         <span class="kw">let </span>output = query(instance, request).<span class="kw">await</span>;
@@ -982,24 +890,28 @@
 
         <span class="kw">let </span>request = Request::Ddl(DdlRequest {
             expr: <span class="prelude-val">Some</span>(DdlExpr::CreateTable(CreateTableExpr {
-                catalog_name: <span class="string">&quot;greptime&quot;</span>.to_string(),
-                schema_name: <span class="string">&quot;database_created_through_grpc&quot;</span>.to_string(),
-                table_name: <span class="string">&quot;table_created_through_grpc&quot;</span>.to_string(),
+                catalog_name: <span class="string">"greptime"</span>.to_string(),
+                schema_name: <span class="string">"database_created_through_grpc"</span>.to_string(),
+                table_name: <span class="string">"table_created_through_grpc"</span>.to_string(),
                 column_defs: <span class="macro">vec!</span>[
                     ColumnDef {
-                        name: <span class="string">&quot;a&quot;</span>.to_string(),
-                        datatype: ColumnDataType::String <span class="kw">as _</span>,
+                        name: <span class="string">"a"</span>.to_string(),
+                        data_type: ColumnDataType::String <span class="kw">as _</span>,
                         is_nullable: <span class="bool-val">true</span>,
                         default_constraint: <span class="macro">vec!</span>[],
+                        semantic_type: SemanticType::Field <span class="kw">as </span>i32,
+                        ..Default::default()
                     },
                     ColumnDef {
-                        name: <span class="string">&quot;ts&quot;</span>.to_string(),
-                        datatype: ColumnDataType::TimestampMillisecond <span class="kw">as _</span>,
+                        name: <span class="string">"ts"</span>.to_string(),
+                        data_type: ColumnDataType::TimestampMillisecond <span class="kw">as _</span>,
                         is_nullable: <span class="bool-val">false</span>,
                         default_constraint: <span class="macro">vec!</span>[],
+                        semantic_type: SemanticType::Timestamp <span class="kw">as </span>i32,
+                        ..Default::default()
                     },
                 ],
-                time_index: <span class="string">&quot;ts&quot;</span>.to_string(),
+                time_index: <span class="string">"ts"</span>.to_string(),
                 engine: MITO_ENGINE.to_string(),
                 ..Default::default()
             })),
@@ -1009,36 +921,36 @@
 
         <span class="kw">let </span>request = Request::Ddl(DdlRequest {
             expr: <span class="prelude-val">Some</span>(DdlExpr::Alter(AlterExpr {
-                catalog_name: <span class="string">&quot;greptime&quot;</span>.to_string(),
-                schema_name: <span class="string">&quot;database_created_through_grpc&quot;</span>.to_string(),
-                table_name: <span class="string">&quot;table_created_through_grpc&quot;</span>.to_string(),
+                catalog_name: <span class="string">"greptime"</span>.to_string(),
+                schema_name: <span class="string">"database_created_through_grpc"</span>.to_string(),
+                table_name: <span class="string">"table_created_through_grpc"</span>.to_string(),
                 kind: <span class="prelude-val">Some</span>(alter_expr::Kind::AddColumns(AddColumns {
                     add_columns: <span class="macro">vec!</span>[AddColumn {
                         column_def: <span class="prelude-val">Some</span>(ColumnDef {
-                            name: <span class="string">&quot;b&quot;</span>.to_string(),
-                            datatype: ColumnDataType::Int32 <span class="kw">as _</span>,
+                            name: <span class="string">"b"</span>.to_string(),
+                            data_type: ColumnDataType::Int32 <span class="kw">as _</span>,
                             is_nullable: <span class="bool-val">true</span>,
                             default_constraint: <span class="macro">vec!</span>[],
+                            semantic_type: SemanticType::Field <span class="kw">as </span>i32,
+                            ..Default::default()
                         }),
-                        is_key: <span class="bool-val">false</span>,
                         location: <span class="prelude-val">None</span>,
                     }],
                 })),
-                ..Default::default()
             })),
         });
         <span class="kw">let </span>output = query(instance, request).<span class="kw">await</span>;
         <span class="macro">assert!</span>(<span class="macro">matches!</span>(output, Output::AffectedRows(<span class="number">0</span>)));
 
         <span class="kw">let </span>request = Request::Query(QueryRequest {
-            query: <span class="prelude-val">Some</span>(Query::Sql(<span class="string">&quot;INSERT INTO database_created_through_grpc.table_created_through_grpc (a, b, ts) VALUES (&#39;s&#39;, 1, 1672816466000)&quot;</span>.to_string()))
+            query: <span class="prelude-val">Some</span>(Query::Sql(<span class="string">"INSERT INTO database_created_through_grpc.table_created_through_grpc (a, b, ts) VALUES ('s', 1, 1672816466000)"</span>.to_string()))
         });
         <span class="kw">let </span>output = query(instance, request).<span class="kw">await</span>;
         <span class="macro">assert!</span>(<span class="macro">matches!</span>(output, Output::AffectedRows(<span class="number">1</span>)));
 
         <span class="kw">let </span>request = Request::Query(QueryRequest {
             query: <span class="prelude-val">Some</span>(Query::Sql(
-                <span class="string">&quot;SELECT ts, a, b FROM database_created_through_grpc.table_created_through_grpc&quot;
+                <span class="string">"SELECT ts, a, b FROM database_created_through_grpc.table_created_through_grpc"
                     </span>.to_string(),
             )),
         });
@@ -1047,64 +959,64 @@
             <span class="macro">unreachable!</span>()
         };
         <span class="kw">let </span>recordbatches = RecordBatches::try_collect(stream).<span class="kw">await</span>.unwrap();
-        <span class="kw">let </span>expected = <span class="string">&quot;\
+        <span class="kw">let </span>expected = <span class="string">"\
 +---------------------+---+---+
 | ts                  | a | b |
 +---------------------+---+---+
 | 2023-01-04T07:14:26 | s | 1 |
-+---------------------+---+---+&quot;</span>;
++---------------------+---+---+"</span>;
         <span class="macro">assert_eq!</span>(recordbatches.pretty_print().unwrap(), expected);
 
         <span class="kw">let </span>request = Request::Ddl(DdlRequest {
             expr: <span class="prelude-val">Some</span>(DdlExpr::DropTable(DropTableExpr {
-                catalog_name: <span class="string">&quot;greptime&quot;</span>.to_string(),
-                schema_name: <span class="string">&quot;database_created_through_grpc&quot;</span>.to_string(),
-                table_name: <span class="string">&quot;table_created_through_grpc&quot;</span>.to_string(),
+                catalog_name: <span class="string">"greptime"</span>.to_string(),
+                schema_name: <span class="string">"database_created_through_grpc"</span>.to_string(),
+                table_name: <span class="string">"table_created_through_grpc"</span>.to_string(),
                 ..Default::default()
             })),
         });
         <span class="kw">let </span>output = query(instance, request).<span class="kw">await</span>;
-        <span class="macro">assert!</span>(<span class="macro">matches!</span>(output, Output::AffectedRows(<span class="number">1</span>)));
+        <span class="macro">assert!</span>(<span class="macro">matches!</span>(output, Output::AffectedRows(<span class="number">0</span>)));
     }
 
     <span class="kw">async fn </span>verify_table_is_dropped(instance: <span class="kw-2">&amp;</span>MockDistributedInstance) {
-        <span class="kw">for </span>(<span class="kw">_</span>, dn) <span class="kw">in </span>instance.datanodes().iter() {
-            <span class="macro">assert!</span>(dn
-                .catalog_manager()
-                .table(
-                    <span class="string">&quot;greptime&quot;</span>,
-                    <span class="string">&quot;database_created_through_grpc&quot;</span>,
-                    <span class="string">&quot;table_created_through_grpc&quot;
-                </span>)
-                .<span class="kw">await
-                </span>.unwrap()
-                .is_none());
-        }
+        <span class="macro">assert!</span>(instance
+            .frontend()
+            .catalog_manager()
+            .table(
+                <span class="string">"greptime"</span>,
+                <span class="string">"database_created_through_grpc"</span>,
+                <span class="string">"table_created_through_grpc"
+            </span>)
+            .<span class="kw">await
+            </span>.unwrap()
+            .is_none());
     }
 
-    <span class="attr">#[tokio::test(flavor = <span class="string">&quot;multi_thread&quot;</span>)]
+    <span class="attr">#[tokio::test(flavor = <span class="string">"multi_thread"</span>)]
     </span><span class="kw">async fn </span>test_distributed_insert_delete_and_query() {
         common_telemetry::init_default_ut_logging();
 
         <span class="kw">let </span>instance =
-            tests::create_distributed_instance(<span class="string">&quot;test_distributed_insert_delete_and_query&quot;</span>).<span class="kw">await</span>;
+            tests::create_distributed_instance(<span class="string">"test_distributed_insert_delete_and_query"</span>).<span class="kw">await</span>;
         <span class="kw">let </span>frontend = instance.frontend();
         <span class="kw">let </span>frontend = frontend.as_ref();
 
-        <span class="kw">let </span>table_name = <span class="string">&quot;my_dist_table&quot;</span>;
+        <span class="kw">let </span>table_name = <span class="string">"my_dist_table"</span>;
         <span class="kw">let </span>sql = <span class="macro">format!</span>(
-            <span class="string">r&quot;
+            <span class="string">r"
 CREATE TABLE {table_name} (
     a INT,
-    b STRING PRIMARY KEY,
+    b STRING,
     ts TIMESTAMP,
-    TIME INDEX (ts)
+    TIME INDEX (ts),
+    PRIMARY KEY (a, b)
 ) PARTITION BY RANGE COLUMNS(a) (
     PARTITION r0 VALUES LESS THAN (10),
     PARTITION r1 VALUES LESS THAN (20),
     PARTITION r2 VALUES LESS THAN (50),
     PARTITION r3 VALUES LESS THAN (MAXVALUE),
-)&quot;
+)"
         </span>);
         create_table(frontend, sql).<span class="kw">await</span>;
 
@@ -1116,7 +1028,7 @@ CREATE TABLE {table_name} (
             HashMap::from([
                 (
                     <span class="number">0u32</span>,
-                    <span class="string">&quot;\
+                    <span class="string">"\
 +---------------------+---+-------------------+
 | ts                  | a | b                 |
 +---------------------+---+-------------------+
@@ -1124,37 +1036,37 @@ CREATE TABLE {table_name} (
 | 2023-01-01T07:26:15 | 4 | ts: 1672557975000 |
 | 2023-01-01T07:26:16 | 5 | ts: 1672557976000 |
 | 2023-01-01T07:26:17 |   | ts: 1672557977000 |
-+---------------------+---+-------------------+&quot;</span>,
++---------------------+---+-------------------+"</span>,
                 ),
                 (
                     <span class="number">1u32</span>,
-                    <span class="string">&quot;\
+                    <span class="string">"\
 +---------------------+----+-------------------+
 | ts                  | a  | b                 |
 +---------------------+----+-------------------+
 | 2023-01-01T07:26:18 | 11 | ts: 1672557978000 |
-+---------------------+----+-------------------+&quot;</span>,
++---------------------+----+-------------------+"</span>,
                 ),
                 (
                     <span class="number">2u32</span>,
-                    <span class="string">&quot;\
+                    <span class="string">"\
 +---------------------+----+-------------------+
 | ts                  | a  | b                 |
 +---------------------+----+-------------------+
 | 2023-01-01T07:26:20 | 20 | ts: 1672557980000 |
 | 2023-01-01T07:26:21 | 21 | ts: 1672557981000 |
 | 2023-01-01T07:26:23 | 23 | ts: 1672557983000 |
-+---------------------+----+-------------------+&quot;</span>,
++---------------------+----+-------------------+"</span>,
                 ),
                 (
                     <span class="number">3u32</span>,
-                    <span class="string">&quot;\
+                    <span class="string">"\
 +---------------------+----+-------------------+
 | ts                  | a  | b                 |
 +---------------------+----+-------------------+
 | 2023-01-01T07:26:24 | 50 | ts: 1672557984000 |
 | 2023-01-01T07:26:25 | 51 | ts: 1672557985000 |
-+---------------------+----+-------------------+&quot;</span>,
++---------------------+----+-------------------+"</span>,
                 ),
             ]),
         )
@@ -1165,10 +1077,10 @@ CREATE TABLE {table_name} (
         <span class="comment">// Auto created table has only one region.
         </span>verify_data_distribution(
             <span class="kw-2">&amp;</span>instance,
-            <span class="string">&quot;auto_created_table&quot;</span>,
+            <span class="string">"auto_created_table"</span>,
             HashMap::from([(
                 <span class="number">0u32</span>,
-                <span class="string">&quot;\
+                <span class="string">"\
 +---------------------+---+---+
 | ts                  | a | b |
 +---------------------+---+---+
@@ -1176,129 +1088,27 @@ CREATE TABLE {table_name} (
 | 2023-01-01T07:26:17 | 6 |   |
 | 2023-01-01T07:26:18 |   | x |
 | 2023-01-01T07:26:20 |   | z |
-+---------------------+---+---+&quot;</span>,
++---------------------+---+---+"</span>,
             )]),
         )
         .<span class="kw">await</span>;
     }
 
-    <span class="attr">#[tokio::test(flavor = <span class="string">&quot;multi_thread&quot;</span>)]
+    <span class="attr">#[tokio::test(flavor = <span class="string">"multi_thread"</span>)]
     </span><span class="kw">async fn </span>test_standalone_insert_and_query() {
-        common_telemetry::init_default_ut_logging();
-
-        <span class="kw">let </span>standalone =
-            tests::create_standalone_instance(<span class="string">&quot;test_standalone_insert_and_query&quot;</span>).<span class="kw">await</span>;
+        <span class="kw">let </span>standalone = GreptimeDbStandaloneBuilder::new(<span class="string">"test_standalone_insert_and_query"</span>)
+            .build()
+            .<span class="kw">await</span>;
         <span class="kw">let </span>instance = <span class="kw-2">&amp;</span>standalone.instance;
 
-        <span class="kw">let </span>table_name = <span class="string">&quot;my_table&quot;</span>;
-        <span class="kw">let </span>sql = <span class="macro">format!</span>(<span class="string">&quot;CREATE TABLE {table_name} (a INT, b STRING, ts TIMESTAMP, TIME INDEX (ts), PRIMARY KEY (a, b))&quot;</span>);
+        <span class="kw">let </span>table_name = <span class="string">"my_table"</span>;
+        <span class="kw">let </span>sql = <span class="macro">format!</span>(<span class="string">"CREATE TABLE {table_name} (a INT, b STRING, ts TIMESTAMP, TIME INDEX (ts), PRIMARY KEY (a, b))"</span>);
         create_table(instance, sql).<span class="kw">await</span>;
 
         test_insert_delete_and_query_on_existing_table(instance, table_name).<span class="kw">await</span>;
 
         test_insert_delete_and_query_on_auto_created_table(instance).<span class="kw">await
     </span>}
-
-    <span class="attr">#[tokio::test(flavor = <span class="string">&quot;multi_thread&quot;</span>)]
-    </span><span class="kw">async fn </span>test_distributed_flush_table() {
-        common_telemetry::init_default_ut_logging();
-
-        <span class="kw">let </span>instance = tests::create_distributed_instance(<span class="string">&quot;test_distributed_flush_table&quot;</span>).<span class="kw">await</span>;
-        <span class="kw">let </span>data_tmp_dirs = instance.data_tmp_dirs();
-        <span class="kw">let </span>frontend = instance.frontend();
-        <span class="kw">let </span>frontend = frontend.as_ref();
-
-        <span class="kw">let </span>table_name = <span class="string">&quot;my_dist_table&quot;</span>;
-        <span class="kw">let </span>sql = <span class="macro">format!</span>(
-            <span class="string">r&quot;
-CREATE TABLE {table_name} (
-    a INT,
-    ts TIMESTAMP,
-    TIME INDEX (ts)
-) PARTITION BY RANGE COLUMNS(a) (
-    PARTITION r0 VALUES LESS THAN (10),
-    PARTITION r1 VALUES LESS THAN (20),
-    PARTITION r2 VALUES LESS THAN (50),
-    PARTITION r3 VALUES LESS THAN (MAXVALUE),
-)&quot;
-        </span>);
-        create_table(frontend, sql).<span class="kw">await</span>;
-
-        test_insert_delete_and_query_on_existing_table(frontend, table_name).<span class="kw">await</span>;
-
-        flush_table(frontend, <span class="string">&quot;greptime&quot;</span>, <span class="string">&quot;public&quot;</span>, table_name, <span class="prelude-val">None</span>).<span class="kw">await</span>;
-        <span class="comment">// Wait for previous task finished
-        </span>flush_table(frontend, <span class="string">&quot;greptime&quot;</span>, <span class="string">&quot;public&quot;</span>, table_name, <span class="prelude-val">None</span>).<span class="kw">await</span>;
-
-        <span class="kw">let </span>table = frontend
-            .catalog_manager()
-            .table(<span class="string">&quot;greptime&quot;</span>, <span class="string">&quot;public&quot;</span>, table_name)
-            .<span class="kw">await
-            </span>.unwrap()
-            .unwrap();
-        <span class="kw">let </span>table = table.as_any().downcast_ref::&lt;DistTable&gt;().unwrap();
-        <span class="kw">let </span>table_id = table.table_info().table_id();
-
-        <span class="kw">let </span>table_region_value = instance
-            .table_metadata_manager()
-            .table_region_manager()
-            .get(table_id)
-            .<span class="kw">await
-            </span>.unwrap()
-            .unwrap();
-
-        <span class="kw">let </span>region_to_dn_map = table_region_value
-            .region_distribution
-            .iter()
-            .map(|(k, v)| (v[<span class="number">0</span>], <span class="kw-2">*</span>k))
-            .collect::&lt;HashMap&lt;u32, u64&gt;&gt;();
-
-        <span class="kw">for </span>(region, dn) <span class="kw">in </span>region_to_dn_map.iter() {
-            <span class="comment">// data_tmp_dirs -&gt; dn: 1..4
-            </span><span class="kw">let </span>data_tmp_dir = data_tmp_dirs.get((<span class="kw-2">*</span>dn - <span class="number">1</span>) <span class="kw">as </span>usize).unwrap();
-            <span class="kw">let </span>region_dir = test_region_dir(
-                data_tmp_dir.path().to_str().unwrap(),
-                <span class="string">&quot;greptime&quot;</span>,
-                <span class="string">&quot;public&quot;</span>,
-                table_id,
-                <span class="kw-2">*</span>region,
-            );
-            <span class="macro">assert!</span>(has_parquet_file(<span class="kw-2">&amp;</span>region_dir));
-        }
-    }
-
-    <span class="attr">#[tokio::test(flavor = <span class="string">&quot;multi_thread&quot;</span>)]
-    </span><span class="kw">async fn </span>test_standalone_flush_table() {
-        common_telemetry::init_default_ut_logging();
-
-        <span class="kw">let </span>standalone = tests::create_standalone_instance(<span class="string">&quot;test_standalone_flush_table&quot;</span>).<span class="kw">await</span>;
-        <span class="kw">let </span>instance = <span class="kw-2">&amp;</span>standalone.instance;
-        <span class="kw">let </span>data_tmp_dir = standalone.data_tmp_dir();
-
-        <span class="kw">let </span>table_name = <span class="string">&quot;my_table&quot;</span>;
-        <span class="kw">let </span>sql = <span class="macro">format!</span>(<span class="string">&quot;CREATE TABLE {table_name} (a INT, b STRING, ts TIMESTAMP, TIME INDEX (ts), PRIMARY KEY (a, b))&quot;</span>);
-
-        create_table(instance, sql).<span class="kw">await</span>;
-
-        test_insert_delete_and_query_on_existing_table(instance, table_name).<span class="kw">await</span>;
-
-        <span class="kw">let </span>table_id = <span class="number">1024</span>;
-        <span class="kw">let </span>region_id = <span class="number">0</span>;
-        <span class="kw">let </span>region_dir = test_region_dir(
-            data_tmp_dir.path().to_str().unwrap(),
-            <span class="string">&quot;greptime&quot;</span>,
-            <span class="string">&quot;public&quot;</span>,
-            table_id,
-            region_id,
-        );
-        <span class="macro">assert!</span>(!has_parquet_file(<span class="kw-2">&amp;</span>region_dir));
-
-        flush_table(instance, <span class="string">&quot;greptime&quot;</span>, <span class="string">&quot;public&quot;</span>, <span class="string">&quot;my_table&quot;</span>, <span class="prelude-val">None</span>).<span class="kw">await</span>;
-        <span class="comment">// Wait for previous task finished
-        </span>flush_table(instance, <span class="string">&quot;greptime&quot;</span>, <span class="string">&quot;public&quot;</span>, <span class="string">&quot;my_table&quot;</span>, <span class="prelude-val">None</span>).<span class="kw">await</span>;
-
-        <span class="macro">assert!</span>(has_parquet_file(<span class="kw-2">&amp;</span>region_dir));
-    }
 
     <span class="kw">async fn </span>create_table(frontend: <span class="kw-2">&amp;</span>Instance, sql: String) {
         <span class="kw">let </span>request = Request::Query(QueryRequest {
@@ -1308,29 +1118,8 @@ CREATE TABLE {table_name} (
         <span class="macro">assert!</span>(<span class="macro">matches!</span>(output, Output::AffectedRows(<span class="number">0</span>)));
     }
 
-    <span class="kw">async fn </span>flush_table(
-        frontend: <span class="kw-2">&amp;</span>Instance,
-        catalog_name: <span class="kw-2">&amp;</span>str,
-        schema_name: <span class="kw-2">&amp;</span>str,
-        table_name: <span class="kw-2">&amp;</span>str,
-        region_number: <span class="prelude-ty">Option</span>&lt;RegionNumber&gt;,
-    ) {
-        <span class="kw">let </span>request = Request::Ddl(DdlRequest {
-            expr: <span class="prelude-val">Some</span>(DdlExpr::FlushTable(FlushTableExpr {
-                catalog_name: catalog_name.to_string(),
-                schema_name: schema_name.to_string(),
-                table_name: table_name.to_string(),
-                region_number,
-                ..Default::default()
-            })),
-        });
-
-        <span class="kw">let </span>output = query(frontend, request).<span class="kw">await</span>;
-        <span class="macro">assert!</span>(<span class="macro">matches!</span>(output, Output::AffectedRows(<span class="number">0</span>)));
-    }
-
     <span class="kw">async fn </span>test_insert_delete_and_query_on_existing_table(instance: <span class="kw-2">&amp;</span>Instance, table_name: <span class="kw-2">&amp;</span>str) {
-        <span class="kw">let </span>ts_millisecond_values = <span class="macro">vec!</span>[
+        <span class="kw">let </span>timestamp_millisecond_values = <span class="macro">vec!</span>[
             <span class="number">1672557972000</span>,
             <span class="number">1672557973000</span>,
             <span class="number">1672557974000</span>,
@@ -1352,21 +1141,22 @@ CREATE TABLE {table_name} (
             table_name: table_name.to_string(),
             columns: <span class="macro">vec!</span>[
                 Column {
-                    column_name: <span class="string">&quot;a&quot;</span>.to_string(),
+                    column_name: <span class="string">"a"</span>.to_string(),
                     values: <span class="prelude-val">Some</span>(Values {
                         i32_values: <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">11</span>, <span class="number">12</span>, <span class="number">20</span>, <span class="number">21</span>, <span class="number">22</span>, <span class="number">23</span>, <span class="number">50</span>, <span class="number">51</span>, <span class="number">52</span>, <span class="number">53</span>],
                         ..Default::default()
                     }),
                     null_mask: <span class="macro">vec!</span>[<span class="number">32</span>, <span class="number">0</span>],
-                    semantic_type: SemanticType::Field <span class="kw">as </span>i32,
+                    semantic_type: SemanticType::Tag <span class="kw">as </span>i32,
                     datatype: ColumnDataType::Int32 <span class="kw">as </span>i32,
+                    ..Default::default()
                 },
                 Column {
-                    column_name: <span class="string">&quot;b&quot;</span>.to_string(),
+                    column_name: <span class="string">"b"</span>.to_string(),
                     values: <span class="prelude-val">Some</span>(Values {
-                        string_values: ts_millisecond_values
+                        string_values: timestamp_millisecond_values
                             .iter()
-                            .map(|x| <span class="macro">format!</span>(<span class="string">&quot;ts: {x}&quot;</span>))
+                            .map(|x| <span class="macro">format!</span>(<span class="string">"ts: {x}"</span>))
                             .collect(),
                         ..Default::default()
                     }),
@@ -1375,9 +1165,9 @@ CREATE TABLE {table_name} (
                     ..Default::default()
                 },
                 Column {
-                    column_name: <span class="string">&quot;ts&quot;</span>.to_string(),
+                    column_name: <span class="string">"ts"</span>.to_string(),
                     values: <span class="prelude-val">Some</span>(Values {
-                        ts_millisecond_values,
+                        timestamp_millisecond_values,
                         ..Default::default()
                     }),
                     semantic_type: SemanticType::Timestamp <span class="kw">as </span>i32,
@@ -1386,7 +1176,6 @@ CREATE TABLE {table_name} (
                 },
             ],
             row_count: <span class="number">16</span>,
-            ..Default::default()
         };
         <span class="kw">let </span>output = query(
             instance,
@@ -1399,7 +1188,7 @@ CREATE TABLE {table_name} (
 
         <span class="kw">let </span>request = Request::Query(QueryRequest {
             query: <span class="prelude-val">Some</span>(Query::Sql(<span class="macro">format!</span>(
-                <span class="string">&quot;SELECT ts, a, b FROM {table_name} ORDER BY ts&quot;
+                <span class="string">"SELECT ts, a, b FROM {table_name} ORDER BY ts"
             </span>))),
         });
         <span class="kw">let </span>output = query(instance, request.clone()).<span class="kw">await</span>;
@@ -1407,7 +1196,7 @@ CREATE TABLE {table_name} (
             <span class="macro">unreachable!</span>()
         };
         <span class="kw">let </span>recordbatches = RecordBatches::try_collect(stream).<span class="kw">await</span>.unwrap();
-        <span class="kw">let </span>expected = <span class="string">&quot;\
+        <span class="kw">let </span>expected = <span class="string">"\
 +---------------------+----+-------------------+
 | ts                  | a  | b                 |
 +---------------------+----+-------------------+
@@ -1427,16 +1216,15 @@ CREATE TABLE {table_name} (
 | 2023-01-01T07:26:25 | 51 | ts: 1672557985000 |
 | 2023-01-01T07:26:26 | 52 | ts: 1672557986000 |
 | 2023-01-01T07:26:27 | 53 | ts: 1672557987000 |
-+---------------------+----+-------------------+&quot;</span>;
++---------------------+----+-------------------+"</span>;
         <span class="macro">assert_eq!</span>(recordbatches.pretty_print().unwrap(), expected);
 
         <span class="kw">let </span>new_grpc_delete_request = |a, b, ts, row_count| DeleteRequest {
             table_name: table_name.to_string(),
-            region_number: <span class="number">0</span>,
             key_columns: <span class="macro">vec!</span>[
                 Column {
-                    column_name: <span class="string">&quot;a&quot;</span>.to_string(),
-                    semantic_type: SemanticType::Field <span class="kw">as </span>i32,
+                    column_name: <span class="string">"a"</span>.to_string(),
+                    semantic_type: SemanticType::Tag <span class="kw">as </span>i32,
                     values: <span class="prelude-val">Some</span>(Values {
                         i32_values: a,
                         ..Default::default()
@@ -1445,7 +1233,7 @@ CREATE TABLE {table_name} (
                     ..Default::default()
                 },
                 Column {
-                    column_name: <span class="string">&quot;b&quot;</span>.to_string(),
+                    column_name: <span class="string">"b"</span>.to_string(),
                     semantic_type: SemanticType::Tag <span class="kw">as </span>i32,
                     values: <span class="prelude-val">Some</span>(Values {
                         string_values: b,
@@ -1455,10 +1243,10 @@ CREATE TABLE {table_name} (
                     ..Default::default()
                 },
                 Column {
-                    column_name: <span class="string">&quot;ts&quot;</span>.to_string(),
+                    column_name: <span class="string">"ts"</span>.to_string(),
                     semantic_type: SemanticType::Timestamp <span class="kw">as </span>i32,
                     values: <span class="prelude-val">Some</span>(Values {
-                        ts_millisecond_values: ts,
+                        timestamp_millisecond_values: ts,
                         ..Default::default()
                     }),
                     datatype: ColumnDataType::TimestampMillisecond <span class="kw">as </span>i32,
@@ -1470,10 +1258,10 @@ CREATE TABLE {table_name} (
         <span class="kw">let </span>delete1 = new_grpc_delete_request(
             <span class="macro">vec!</span>[<span class="number">2</span>, <span class="number">12</span>, <span class="number">22</span>, <span class="number">52</span>],
             <span class="macro">vec!</span>[
-                <span class="string">&quot;ts: 1672557973000&quot;</span>.to_string(),
-                <span class="string">&quot;ts: 1672557979000&quot;</span>.to_string(),
-                <span class="string">&quot;ts: 1672557982000&quot;</span>.to_string(),
-                <span class="string">&quot;ts: 1672557986000&quot;</span>.to_string(),
+                <span class="string">"ts: 1672557973000"</span>.to_string(),
+                <span class="string">"ts: 1672557979000"</span>.to_string(),
+                <span class="string">"ts: 1672557982000"</span>.to_string(),
+                <span class="string">"ts: 1672557986000"</span>.to_string(),
             ],
             <span class="macro">vec!</span>[<span class="number">1672557973000</span>, <span class="number">1672557979000</span>, <span class="number">1672557982000</span>, <span class="number">1672557986000</span>],
             <span class="number">4</span>,
@@ -1481,8 +1269,8 @@ CREATE TABLE {table_name} (
         <span class="kw">let </span>delete2 = new_grpc_delete_request(
             <span class="macro">vec!</span>[<span class="number">3</span>, <span class="number">53</span>],
             <span class="macro">vec!</span>[
-                <span class="string">&quot;ts: 1672557974000&quot;</span>.to_string(),
-                <span class="string">&quot;ts: 1672557987000&quot;</span>.to_string(),
+                <span class="string">"ts: 1672557974000"</span>.to_string(),
+                <span class="string">"ts: 1672557987000"</span>.to_string(),
             ],
             <span class="macro">vec!</span>[<span class="number">1672557974000</span>, <span class="number">1672557987000</span>],
             <span class="number">2</span>,
@@ -1501,7 +1289,7 @@ CREATE TABLE {table_name} (
             <span class="macro">unreachable!</span>()
         };
         <span class="kw">let </span>recordbatches = RecordBatches::try_collect(stream).<span class="kw">await</span>.unwrap();
-        <span class="kw">let </span>expected = <span class="string">&quot;\
+        <span class="kw">let </span>expected = <span class="string">"\
 +---------------------+----+-------------------+
 | ts                  | a  | b                 |
 +---------------------+----+-------------------+
@@ -1515,7 +1303,7 @@ CREATE TABLE {table_name} (
 | 2023-01-01T07:26:23 | 23 | ts: 1672557983000 |
 | 2023-01-01T07:26:24 | 50 | ts: 1672557984000 |
 | 2023-01-01T07:26:25 | 51 | ts: 1672557985000 |
-+---------------------+----+-------------------+&quot;</span>;
++---------------------+----+-------------------+"</span>;
         <span class="macro">assert_eq!</span>(recordbatches.pretty_print().unwrap(), expected);
     }
 
@@ -1527,43 +1315,53 @@ CREATE TABLE {table_name} (
         <span class="kw">let </span>table = instance
             .frontend()
             .catalog_manager()
-            .table(<span class="string">&quot;greptime&quot;</span>, <span class="string">&quot;public&quot;</span>, table_name)
+            .table(<span class="string">"greptime"</span>, <span class="string">"public"</span>, table_name)
             .<span class="kw">await
             </span>.unwrap()
             .unwrap();
-        <span class="kw">let </span>table = table.as_any().downcast_ref::&lt;DistTable&gt;().unwrap();
         <span class="kw">let </span>table_id = table.table_info().ident.table_id;
-        <span class="kw">let </span>table_region_value = instance
+        <span class="kw">let </span>table_route_value = instance
             .table_metadata_manager()
-            .table_region_manager()
+            .table_route_manager()
             .get(table_id)
             .<span class="kw">await
             </span>.unwrap()
-            .unwrap();
+            .unwrap()
+            .into_inner();
 
-        <span class="kw">let </span>region_to_dn_map = table_region_value
-            .region_distribution
+        <span class="kw">let </span>region_to_dn_map = region_distribution(table_route_value.region_routes())
+            .unwrap()
             .iter()
             .map(|(k, v)| (v[<span class="number">0</span>], <span class="kw-2">*</span>k))
             .collect::&lt;HashMap&lt;u32, u64&gt;&gt;();
-        <span class="macro">assert_eq!</span>(region_to_dn_map.len(), expected_distribution.len());
+        <span class="macro">assert!</span>(region_to_dn_map.len() &lt;= instance.datanodes().len());
+
+        <span class="kw">let </span>stmt = QueryLanguageParser::parse_sql(<span class="kw-2">&amp;</span><span class="macro">format!</span>(
+            <span class="string">"SELECT ts, a, b FROM {table_name} ORDER BY ts"
+        </span>))
+        .unwrap();
+        <span class="kw">let </span>LogicalPlan::DfPlan(plan) = instance
+            .frontend()
+            .statement_executor()
+            .plan(stmt, QueryContext::arc())
+            .<span class="kw">await
+            </span>.unwrap();
+        <span class="kw">let </span>plan = DFLogicalSubstraitConvertor.encode(<span class="kw-2">&amp;</span>plan).unwrap();
 
         <span class="kw">for </span>(region, dn) <span class="kw">in </span>region_to_dn_map.iter() {
-            <span class="kw">let </span>stmt = QueryLanguageParser::parse_sql(<span class="kw-2">&amp;</span><span class="macro">format!</span>(
-                <span class="string">&quot;SELECT ts, a, b FROM {table_name} ORDER BY ts&quot;
-            </span>))
-            .unwrap();
-            <span class="kw">let </span>dn = instance.datanodes().get(dn).unwrap();
-            <span class="kw">let </span>engine = dn.query_engine();
-            <span class="kw">let </span>plan = engine
-                .planner()
-                .plan(stmt, QueryContext::arc())
+            <span class="kw">let </span>region_server = instance.datanodes().get(dn).unwrap().region_server();
+
+            <span class="kw">let </span>region_id = RegionId::new(table_id, <span class="kw-2">*</span>region);
+
+            <span class="kw">let </span>stream = region_server
+                .handle_read(RegionQueryRequest {
+                    region_id: region_id.as_u64(),
+                    plan: plan.to_vec(),
+                    ..Default::default()
+                })
                 .<span class="kw">await
                 </span>.unwrap();
-            <span class="kw">let </span>output = engine.execute(plan, QueryContext::arc()).<span class="kw">await</span>.unwrap();
-            <span class="kw">let </span>Output::Stream(stream) = output <span class="kw">else </span>{
-                <span class="macro">unreachable!</span>()
-            };
+
             <span class="kw">let </span>recordbatches = RecordBatches::try_collect(stream).<span class="kw">await</span>.unwrap();
             <span class="kw">let </span>actual = recordbatches.pretty_print().unwrap();
 
@@ -1574,10 +1372,10 @@ CREATE TABLE {table_name} (
 
     <span class="kw">async fn </span>test_insert_delete_and_query_on_auto_created_table(instance: <span class="kw-2">&amp;</span>Instance) {
         <span class="kw">let </span>insert = InsertRequest {
-            table_name: <span class="string">&quot;auto_created_table&quot;</span>.to_string(),
+            table_name: <span class="string">"auto_created_table"</span>.to_string(),
             columns: <span class="macro">vec!</span>[
                 Column {
-                    column_name: <span class="string">&quot;a&quot;</span>.to_string(),
+                    column_name: <span class="string">"a"</span>.to_string(),
                     values: <span class="prelude-val">Some</span>(Values {
                         i32_values: <span class="macro">vec!</span>[<span class="number">4</span>, <span class="number">6</span>],
                         ..Default::default()
@@ -1585,11 +1383,16 @@ CREATE TABLE {table_name} (
                     null_mask: <span class="macro">vec!</span>[<span class="number">2</span>],
                     semantic_type: SemanticType::Field <span class="kw">as </span>i32,
                     datatype: ColumnDataType::Int32 <span class="kw">as </span>i32,
+                    ..Default::default()
                 },
                 Column {
-                    column_name: <span class="string">&quot;ts&quot;</span>.to_string(),
+                    column_name: <span class="string">"ts"</span>.to_string(),
                     values: <span class="prelude-val">Some</span>(Values {
-                        ts_millisecond_values: <span class="macro">vec!</span>[<span class="number">1672557975000</span>, <span class="number">1672557976000</span>, <span class="number">1672557977000</span>],
+                        timestamp_millisecond_values: <span class="macro">vec!</span>[
+                            <span class="number">1672557975000</span>,
+                            <span class="number">1672557976000</span>,
+                            <span class="number">1672557977000</span>,
+                        ],
                         ..Default::default()
                     }),
                     semantic_type: SemanticType::Timestamp <span class="kw">as </span>i32,
@@ -1598,7 +1401,6 @@ CREATE TABLE {table_name} (
                 },
             ],
             row_count: <span class="number">3</span>,
-            ..Default::default()
         };
 
         <span class="comment">// Test auto create not existed table upon insertion.
@@ -1609,22 +1411,27 @@ CREATE TABLE {table_name} (
         <span class="macro">assert!</span>(<span class="macro">matches!</span>(output, Output::AffectedRows(<span class="number">3</span>)));
 
         <span class="kw">let </span>insert = InsertRequest {
-            table_name: <span class="string">&quot;auto_created_table&quot;</span>.to_string(),
+            table_name: <span class="string">"auto_created_table"</span>.to_string(),
             columns: <span class="macro">vec!</span>[
                 Column {
-                    column_name: <span class="string">&quot;b&quot;</span>.to_string(),
+                    column_name: <span class="string">"b"</span>.to_string(),
                     values: <span class="prelude-val">Some</span>(Values {
-                        string_values: <span class="macro">vec!</span>[<span class="string">&quot;x&quot;</span>.to_string(), <span class="string">&quot;z&quot;</span>.to_string()],
+                        string_values: <span class="macro">vec!</span>[<span class="string">"x"</span>.to_string(), <span class="string">"z"</span>.to_string()],
                         ..Default::default()
                     }),
                     null_mask: <span class="macro">vec!</span>[<span class="number">2</span>],
                     semantic_type: SemanticType::Field <span class="kw">as </span>i32,
                     datatype: ColumnDataType::String <span class="kw">as </span>i32,
+                    ..Default::default()
                 },
                 Column {
-                    column_name: <span class="string">&quot;ts&quot;</span>.to_string(),
+                    column_name: <span class="string">"ts"</span>.to_string(),
                     values: <span class="prelude-val">Some</span>(Values {
-                        ts_millisecond_values: <span class="macro">vec!</span>[<span class="number">1672557978000</span>, <span class="number">1672557979000</span>, <span class="number">1672557980000</span>],
+                        timestamp_millisecond_values: <span class="macro">vec!</span>[
+                            <span class="number">1672557978000</span>,
+                            <span class="number">1672557979000</span>,
+                            <span class="number">1672557980000</span>,
+                        ],
                         ..Default::default()
                     }),
                     semantic_type: SemanticType::Timestamp <span class="kw">as </span>i32,
@@ -1633,7 +1440,6 @@ CREATE TABLE {table_name} (
                 },
             ],
             row_count: <span class="number">3</span>,
-            ..Default::default()
         };
 
         <span class="comment">// Test auto add not existed column upon insertion.
@@ -1645,7 +1451,7 @@ CREATE TABLE {table_name} (
 
         <span class="kw">let </span>request = Request::Query(QueryRequest {
             query: <span class="prelude-val">Some</span>(Query::Sql(
-                <span class="string">&quot;SELECT ts, a, b FROM auto_created_table&quot;</span>.to_string(),
+                <span class="string">"SELECT ts, a, b FROM auto_created_table"</span>.to_string(),
             )),
         });
         <span class="kw">let </span>output = query(instance, request.clone()).<span class="kw">await</span>;
@@ -1653,7 +1459,7 @@ CREATE TABLE {table_name} (
             <span class="macro">unreachable!</span>()
         };
         <span class="kw">let </span>recordbatches = RecordBatches::try_collect(stream).<span class="kw">await</span>.unwrap();
-        <span class="kw">let </span>expected = <span class="string">&quot;\
+        <span class="kw">let </span>expected = <span class="string">"\
 +---------------------+---+---+
 | ts                  | a | b |
 +---------------------+---+---+
@@ -1663,16 +1469,15 @@ CREATE TABLE {table_name} (
 | 2023-01-01T07:26:18 |   | x |
 | 2023-01-01T07:26:19 |   |   |
 | 2023-01-01T07:26:20 |   | z |
-+---------------------+---+---+&quot;</span>;
++---------------------+---+---+"</span>;
         <span class="macro">assert_eq!</span>(recordbatches.pretty_print().unwrap(), expected);
 
         <span class="kw">let </span>delete = DeleteRequest {
-            table_name: <span class="string">&quot;auto_created_table&quot;</span>.to_string(),
-            region_number: <span class="number">0</span>,
+            table_name: <span class="string">"auto_created_table"</span>.to_string(),
             key_columns: <span class="macro">vec!</span>[Column {
-                column_name: <span class="string">&quot;ts&quot;</span>.to_string(),
+                column_name: <span class="string">"ts"</span>.to_string(),
                 values: <span class="prelude-val">Some</span>(Values {
-                    ts_millisecond_values: <span class="macro">vec!</span>[<span class="number">1672557975000</span>, <span class="number">1672557979000</span>],
+                    timestamp_millisecond_values: <span class="macro">vec!</span>[<span class="number">1672557975000</span>, <span class="number">1672557979000</span>],
                     ..Default::default()
                 }),
                 semantic_type: SemanticType::Timestamp <span class="kw">as </span>i32,
@@ -1696,7 +1501,7 @@ CREATE TABLE {table_name} (
             <span class="macro">unreachable!</span>()
         };
         <span class="kw">let </span>recordbatches = RecordBatches::try_collect(stream).<span class="kw">await</span>.unwrap();
-        <span class="kw">let </span>expected = <span class="string">&quot;\
+        <span class="kw">let </span>expected = <span class="string">"\
 +---------------------+---+---+
 | ts                  | a | b |
 +---------------------+---+---+
@@ -1704,36 +1509,36 @@ CREATE TABLE {table_name} (
 | 2023-01-01T07:26:17 | 6 |   |
 | 2023-01-01T07:26:18 |   | x |
 | 2023-01-01T07:26:20 |   | z |
-+---------------------+---+---+&quot;</span>;
++---------------------+---+---+"</span>;
         <span class="macro">assert_eq!</span>(recordbatches.pretty_print().unwrap(), expected);
     }
 
-    <span class="attr">#[tokio::test(flavor = <span class="string">&quot;multi_thread&quot;</span>)]
+    <span class="attr">#[tokio::test(flavor = <span class="string">"multi_thread"</span>)]
     </span><span class="kw">async fn </span>test_promql_query() {
-        common_telemetry::init_default_ut_logging();
-
-        <span class="kw">let </span>standalone = tests::create_standalone_instance(<span class="string">&quot;test_standalone_promql_query&quot;</span>).<span class="kw">await</span>;
+        <span class="kw">let </span>standalone = GreptimeDbStandaloneBuilder::new(<span class="string">"test_standalone_promql_query"</span>)
+            .build()
+            .<span class="kw">await</span>;
         <span class="kw">let </span>instance = <span class="kw-2">&amp;</span>standalone.instance;
 
-        <span class="kw">let </span>table_name = <span class="string">&quot;my_table&quot;</span>;
-        <span class="kw">let </span>sql = <span class="macro">format!</span>(<span class="string">&quot;CREATE TABLE {table_name} (h string, a double, ts TIMESTAMP, TIME INDEX (ts), PRIMARY KEY(h))&quot;</span>);
+        <span class="kw">let </span>table_name = <span class="string">"my_table"</span>;
+        <span class="kw">let </span>sql = <span class="macro">format!</span>(<span class="string">"CREATE TABLE {table_name} (h string, a double, ts TIMESTAMP, TIME INDEX (ts), PRIMARY KEY(h))"</span>);
         create_table(instance, sql).<span class="kw">await</span>;
 
         <span class="kw">let </span>insert = InsertRequest {
             table_name: table_name.to_string(),
             columns: <span class="macro">vec!</span>[
                 Column {
-                    column_name: <span class="string">&quot;h&quot;</span>.to_string(),
+                    column_name: <span class="string">"h"</span>.to_string(),
                     values: <span class="prelude-val">Some</span>(Values {
                         string_values: <span class="macro">vec!</span>[
-                            <span class="string">&quot;t&quot;</span>.to_string(),
-                            <span class="string">&quot;t&quot;</span>.to_string(),
-                            <span class="string">&quot;t&quot;</span>.to_string(),
-                            <span class="string">&quot;t&quot;</span>.to_string(),
-                            <span class="string">&quot;t&quot;</span>.to_string(),
-                            <span class="string">&quot;t&quot;</span>.to_string(),
-                            <span class="string">&quot;t&quot;</span>.to_string(),
-                            <span class="string">&quot;t&quot;</span>.to_string(),
+                            <span class="string">"t"</span>.to_string(),
+                            <span class="string">"t"</span>.to_string(),
+                            <span class="string">"t"</span>.to_string(),
+                            <span class="string">"t"</span>.to_string(),
+                            <span class="string">"t"</span>.to_string(),
+                            <span class="string">"t"</span>.to_string(),
+                            <span class="string">"t"</span>.to_string(),
+                            <span class="string">"t"</span>.to_string(),
                         ],
                         ..Default::default()
                     }),
@@ -1742,7 +1547,7 @@ CREATE TABLE {table_name} (
                     ..Default::default()
                 },
                 Column {
-                    column_name: <span class="string">&quot;a&quot;</span>.to_string(),
+                    column_name: <span class="string">"a"</span>.to_string(),
                     values: <span class="prelude-val">Some</span>(Values {
                         f64_values: <span class="macro">vec!</span>[<span class="number">1f64</span>, <span class="number">11f64</span>, <span class="number">20f64</span>, <span class="number">22f64</span>, <span class="number">50f64</span>, <span class="number">55f64</span>, <span class="number">99f64</span>],
                         ..Default::default()
@@ -1750,11 +1555,12 @@ CREATE TABLE {table_name} (
                     null_mask: <span class="macro">vec!</span>[<span class="number">4</span>],
                     semantic_type: SemanticType::Field <span class="kw">as </span>i32,
                     datatype: ColumnDataType::Float64 <span class="kw">as </span>i32,
+                    ..Default::default()
                 },
                 Column {
-                    column_name: <span class="string">&quot;ts&quot;</span>.to_string(),
+                    column_name: <span class="string">"ts"</span>.to_string(),
                     values: <span class="prelude-val">Some</span>(Values {
-                        ts_millisecond_values: <span class="macro">vec!</span>[
+                        timestamp_millisecond_values: <span class="macro">vec!</span>[
                             <span class="number">1672557972000</span>,
                             <span class="number">1672557973000</span>,
                             <span class="number">1672557974000</span>,
@@ -1772,7 +1578,6 @@ CREATE TABLE {table_name} (
                 },
             ],
             row_count: <span class="number">8</span>,
-            ..Default::default()
         };
 
         <span class="kw">let </span>request = Request::Inserts(InsertRequests {
@@ -1783,10 +1588,10 @@ CREATE TABLE {table_name} (
 
         <span class="kw">let </span>request = Request::Query(QueryRequest {
             query: <span class="prelude-val">Some</span>(Query::PromRangeQuery(api::v1::PromRangeQuery {
-                query: <span class="string">&quot;my_table&quot;</span>.to_owned(),
-                start: <span class="string">&quot;1672557973&quot;</span>.to_owned(),
-                end: <span class="string">&quot;1672557978&quot;</span>.to_owned(),
-                step: <span class="string">&quot;1s&quot;</span>.to_owned(),
+                query: <span class="string">"my_table"</span>.to_owned(),
+                start: <span class="string">"1672557973"</span>.to_owned(),
+                end: <span class="string">"1672557978"</span>.to_owned(),
+                step: <span class="string">"1s"</span>.to_owned(),
             })),
         });
         <span class="kw">let </span>output = query(instance, request).<span class="kw">await</span>;
@@ -1794,7 +1599,7 @@ CREATE TABLE {table_name} (
             <span class="macro">unreachable!</span>()
         };
         <span class="kw">let </span>recordbatches = RecordBatches::try_collect(stream).<span class="kw">await</span>.unwrap();
-        <span class="kw">let </span>expected = <span class="string">&quot;\
+        <span class="kw">let </span>expected = <span class="string">"\
 +---+------+---------------------+
 | h | a    | ts                  |
 +---+------+---------------------+
@@ -1804,7 +1609,7 @@ CREATE TABLE {table_name} (
 | t | 22.0 | 2023-01-01T07:26:16 |
 | t | 50.0 | 2023-01-01T07:26:17 |
 | t | 55.0 | 2023-01-01T07:26:18 |
-+---+------+---------------------+&quot;</span>;
++---+------+---------------------+"</span>;
         <span class="macro">assert_eq!</span>(recordbatches.pretty_print().unwrap(), expected);
     }
 }

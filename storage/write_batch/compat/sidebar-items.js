@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["column_not_in_schema"]};

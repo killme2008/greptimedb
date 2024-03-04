@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["FlushType"],"fn":["get_mutable_limitation"],"mod":["picker","scheduler"],"struct":["FlushJob","RegionStatus","SizeBasedStrategy"],"trait":["FlushStrategy"],"type":["FlushStrategyRef"]};

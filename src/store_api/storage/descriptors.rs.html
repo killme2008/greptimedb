@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/store-api/src/storage/descriptors.rs`."><title>descriptors.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="store_api" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../store_api/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/store-api/src/storage/descriptors.rs`."><title>descriptors.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="store_api" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -344,145 +345,16 @@
 <a href="#344" id="344">344</a>
 <a href="#345" id="345">345</a>
 <a href="#346" id="346">346</a>
-<a href="#347" id="347">347</a>
-<a href="#348" id="348">348</a>
-<a href="#349" id="349">349</a>
-<a href="#350" id="350">350</a>
-<a href="#351" id="351">351</a>
-<a href="#352" id="352">352</a>
-<a href="#353" id="353">353</a>
-<a href="#354" id="354">354</a>
-<a href="#355" id="355">355</a>
-<a href="#356" id="356">356</a>
-<a href="#357" id="357">357</a>
-<a href="#358" id="358">358</a>
-<a href="#359" id="359">359</a>
-<a href="#360" id="360">360</a>
-<a href="#361" id="361">361</a>
-<a href="#362" id="362">362</a>
-<a href="#363" id="363">363</a>
-<a href="#364" id="364">364</a>
-<a href="#365" id="365">365</a>
-<a href="#366" id="366">366</a>
-<a href="#367" id="367">367</a>
-<a href="#368" id="368">368</a>
-<a href="#369" id="369">369</a>
-<a href="#370" id="370">370</a>
-<a href="#371" id="371">371</a>
-<a href="#372" id="372">372</a>
-<a href="#373" id="373">373</a>
-<a href="#374" id="374">374</a>
-<a href="#375" id="375">375</a>
-<a href="#376" id="376">376</a>
-<a href="#377" id="377">377</a>
-<a href="#378" id="378">378</a>
-<a href="#379" id="379">379</a>
-<a href="#380" id="380">380</a>
-<a href="#381" id="381">381</a>
-<a href="#382" id="382">382</a>
-<a href="#383" id="383">383</a>
-<a href="#384" id="384">384</a>
-<a href="#385" id="385">385</a>
-<a href="#386" id="386">386</a>
-<a href="#387" id="387">387</a>
-<a href="#388" id="388">388</a>
-<a href="#389" id="389">389</a>
-<a href="#390" id="390">390</a>
-<a href="#391" id="391">391</a>
-<a href="#392" id="392">392</a>
-<a href="#393" id="393">393</a>
-<a href="#394" id="394">394</a>
-<a href="#395" id="395">395</a>
-<a href="#396" id="396">396</a>
-<a href="#397" id="397">397</a>
-<a href="#398" id="398">398</a>
-<a href="#399" id="399">399</a>
-<a href="#400" id="400">400</a>
-<a href="#401" id="401">401</a>
-<a href="#402" id="402">402</a>
-<a href="#403" id="403">403</a>
-<a href="#404" id="404">404</a>
-<a href="#405" id="405">405</a>
-<a href="#406" id="406">406</a>
-<a href="#407" id="407">407</a>
-<a href="#408" id="408">408</a>
-<a href="#409" id="409">409</a>
-<a href="#410" id="410">410</a>
-<a href="#411" id="411">411</a>
-<a href="#412" id="412">412</a>
-<a href="#413" id="413">413</a>
-<a href="#414" id="414">414</a>
-<a href="#415" id="415">415</a>
-<a href="#416" id="416">416</a>
-<a href="#417" id="417">417</a>
-<a href="#418" id="418">418</a>
-<a href="#419" id="419">419</a>
-<a href="#420" id="420">420</a>
-<a href="#421" id="421">421</a>
-<a href="#422" id="422">422</a>
-<a href="#423" id="423">423</a>
-<a href="#424" id="424">424</a>
-<a href="#425" id="425">425</a>
-<a href="#426" id="426">426</a>
-<a href="#427" id="427">427</a>
-<a href="#428" id="428">428</a>
-<a href="#429" id="429">429</a>
-<a href="#430" id="430">430</a>
-<a href="#431" id="431">431</a>
-<a href="#432" id="432">432</a>
-<a href="#433" id="433">433</a>
-<a href="#434" id="434">434</a>
-<a href="#435" id="435">435</a>
-<a href="#436" id="436">436</a>
-<a href="#437" id="437">437</a>
-<a href="#438" id="438">438</a>
-<a href="#439" id="439">439</a>
-<a href="#440" id="440">440</a>
-<a href="#441" id="441">441</a>
-<a href="#442" id="442">442</a>
-<a href="#443" id="443">443</a>
-<a href="#444" id="444">444</a>
-<a href="#445" id="445">445</a>
-<a href="#446" id="446">446</a>
-<a href="#447" id="447">447</a>
-<a href="#448" id="448">448</a>
-<a href="#449" id="449">449</a>
-<a href="#450" id="450">450</a>
-<a href="#451" id="451">451</a>
-<a href="#452" id="452">452</a>
-<a href="#453" id="453">453</a>
-<a href="#454" id="454">454</a>
-<a href="#455" id="455">455</a>
-<a href="#456" id="456">456</a>
-<a href="#457" id="457">457</a>
-<a href="#458" id="458">458</a>
-<a href="#459" id="459">459</a>
-<a href="#460" id="460">460</a>
-<a href="#461" id="461">461</a>
-<a href="#462" id="462">462</a>
-<a href="#463" id="463">463</a>
-<a href="#464" id="464">464</a>
-<a href="#465" id="465">465</a>
-<a href="#466" id="466">466</a>
-<a href="#467" id="467">467</a>
-<a href="#468" id="468">468</a>
-<a href="#469" id="469">469</a>
-<a href="#470" id="470">470</a>
-<a href="#471" id="471">471</a>
-<a href="#472" id="472">472</a>
-<a href="#473" id="473">473</a>
-<a href="#474" id="474">474</a>
-<a href="#475" id="475">475</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -492,12 +364,10 @@
 <span class="kw">use </span>derive_builder::Builder;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 
-<span class="kw">use </span><span class="kw">crate</span>::storage::{consts, ColumnDefaultConstraint, ColumnSchema, ConcreteDataType};
+<span class="kw">use </span><span class="kw">crate</span>::storage::{ColumnDefaultConstraint, ColumnSchema, ConcreteDataType};
 
 <span class="doccomment">/// Id of column. Unique in each region.
 </span><span class="kw">pub type </span>ColumnId = u32;
-<span class="doccomment">/// Id of column family. Unique in each region.
-</span><span class="kw">pub type </span>ColumnFamilyId = u32;
 <span class="doccomment">/// Group number of one region. Unique in each region.
 </span><span class="kw">pub type </span>RegionGroup = u8;
 <span class="doccomment">/// Sequence number of region inside one table. Unique in each table.
@@ -515,7 +385,7 @@
 <span class="doccomment">/// The max valid region sequence number.
 </span><span class="kw">pub const </span>MAX_REGION_SEQ: u32 = REGION_SEQ_MASK;
 
-<span class="doccomment">/// Id of the region. It&#39;s generated by concatenating table id, region group and region number.
+<span class="doccomment">/// Id of the region. It's generated by concatenating table id, region group and region number.
 ///
 /// ```plaintext
 /// 63                                  31         23                  0
@@ -563,7 +433,7 @@
         RegionId(id)
     }
 
-    <span class="attr">#[cfg(test)]
+    <span class="doccomment">/// Construct a new [RegionId] from table id, region group and region sequence.
     </span><span class="kw">pub const fn </span>with_group_and_seq(
         table_id: TableId,
         group: RegionGroup,
@@ -578,10 +448,10 @@
 }
 
 <span class="kw">impl </span>fmt::Debug <span class="kw">for </span>RegionId {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; fmt::Result {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; fmt::Result {
         <span class="macro">write!</span>(
             f,
-            <span class="string">&quot;{}({}, {})&quot;</span>,
+            <span class="string">"{}({}, {})"</span>,
             <span class="self">self</span>.<span class="number">0</span>,
             <span class="self">self</span>.table_id(),
             <span class="self">self</span>.region_number()
@@ -590,8 +460,8 @@
 }
 
 <span class="kw">impl </span>fmt::Display <span class="kw">for </span>RegionId {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; fmt::Result {
-        <span class="macro">write!</span>(f, <span class="string">&quot;{:?}&quot;</span>, <span class="self">self</span>)
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; fmt::Result {
+        <span class="macro">write!</span>(f, <span class="string">"{:?}"</span>, <span class="self">self</span>)
     }
 }
 
@@ -621,17 +491,17 @@
 
 <span class="doccomment">/// A [ColumnDescriptor] contains information to create a column.
 </span><span class="attr">#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Builder)]
-#[builder(pattern = <span class="string">&quot;owned&quot;</span>, build_fn(validate = <span class="string">&quot;Self::validate&quot;</span>))]
+#[builder(pattern = <span class="string">"owned"</span>, build_fn(validate = <span class="string">"Self::validate"</span>))]
 </span><span class="kw">pub struct </span>ColumnDescriptor {
     <span class="kw">pub </span>id: ColumnId,
     <span class="attr">#[builder(setter(into))]
     </span><span class="kw">pub </span>name: String,
     <span class="kw">pub </span>data_type: ConcreteDataType,
     <span class="doccomment">/// Is column nullable, default is true.
-    </span><span class="attr">#[builder(default = <span class="string">&quot;true&quot;</span>)]
+    </span><span class="attr">#[builder(default = <span class="string">"true"</span>)]
     </span>is_nullable: bool,
     <span class="doccomment">/// Is time index column, default is true.
-    </span><span class="attr">#[builder(default = <span class="string">&quot;false&quot;</span>)]
+    </span><span class="attr">#[builder(default = <span class="string">"false"</span>)]
     </span>is_time_index: bool,
     <span class="doccomment">/// Default constraint of column, default is None, which means no default constraint
     /// for this column, and user must provide a value for a not-null column.
@@ -662,7 +532,7 @@
         ColumnSchema::new(<span class="kw-2">&amp;</span><span class="self">self</span>.name, <span class="self">self</span>.data_type.clone(), <span class="self">self</span>.is_nullable)
             .with_time_index(<span class="self">self</span>.is_time_index)
             .with_default_constraint(<span class="self">self</span>.default_constraint.clone())
-            .expect(<span class="string">&quot;ColumnDescriptor should validate default constraint&quot;</span>)
+            .expect(<span class="string">"ColumnDescriptor should validate default constraint"</span>)
     }
 }
 
@@ -679,7 +549,7 @@
     <span class="kw">fn </span>validate(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), String&gt; {
         <span class="kw">if let </span><span class="prelude-val">Some</span>(name) = <span class="kw-2">&amp;</span><span class="self">self</span>.name {
             <span class="kw">if </span>name.is_empty() {
-                <span class="kw">return </span><span class="prelude-val">Err</span>(<span class="string">&quot;name should not be empty&quot;</span>.to_string());
+                <span class="kw">return </span><span class="prelude-val">Err</span>(<span class="string">"name should not be empty"</span>.to_string());
             }
         }
 
@@ -687,7 +557,7 @@
             (<span class="kw-2">&amp;</span><span class="self">self</span>.default_constraint, <span class="kw-2">&amp;</span><span class="self">self</span>.data_type)
         {
             <span class="comment">// The default value of unwrap_or should be same as the default value
-            // defined in the `#[builder(default = &quot;xxx&quot;)]` attribute.
+            // defined in the `#[builder(default = "xxx")]` attribute.
             </span><span class="kw">let </span>is_nullable = <span class="self">self</span>.is_nullable.unwrap_or(<span class="bool-val">true</span>);
 
             constraint
@@ -699,68 +569,6 @@
     }
 }
 
-<span class="doccomment">/// A [RowKeyDescriptor] contains information about row key.
-</span><span class="attr">#[derive(Debug, Clone, PartialEq, Eq, Builder)]
-#[builder(pattern = <span class="string">&quot;owned&quot;</span>)]
-</span><span class="kw">pub struct </span>RowKeyDescriptor {
-    <span class="attr">#[builder(default, setter(each(name = <span class="string">&quot;push_column&quot;</span>)))]
-    </span><span class="kw">pub </span>columns: Vec&lt;ColumnDescriptor&gt;,
-    <span class="doccomment">/// Timestamp key column.
-    </span><span class="kw">pub </span>timestamp: ColumnDescriptor,
-}
-
-<span class="doccomment">/// A [ColumnFamilyDescriptor] contains information to create a column family.
-</span><span class="attr">#[derive(Debug, Clone, PartialEq, Eq, Builder)]
-#[builder(pattern = <span class="string">&quot;owned&quot;</span>)]
-</span><span class="kw">pub struct </span>ColumnFamilyDescriptor {
-    <span class="attr">#[builder(default = <span class="string">&quot;consts::DEFAULT_CF_ID&quot;</span>)]
-    </span><span class="kw">pub </span>cf_id: ColumnFamilyId,
-    <span class="attr">#[builder(default = <span class="string">&quot;consts::DEFAULT_CF_NAME.to_string()&quot;</span>, setter(into))]
-    </span><span class="kw">pub </span>name: String,
-    <span class="doccomment">/// Descriptors of columns in this column family.
-    </span><span class="attr">#[builder(default, setter(each(name = <span class="string">&quot;push_column&quot;</span>)))]
-    </span><span class="kw">pub </span>columns: Vec&lt;ColumnDescriptor&gt;,
-}
-
-<span class="doccomment">/// A [RegionDescriptor] contains information to create a region.
-</span><span class="attr">#[derive(Debug, Clone, PartialEq, Eq, Builder)]
-#[builder(pattern = <span class="string">&quot;owned&quot;</span>)]
-</span><span class="kw">pub struct </span>RegionDescriptor {
-    <span class="attr">#[builder(setter(into))]
-    </span><span class="kw">pub </span>id: RegionId,
-    <span class="doccomment">/// Region name.
-    </span><span class="attr">#[builder(setter(into))]
-    </span><span class="kw">pub </span>name: String,
-    <span class="doccomment">/// Row key descriptor of this region.
-    </span><span class="kw">pub </span>row_key: RowKeyDescriptor,
-    <span class="doccomment">/// Default column family.
-    </span><span class="kw">pub </span>default_cf: ColumnFamilyDescriptor,
-    <span class="doccomment">/// Extra column families defined by user.
-    </span><span class="attr">#[builder(default, setter(each(name = <span class="string">&quot;push_extra_column_family&quot;</span>)))]
-    </span><span class="kw">pub </span>extra_cfs: Vec&lt;ColumnFamilyDescriptor&gt;,
-}
-
-<span class="kw">impl </span>RowKeyDescriptorBuilder {
-    <span class="kw">pub fn </span>new(timestamp: ColumnDescriptor) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
-            timestamp: <span class="prelude-val">Some</span>(timestamp),
-            ..Default::default()
-        }
-    }
-
-    <span class="kw">pub fn </span>columns_capacity(<span class="kw-2">mut </span><span class="self">self</span>, capacity: usize) -&gt; <span class="self">Self </span>{
-        <span class="self">self</span>.columns = <span class="prelude-val">Some</span>(Vec::with_capacity(capacity));
-        <span class="self">self
-    </span>}
-}
-
-<span class="kw">impl </span>ColumnFamilyDescriptorBuilder {
-    <span class="kw">pub fn </span>columns_capacity(<span class="kw-2">mut </span><span class="self">self</span>, capacity: usize) -&gt; <span class="self">Self </span>{
-        <span class="self">self</span>.columns = <span class="prelude-val">Some</span>(Vec::with_capacity(capacity));
-        <span class="self">self
-    </span>}
-}
-
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use </span>datatypes::value::Value;
@@ -769,14 +577,14 @@
 
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>new_column_desc_builder() -&gt; ColumnDescriptorBuilder {
-        ColumnDescriptorBuilder::new(<span class="number">3</span>, <span class="string">&quot;test&quot;</span>, ConcreteDataType::int32_datatype())
+        ColumnDescriptorBuilder::new(<span class="number">3</span>, <span class="string">"test"</span>, ConcreteDataType::int32_datatype())
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_column_descriptor_builder() {
         <span class="kw">let </span>desc = new_column_desc_builder().build().unwrap();
         <span class="macro">assert_eq!</span>(<span class="number">3</span>, desc.id);
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;test&quot;</span>, desc.name);
+        <span class="macro">assert_eq!</span>(<span class="string">"test"</span>, desc.name);
         <span class="macro">assert_eq!</span>(ConcreteDataType::int32_datatype(), desc.data_type);
         <span class="macro">assert!</span>(desc.is_nullable);
         <span class="macro">assert!</span>(desc.default_constraint.is_none());
@@ -807,10 +615,10 @@
         );
 
         <span class="kw">let </span>desc = new_column_desc_builder()
-            .comment(<span class="string">&quot;A test column&quot;</span>)
+            .comment(<span class="string">"A test column"</span>)
             .build()
             .unwrap();
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;A test column&quot;</span>, desc.comment);
+        <span class="macro">assert_eq!</span>(<span class="string">"A test column"</span>, desc.comment);
 
         <span class="macro">assert!</span>(new_column_desc_builder()
             .is_nullable(<span class="bool-val">false</span>)
@@ -828,76 +636,11 @@
             .build()
             .unwrap();
         <span class="kw">let </span>column_schema = desc.to_column_schema();
-        <span class="kw">let </span>expected = ColumnSchema::new(<span class="string">&quot;test&quot;</span>, ConcreteDataType::int32_datatype(), <span class="bool-val">false</span>)
+        <span class="kw">let </span>expected = ColumnSchema::new(<span class="string">"test"</span>, ConcreteDataType::int32_datatype(), <span class="bool-val">false</span>)
             .with_default_constraint(<span class="prelude-val">Some</span>(constraint))
             .unwrap();
 
         <span class="macro">assert_eq!</span>(expected, column_schema);
-    }
-
-    <span class="kw">fn </span>new_timestamp_desc() -&gt; ColumnDescriptor {
-        ColumnDescriptorBuilder::new(<span class="number">5</span>, <span class="string">&quot;timestamp&quot;</span>, ConcreteDataType::int64_datatype())
-            .is_time_index(<span class="bool-val">true</span>)
-            .build()
-            .unwrap()
-    }
-
-    <span class="attr">#[test]
-    </span><span class="kw">fn </span>test_row_key_descriptor_builder() {
-        <span class="kw">let </span>timestamp = new_timestamp_desc();
-
-        <span class="kw">let </span>desc = RowKeyDescriptorBuilder::new(timestamp.clone())
-            .build()
-            .unwrap();
-        <span class="macro">assert!</span>(desc.columns.is_empty());
-
-        <span class="kw">let </span>desc = RowKeyDescriptorBuilder::new(timestamp.clone())
-            .columns_capacity(<span class="number">1</span>)
-            .push_column(
-                ColumnDescriptorBuilder::new(<span class="number">6</span>, <span class="string">&quot;c1&quot;</span>, ConcreteDataType::int32_datatype())
-                    .build()
-                    .unwrap(),
-            )
-            .push_column(
-                ColumnDescriptorBuilder::new(<span class="number">7</span>, <span class="string">&quot;c2&quot;</span>, ConcreteDataType::int32_datatype())
-                    .build()
-                    .unwrap(),
-            )
-            .build()
-            .unwrap();
-        <span class="macro">assert_eq!</span>(<span class="number">2</span>, desc.columns.len());
-
-        <span class="kw">let </span>desc = RowKeyDescriptorBuilder::new(timestamp).build().unwrap();
-        <span class="macro">assert!</span>(desc.columns.is_empty());
-    }
-
-    <span class="attr">#[test]
-    </span><span class="kw">fn </span>test_cf_descriptor_builder() {
-        <span class="kw">let </span>desc = ColumnFamilyDescriptorBuilder::default().build().unwrap();
-        <span class="macro">assert_eq!</span>(consts::DEFAULT_CF_ID, desc.cf_id);
-        <span class="macro">assert_eq!</span>(consts::DEFAULT_CF_NAME, desc.name);
-        <span class="macro">assert!</span>(desc.columns.is_empty());
-
-        <span class="kw">let </span>desc = ColumnFamilyDescriptorBuilder::default()
-            .cf_id(<span class="number">32</span>)
-            .name(<span class="string">&quot;cf1&quot;</span>)
-            .build()
-            .unwrap();
-        <span class="macro">assert_eq!</span>(<span class="number">32</span>, desc.cf_id);
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;cf1&quot;</span>, desc.name);
-
-        <span class="kw">let </span>desc = ColumnFamilyDescriptorBuilder::default()
-            .push_column(
-                ColumnDescriptorBuilder::default()
-                    .id(<span class="number">6</span>)
-                    .name(<span class="string">&quot;c1&quot;</span>)
-                    .data_type(ConcreteDataType::int32_datatype())
-                    .build()
-                    .unwrap(),
-            )
-            .build()
-            .unwrap();
-        <span class="macro">assert_eq!</span>(<span class="number">1</span>, desc.columns.len());
     }
 
     <span class="attr">#[test]
@@ -916,15 +659,15 @@
         <span class="macro">assert_eq!</span>(RegionId::from(inner), region_id);
 
         <span class="kw">let </span>region_id = RegionId::new(<span class="number">1234</span>, <span class="number">5</span>);
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;5299989643269(1234, 5)&quot;</span>, region_id.to_string());
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;5299989643269(1234, 5)&quot;</span>, <span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, region_id));
+        <span class="macro">assert_eq!</span>(<span class="string">"5299989643269(1234, 5)"</span>, region_id.to_string());
+        <span class="macro">assert_eq!</span>(<span class="string">"5299989643269(1234, 5)"</span>, <span class="macro">format!</span>(<span class="string">"{:?}"</span>, region_id));
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_region_id_to_json() {
         <span class="kw">let </span>region_id = RegionId::from(<span class="number">4294967297</span>);
         <span class="kw">let </span>json = serde_json::to_string(<span class="kw-2">&amp;</span>region_id).unwrap();
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;4294967297&quot;</span>, json);
+        <span class="macro">assert_eq!</span>(<span class="string">"4294967297"</span>, json);
 
         <span class="kw">let </span>parsed: RegionId = serde_json::from_str(<span class="kw-2">&amp;</span>json).unwrap();
         <span class="macro">assert_eq!</span>(region_id, parsed);

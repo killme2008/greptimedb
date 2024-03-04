@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/promql/src/extension_plan/normalize.rs`."><title>normalize.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="promql" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../promql/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/promql/src/extension_plan/normalize.rs`."><title>normalize.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="promql" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -422,16 +423,20 @@
 <a href="#422" id="422">422</a>
 <a href="#423" id="423">423</a>
 <a href="#424" id="424">424</a>
+<a href="#425" id="425">425</a>
+<a href="#426" id="426">426</a>
+<a href="#427" id="427">427</a>
+<a href="#428" id="428">428</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -450,7 +455,7 @@
 <span class="kw">use </span>datafusion::physical_expr::PhysicalSortExpr;
 <span class="kw">use </span>datafusion::physical_plan::metrics::{BaselineMetrics, ExecutionPlanMetricsSet, MetricsSet};
 <span class="kw">use </span>datafusion::physical_plan::{
-    DisplayAs, DisplayFormatType, ExecutionPlan, Partitioning, RecordBatchStream,
+    DisplayAs, DisplayFormatType, Distribution, ExecutionPlan, Partitioning, RecordBatchStream,
     SendableRecordBatchStream,
 };
 <span class="kw">use </span>datatypes::arrow::array::TimestampMillisecondArray;
@@ -469,7 +474,7 @@
 /// the input batch only contains sample points from one time series.
 ///
 /// Roughly speaking, this method does these things:
-/// - bias sample&#39;s timestamp by offset
+/// - bias sample's timestamp by offset
 /// - sort the record batch based on timestamp column
 /// - remove NaN values (optional)
 </span><span class="attr">#[derive(Debug, PartialEq, Eq, Hash)]
@@ -501,7 +506,7 @@
     <span class="kw">fn </span>fmt_for_explain(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter) -&gt; std::fmt::Result {
         <span class="macro">write!</span>(
             f,
-            <span class="string">&quot;PromSeriesNormalize: offset=[{}], time index=[{}], filter NaN: [{}]&quot;</span>,
+            <span class="string">"PromSeriesNormalize: offset=[{}], time index=[{}], filter NaN: [{}]"</span>,
             <span class="self">self</span>.offset, <span class="self">self</span>.time_index_column_name, <span class="self">self</span>.need_filter_out_nan
         )
     }
@@ -533,8 +538,8 @@
         }
     }
 
-    <span class="kw">pub const fn </span>name() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str {
-        <span class="string">&quot;SeriesNormalize&quot;
+    <span class="kw">pub const fn </span>name() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str {
+        <span class="string">"SeriesNormalize"
     </span>}
 
     <span class="kw">pub fn </span>to_execution_plan(<span class="kw-2">&amp;</span><span class="self">self</span>, exec_input: Arc&lt;<span class="kw">dyn </span>ExecutionPlan&gt;) -&gt; Arc&lt;<span class="kw">dyn </span>ExecutionPlan&gt; {
@@ -590,6 +595,10 @@
         <span class="self">self</span>.input.schema()
     }
 
+    <span class="kw">fn </span>required_input_distribution(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;Distribution&gt; {
+        <span class="macro">vec!</span>[Distribution::SinglePartition]
+    }
+
     <span class="kw">fn </span>output_partitioning(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Partitioning {
         <span class="self">self</span>.input.output_partitioning()
     }
@@ -627,7 +636,7 @@
         <span class="kw">let </span>schema = input.schema();
         <span class="kw">let </span>time_index = schema
             .column_with_name(<span class="kw-2">&amp;</span><span class="self">self</span>.time_index_column_name)
-            .expect(<span class="string">&quot;time index column not found&quot;</span>)
+            .expect(<span class="string">"time index column not found"</span>)
             .<span class="number">0</span>;
         <span class="prelude-val">Ok</span>(Box::pin(SeriesNormalizeStream {
             offset: <span class="self">self</span>.offset,
@@ -654,7 +663,7 @@
             DisplayFormatType::Default | DisplayFormatType::Verbose =&gt; {
                 <span class="macro">write!</span>(
                     f,
-                    <span class="string">&quot;PromSeriesNormalizeExec: offset=[{}], time index=[{}], filter NaN: [{}]&quot;</span>,
+                    <span class="string">"PromSeriesNormalizeExec: offset=[{}], time index=[{}], filter NaN: [{}]"</span>,
                     <span class="self">self</span>.offset, <span class="self">self</span>.time_index_column_name, <span class="self">self</span>.need_filter_out_nan
                 )
             }
@@ -664,7 +673,7 @@
 
 <span class="kw">pub struct </span>SeriesNormalizeStream {
     offset: Millisecond,
-    <span class="comment">// Column index of TIME INDEX column&#39;s position in schema
+    <span class="comment">// Column index of TIME INDEX column's position in schema
     </span>time_index: usize,
     need_filter_out_nan: bool,
 
@@ -705,7 +714,7 @@
             <span class="kw">return </span><span class="prelude-val">Ok</span>(ordered_batch);
         }
 
-        <span class="comment">// TODO(ruihang): consider the &quot;special NaN&quot;
+        <span class="comment">// TODO(ruihang): consider the "special NaN"
         // filter out NaN
         </span><span class="kw">let </span><span class="kw-2">mut </span>filter = <span class="macro">vec!</span>[<span class="bool-val">true</span>; input.num_rows()];
         <span class="kw">for </span>column <span class="kw">in </span>ordered_batch.columns() {
@@ -733,7 +742,7 @@
 <span class="kw">impl </span>Stream <span class="kw">for </span>SeriesNormalizeStream {
     <span class="kw">type </span>Item = DataFusionResult&lt;RecordBatch&gt;;
 
-    <span class="kw">fn </span>poll_next(<span class="kw-2">mut </span><span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; Poll&lt;<span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt;&gt; {
+    <span class="kw">fn </span>poll_next(<span class="kw-2">mut </span><span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">'_</span>&gt;) -&gt; Poll&lt;<span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt;&gt; {
         <span class="kw">let </span>poll = <span class="kw">match </span><span class="self">self</span>.input.poll_next_unpin(cx) {
             Poll::Ready(batch) =&gt; {
                 <span class="kw">let </span>_timer = <span class="self">self</span>.metric.elapsed_compute().timer();
@@ -758,19 +767,19 @@
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
-    <span class="kw">const </span>TIME_INDEX_COLUMN: <span class="kw-2">&amp;</span>str = <span class="string">&quot;timestamp&quot;</span>;
+    <span class="kw">const </span>TIME_INDEX_COLUMN: <span class="kw-2">&amp;</span>str = <span class="string">"timestamp"</span>;
 
     <span class="kw">fn </span>prepare_test_data() -&gt; MemoryExec {
         <span class="kw">let </span>schema = Arc::new(Schema::new(<span class="macro">vec!</span>[
             Field::new(TIME_INDEX_COLUMN, TimestampMillisecondType::DATA_TYPE, <span class="bool-val">true</span>),
-            Field::new(<span class="string">&quot;value&quot;</span>, DataType::Float64, <span class="bool-val">true</span>),
-            Field::new(<span class="string">&quot;path&quot;</span>, DataType::Utf8, <span class="bool-val">true</span>),
+            Field::new(<span class="string">"value"</span>, DataType::Float64, <span class="bool-val">true</span>),
+            Field::new(<span class="string">"path"</span>, DataType::Utf8, <span class="bool-val">true</span>),
         ]));
         <span class="kw">let </span>timestamp_column = Arc::new(TimestampMillisecondArray::from(<span class="macro">vec!</span>[
             <span class="number">60_000</span>, <span class="number">120_000</span>, <span class="number">0</span>, <span class="number">30_000</span>, <span class="number">90_000</span>,
         ])) <span class="kw">as _</span>;
         <span class="kw">let </span>field_column = Arc::new(Float64Array::from(<span class="macro">vec!</span>[<span class="number">0.0</span>, <span class="number">1.0</span>, <span class="number">10.0</span>, <span class="number">100.0</span>, <span class="number">1000.0</span>])) <span class="kw">as _</span>;
-        <span class="kw">let </span>path_column = Arc::new(StringArray::from(<span class="macro">vec!</span>[<span class="string">&quot;foo&quot;</span>, <span class="string">&quot;foo&quot;</span>, <span class="string">&quot;foo&quot;</span>, <span class="string">&quot;foo&quot;</span>, <span class="string">&quot;foo&quot;</span>])) <span class="kw">as _</span>;
+        <span class="kw">let </span>path_column = Arc::new(StringArray::from(<span class="macro">vec!</span>[<span class="string">"foo"</span>, <span class="string">"foo"</span>, <span class="string">"foo"</span>, <span class="string">"foo"</span>, <span class="string">"foo"</span>])) <span class="kw">as _</span>;
         <span class="kw">let </span>data = RecordBatch::try_new(
             schema.clone(),
             <span class="macro">vec!</span>[timestamp_column, field_column, path_column],
@@ -799,7 +808,7 @@
             .to_string();
 
         <span class="kw">let </span>expected = String::from(
-            <span class="string">&quot;+---------------------+--------+------+\
+            <span class="string">"+---------------------+--------+------+\
             \n| timestamp           | value  | path |\
             \n+---------------------+--------+------+\
             \n| 1970-01-01T00:00:00 | 10.0   | foo  |\
@@ -807,7 +816,7 @@
             \n| 1970-01-01T00:01:00 | 0.0    | foo  |\
             \n| 1970-01-01T00:01:30 | 1000.0 | foo  |\
             \n| 1970-01-01T00:02:00 | 1.0    | foo  |\
-            \n+---------------------+--------+------+&quot;</span>,
+            \n+---------------------+--------+------+"</span>,
         );
 
         <span class="macro">assert_eq!</span>(result_literal, expected);
@@ -832,7 +841,7 @@
             .to_string();
 
         <span class="kw">let </span>expected = String::from(
-            <span class="string">&quot;+---------------------+--------+------+\
+            <span class="string">"+---------------------+--------+------+\
             \n| timestamp           | value  | path |\
             \n+---------------------+--------+------+\
             \n| 1970-01-01T00:00:01 | 10.0   | foo  |\
@@ -840,7 +849,7 @@
             \n| 1970-01-01T00:01:01 | 0.0    | foo  |\
             \n| 1970-01-01T00:01:31 | 1000.0 | foo  |\
             \n| 1970-01-01T00:02:01 | 1.0    | foo  |\
-            \n+---------------------+--------+------+&quot;</span>,
+            \n+---------------------+--------+------+"</span>,
         );
 
         <span class="macro">assert_eq!</span>(result_literal, expected);

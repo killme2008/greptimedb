@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"macro":["impl_min_max_values"],"struct":["RowGroupPruningStatistics"]};

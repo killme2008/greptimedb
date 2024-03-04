@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"constant":["INIT_COMMITTED_SEQUENCE"],"struct":["Version","VersionControl","VersionEdit"],"type":["LevelMetasRef","MemtableVersionRef","VersionControlRef","VersionRef"]};

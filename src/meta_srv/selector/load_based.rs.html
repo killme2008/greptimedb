@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/meta-srv/src/selector/load_based.rs`."><title>load_based.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="meta_srv" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../meta_srv/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/meta-srv/src/selector/load_based.rs`."><title>load_based.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="meta_srv" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -206,286 +207,212 @@
 <a href="#206" id="206">206</a>
 <a href="#207" id="207">207</a>
 <a href="#208" id="208">208</a>
-<a href="#209" id="209">209</a>
-<a href="#210" id="210">210</a>
-<a href="#211" id="211">211</a>
-<a href="#212" id="212">212</a>
-<a href="#213" id="213">213</a>
-<a href="#214" id="214">214</a>
-<a href="#215" id="215">215</a>
-<a href="#216" id="216">216</a>
-<a href="#217" id="217">217</a>
-<a href="#218" id="218">218</a>
-<a href="#219" id="219">219</a>
-<a href="#220" id="220">220</a>
-<a href="#221" id="221">221</a>
-<a href="#222" id="222">222</a>
-<a href="#223" id="223">223</a>
-<a href="#224" id="224">224</a>
-<a href="#225" id="225">225</a>
-<a href="#226" id="226">226</a>
-<a href="#227" id="227">227</a>
-<a href="#228" id="228">228</a>
-<a href="#229" id="229">229</a>
-<a href="#230" id="230">230</a>
-<a href="#231" id="231">231</a>
-<a href="#232" id="232">232</a>
-<a href="#233" id="233">233</a>
-<a href="#234" id="234">234</a>
-<a href="#235" id="235">235</a>
-<a href="#236" id="236">236</a>
-<a href="#237" id="237">237</a>
-<a href="#238" id="238">238</a>
-<a href="#239" id="239">239</a>
-<a href="#240" id="240">240</a>
-<a href="#241" id="241">241</a>
-<a href="#242" id="242">242</a>
-<a href="#243" id="243">243</a>
-<a href="#244" id="244">244</a>
-<a href="#245" id="245">245</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-</span><span class="kw">use </span>api::v1::meta::Peer;
-<span class="kw">use </span>common_meta::ident::TableIdent;
-<span class="kw">use </span>common_telemetry::warn;
+</span><span class="kw">use </span>std::collections::HashMap;
 
-<span class="kw">use </span><span class="kw">crate</span>::error::Result;
-<span class="kw">use </span><span class="kw">crate</span>::handler::node_stat::RegionStat;
+<span class="kw">use </span>api::v1::meta::Peer;
+<span class="kw">use </span>common_meta::key::TableMetadataManager;
+<span class="kw">use </span>common_meta::rpc::router::find_leaders;
+<span class="kw">use </span>common_telemetry::{debug, info};
+<span class="kw">use </span>parking_lot::RwLock;
+<span class="kw">use </span>snafu::ResultExt;
+<span class="kw">use </span>table::metadata::TableId;
+
+<span class="kw">use </span><span class="kw">crate</span>::error::{<span class="self">self</span>, <span class="prelude-ty">Result</span>};
 <span class="kw">use </span><span class="kw">crate</span>::keys::{LeaseKey, LeaseValue, StatKey, StatValue};
 <span class="kw">use </span><span class="kw">crate</span>::lease;
 <span class="kw">use </span><span class="kw">crate</span>::metasrv::SelectorContext;
-<span class="kw">use </span><span class="kw">crate</span>::selector::{Namespace, Selector};
+<span class="kw">use </span><span class="kw">crate</span>::selector::common::choose_peers;
+<span class="kw">use </span><span class="kw">crate</span>::selector::weight_compute::{RegionNumsBasedWeightCompute, WeightCompute};
+<span class="kw">use </span><span class="kw">crate</span>::selector::weighted_choose::{RandomWeightedChoose, WeightedChoose};
+<span class="kw">use </span><span class="kw">crate</span>::selector::{Namespace, Selector, SelectorOptions};
 
-<span class="kw">const </span>MAX_REGION_NUMBER: u64 = u64::MAX;
+<span class="kw">pub struct </span>LoadBasedSelector&lt;W, C&gt; {
+    weighted_choose: RwLock&lt;W&gt;,
+    weight_compute: C,
+}
 
-<span class="kw">pub struct </span>LoadBasedSelector;
-
-<span class="attr">#[async_trait::async_trait]
-</span><span class="kw">impl </span>Selector <span class="kw">for </span>LoadBasedSelector {
-    <span class="kw">type </span>Context = SelectorContext;
-    <span class="kw">type </span>Output = Vec&lt;Peer&gt;;
-
-    <span class="kw">async fn </span>select(<span class="kw-2">&amp;</span><span class="self">self</span>, ns: Namespace, ctx: <span class="kw-2">&amp;</span><span class="self">Self</span>::Context) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Output&gt; {
-        <span class="comment">// get alive datanodes
-        </span><span class="kw">let </span>lease_kvs =
-            lease::alive_datanodes(ns, <span class="kw-2">&amp;</span>ctx.meta_peer_client, ctx.datanode_lease_secs).<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="kw">if </span>lease_kvs.is_empty() {
-            <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="macro">vec!</span>[]);
+<span class="kw">impl</span>&lt;W, C&gt; LoadBasedSelector&lt;W, C&gt; {
+    <span class="kw">pub fn </span>new(weighted_choose: W, weight_compute: C) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            weighted_choose: RwLock::new(weighted_choose),
+            weight_compute,
         }
-
-        <span class="kw">let </span>stat_keys: Vec&lt;StatKey&gt; = lease_kvs.keys().map(|k| k.into()).collect();
-        <span class="kw">let </span>stat_kvs = ctx.meta_peer_client.get_dn_stat_kvs(stat_keys).<span class="kw">await</span><span class="question-mark">?</span>;
-
-        <span class="kw">let </span><span class="kw-2">mut </span>tuples: Vec&lt;(LeaseKey, LeaseValue, u64)&gt; = lease_kvs
-            .into_iter()
-            <span class="comment">// The regions of a table need to be distributed on different datanode.
-            </span>.filter(|(lease_k, <span class="kw">_</span>)| {
-                <span class="kw">if let </span><span class="prelude-val">Some</span>(stat_val) = stat_kvs.get(<span class="kw-2">&amp;</span>lease_k.into()) {
-                    <span class="kw">if let </span>(<span class="prelude-val">Some</span>(catalog), <span class="prelude-val">Some</span>(schema), <span class="prelude-val">Some</span>(table)) =
-                        (<span class="kw-2">&amp;</span>ctx.catalog, <span class="kw-2">&amp;</span>ctx.schema, <span class="kw-2">&amp;</span>ctx.table)
-                    {
-                        <span class="kw">return </span>contains_table(stat_val, catalog, schema, table) != <span class="prelude-val">Some</span>(<span class="bool-val">true</span>);
-                    }
-                }
-                <span class="bool-val">true
-            </span>})
-            .map(|(lease_k, lease_v)| {
-                <span class="kw">let </span>stat_key: StatKey = (<span class="kw-2">&amp;</span>lease_k).into();
-
-                <span class="kw">let </span>region_num = <span class="kw">match </span>stat_kvs
-                    .get(<span class="kw-2">&amp;</span>stat_key)
-                    .and_then(|stat_val| stat_val.region_num())
-                {
-                    <span class="prelude-val">Some</span>(region_num) =&gt; region_num,
-                    <span class="prelude-val">None </span>=&gt; {
-                        <span class="macro">warn!</span>(<span class="string">&quot;Failed to get stat_val by stat_key {:?}&quot;</span>, stat_key);
-                        MAX_REGION_NUMBER
-                    }
-                };
-
-                (lease_k, lease_v, region_num)
-            })
-            .collect();
-
-        <span class="comment">// sort the datanodes according to the number of regions
-        </span>tuples.sort_by(|a, b| a.<span class="number">2</span>.cmp(<span class="kw-2">&amp;</span>b.<span class="number">2</span>));
-
-        <span class="prelude-val">Ok</span>(tuples
-            .into_iter()
-            .map(|(stat_key, lease_val, <span class="kw">_</span>)| Peer {
-                id: stat_key.node_id,
-                addr: lease_val.node_addr,
-            })
-            .collect())
     }
 }
 
-<span class="comment">// Determine whether there is the table in datanode according to the heartbeats.
-//
-// Result:
-// None indicates no heartbeats in stat_val;
-// Some(true) indicates table exists in the datanode;
-// Some(false) indicates that table not exists in datanode.
-</span><span class="kw">fn </span>contains_table(
-    stat_val: <span class="kw-2">&amp;</span>StatValue,
-    catalog_name: <span class="kw-2">&amp;</span>str,
-    schema_name: <span class="kw-2">&amp;</span>str,
-    table_name: <span class="kw-2">&amp;</span>str,
-) -&gt; <span class="prelude-ty">Option</span>&lt;bool&gt; {
-    <span class="kw">let </span>may_latest = stat_val.stats.last();
-
-    <span class="kw">if let </span><span class="prelude-val">Some</span>(latest) = may_latest {
-        <span class="kw">for </span>RegionStat {
-            table_ident:
-                TableIdent {
-                    catalog,
-                    schema,
-                    table,
-                    ..
-                },
-            ..
-        } <span class="kw">in </span>latest.region_stats.iter()
-        {
-            <span class="kw">if </span>catalog_name == catalog &amp;&amp; schema_name == schema &amp;&amp; table_name == table {
-                <span class="kw">return </span><span class="prelude-val">Some</span>(<span class="bool-val">true</span>);
-            }
+<span class="kw">impl </span>Default <span class="kw">for </span>LoadBasedSelector&lt;RandomWeightedChoose&lt;Peer&gt;, RegionNumsBasedWeightCompute&gt; {
+    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            weighted_choose: RwLock::new(RandomWeightedChoose::default()),
+            weight_compute: RegionNumsBasedWeightCompute,
         }
-    } <span class="kw">else </span>{
-        <span class="kw">return </span><span class="prelude-val">None</span>;
     }
+}
 
-    <span class="prelude-val">Some</span>(<span class="bool-val">false</span>)
+<span class="attr">#[async_trait::async_trait]
+</span><span class="kw">impl</span>&lt;W, C&gt; Selector <span class="kw">for </span>LoadBasedSelector&lt;W, C&gt;
+<span class="kw">where
+    </span>W: WeightedChoose&lt;Peer&gt;,
+    C: WeightCompute&lt;Source = HashMap&lt;StatKey, StatValue&gt;&gt;,
+{
+    <span class="kw">type </span>Context = SelectorContext;
+    <span class="kw">type </span>Output = Vec&lt;Peer&gt;;
+
+    <span class="kw">async fn </span>select(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        ns: Namespace,
+        ctx: <span class="kw-2">&amp;</span><span class="self">Self</span>::Context,
+        opts: SelectorOptions,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Output&gt; {
+        <span class="comment">// 1. get alive datanodes.
+        </span><span class="kw">let </span>lease_kvs =
+            lease::alive_datanodes(ns, <span class="kw-2">&amp;</span>ctx.meta_peer_client, ctx.datanode_lease_secs).<span class="kw">await</span><span class="question-mark">?</span>;
+
+        <span class="comment">// 2. get stat kvs and filter out expired datanodes.
+        </span><span class="kw">let </span>stat_keys = lease_kvs.keys().map(|k| k.into()).collect();
+        <span class="kw">let </span>stat_kvs = filter_out_expired_datanode(
+            ctx.meta_peer_client.get_dn_stat_kvs(stat_keys).<span class="kw">await</span><span class="question-mark">?</span>,
+            <span class="kw-2">&amp;</span>lease_kvs,
+        );
+
+        <span class="comment">// 3. try to make the regions of a table distributed on different datanodes as much as possible.
+        </span><span class="kw">let </span>stat_kvs = <span class="kw">if let </span><span class="prelude-val">Some</span>(table_id) = ctx.table_id {
+            <span class="kw">let </span>table_metadata_manager = TableMetadataManager::new(ctx.kv_backend.clone());
+            <span class="kw">let </span>leader_peer_ids = get_leader_peer_ids(<span class="kw-2">&amp;</span>table_metadata_manager, table_id).<span class="kw">await</span><span class="question-mark">?</span>;
+            <span class="kw">let </span>filter_result = filter_out_datanode_by_table(<span class="kw-2">&amp;</span>stat_kvs, <span class="kw-2">&amp;</span>leader_peer_ids);
+            <span class="kw">if </span>filter_result.is_empty() {
+                <span class="macro">info!</span>(<span class="string">"The regions of the table cannot be allocated to completely different datanodes, table id: {}."</span>, table_id);
+                stat_kvs
+            } <span class="kw">else </span>{
+                filter_result
+            }
+        } <span class="kw">else </span>{
+            stat_kvs
+        };
+
+        <span class="comment">// 4. compute weight array.
+        </span><span class="kw">let </span>weight_array = <span class="self">self</span>.weight_compute.compute(<span class="kw-2">&amp;</span>stat_kvs);
+
+        <span class="comment">// 5. choose peers by weight_array.
+        </span><span class="kw">let </span><span class="kw-2">mut </span>weighted_choose = <span class="self">self</span>.weighted_choose.write();
+        <span class="kw">let </span>selected = choose_peers(weight_array, <span class="kw-2">&amp;</span>opts, <span class="kw-2">&amp;mut *</span>weighted_choose)<span class="question-mark">?</span>;
+
+        <span class="macro">debug!</span>(
+            <span class="string">"LoadBasedSelector select peers: {:?}, namespace: {}, opts: {:?}."</span>,
+            selected, ns, opts,
+        );
+
+        <span class="prelude-val">Ok</span>(selected)
+    }
+}
+
+<span class="kw">fn </span>filter_out_expired_datanode(
+    <span class="kw-2">mut </span>stat_kvs: HashMap&lt;StatKey, StatValue&gt;,
+    lease_kvs: <span class="kw-2">&amp;</span>HashMap&lt;LeaseKey, LeaseValue&gt;,
+) -&gt; HashMap&lt;StatKey, StatValue&gt; {
+    lease_kvs
+        .iter()
+        .filter_map(|(lease_k, <span class="kw">_</span>)| stat_kvs.remove_entry(<span class="kw-2">&amp;</span>lease_k.into()))
+        .collect()
+}
+
+<span class="kw">fn </span>filter_out_datanode_by_table(
+    stat_kvs: <span class="kw-2">&amp;</span>HashMap&lt;StatKey, StatValue&gt;,
+    leader_peer_ids: <span class="kw-2">&amp;</span>[u64],
+) -&gt; HashMap&lt;StatKey, StatValue&gt; {
+    stat_kvs
+        .iter()
+        .filter(|(stat_k, <span class="kw">_</span>)| leader_peer_ids.contains(<span class="kw-2">&amp;</span>stat_k.node_id))
+        .map(|(stat_k, stat_v)| (<span class="kw-2">*</span>stat_k, stat_v.clone()))
+        .collect()
+}
+
+<span class="kw">async fn </span>get_leader_peer_ids(
+    table_metadata_manager: <span class="kw-2">&amp;</span>TableMetadataManager,
+    table_id: TableId,
+) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;u64&gt;&gt; {
+    table_metadata_manager
+        .table_route_manager()
+        .get(table_id)
+        .<span class="kw">await
+        </span>.context(error::TableMetadataManagerSnafu)
+        .map(|route| {
+            route.map_or_else(Vec::new, |route| {
+                find_leaders(route.region_routes())
+                    .into_iter()
+                    .map(|peer| peer.id)
+                    .collect()
+            })
+        })
 }
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
-    <span class="kw">use </span>common_meta::ident::TableIdent;
+    <span class="kw">use </span>std::collections::HashMap;
 
-    <span class="kw">use </span><span class="kw">crate</span>::handler::node_stat::{RegionStat, Stat};
-    <span class="kw">use </span><span class="kw">crate</span>::keys::StatValue;
-    <span class="kw">use </span><span class="kw">crate</span>::selector::load_based::contains_table;
+    <span class="kw">use </span><span class="kw">crate</span>::keys::{LeaseKey, LeaseValue, StatKey, StatValue};
+    <span class="kw">use </span><span class="kw">crate</span>::selector::load_based::filter_out_expired_datanode;
 
     <span class="attr">#[test]
-    </span><span class="kw">fn </span>test_contains_table_from_stat_val() {
-        <span class="kw">let </span>empty = StatValue { stats: <span class="macro">vec!</span>[] };
-        <span class="macro">assert!</span>(contains_table(<span class="kw-2">&amp;</span>empty, <span class="string">&quot;greptime_4&quot;</span>, <span class="string">&quot;public_4&quot;</span>, <span class="string">&quot;demo_5&quot;</span>).is_none());
+    </span><span class="kw">fn </span>test_filter_out_expired_datanode() {
+        <span class="kw">let </span><span class="kw-2">mut </span>stat_kvs = HashMap::new();
+        stat_kvs.insert(
+            StatKey {
+                cluster_id: <span class="number">1</span>,
+                node_id: <span class="number">0</span>,
+            },
+            StatValue { stats: <span class="macro">vec!</span>[] },
+        );
+        stat_kvs.insert(
+            StatKey {
+                cluster_id: <span class="number">1</span>,
+                node_id: <span class="number">1</span>,
+            },
+            StatValue { stats: <span class="macro">vec!</span>[] },
+        );
+        stat_kvs.insert(
+            StatKey {
+                cluster_id: <span class="number">1</span>,
+                node_id: <span class="number">2</span>,
+            },
+            StatValue { stats: <span class="macro">vec!</span>[] },
+        );
 
-        <span class="kw">let </span>stat_val = StatValue {
-            stats: <span class="macro">vec!</span>[
-                Stat {
-                    region_stats: <span class="macro">vec!</span>[
-                        RegionStat {
-                            table_ident: TableIdent {
-                                catalog: <span class="string">&quot;greptime_1&quot;</span>.to_string(),
-                                schema: <span class="string">&quot;public_1&quot;</span>.to_string(),
-                                table: <span class="string">&quot;demo_1&quot;</span>.to_string(),
-                                ..Default::default()
-                            },
-                            ..Default::default()
-                        },
-                        RegionStat {
-                            table_ident: TableIdent {
-                                catalog: <span class="string">&quot;greptime_2&quot;</span>.to_string(),
-                                schema: <span class="string">&quot;public_2&quot;</span>.to_string(),
-                                table: <span class="string">&quot;demo_2&quot;</span>.to_string(),
-                                ..Default::default()
-                            },
-                            ..Default::default()
-                        },
-                        RegionStat {
-                            table_ident: TableIdent {
-                                catalog: <span class="string">&quot;greptime_3&quot;</span>.to_string(),
-                                schema: <span class="string">&quot;public_3&quot;</span>.to_string(),
-                                table: <span class="string">&quot;demo_3&quot;</span>.to_string(),
-                                ..Default::default()
-                            },
-                            ..Default::default()
-                        },
-                    ],
-                    ..Default::default()
-                },
-                Stat {
-                    region_stats: <span class="macro">vec!</span>[
-                        RegionStat {
-                            table_ident: TableIdent {
-                                catalog: <span class="string">&quot;greptime_1&quot;</span>.to_string(),
-                                schema: <span class="string">&quot;public_1&quot;</span>.to_string(),
-                                table: <span class="string">&quot;demo_1&quot;</span>.to_string(),
-                                ..Default::default()
-                            },
-                            ..Default::default()
-                        },
-                        RegionStat {
-                            table_ident: TableIdent {
-                                catalog: <span class="string">&quot;greptime_2&quot;</span>.to_string(),
-                                schema: <span class="string">&quot;public_2&quot;</span>.to_string(),
-                                table: <span class="string">&quot;demo_2&quot;</span>.to_string(),
-                                ..Default::default()
-                            },
-                            ..Default::default()
-                        },
-                        RegionStat {
-                            table_ident: TableIdent {
-                                catalog: <span class="string">&quot;greptime_3&quot;</span>.to_string(),
-                                schema: <span class="string">&quot;public_3&quot;</span>.to_string(),
-                                table: <span class="string">&quot;demo_3&quot;</span>.to_string(),
-                                ..Default::default()
-                            },
-                            ..Default::default()
-                        },
-                    ],
-                    ..Default::default()
-                },
-                Stat {
-                    region_stats: <span class="macro">vec!</span>[
-                        RegionStat {
-                            table_ident: TableIdent {
-                                catalog: <span class="string">&quot;greptime_1&quot;</span>.to_string(),
-                                schema: <span class="string">&quot;public_1&quot;</span>.to_string(),
-                                table: <span class="string">&quot;demo_1&quot;</span>.to_string(),
-                                ..Default::default()
-                            },
-                            ..Default::default()
-                        },
-                        RegionStat {
-                            table_ident: TableIdent {
-                                catalog: <span class="string">&quot;greptime_2&quot;</span>.to_string(),
-                                schema: <span class="string">&quot;public_2&quot;</span>.to_string(),
-                                table: <span class="string">&quot;demo_2&quot;</span>.to_string(),
-                                ..Default::default()
-                            },
-                            ..Default::default()
-                        },
-                        RegionStat {
-                            table_ident: TableIdent {
-                                catalog: <span class="string">&quot;greptime_4&quot;</span>.to_string(),
-                                schema: <span class="string">&quot;public_4&quot;</span>.to_string(),
-                                table: <span class="string">&quot;demo_4&quot;</span>.to_string(),
-                                ..Default::default()
-                            },
-                            ..Default::default()
-                        },
-                    ],
-                    ..Default::default()
-                },
-            ],
-        };
-        <span class="macro">assert!</span>(contains_table(<span class="kw-2">&amp;</span>stat_val, <span class="string">&quot;greptime_1&quot;</span>, <span class="string">&quot;public_1&quot;</span>, <span class="string">&quot;demo_1&quot;</span>).unwrap());
-        <span class="macro">assert!</span>(contains_table(<span class="kw-2">&amp;</span>stat_val, <span class="string">&quot;greptime_2&quot;</span>, <span class="string">&quot;public_2&quot;</span>, <span class="string">&quot;demo_2&quot;</span>).unwrap());
-        <span class="macro">assert!</span>(!contains_table(<span class="kw-2">&amp;</span>stat_val, <span class="string">&quot;greptime_3&quot;</span>, <span class="string">&quot;public_3&quot;</span>, <span class="string">&quot;demo_3&quot;</span>).unwrap());
-        <span class="macro">assert!</span>(contains_table(<span class="kw-2">&amp;</span>stat_val, <span class="string">&quot;greptime_4&quot;</span>, <span class="string">&quot;public_4&quot;</span>, <span class="string">&quot;demo_4&quot;</span>).unwrap());
+        <span class="kw">let </span><span class="kw-2">mut </span>lease_kvs = HashMap::new();
+        lease_kvs.insert(
+            LeaseKey {
+                cluster_id: <span class="number">1</span>,
+                node_id: <span class="number">1</span>,
+            },
+            LeaseValue {
+                timestamp_millis: <span class="number">0</span>,
+                node_addr: <span class="string">"127.0.0.1:3002"</span>.to_string(),
+            },
+        );
+
+        <span class="kw">let </span>alive_stat_kvs = filter_out_expired_datanode(stat_kvs, <span class="kw-2">&amp;</span>lease_kvs);
+
+        <span class="macro">assert_eq!</span>(<span class="number">1</span>, alive_stat_kvs.len());
+        <span class="macro">assert!</span>(alive_stat_kvs
+            .get(<span class="kw-2">&amp;</span>StatKey {
+                cluster_id: <span class="number">1</span>,
+                node_id: <span class="number">1
+            </span>})
+            .is_some());
     }
 }
 </code></pre></div></section></main></body></html>

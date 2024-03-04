@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["FrontendOptions"]};
+window.SIDEBAR_ITEMS = {"struct":["FrontendOptions"],"trait":["TomlSerializable"]};

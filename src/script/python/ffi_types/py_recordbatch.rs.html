@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/script/src/python/ffi_types/py_recordbatch.rs`."><title>py_recordbatch.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="script" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../script/index.html"><img class="rust-logo" src="../../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/script/src/python/ffi_types/py_recordbatch.rs`."><title>py_recordbatch.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="script" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -134,29 +135,27 @@
 <a href="#134" id="134">134</a>
 <a href="#135" id="135">135</a>
 <a href="#136" id="136">136</a>
-<a href="#137" id="137">137</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-</span><span class="doccomment">//! PyRecordBatch is a Python class that wraps a RecordBatch,
 
-//! PyRecordBatch is a Python class that wraps a RecordBatch,
+</span><span class="doccomment">//! PyRecordBatch is a Python class that wraps a RecordBatch,
 //! and provide a PyMapping Protocol to
 //! access the columns of the RecordBatch.
 
 </span><span class="kw">use </span>common_recordbatch::RecordBatch;
 <span class="kw">use </span>crossbeam_utils::atomic::AtomicCell;
-<span class="attr">#[cfg(feature = <span class="string">&quot;pyo3_backend&quot;</span>)]
+<span class="attr">#[cfg(feature = <span class="string">"pyo3_backend"</span>)]
 </span><span class="kw">use </span>pyo3::{
     exceptions::{PyKeyError, PyRuntimeError},
     pyclass <span class="kw">as </span>pyo3class, pymethods, PyObject, PyResult, Python,
@@ -171,9 +170,9 @@
 
 <span class="kw">use </span><span class="kw">crate</span>::python::ffi_types::PyVector;
 
-<span class="doccomment">/// This is a Wrapper around a RecordBatch, impl PyMapping Protocol so you can do both `a[0]` and `a[&quot;number&quot;]` to retrieve column.
-</span><span class="attr">#[cfg_attr(feature = <span class="string">&quot;pyo3_backend&quot;</span>, pyo3class(name = <span class="string">&quot;PyRecordBatch&quot;</span>))]
-#[rspyclass(module = <span class="bool-val">false</span>, name = <span class="string">&quot;PyRecordBatch&quot;</span>)]
+<span class="doccomment">/// This is a Wrapper around a RecordBatch, impl PyMapping Protocol so you can do both `a[0]` and `a["number"]` to retrieve column.
+</span><span class="attr">#[cfg_attr(feature = <span class="string">"pyo3_backend"</span>, pyo3class(name = <span class="string">"PyRecordBatch"</span>))]
+#[rspyclass(module = <span class="bool-val">false</span>, name = <span class="string">"PyRecordBatch"</span>)]
 #[derive(Debug, PyPayload)]
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct </span>PyRecordBatch {
     record_batch: RecordBatch,
@@ -191,12 +190,12 @@
     }
 }
 
-<span class="attr">#[cfg(feature = <span class="string">&quot;pyo3_backend&quot;</span>)]
+<span class="attr">#[cfg(feature = <span class="string">"pyo3_backend"</span>)]
 #[pymethods]
 </span><span class="kw">impl </span>PyRecordBatch {
     <span class="kw">fn </span>__repr__(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
         <span class="comment">// TODO(discord9): a better pretty print
-        </span><span class="macro">format!</span>(<span class="string">&quot;{:#?}&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.record_batch.df_record_batch())
+        </span><span class="macro">format!</span>(<span class="string">"{:#?}"</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.record_batch.df_record_batch())
     }
     <span class="kw">fn </span>__getitem__(<span class="kw-2">&amp;</span><span class="self">self</span>, py: Python, key: PyObject) -&gt; PyResult&lt;PyVector&gt; {
         <span class="kw">let </span>column = <span class="kw">if let </span><span class="prelude-val">Ok</span>(key) = key.extract::&lt;String&gt;(py) {
@@ -205,10 +204,10 @@
             <span class="prelude-val">Some</span>(<span class="self">self</span>.record_batch.column(key))
         } <span class="kw">else </span>{
             <span class="kw">return </span><span class="prelude-val">Err</span>(PyRuntimeError::new_err(<span class="macro">format!</span>(
-                <span class="string">&quot;Expect either str or int, found {key:?}&quot;
+                <span class="string">"Expect either str or int, found {key:?}"
             </span>)));
         }
-        .ok_or_else(|| PyKeyError::new_err(<span class="macro">format!</span>(<span class="string">&quot;Column {} not found&quot;</span>, key)))<span class="question-mark">?</span>;
+        .ok_or_else(|| PyKeyError::new_err(<span class="macro">format!</span>(<span class="string">"Column {} not found"</span>, key)))<span class="question-mark">?</span>;
         <span class="kw">let </span>v = PyVector::from(column.clone());
         <span class="prelude-val">Ok</span>(v)
     }
@@ -239,13 +238,13 @@
             <span class="kw">let </span>key = index.as_str();
 
             <span class="kw">let </span>v = <span class="self">self</span>.record_batch.column_by_name(key).ok_or_else(|| {
-                vm.new_key_error(PyStr::from(<span class="macro">format!</span>(<span class="string">&quot;Column {} not found&quot;</span>, key)).into_pyobject(vm))
+                vm.new_key_error(PyStr::from(<span class="macro">format!</span>(<span class="string">"Column {} not found"</span>, key)).into_pyobject(vm))
             })<span class="question-mark">?</span>;
             <span class="kw">let </span>v: PyVector = v.clone().into();
             <span class="prelude-val">Ok</span>(v.into_pyobject(vm))
         } <span class="kw">else </span>{
             <span class="prelude-val">Err</span>(vm.new_key_error(
-                PyStr::from(<span class="macro">format!</span>(<span class="string">&quot;Expect either str or int, found {needle:?}&quot;</span>))
+                PyStr::from(<span class="macro">format!</span>(<span class="string">"Expect either str or int, found {needle:?}"</span>))
                     .into_pyobject(vm),
             ))
         }
@@ -254,14 +253,14 @@
 
 <span class="attr">#[rspyclass(with(AsMapping))]
 </span><span class="kw">impl </span>PyRecordBatch {
-    <span class="attr">#[pymethod(name = <span class="string">&quot;__repr__&quot;</span>)]
+    <span class="attr">#[pymethod(name = <span class="string">"__repr__"</span>)]
     </span><span class="kw">fn </span>rspy_repr(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
-        <span class="macro">format!</span>(<span class="string">&quot;{:#?}&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.record_batch.df_record_batch())
+        <span class="macro">format!</span>(<span class="string">"{:#?}"</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.record_batch.df_record_batch())
     }
 }
 
 <span class="kw">impl </span>AsMapping <span class="kw">for </span>PyRecordBatch {
-    <span class="kw">fn </span>as_mapping() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>PyMappingMethods {
+    <span class="kw">fn </span>as_mapping() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'static </span>PyMappingMethods {
         <span class="kw">static </span>AS_MAPPING: PyMappingMethods = PyMappingMethods {
             length: <span class="macro">atomic_func!</span>(|mapping, _vm| <span class="prelude-val">Ok</span>(PyRecordBatch::mapping_downcast(mapping).len())),
             subscript: <span class="macro">atomic_func!</span>(

@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/cmd/src/metasrv.rs`."><title>metasrv.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="cmd" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../cmd/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/cmd/src/metasrv.rs`."><title>metasrv.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="cmd" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -328,44 +329,118 @@
 <a href="#328" id="328">328</a>
 <a href="#329" id="329">329</a>
 <a href="#330" id="330">330</a>
+<a href="#331" id="331">331</a>
+<a href="#332" id="332">332</a>
+<a href="#333" id="333">333</a>
+<a href="#334" id="334">334</a>
+<a href="#335" id="335">335</a>
+<a href="#336" id="336">336</a>
+<a href="#337" id="337">337</a>
+<a href="#338" id="338">338</a>
+<a href="#339" id="339">339</a>
+<a href="#340" id="340">340</a>
+<a href="#341" id="341">341</a>
+<a href="#342" id="342">342</a>
+<a href="#343" id="343">343</a>
+<a href="#344" id="344">344</a>
+<a href="#345" id="345">345</a>
+<a href="#346" id="346">346</a>
+<a href="#347" id="347">347</a>
+<a href="#348" id="348">348</a>
+<a href="#349" id="349">349</a>
+<a href="#350" id="350">350</a>
+<a href="#351" id="351">351</a>
+<a href="#352" id="352">352</a>
+<a href="#353" id="353">353</a>
+<a href="#354" id="354">354</a>
+<a href="#355" id="355">355</a>
+<a href="#356" id="356">356</a>
+<a href="#357" id="357">357</a>
+<a href="#358" id="358">358</a>
+<a href="#359" id="359">359</a>
+<a href="#360" id="360">360</a>
+<a href="#361" id="361">361</a>
+<a href="#362" id="362">362</a>
+<a href="#363" id="363">363</a>
+<a href="#364" id="364">364</a>
+<a href="#365" id="365">365</a>
+<a href="#366" id="366">366</a>
+<a href="#367" id="367">367</a>
+<a href="#368" id="368">368</a>
+<a href="#369" id="369">369</a>
+<a href="#370" id="370">370</a>
+<a href="#371" id="371">371</a>
+<a href="#372" id="372">372</a>
+<a href="#373" id="373">373</a>
+<a href="#374" id="374">374</a>
+<a href="#375" id="375">375</a>
+<a href="#376" id="376">376</a>
+<a href="#377" id="377">377</a>
+<a href="#378" id="378">378</a>
+<a href="#379" id="379">379</a>
+<a href="#380" id="380">380</a>
+<a href="#381" id="381">381</a>
+<a href="#382" id="382">382</a>
+<a href="#383" id="383">383</a>
+<a href="#384" id="384">384</a>
+<a href="#385" id="385">385</a>
+<a href="#386" id="386">386</a>
+<a href="#387" id="387">387</a>
+<a href="#388" id="388">388</a>
+<a href="#389" id="389">389</a>
+<a href="#390" id="390">390</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
 </span><span class="kw">use </span>std::time::Duration;
 
+<span class="kw">use </span>async_trait::async_trait;
 <span class="kw">use </span>clap::Parser;
 <span class="kw">use </span>common_telemetry::logging;
 <span class="kw">use </span>meta_srv::bootstrap::MetaSrvInstance;
 <span class="kw">use </span>meta_srv::metasrv::MetaSrvOptions;
 <span class="kw">use </span>snafu::ResultExt;
 
-<span class="kw">use </span><span class="kw">crate</span>::error::{<span class="self">self</span>, <span class="prelude-ty">Result</span>};
-<span class="kw">use </span><span class="kw">crate</span>::options::{Options, TopLevelOptions};
+<span class="kw">use </span><span class="kw">crate</span>::error::{<span class="self">self</span>, <span class="prelude-ty">Result</span>, StartMetaServerSnafu};
+<span class="kw">use </span><span class="kw">crate</span>::options::{CliOptions, Options};
+<span class="kw">use </span><span class="kw">crate</span>::App;
 
 <span class="kw">pub struct </span>Instance {
     instance: MetaSrvInstance,
 }
 
 <span class="kw">impl </span>Instance {
-    <span class="kw">pub async fn </span>start(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="self">self</span>.instance
-            .start()
+    <span class="kw">fn </span>new(instance: MetaSrvInstance) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{ instance }
+    }
+}
+
+<span class="attr">#[async_trait]
+</span><span class="kw">impl </span>App <span class="kw">for </span>Instance {
+    <span class="kw">fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
+        <span class="string">"greptime-metasrv"
+    </span>}
+
+    <span class="kw">async fn </span>start(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        plugins::start_meta_srv_plugins(<span class="self">self</span>.instance.plugins())
             .<span class="kw">await
-            </span>.context(error::StartMetaServerSnafu)
+            </span>.context(StartMetaServerSnafu)<span class="question-mark">?</span>;
+
+        <span class="self">self</span>.instance.start().<span class="kw">await</span>.context(StartMetaServerSnafu)
     }
 
-    <span class="kw">pub async fn </span>stop(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="kw">async fn </span>stop(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.instance
             .shutdown()
             .<span class="kw">await
@@ -384,8 +459,8 @@
         <span class="self">self</span>.subcmd.build(opts).<span class="kw">await
     </span>}
 
-    <span class="kw">pub fn </span>load_options(<span class="kw-2">&amp;</span><span class="self">self</span>, top_level_opts: TopLevelOptions) -&gt; <span class="prelude-ty">Result</span>&lt;Options&gt; {
-        <span class="self">self</span>.subcmd.load_options(top_level_opts)
+    <span class="kw">pub fn </span>load_options(<span class="kw-2">&amp;</span><span class="self">self</span>, cli_options: <span class="kw-2">&amp;</span>CliOptions) -&gt; <span class="prelude-ty">Result</span>&lt;Options&gt; {
+        <span class="self">self</span>.subcmd.load_options(cli_options)
     }
 }
 
@@ -401,9 +476,9 @@
         }
     }
 
-    <span class="kw">fn </span>load_options(<span class="kw-2">&amp;</span><span class="self">self</span>, top_level_opts: TopLevelOptions) -&gt; <span class="prelude-ty">Result</span>&lt;Options&gt; {
+    <span class="kw">fn </span>load_options(<span class="kw-2">&amp;</span><span class="self">self</span>, cli_options: <span class="kw-2">&amp;</span>CliOptions) -&gt; <span class="prelude-ty">Result</span>&lt;Options&gt; {
         <span class="kw">match </span><span class="self">self </span>{
-            SubCommand::Start(cmd) =&gt; cmd.load_options(top_level_opts),
+            SubCommand::Start(cmd) =&gt; cmd.load_options(cli_options),
         }
     }
 }
@@ -423,29 +498,36 @@
     <span class="attr">#[clap(long)]
     </span>use_memory_store: <span class="prelude-ty">Option</span>&lt;bool&gt;,
     <span class="attr">#[clap(long)]
-    </span>disable_region_failover: <span class="prelude-ty">Option</span>&lt;bool&gt;,
+    </span>enable_region_failover: <span class="prelude-ty">Option</span>&lt;bool&gt;,
     <span class="attr">#[clap(long)]
     </span>http_addr: <span class="prelude-ty">Option</span>&lt;String&gt;,
     <span class="attr">#[clap(long)]
     </span>http_timeout: <span class="prelude-ty">Option</span>&lt;u64&gt;,
-    <span class="attr">#[clap(long, default_value = <span class="string">&quot;GREPTIMEDB_METASRV&quot;</span>)]
+    <span class="attr">#[clap(long, default_value = <span class="string">"GREPTIMEDB_METASRV"</span>)]
     </span>env_prefix: String,
+    <span class="doccomment">/// The working home directory of this metasrv instance.
+    </span><span class="attr">#[clap(long)]
+    </span>data_home: <span class="prelude-ty">Option</span>&lt;String&gt;,
+
+    <span class="doccomment">/// If it's not empty, the metasrv will store all data with this key prefix.
+    </span><span class="attr">#[clap(long, default_value = <span class="string">""</span>)]
+    </span>store_key_prefix: String,
 }
 
 <span class="kw">impl </span>StartCommand {
-    <span class="kw">fn </span>load_options(<span class="kw-2">&amp;</span><span class="self">self</span>, top_level_opts: TopLevelOptions) -&gt; <span class="prelude-ty">Result</span>&lt;Options&gt; {
+    <span class="kw">fn </span>load_options(<span class="kw-2">&amp;</span><span class="self">self</span>, cli_options: <span class="kw-2">&amp;</span>CliOptions) -&gt; <span class="prelude-ty">Result</span>&lt;Options&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>opts: MetaSrvOptions = Options::load_layered_options(
             <span class="self">self</span>.config_file.as_deref(),
             <span class="self">self</span>.env_prefix.as_ref(),
             <span class="prelude-val">None</span>,
         )<span class="question-mark">?</span>;
 
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(dir) = top_level_opts.log_dir {
-            opts.logging.dir = dir;
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(dir) = <span class="kw-2">&amp;</span>cli_options.log_dir {
+            opts.logging.dir = dir.clone();
         }
 
-        <span class="kw">if </span>top_level_opts.log_level.is_some() {
-            opts.logging.level = top_level_opts.log_level;
+        <span class="kw">if </span>cli_options.log_level.is_some() {
+            opts.logging.level = cli_options.log_level.clone();
         }
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(addr) = <span class="kw-2">&amp;</span><span class="self">self</span>.bind_addr {
@@ -470,34 +552,50 @@
             opts.use_memory_store = use_memory_store;
         }
 
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(disable_region_failover) = <span class="self">self</span>.disable_region_failover {
-            opts.disable_region_failover = disable_region_failover;
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(enable_region_failover) = <span class="self">self</span>.enable_region_failover {
+            opts.enable_region_failover = enable_region_failover;
         }
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(http_addr) = <span class="kw-2">&amp;</span><span class="self">self</span>.http_addr {
-            opts.http_opts.addr = http_addr.clone();
+            opts.http.addr = http_addr.clone();
         }
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(http_timeout) = <span class="self">self</span>.http_timeout {
-            opts.http_opts.timeout = Duration::from_secs(http_timeout);
+            opts.http.timeout = Duration::from_secs(http_timeout);
+        }
+
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(data_home) = <span class="kw-2">&amp;</span><span class="self">self</span>.data_home {
+            opts.data_home = data_home.clone();
+        }
+
+        <span class="kw">if </span>!<span class="self">self</span>.store_key_prefix.is_empty() {
+            opts.store_key_prefix = <span class="self">self</span>.store_key_prefix.clone()
         }
 
         <span class="comment">// Disable dashboard in metasrv.
-        </span>opts.http_opts.disable_dashboard = <span class="bool-val">true</span>;
+        </span>opts.http.disable_dashboard = <span class="bool-val">true</span>;
 
         <span class="prelude-val">Ok</span>(Options::Metasrv(Box::new(opts)))
     }
 
-    <span class="kw">async fn </span>build(<span class="self">self</span>, opts: MetaSrvOptions) -&gt; <span class="prelude-ty">Result</span>&lt;Instance&gt; {
-        <span class="macro">logging::info!</span>(<span class="string">&quot;MetaSrv start command: {:#?}&quot;</span>, <span class="self">self</span>);
+    <span class="kw">async fn </span>build(<span class="self">self</span>, <span class="kw-2">mut </span>opts: MetaSrvOptions) -&gt; <span class="prelude-ty">Result</span>&lt;Instance&gt; {
+        <span class="kw">let </span>plugins = plugins::setup_meta_srv_plugins(<span class="kw-2">&amp;mut </span>opts)
+            .<span class="kw">await
+            </span>.context(StartMetaServerSnafu)<span class="question-mark">?</span>;
 
-        <span class="macro">logging::info!</span>(<span class="string">&quot;MetaSrv options: {:#?}&quot;</span>, opts);
+        <span class="macro">logging::info!</span>(<span class="string">"MetaSrv start command: {:#?}"</span>, <span class="self">self</span>);
+        <span class="macro">logging::info!</span>(<span class="string">"MetaSrv options: {:#?}"</span>, opts);
 
-        <span class="kw">let </span>instance = MetaSrvInstance::new(opts)
+        <span class="kw">let </span>builder = meta_srv::bootstrap::metasrv_builder(<span class="kw-2">&amp;</span>opts, plugins.clone(), <span class="prelude-val">None</span>)
+            .<span class="kw">await
+            </span>.context(error::BuildMetaServerSnafu)<span class="question-mark">?</span>;
+        <span class="kw">let </span>metasrv = builder.build().<span class="kw">await</span>.context(error::BuildMetaServerSnafu)<span class="question-mark">?</span>;
+
+        <span class="kw">let </span>instance = MetaSrvInstance::new(opts, plugins, metasrv)
             .<span class="kw">await
             </span>.context(error::BuildMetaServerSnafu)<span class="question-mark">?</span>;
 
-        <span class="prelude-val">Ok</span>(Instance { instance })
+        <span class="prelude-val">Ok</span>(Instance::new(instance))
     }
 }
 
@@ -514,146 +612,169 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_read_from_cmd() {
         <span class="kw">let </span>cmd = StartCommand {
-            bind_addr: <span class="prelude-val">Some</span>(<span class="string">&quot;127.0.0.1:3002&quot;</span>.to_string()),
-            server_addr: <span class="prelude-val">Some</span>(<span class="string">&quot;127.0.0.1:3002&quot;</span>.to_string()),
-            store_addr: <span class="prelude-val">Some</span>(<span class="string">&quot;127.0.0.1:2380&quot;</span>.to_string()),
-            selector: <span class="prelude-val">Some</span>(<span class="string">&quot;LoadBased&quot;</span>.to_string()),
+            bind_addr: <span class="prelude-val">Some</span>(<span class="string">"127.0.0.1:3002"</span>.to_string()),
+            server_addr: <span class="prelude-val">Some</span>(<span class="string">"127.0.0.1:3002"</span>.to_string()),
+            store_addr: <span class="prelude-val">Some</span>(<span class="string">"127.0.0.1:2380"</span>.to_string()),
+            selector: <span class="prelude-val">Some</span>(<span class="string">"LoadBased"</span>.to_string()),
             ..Default::default()
         };
 
-        <span class="kw">let </span>Options::Metasrv(options) = cmd.load_options(TopLevelOptions::default()).unwrap()
-        <span class="kw">else </span>{
+        <span class="kw">let </span>Options::Metasrv(options) = cmd.load_options(<span class="kw-2">&amp;</span>CliOptions::default()).unwrap() <span class="kw">else </span>{
             <span class="macro">unreachable!</span>()
         };
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;127.0.0.1:3002&quot;</span>.to_string(), options.bind_addr);
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;127.0.0.1:2380&quot;</span>.to_string(), options.store_addr);
+        <span class="macro">assert_eq!</span>(<span class="string">"127.0.0.1:3002"</span>.to_string(), options.bind_addr);
+        <span class="macro">assert_eq!</span>(<span class="string">"127.0.0.1:2380"</span>.to_string(), options.store_addr);
         <span class="macro">assert_eq!</span>(SelectorType::LoadBased, options.selector);
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_read_from_config_file() {
         <span class="kw">let </span><span class="kw-2">mut </span>file = create_named_temp_file();
-        <span class="kw">let </span>toml_str = <span class="string">r#&quot;
-            bind_addr = &quot;127.0.0.1:3002&quot;
-            server_addr = &quot;127.0.0.1:3002&quot;
-            store_addr = &quot;127.0.0.1:2379&quot;
-            datanode_lease_secs = 15
-            selector = &quot;LeaseBased&quot;
+        <span class="kw">let </span>toml_str = <span class="string">r#"
+            bind_addr = "127.0.0.1:3002"
+            server_addr = "127.0.0.1:3002"
+            store_addr = "127.0.0.1:2379"
+            selector = "LeaseBased"
             use_memory_store = false
 
             [logging]
-            level = &quot;debug&quot;
-            dir = &quot;/tmp/greptimedb/test/logs&quot;
-        &quot;#</span>;
-        <span class="macro">write!</span>(file, <span class="string">&quot;{}&quot;</span>, toml_str).unwrap();
+            level = "debug"
+            dir = "/tmp/greptimedb/test/logs"
+            
+            [failure_detector]
+            threshold = 8.0
+            min_std_deviation = "100ms"
+            acceptable_heartbeat_pause = "3000ms"
+            first_heartbeat_estimate = "1000ms"
+        "#</span>;
+        <span class="macro">write!</span>(file, <span class="string">"{}"</span>, toml_str).unwrap();
 
         <span class="kw">let </span>cmd = StartCommand {
             config_file: <span class="prelude-val">Some</span>(file.path().to_str().unwrap().to_string()),
             ..Default::default()
         };
 
-        <span class="kw">let </span>Options::Metasrv(options) = cmd.load_options(TopLevelOptions::default()).unwrap()
-        <span class="kw">else </span>{
+        <span class="kw">let </span>Options::Metasrv(options) = cmd.load_options(<span class="kw-2">&amp;</span>CliOptions::default()).unwrap() <span class="kw">else </span>{
             <span class="macro">unreachable!</span>()
         };
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;127.0.0.1:3002&quot;</span>.to_string(), options.bind_addr);
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;127.0.0.1:3002&quot;</span>.to_string(), options.server_addr);
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;127.0.0.1:2379&quot;</span>.to_string(), options.store_addr);
-        <span class="macro">assert_eq!</span>(<span class="number">15</span>, options.datanode_lease_secs);
+        <span class="macro">assert_eq!</span>(<span class="string">"127.0.0.1:3002"</span>.to_string(), options.bind_addr);
+        <span class="macro">assert_eq!</span>(<span class="string">"127.0.0.1:3002"</span>.to_string(), options.server_addr);
+        <span class="macro">assert_eq!</span>(<span class="string">"127.0.0.1:2379"</span>.to_string(), options.store_addr);
         <span class="macro">assert_eq!</span>(SelectorType::LeaseBased, options.selector);
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;debug&quot;</span>, options.logging.level.as_ref().unwrap());
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;/tmp/greptimedb/test/logs&quot;</span>.to_string(), options.logging.dir);
+        <span class="macro">assert_eq!</span>(<span class="string">"debug"</span>, options.logging.level.as_ref().unwrap());
+        <span class="macro">assert_eq!</span>(<span class="string">"/tmp/greptimedb/test/logs"</span>.to_string(), options.logging.dir);
+        <span class="macro">assert_eq!</span>(<span class="number">8.0</span>, options.failure_detector.threshold);
+        <span class="macro">assert_eq!</span>(
+            <span class="number">100.0</span>,
+            options.failure_detector.min_std_deviation.as_millis() <span class="kw">as </span>f32
+        );
+        <span class="macro">assert_eq!</span>(
+            <span class="number">3000</span>,
+            options
+                .failure_detector
+                .acceptable_heartbeat_pause
+                .as_millis()
+        );
+        <span class="macro">assert_eq!</span>(
+            <span class="number">1000</span>,
+            options
+                .failure_detector
+                .first_heartbeat_estimate
+                .as_millis()
+        );
     }
 
     <span class="attr">#[test]
-    </span><span class="kw">fn </span>test_top_level_options() {
+    </span><span class="kw">fn </span>test_load_log_options_from_cli() {
         <span class="kw">let </span>cmd = StartCommand {
-            bind_addr: <span class="prelude-val">Some</span>(<span class="string">&quot;127.0.0.1:3002&quot;</span>.to_string()),
-            server_addr: <span class="prelude-val">Some</span>(<span class="string">&quot;127.0.0.1:3002&quot;</span>.to_string()),
-            store_addr: <span class="prelude-val">Some</span>(<span class="string">&quot;127.0.0.1:2380&quot;</span>.to_string()),
-            selector: <span class="prelude-val">Some</span>(<span class="string">&quot;LoadBased&quot;</span>.to_string()),
+            bind_addr: <span class="prelude-val">Some</span>(<span class="string">"127.0.0.1:3002"</span>.to_string()),
+            server_addr: <span class="prelude-val">Some</span>(<span class="string">"127.0.0.1:3002"</span>.to_string()),
+            store_addr: <span class="prelude-val">Some</span>(<span class="string">"127.0.0.1:2380"</span>.to_string()),
+            selector: <span class="prelude-val">Some</span>(<span class="string">"LoadBased"</span>.to_string()),
             ..Default::default()
         };
 
         <span class="kw">let </span>options = cmd
-            .load_options(TopLevelOptions {
-                log_dir: <span class="prelude-val">Some</span>(<span class="string">&quot;/tmp/greptimedb/test/logs&quot;</span>.to_string()),
-                log_level: <span class="prelude-val">Some</span>(<span class="string">&quot;debug&quot;</span>.to_string()),
+            .load_options(<span class="kw-2">&amp;</span>CliOptions {
+                log_dir: <span class="prelude-val">Some</span>(<span class="string">"/tmp/greptimedb/test/logs"</span>.to_string()),
+                log_level: <span class="prelude-val">Some</span>(<span class="string">"debug"</span>.to_string()),
+
+                <span class="attr">#[cfg(feature = <span class="string">"tokio-console"</span>)]
+                </span>tokio_console_addr: <span class="prelude-val">None</span>,
             })
             .unwrap();
 
         <span class="kw">let </span>logging_opt = options.logging_options();
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;/tmp/greptimedb/test/logs&quot;</span>, logging_opt.dir);
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;debug&quot;</span>, logging_opt.level.as_ref().unwrap());
+        <span class="macro">assert_eq!</span>(<span class="string">"/tmp/greptimedb/test/logs"</span>, logging_opt.dir);
+        <span class="macro">assert_eq!</span>(<span class="string">"debug"</span>, logging_opt.level.as_ref().unwrap());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_config_precedence_order() {
         <span class="kw">let </span><span class="kw-2">mut </span>file = create_named_temp_file();
-        <span class="kw">let </span>toml_str = <span class="string">r#&quot;
-            server_addr = &quot;127.0.0.1:3002&quot;
+        <span class="kw">let </span>toml_str = <span class="string">r#"
+            server_addr = "127.0.0.1:3002"
             datanode_lease_secs = 15
-            selector = &quot;LeaseBased&quot;
+            selector = "LeaseBased"
             use_memory_store = false
 
-            [http_options]
-            addr = &quot;127.0.0.1:4000&quot;
+            [http]
+            addr = "127.0.0.1:4000"
 
             [logging]
-            level = &quot;debug&quot;
-            dir = &quot;/tmp/greptimedb/test/logs&quot;
-        &quot;#</span>;
-        <span class="macro">write!</span>(file, <span class="string">&quot;{}&quot;</span>, toml_str).unwrap();
+            level = "debug"
+            dir = "/tmp/greptimedb/test/logs"
+        "#</span>;
+        <span class="macro">write!</span>(file, <span class="string">"{}"</span>, toml_str).unwrap();
 
-        <span class="kw">let </span>env_prefix = <span class="string">&quot;METASRV_UT&quot;</span>;
+        <span class="kw">let </span>env_prefix = <span class="string">"METASRV_UT"</span>;
         temp_env::with_vars(
             [
                 (
                     <span class="comment">// bind_addr = 127.0.0.1:14002
-                    </span>[env_prefix.to_string(), <span class="string">&quot;bind_addr&quot;</span>.to_uppercase()].join(ENV_VAR_SEP),
-                    <span class="prelude-val">Some</span>(<span class="string">&quot;127.0.0.1:14002&quot;</span>),
+                    </span>[env_prefix.to_string(), <span class="string">"bind_addr"</span>.to_uppercase()].join(ENV_VAR_SEP),
+                    <span class="prelude-val">Some</span>(<span class="string">"127.0.0.1:14002"</span>),
                 ),
                 (
                     <span class="comment">// server_addr = 127.0.0.1:13002
-                    </span>[env_prefix.to_string(), <span class="string">&quot;server_addr&quot;</span>.to_uppercase()].join(ENV_VAR_SEP),
-                    <span class="prelude-val">Some</span>(<span class="string">&quot;127.0.0.1:13002&quot;</span>),
+                    </span>[env_prefix.to_string(), <span class="string">"server_addr"</span>.to_uppercase()].join(ENV_VAR_SEP),
+                    <span class="prelude-val">Some</span>(<span class="string">"127.0.0.1:13002"</span>),
                 ),
                 (
-                    <span class="comment">// http_options.addr = 127.0.0.1:24000
+                    <span class="comment">// http.addr = 127.0.0.1:24000
                     </span>[
                         env_prefix.to_string(),
-                        <span class="string">&quot;http_options&quot;</span>.to_uppercase(),
-                        <span class="string">&quot;addr&quot;</span>.to_uppercase(),
+                        <span class="string">"http"</span>.to_uppercase(),
+                        <span class="string">"addr"</span>.to_uppercase(),
                     ]
                     .join(ENV_VAR_SEP),
-                    <span class="prelude-val">Some</span>(<span class="string">&quot;127.0.0.1:24000&quot;</span>),
+                    <span class="prelude-val">Some</span>(<span class="string">"127.0.0.1:24000"</span>),
                 ),
             ],
             || {
                 <span class="kw">let </span>command = StartCommand {
-                    http_addr: <span class="prelude-val">Some</span>(<span class="string">&quot;127.0.0.1:14000&quot;</span>.to_string()),
+                    http_addr: <span class="prelude-val">Some</span>(<span class="string">"127.0.0.1:14000"</span>.to_string()),
                     config_file: <span class="prelude-val">Some</span>(file.path().to_str().unwrap().to_string()),
                     env_prefix: env_prefix.to_string(),
                     ..Default::default()
                 };
 
-                <span class="kw">let </span>Options::Metasrv(opts) =
-                    command.load_options(TopLevelOptions::default()).unwrap()
+                <span class="kw">let </span>Options::Metasrv(opts) = command.load_options(<span class="kw-2">&amp;</span>CliOptions::default()).unwrap()
                 <span class="kw">else </span>{
                     <span class="macro">unreachable!</span>()
                 };
 
                 <span class="comment">// Should be read from env, env &gt; default values.
-                </span><span class="macro">assert_eq!</span>(opts.bind_addr, <span class="string">&quot;127.0.0.1:14002&quot;</span>);
+                </span><span class="macro">assert_eq!</span>(opts.bind_addr, <span class="string">"127.0.0.1:14002"</span>);
 
                 <span class="comment">// Should be read from config file, config file &gt; env &gt; default values.
-                </span><span class="macro">assert_eq!</span>(opts.server_addr, <span class="string">&quot;127.0.0.1:3002&quot;</span>);
+                </span><span class="macro">assert_eq!</span>(opts.server_addr, <span class="string">"127.0.0.1:3002"</span>);
 
                 <span class="comment">// Should be read from cli, cli &gt; config file &gt; env &gt; default values.
-                </span><span class="macro">assert_eq!</span>(opts.http_opts.addr, <span class="string">&quot;127.0.0.1:14000&quot;</span>);
+                </span><span class="macro">assert_eq!</span>(opts.http.addr, <span class="string">"127.0.0.1:14000"</span>);
 
                 <span class="comment">// Should be default value.
-                </span><span class="macro">assert_eq!</span>(opts.store_addr, <span class="string">&quot;127.0.0.1:2379&quot;</span>);
+                </span><span class="macro">assert_eq!</span>(opts.store_addr, <span class="string">"127.0.0.1:2379"</span>);
             },
         );
     }

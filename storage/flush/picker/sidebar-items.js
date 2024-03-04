@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["flush_regions_by_interval"],"struct":["FlushPicker","PickerConfig"],"trait":["FlushItem"]};

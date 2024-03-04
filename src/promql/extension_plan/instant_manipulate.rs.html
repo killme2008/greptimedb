@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/promql/src/extension_plan/instant_manipulate.rs`."><title>instant_manipulate.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="promql" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../promql/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/promql/src/extension_plan/instant_manipulate.rs`."><title>instant_manipulate.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="promql" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -805,16 +806,21 @@
 <a href="#805" id="805">805</a>
 <a href="#806" id="806">806</a>
 <a href="#807" id="807">807</a>
+<a href="#808" id="808">808</a>
+<a href="#809" id="809">809</a>
+<a href="#810" id="810">810</a>
+<a href="#811" id="811">811</a>
+<a href="#812" id="812">812</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -885,7 +891,7 @@
     <span class="kw">fn </span>fmt_for_explain(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter) -&gt; std::fmt::Result {
         <span class="macro">write!</span>(
             f,
-            <span class="string">&quot;PromInstantManipulate: range=[{}..{}], lookback=[{}], interval=[{}], time index=[{}]&quot;</span>,
+            <span class="string">"PromInstantManipulate: range=[{}..{}], lookback=[{}], interval=[{}], time index=[{}]"</span>,
             <span class="self">self</span>.start, <span class="self">self</span>.end, <span class="self">self</span>.lookback_delta, <span class="self">self</span>.interval, <span class="self">self</span>.time_index_column
         )
     }
@@ -926,8 +932,8 @@
         }
     }
 
-    <span class="kw">pub const fn </span>name() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str {
-        <span class="string">&quot;InstantManipulate&quot;
+    <span class="kw">pub const fn </span>name() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str {
+        <span class="string">"InstantManipulate"
     </span>}
 
     <span class="kw">pub fn </span>to_execution_plan(<span class="kw-2">&amp;</span><span class="self">self</span>, exec_input: Arc&lt;<span class="kw">dyn </span>ExecutionPlan&gt;) -&gt; Arc&lt;<span class="kw">dyn </span>ExecutionPlan&gt; {
@@ -1045,7 +1051,7 @@
         <span class="kw">let </span>schema = input.schema();
         <span class="kw">let </span>time_index = schema
             .column_with_name(<span class="kw-2">&amp;</span><span class="self">self</span>.time_index_column)
-            .expect(<span class="string">&quot;time index column not found&quot;</span>)
+            .expect(<span class="string">"time index column not found"</span>)
             .<span class="number">0</span>;
         <span class="kw">let </span>field_index = <span class="self">self
             </span>.field_column
@@ -1095,7 +1101,7 @@
             DisplayFormatType::Default | DisplayFormatType::Verbose =&gt; {
                 <span class="macro">write!</span>(
                     f,
-                    <span class="string">&quot;PromInstantManipulateExec: range=[{}..{}], lookback=[{}], interval=[{}], time index=[{}]&quot;</span>,
+                    <span class="string">"PromInstantManipulateExec: range=[{}..{}], lookback=[{}], interval=[{}], time index=[{}]"</span>,
                    <span class="self">self</span>.start,<span class="self">self</span>.end, <span class="self">self</span>.lookback_delta, <span class="self">self</span>.interval, <span class="self">self</span>.time_index_column
                 )
             }
@@ -1108,7 +1114,7 @@
     end: Millisecond,
     lookback_delta: Millisecond,
     interval: Millisecond,
-    <span class="comment">// Column index of TIME INDEX column&#39;s position in schema
+    <span class="comment">// Column index of TIME INDEX column's position in schema
     </span>time_index: usize,
     field_index: <span class="prelude-ty">Option</span>&lt;usize&gt;,
 
@@ -1126,7 +1132,7 @@
 <span class="kw">impl </span>Stream <span class="kw">for </span>InstantManipulateStream {
     <span class="kw">type </span>Item = DataFusionResult&lt;RecordBatch&gt;;
 
-    <span class="kw">fn </span>poll_next(<span class="kw-2">mut </span><span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; Poll&lt;<span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt;&gt; {
+    <span class="kw">fn </span>poll_next(<span class="kw-2">mut </span><span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">'_</span>&gt;) -&gt; Poll&lt;<span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt;&gt; {
         <span class="kw">let </span>poll = <span class="kw">match </span><span class="self">self</span>.input.poll_next_unpin(cx) {
             Poll::Ready(batch) =&gt; {
                 <span class="kw">let </span>_timer = <span class="self">self</span>.metric.elapsed_compute().timer();
@@ -1161,19 +1167,21 @@
         <span class="kw">let </span><span class="kw-2">mut </span>aligned_ts = <span class="macro">vec!</span>[];
 
         <span class="comment">// calculate the offsets to take
-        </span><span class="lifetime">&#39;next</span>: <span class="kw">for </span>expected_ts <span class="kw">in </span>aligned_ts_iter {
+        </span><span class="lifetime">'next</span>: <span class="kw">for </span>expected_ts <span class="kw">in </span>aligned_ts_iter {
             <span class="comment">// first, search toward end to see if there is matched timestamp
             </span><span class="kw">while </span>cursor &lt; ts_column.len() {
                 <span class="kw">let </span>curr = ts_column.value(cursor);
                 <span class="kw">match </span>curr.cmp(<span class="kw-2">&amp;</span>expected_ts) {
                     Ordering::Equal =&gt; {
-                        <span class="kw">if let </span><span class="prelude-val">Some</span>(field_column) = <span class="kw-2">&amp;</span>field_column &amp;&amp; field_column.value(cursor).is_nan() {
+                        <span class="kw">if let </span><span class="prelude-val">Some</span>(field_column) = <span class="kw-2">&amp;</span>field_column
+                            &amp;&amp; field_column.value(cursor).is_nan()
+                        {
                             <span class="comment">// ignore the NaN value
                         </span>} <span class="kw">else </span>{
                             take_indices.push(cursor <span class="kw">as </span>u64);
                             aligned_ts.push(expected_ts);
                         }
-                        <span class="kw">continue </span><span class="lifetime">&#39;next</span>;
+                        <span class="kw">continue </span><span class="lifetime">'next</span>;
                     }
                     Ordering::Greater =&gt; <span class="kw">break</span>,
                     Ordering::Less =&gt; {}
@@ -1200,7 +1208,8 @@
                     <span class="kw">if </span>prev_ts + <span class="self">self</span>.lookback_delta &gt;= expected_ts {
                         <span class="comment">// only use the point in the time range
                         </span><span class="kw">if let </span><span class="prelude-val">Some</span>(field_column) = <span class="kw-2">&amp;</span>field_column
-                            &amp;&amp; field_column.value(prev_cursor).is_nan() {
+                            &amp;&amp; field_column.value(prev_cursor).is_nan()
+                        {
                             <span class="comment">// if the newest value is NaN, it means the value is stale, so we should not use it
                             </span><span class="kw">continue</span>;
                         }
@@ -1209,7 +1218,9 @@
                         aligned_ts.push(expected_ts);
                     }
                 }
-            } <span class="kw">else if let </span><span class="prelude-val">Some</span>(field_column) = <span class="kw-2">&amp;</span>field_column &amp;&amp; field_column.value(cursor).is_nan() {
+            } <span class="kw">else if let </span><span class="prelude-val">Some</span>(field_column) = <span class="kw-2">&amp;</span>field_column
+                &amp;&amp; field_column.value(cursor).is_nan()
+            {
                 <span class="comment">// if the newest value is NaN, it means the value is stale, so we should not use it
             </span>} <span class="kw">else </span>{
                 <span class="comment">// use this point
@@ -1222,7 +1233,7 @@
         </span><span class="self">self</span>.take_record_batch_optional(input, take_indices, aligned_ts)
     }
 
-    <span class="doccomment">/// Helper function to apply &quot;take&quot; on record batch.
+    <span class="doccomment">/// Helper function to apply "take" on record batch.
     </span><span class="kw">fn </span>take_record_batch_optional(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         record_batch: RecordBatch,
@@ -1258,13 +1269,13 @@
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
-    <span class="kw">const </span>TIME_INDEX_COLUMN: <span class="kw-2">&amp;</span>str = <span class="string">&quot;timestamp&quot;</span>;
+    <span class="kw">const </span>TIME_INDEX_COLUMN: <span class="kw-2">&amp;</span>str = <span class="string">"timestamp"</span>;
 
     <span class="kw">fn </span>prepare_test_data() -&gt; MemoryExec {
         <span class="kw">let </span>schema = Arc::new(Schema::new(<span class="macro">vec!</span>[
             Field::new(TIME_INDEX_COLUMN, TimestampMillisecondType::DATA_TYPE, <span class="bool-val">true</span>),
-            Field::new(<span class="string">&quot;value&quot;</span>, DataType::Float64, <span class="bool-val">true</span>),
-            Field::new(<span class="string">&quot;path&quot;</span>, DataType::Utf8, <span class="bool-val">true</span>),
+            Field::new(<span class="string">"value"</span>, DataType::Float64, <span class="bool-val">true</span>),
+            Field::new(<span class="string">"path"</span>, DataType::Utf8, <span class="bool-val">true</span>),
         ]));
         <span class="kw">let </span>timestamp_column = Arc::new(TimestampMillisecondArray::from(<span class="macro">vec!</span>[
             <span class="number">0</span>, <span class="number">30_000</span>, <span class="number">60_000</span>, <span class="number">90_000</span>, <span class="number">120_000</span>, <span class="comment">// every 30s
@@ -1272,7 +1283,7 @@
             </span><span class="number">241_000</span>, <span class="number">271_000</span>, <span class="number">291_000</span>, <span class="comment">// others
         </span>])) <span class="kw">as _</span>;
         <span class="kw">let </span>field_column = Arc::new(Float64Array::from(<span class="macro">vec!</span>[<span class="number">1.0</span>; <span class="number">10</span>])) <span class="kw">as _</span>;
-        <span class="kw">let </span>path_column = Arc::new(StringArray::from(<span class="macro">vec!</span>[<span class="string">&quot;foo&quot;</span>; <span class="number">10</span>])) <span class="kw">as _</span>;
+        <span class="kw">let </span>path_column = Arc::new(StringArray::from(<span class="macro">vec!</span>[<span class="string">"foo"</span>; <span class="number">10</span>])) <span class="kw">as _</span>;
         <span class="kw">let </span>data = RecordBatch::try_new(
             schema.clone(),
             <span class="macro">vec!</span>[timestamp_column, field_column, path_column],
@@ -1301,7 +1312,7 @@
             lookback_delta,
             interval,
             time_index_column: TIME_INDEX_COLUMN.to_string(),
-            field_column: <span class="prelude-val">Some</span>(<span class="string">&quot;value&quot;</span>.to_string()),
+            field_column: <span class="prelude-val">Some</span>(<span class="string">"value"</span>.to_string()),
             input: memory_exec,
             metric: ExecutionPlanMetricsSet::new(),
         });
@@ -1319,7 +1330,7 @@
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>lookback_10s_interval_30s() {
         <span class="kw">let </span>expected = String::from(
-            <span class="string">&quot;+---------------------+-------+------+\
+            <span class="string">"+---------------------+-------+------+\
             \n| timestamp           | value | path |\
             \n+---------------------+-------+------+\
             \n| 1970-01-01T00:00:00 | 1.0   | foo  |\
@@ -1330,7 +1341,7 @@
             \n| 1970-01-01T00:03:00 | 1.0   | foo  |\
             \n| 1970-01-01T00:04:00 | 1.0   | foo  |\
             \n| 1970-01-01T00:05:00 | 1.0   | foo  |\
-            \n+---------------------+-------+------+&quot;</span>,
+            \n+---------------------+-------+------+"</span>,
         );
         do_normalize_test(<span class="number">0</span>, <span class="number">310_000</span>, <span class="number">10_000</span>, <span class="number">30_000</span>, expected, <span class="bool-val">false</span>).<span class="kw">await</span>;
     }
@@ -1338,7 +1349,7 @@
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>lookback_10s_interval_10s() {
         <span class="kw">let </span>expected = String::from(
-            <span class="string">&quot;+---------------------+-------+------+\
+            <span class="string">"+---------------------+-------+------+\
             \n| timestamp           | value | path |\
             \n+---------------------+-------+------+\
             \n| 1970-01-01T00:00:00 | 1.0   | foo  |\
@@ -1357,7 +1368,7 @@
             \n| 1970-01-01T00:04:10 | 1.0   | foo  |\
             \n| 1970-01-01T00:04:40 | 1.0   | foo  |\
             \n| 1970-01-01T00:05:00 | 1.0   | foo  |\
-            \n+---------------------+-------+------+&quot;</span>,
+            \n+---------------------+-------+------+"</span>,
         );
         do_normalize_test(<span class="number">0</span>, <span class="number">300_000</span>, <span class="number">10_000</span>, <span class="number">10_000</span>, expected, <span class="bool-val">false</span>).<span class="kw">await</span>;
     }
@@ -1365,7 +1376,7 @@
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>lookback_30s_interval_30s() {
         <span class="kw">let </span>expected = String::from(
-            <span class="string">&quot;+---------------------+-------+------+\
+            <span class="string">"+---------------------+-------+------+\
             \n| timestamp           | value | path |\
             \n+---------------------+-------+------+\
             \n| 1970-01-01T00:00:00 | 1.0   | foo  |\
@@ -1379,7 +1390,7 @@
             \n| 1970-01-01T00:04:00 | 1.0   | foo  |\
             \n| 1970-01-01T00:04:30 | 1.0   | foo  |\
             \n| 1970-01-01T00:05:00 | 1.0   | foo  |\
-            \n+---------------------+-------+------+&quot;</span>,
+            \n+---------------------+-------+------+"</span>,
         );
         do_normalize_test(<span class="number">0</span>, <span class="number">300_000</span>, <span class="number">30_000</span>, <span class="number">30_000</span>, expected, <span class="bool-val">false</span>).<span class="kw">await</span>;
     }
@@ -1387,7 +1398,7 @@
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>lookback_30s_interval_10s() {
         <span class="kw">let </span>expected = String::from(
-            <span class="string">&quot;+---------------------+-------+------+\
+            <span class="string">"+---------------------+-------+------+\
             \n| timestamp           | value | path |\
             \n+---------------------+-------+------+\
             \n| 1970-01-01T00:00:00 | 1.0   | foo  |\
@@ -1417,7 +1428,7 @@
             \n| 1970-01-01T00:04:40 | 1.0   | foo  |\
             \n| 1970-01-01T00:04:50 | 1.0   | foo  |\
             \n| 1970-01-01T00:05:00 | 1.0   | foo  |\
-            \n+---------------------+-------+------+&quot;</span>,
+            \n+---------------------+-------+------+"</span>,
         );
         do_normalize_test(<span class="number">0</span>, <span class="number">300_000</span>, <span class="number">30_000</span>, <span class="number">10_000</span>, expected, <span class="bool-val">false</span>).<span class="kw">await</span>;
     }
@@ -1425,7 +1436,7 @@
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>lookback_60s_interval_10s() {
         <span class="kw">let </span>expected = String::from(
-            <span class="string">&quot;+---------------------+-------+------+\
+            <span class="string">"+---------------------+-------+------+\
             \n| timestamp           | value | path |\
             \n+---------------------+-------+------+\
             \n| 1970-01-01T00:00:00 | 1.0   | foo  |\
@@ -1459,7 +1470,7 @@
             \n| 1970-01-01T00:04:40 | 1.0   | foo  |\
             \n| 1970-01-01T00:04:50 | 1.0   | foo  |\
             \n| 1970-01-01T00:05:00 | 1.0   | foo  |\
-            \n+---------------------+-------+------+&quot;</span>,
+            \n+---------------------+-------+------+"</span>,
         );
         do_normalize_test(<span class="number">0</span>, <span class="number">300_000</span>, <span class="number">60_000</span>, <span class="number">10_000</span>, expected, <span class="bool-val">false</span>).<span class="kw">await</span>;
     }
@@ -1467,7 +1478,7 @@
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>lookback_60s_interval_30s() {
         <span class="kw">let </span>expected = String::from(
-            <span class="string">&quot;+---------------------+-------+------+\
+            <span class="string">"+---------------------+-------+------+\
             \n| timestamp           | value | path |\
             \n+---------------------+-------+------+\
             \n| 1970-01-01T00:00:00 | 1.0   | foo  |\
@@ -1481,7 +1492,7 @@
             \n| 1970-01-01T00:04:00 | 1.0   | foo  |\
             \n| 1970-01-01T00:04:30 | 1.0   | foo  |\
             \n| 1970-01-01T00:05:00 | 1.0   | foo  |\
-            \n+---------------------+-------+------+&quot;</span>,
+            \n+---------------------+-------+------+"</span>,
         );
         do_normalize_test(<span class="number">0</span>, <span class="number">300_000</span>, <span class="number">60_000</span>, <span class="number">30_000</span>, expected, <span class="bool-val">false</span>).<span class="kw">await</span>;
     }
@@ -1489,12 +1500,12 @@
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>small_range_lookback_0s_interval_1s() {
         <span class="kw">let </span>expected = String::from(
-            <span class="string">&quot;+---------------------+-------+------+\
+            <span class="string">"+---------------------+-------+------+\
             \n| timestamp           | value | path |\
             \n+---------------------+-------+------+\
             \n| 1970-01-01T00:04:00 | 1.0   | foo  |\
             \n| 1970-01-01T00:04:01 | 1.0   | foo  |\
-            \n+---------------------+-------+------+&quot;</span>,
+            \n+---------------------+-------+------+"</span>,
         );
         do_normalize_test(<span class="number">230_000</span>, <span class="number">245_000</span>, <span class="number">0</span>, <span class="number">1_000</span>, expected, <span class="bool-val">false</span>).<span class="kw">await</span>;
     }
@@ -1502,13 +1513,13 @@
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>small_range_lookback_10s_interval_10s() {
         <span class="kw">let </span>expected = String::from(
-            <span class="string">&quot;+---------------------+-------+------+\
+            <span class="string">"+---------------------+-------+------+\
             \n| timestamp           | value | path |\
             \n+---------------------+-------+------+\
             \n| 1970-01-01T00:00:00 | 1.0   | foo  |\
             \n| 1970-01-01T00:00:10 | 1.0   | foo  |\
             \n| 1970-01-01T00:00:30 | 1.0   | foo  |\
-            \n+---------------------+-------+------+&quot;</span>,
+            \n+---------------------+-------+------+"</span>,
         );
         do_normalize_test(<span class="number">0</span>, <span class="number">30_000</span>, <span class="number">10_000</span>, <span class="number">10_000</span>, expected, <span class="bool-val">false</span>).<span class="kw">await</span>;
     }
@@ -1516,7 +1527,7 @@
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>large_range_lookback_30s_interval_60s() {
         <span class="kw">let </span>expected = String::from(
-            <span class="string">&quot;+---------------------+-------+------+\
+            <span class="string">"+---------------------+-------+------+\
             \n| timestamp           | value | path |\
             \n+---------------------+-------+------+\
             \n| 1970-01-01T00:00:00 | 1.0   | foo  |\
@@ -1525,7 +1536,7 @@
             \n| 1970-01-01T00:03:00 | 1.0   | foo  |\
             \n| 1970-01-01T00:04:00 | 1.0   | foo  |\
             \n| 1970-01-01T00:05:00 | 1.0   | foo  |\
-            \n+---------------------+-------+------+&quot;</span>,
+            \n+---------------------+-------+------+"</span>,
         );
         do_normalize_test(-<span class="number">900_000</span>, <span class="number">900_000</span>, <span class="number">30_000</span>, <span class="number">60_000</span>, expected, <span class="bool-val">false</span>).<span class="kw">await</span>;
     }
@@ -1533,7 +1544,7 @@
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>small_range_lookback_30s_interval_30s() {
         <span class="kw">let </span>expected = String::from(
-            <span class="string">&quot;+---------------------+-------+------+\
+            <span class="string">"+---------------------+-------+------+\
             \n| timestamp           | value | path |\
             \n+---------------------+-------+------+\
             \n| 1970-01-01T00:03:10 | 1.0   | foo  |\
@@ -1546,7 +1557,7 @@
             \n| 1970-01-01T00:04:40 | 1.0   | foo  |\
             \n| 1970-01-01T00:04:50 | 1.0   | foo  |\
             \n| 1970-01-01T00:05:00 | 1.0   | foo  |\
-            \n+---------------------+-------+------+&quot;</span>,
+            \n+---------------------+-------+------+"</span>,
         );
         do_normalize_test(<span class="number">190_000</span>, <span class="number">300_000</span>, <span class="number">30_000</span>, <span class="number">10_000</span>, expected, <span class="bool-val">false</span>).<span class="kw">await</span>;
     }
@@ -1554,7 +1565,7 @@
     <span class="kw">fn </span>prepare_test_data_with_nan() -&gt; MemoryExec {
         <span class="kw">let </span>schema = Arc::new(Schema::new(<span class="macro">vec!</span>[
             Field::new(TIME_INDEX_COLUMN, TimestampMillisecondType::DATA_TYPE, <span class="bool-val">true</span>),
-            Field::new(<span class="string">&quot;value&quot;</span>, DataType::Float64, <span class="bool-val">true</span>),
+            Field::new(<span class="string">"value"</span>, DataType::Float64, <span class="bool-val">true</span>),
         ]));
         <span class="kw">let </span>timestamp_column = Arc::new(TimestampMillisecondArray::from(<span class="macro">vec!</span>[
             <span class="number">0</span>, <span class="number">30_000</span>, <span class="number">60_000</span>, <span class="number">90_000</span>, <span class="number">120_000</span>, <span class="comment">// every 30s
@@ -1570,7 +1581,7 @@
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>lookback_10s_interval_10s_with_nan() {
         <span class="kw">let </span>expected = String::from(
-            <span class="string">&quot;+---------------------+-------+\
+            <span class="string">"+---------------------+-------+\
             \n| timestamp           | value |\
             \n+---------------------+-------+\
             \n| 1970-01-01T00:00:00 | 0.0   |\
@@ -1579,7 +1590,7 @@
             \n| 1970-01-01T00:01:10 | 6.0   |\
             \n| 1970-01-01T00:02:00 | 12.0  |\
             \n| 1970-01-01T00:02:10 | 12.0  |\
-            \n+---------------------+-------+&quot;</span>,
+            \n+---------------------+-------+"</span>,
         );
         do_normalize_test(<span class="number">0</span>, <span class="number">300_000</span>, <span class="number">10_000</span>, <span class="number">10_000</span>, expected, <span class="bool-val">true</span>).<span class="kw">await</span>;
     }
@@ -1587,13 +1598,13 @@
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>lookback_10s_interval_10s_with_nan_unaligned() {
         <span class="kw">let </span>expected = String::from(
-            <span class="string">&quot;+-------------------------+-------+\
+            <span class="string">"+-------------------------+-------+\
             \n| timestamp               | value |\
             \n+-------------------------+-------+\
             \n| 1970-01-01T00:00:00.001 | 0.0   |\
             \n| 1970-01-01T00:01:00.001 | 6.0   |\
             \n| 1970-01-01T00:02:00.001 | 12.0  |\
-            \n+-------------------------+-------+&quot;</span>,
+            \n+-------------------------+-------+"</span>,
         );
         do_normalize_test(<span class="number">1</span>, <span class="number">300_001</span>, <span class="number">10_000</span>, <span class="number">10_000</span>, expected, <span class="bool-val">true</span>).<span class="kw">await</span>;
     }
@@ -1601,13 +1612,13 @@
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>ultra_large_range() {
         <span class="kw">let </span>expected = String::from(
-            <span class="string">&quot;+-------------------------+-------+\
+            <span class="string">"+-------------------------+-------+\
             \n| timestamp               | value |\
             \n+-------------------------+-------+\
             \n| 1970-01-01T00:00:00.001 | 0.0   |\
             \n| 1970-01-01T00:01:00.001 | 6.0   |\
             \n| 1970-01-01T00:02:00.001 | 12.0  |\
-            \n+-------------------------+-------+&quot;</span>,
+            \n+-------------------------+-------+"</span>,
         );
         do_normalize_test(<span class="number">1</span>, <span class="number">900_000_000_000_000</span>, <span class="number">10_000</span>, <span class="number">10_000</span>, expected, <span class="bool-val">true</span>).<span class="kw">await</span>;
     }

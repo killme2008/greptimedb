@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["NoopPurger","PurgeRequest"],"trait":["FilePurger"],"type":["FilePurgerRef"]};
+window.SIDEBAR_ITEMS = {"struct":["LocalFilePurger","PurgeRequest"],"trait":["FilePurger"],"type":["FilePurgerRef"]};

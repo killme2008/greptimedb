@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/mito2/src/worker/handle_write.rs`."><title>handle_write.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="mito2" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../mito2/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/mito2/src/worker/handle_write.rs`."><title>handle_write.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="mito2" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -213,56 +214,16 @@
 <a href="#213" id="213">213</a>
 <a href="#214" id="214">214</a>
 <a href="#215" id="215">215</a>
-<a href="#216" id="216">216</a>
-<a href="#217" id="217">217</a>
-<a href="#218" id="218">218</a>
-<a href="#219" id="219">219</a>
-<a href="#220" id="220">220</a>
-<a href="#221" id="221">221</a>
-<a href="#222" id="222">222</a>
-<a href="#223" id="223">223</a>
-<a href="#224" id="224">224</a>
-<a href="#225" id="225">225</a>
-<a href="#226" id="226">226</a>
-<a href="#227" id="227">227</a>
-<a href="#228" id="228">228</a>
-<a href="#229" id="229">229</a>
-<a href="#230" id="230">230</a>
-<a href="#231" id="231">231</a>
-<a href="#232" id="232">232</a>
-<a href="#233" id="233">233</a>
-<a href="#234" id="234">234</a>
-<a href="#235" id="235">235</a>
-<a href="#236" id="236">236</a>
-<a href="#237" id="237">237</a>
-<a href="#238" id="238">238</a>
-<a href="#239" id="239">239</a>
-<a href="#240" id="240">240</a>
-<a href="#241" id="241">241</a>
-<a href="#242" id="242">242</a>
-<a href="#243" id="243">243</a>
-<a href="#244" id="244">244</a>
-<a href="#245" id="245">245</a>
-<a href="#246" id="246">246</a>
-<a href="#247" id="247">247</a>
-<a href="#248" id="248">248</a>
-<a href="#249" id="249">249</a>
-<a href="#250" id="250">250</a>
-<a href="#251" id="251">251</a>
-<a href="#252" id="252">252</a>
-<a href="#253" id="253">253</a>
-<a href="#254" id="254">254</a>
-<a href="#255" id="255">255</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -270,75 +231,142 @@
 </span><span class="doccomment">//! Handling write requests.
 
 </span><span class="kw">use </span>std::collections::{hash_map, HashMap};
-<span class="kw">use </span>std::mem;
 <span class="kw">use </span>std::sync::Arc;
 
-<span class="kw">use </span>api::v1::{Mutation, WalEntry};
-<span class="kw">use </span>snafu::ResultExt;
 <span class="kw">use </span>store_api::logstore::LogStore;
 <span class="kw">use </span>store_api::metadata::RegionMetadata;
-<span class="kw">use </span>store_api::storage::{RegionId, SequenceNumber};
-<span class="kw">use </span>tokio::sync::oneshot::Sender;
+<span class="kw">use </span>store_api::storage::RegionId;
 
-<span class="kw">use </span><span class="kw">crate</span>::error::{Error, RegionNotFoundSnafu, <span class="prelude-ty">Result</span>, WriteGroupSnafu};
-<span class="kw">use </span><span class="kw">crate</span>::memtable::KeyValues;
-<span class="kw">use </span><span class="kw">crate</span>::region::version::{VersionControlData, VersionRef};
-<span class="kw">use </span><span class="kw">crate</span>::region::MitoRegionRef;
+<span class="kw">use </span><span class="kw">crate</span>::error::{RejectWriteSnafu, <span class="prelude-ty">Result</span>};
+<span class="kw">use </span><span class="kw">crate</span>::metrics::{
+    WRITE_REJECT_TOTAL, WRITE_ROWS_TOTAL, WRITE_STAGE_ELAPSED, WRITE_STALL_TOTAL,
+};
+<span class="kw">use </span><span class="kw">crate</span>::region_write_ctx::RegionWriteCtx;
 <span class="kw">use </span><span class="kw">crate</span>::request::{SenderWriteRequest, WriteRequest};
-<span class="kw">use </span><span class="kw">crate</span>::wal::{EntryId, WalWriter};
 <span class="kw">use </span><span class="kw">crate</span>::worker::RegionWorkerLoop;
 
 <span class="kw">impl</span>&lt;S: LogStore&gt; RegionWorkerLoop&lt;S&gt; {
     <span class="doccomment">/// Takes and handles all write requests.
-    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>handle_write_requests(<span class="kw-2">&amp;mut </span><span class="self">self</span>, write_requests: Vec&lt;SenderWriteRequest&gt;) {
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>handle_write_requests(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        <span class="kw-2">mut </span>write_requests: Vec&lt;SenderWriteRequest&gt;,
+        allow_stall: bool,
+    ) {
         <span class="kw">if </span>write_requests.is_empty() {
+            <span class="kw">return</span>;
+        }
+
+        <span class="comment">// Flush this worker if the engine needs to flush.
+        </span><span class="self">self</span>.maybe_flush_worker();
+
+        <span class="kw">if </span><span class="self">self</span>.should_reject_write() {
+            <span class="comment">// The memory pressure is still too high, reject write requests.
+            </span>reject_write_requests(write_requests);
+            <span class="comment">// Also reject all stalled requests.
+            </span><span class="kw">let </span>stalled = std::mem::take(<span class="kw-2">&amp;mut </span><span class="self">self</span>.stalled_requests);
+            reject_write_requests(stalled.requests);
+            <span class="kw">return</span>;
+        }
+
+        <span class="kw">if </span><span class="self">self</span>.write_buffer_manager.should_stall() &amp;&amp; allow_stall {
+            WRITE_STALL_TOTAL.inc_by(write_requests.len() <span class="kw">as </span>u64);
+
+            <span class="self">self</span>.stalled_requests.append(<span class="kw-2">&amp;mut </span>write_requests);
+            <span class="self">self</span>.listener.on_write_stall();
             <span class="kw">return</span>;
         }
 
         <span class="kw">let </span><span class="kw-2">mut </span>region_ctxs = <span class="self">self</span>.prepare_region_write_ctx(write_requests);
 
         <span class="comment">// Write to WAL.
-        </span><span class="kw">let </span><span class="kw-2">mut </span>wal_writer = <span class="self">self</span>.wal.writer();
-        <span class="kw">for </span>region_ctx <span class="kw">in </span>region_ctxs.values_mut() {
-            <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = region_ctx.add_wal_entry(<span class="kw-2">&amp;mut </span>wal_writer).map_err(Arc::new) {
-                region_ctx.set_error(e);
+        </span>{
+            <span class="kw">let </span>_timer = WRITE_STAGE_ELAPSED
+                .with_label_values(<span class="kw-2">&amp;</span>[<span class="string">"write_wal"</span>])
+                .start_timer();
+            <span class="kw">let </span><span class="kw-2">mut </span>wal_writer = <span class="self">self</span>.wal.writer();
+            <span class="kw">for </span>region_ctx <span class="kw">in </span>region_ctxs.values_mut() {
+                <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = region_ctx.add_wal_entry(<span class="kw-2">&amp;mut </span>wal_writer).map_err(Arc::new) {
+                    region_ctx.set_error(e);
+                }
             }
-        }
-        <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = wal_writer.write_to_wal().<span class="kw">await</span>.map_err(Arc::new) {
-            <span class="comment">// Failed to write wal.
-            </span><span class="kw">for </span><span class="kw-2">mut </span>region_ctx <span class="kw">in </span>region_ctxs.into_values() {
-                region_ctx.set_error(e.clone());
+            <span class="kw">match </span>wal_writer.write_to_wal().<span class="kw">await</span>.map_err(Arc::new) {
+                <span class="prelude-val">Ok</span>(response) =&gt; {
+                    <span class="kw">for </span>(region_id, region_ctx) <span class="kw">in </span>region_ctxs.iter_mut() {
+                        <span class="comment">// Safety: the log store implementation ensures that either the `write_to_wal` fails and no
+                        // response is returned or the last entry ids for each region do exist.
+                        </span><span class="kw">let </span>last_entry_id =
+                            response.last_entry_ids.get(<span class="kw-2">&amp;</span>region_id.as_u64()).unwrap();
+                        region_ctx.set_next_entry_id(last_entry_id + <span class="number">1</span>);
+                    }
+                }
+                <span class="prelude-val">Err</span>(e) =&gt; {
+                    <span class="comment">// Failed to write wal.
+                    </span><span class="kw">for </span><span class="kw-2">mut </span>region_ctx <span class="kw">in </span>region_ctxs.into_values() {
+                        region_ctx.set_error(e.clone());
+                    }
+                    <span class="kw">return</span>;
+                }
             }
-            <span class="kw">return</span>;
         }
 
+        <span class="kw">let </span>(<span class="kw-2">mut </span>put_rows, <span class="kw-2">mut </span>delete_rows) = (<span class="number">0</span>, <span class="number">0</span>);
         <span class="comment">// Write to memtables.
-        </span><span class="kw">for </span><span class="kw-2">mut </span>region_ctx <span class="kw">in </span>region_ctxs.into_values() {
-            region_ctx.write_memtable();
+        </span>{
+            <span class="kw">let </span>_timer = WRITE_STAGE_ELAPSED
+                .with_label_values(<span class="kw-2">&amp;</span>[<span class="string">"write_memtable"</span>])
+                .start_timer();
+            <span class="kw">for </span><span class="kw-2">mut </span>region_ctx <span class="kw">in </span>region_ctxs.into_values() {
+                region_ctx.write_memtable();
+                put_rows += region_ctx.put_num;
+                delete_rows += region_ctx.delete_num;
+            }
         }
+        WRITE_ROWS_TOTAL
+            .with_label_values(<span class="kw-2">&amp;</span>[<span class="string">"put"</span>])
+            .inc_by(put_rows <span class="kw">as </span>u64);
+        WRITE_ROWS_TOTAL
+            .with_label_values(<span class="kw-2">&amp;</span>[<span class="string">"delete"</span>])
+            .inc_by(delete_rows <span class="kw">as </span>u64);
     }
 }
 
 <span class="kw">impl</span>&lt;S&gt; RegionWorkerLoop&lt;S&gt; {
     <span class="doccomment">/// Validates and groups requests by region.
     </span><span class="kw">fn </span>prepare_region_write_ctx(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
         write_requests: Vec&lt;SenderWriteRequest&gt;,
     ) -&gt; HashMap&lt;RegionId, RegionWriteCtx&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>region_ctxs = HashMap::new();
+        <span class="comment">// Initialize region write context map.
+        </span><span class="kw">let </span><span class="kw-2">mut </span>region_ctxs = HashMap::new();
         <span class="kw">for </span><span class="kw-2">mut </span>sender_req <span class="kw">in </span>write_requests {
             <span class="kw">let </span>region_id = sender_req.request.region_id;
-            <span class="comment">// Checks whether the region exists.
-            </span><span class="kw">if let </span>hash_map::Entry::Vacant(e) = region_ctxs.entry(region_id) {
-                <span class="kw">let </span><span class="prelude-val">Some</span>(region) = <span class="self">self</span>.regions.get_region(region_id) <span class="kw">else </span>{
-                    <span class="comment">// No such region.
-                    </span>send_result(sender_req.sender, RegionNotFoundSnafu { region_id }.fail());
 
-                    <span class="kw">continue</span>;
+            <span class="comment">// If region is waiting for alteration, add requests to pending writes.
+            </span><span class="kw">if </span><span class="self">self</span>.flush_scheduler.has_pending_ddls(region_id) {
+                <span class="comment">// TODO(yingwen): consider adding some metrics for this.
+                // Safety: The region has pending ddls.
+                </span><span class="self">self</span>.flush_scheduler
+                    .add_write_request_to_pending(sender_req);
+                <span class="kw">continue</span>;
+            }
+
+            <span class="comment">// Checks whether the region exists and is it stalling.
+            </span><span class="kw">if let </span>hash_map::Entry::Vacant(e) = region_ctxs.entry(region_id) {
+                <span class="kw">let </span><span class="prelude-val">Some</span>(region) = <span class="self">self
+                    </span>.regions
+                    .writable_region_or(region_id, <span class="kw-2">&amp;mut </span>sender_req.sender)
+                <span class="kw">else </span>{
+                    <span class="comment">// No such region or the region is read only.
+                    </span><span class="kw">continue</span>;
                 };
 
-                <span class="comment">// Initialize the context.
-                </span>e.insert(RegionWriteCtx::new(region));
+                <span class="kw">let </span>region_ctx = RegionWriteCtx::new(
+                    region.region_id,
+                    <span class="kw-2">&amp;</span>region.version_control,
+                    region.wal_options.clone(),
+                );
+
+                e.insert(region_ctx);
             }
 
             <span class="comment">// Safety: Now we ensure the region exists.
@@ -346,18 +374,43 @@
 
             <span class="comment">// Checks whether request schema is compatible with region schema.
             </span><span class="kw">if let </span><span class="prelude-val">Err</span>(e) =
-                maybe_fill_missing_columns(<span class="kw-2">&amp;mut </span>sender_req.request, <span class="kw-2">&amp;</span>region_ctx.version.metadata)
+                maybe_fill_missing_columns(<span class="kw-2">&amp;mut </span>sender_req.request, <span class="kw-2">&amp;</span>region_ctx.version().metadata)
             {
-                send_result(sender_req.sender, <span class="prelude-val">Err</span>(e));
+                sender_req.sender.send(<span class="prelude-val">Err</span>(e));
 
                 <span class="kw">continue</span>;
             }
 
             <span class="comment">// Collect requests by region.
-            </span>region_ctx.push_sender_request(sender_req);
+            </span>region_ctx.push_mutation(
+                sender_req.request.op_type <span class="kw">as </span>i32,
+                <span class="prelude-val">Some</span>(sender_req.request.rows),
+                sender_req.sender,
+            );
         }
 
         region_ctxs
+    }
+
+    <span class="doccomment">/// Returns true if the engine needs to reject some write requests.
+    </span><span class="kw">fn </span>should_reject_write(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="comment">// If memory usage reaches high threshold (we should also consider stalled requests) returns true.
+        </span><span class="self">self</span>.write_buffer_manager.memory_usage() + <span class="self">self</span>.stalled_requests.estimated_size
+            &gt;= <span class="self">self</span>.config.global_write_buffer_reject_size.as_bytes() <span class="kw">as </span>usize
+    }
+}
+
+<span class="doccomment">/// Send rejected error to all `write_requests`.
+</span><span class="kw">fn </span>reject_write_requests(write_requests: Vec&lt;SenderWriteRequest&gt;) {
+    WRITE_REJECT_TOTAL.inc_by(write_requests.len() <span class="kw">as </span>u64);
+
+    <span class="kw">for </span>req <span class="kw">in </span>write_requests {
+        req.sender.send(
+            RejectWriteSnafu {
+                region_id: req.request.region_id,
+            }
+            .fail(),
+        );
     }
 }
 
@@ -366,7 +419,7 @@
     <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = request.check_schema(metadata) {
         <span class="kw">if </span>e.is_fill_default() {
             <span class="comment">// TODO(yingwen): Add metrics for this case.
-            // We need to fill default value again. The write request may be a request
+            // We need to fill default value. The write request may be a request
             // sent before changing the schema.
             </span>request.fill_missing_columns(metadata)<span class="question-mark">?</span>;
         } <span class="kw">else </span>{
@@ -375,137 +428,5 @@
     }
 
     <span class="prelude-val">Ok</span>(())
-}
-
-<span class="doccomment">/// Send result to the request.
-</span><span class="kw">fn </span>send_result(sender: <span class="prelude-ty">Option</span>&lt;Sender&lt;<span class="prelude-ty">Result</span>&lt;()&gt;&gt;&gt;, res: <span class="prelude-ty">Result</span>&lt;()&gt;) {
-    <span class="kw">if let </span><span class="prelude-val">Some</span>(sender) = sender {
-        <span class="comment">// Ignore send result.
-        </span><span class="kw">let _ </span>= sender.send(res);
-    }
-}
-
-<span class="doccomment">/// Notifier to notify write result on drop.
-</span><span class="kw">struct </span>WriteNotify {
-    <span class="doccomment">/// Error to send to the waiter.
-    </span>err: <span class="prelude-ty">Option</span>&lt;Arc&lt;Error&gt;&gt;,
-    <span class="doccomment">/// Sender to send write result to the waiter for this mutation.
-    </span>sender: <span class="prelude-ty">Option</span>&lt;Sender&lt;<span class="prelude-ty">Result</span>&lt;()&gt;&gt;&gt;,
-}
-
-<span class="kw">impl </span>WriteNotify {
-    <span class="doccomment">/// Creates a new notify from the `sender`.
-    </span><span class="kw">fn </span>new(sender: <span class="prelude-ty">Option</span>&lt;Sender&lt;<span class="prelude-ty">Result</span>&lt;()&gt;&gt;&gt;) -&gt; WriteNotify {
-        WriteNotify { err: <span class="prelude-val">None</span>, sender }
-    }
-
-    <span class="doccomment">/// Send result to the waiter.
-    </span><span class="kw">fn </span>notify_result(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
-        <span class="kw">let </span><span class="prelude-val">Some</span>(sender) = <span class="self">self</span>.sender.take() <span class="kw">else </span>{
-            <span class="kw">return</span>;
-        };
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(err) = <span class="kw-2">&amp;</span><span class="self">self</span>.err {
-            <span class="comment">// Try to send the error to waiters.
-            </span><span class="kw">let _ </span>= sender.send(<span class="prelude-val">Err</span>(err.clone()).context(WriteGroupSnafu));
-        } <span class="kw">else </span>{
-            <span class="comment">// Send success result.
-            </span><span class="kw">let _ </span>= sender.send(<span class="prelude-val">Ok</span>(()));
-        }
-    }
-}
-
-<span class="kw">impl </span>Drop <span class="kw">for </span>WriteNotify {
-    <span class="kw">fn </span>drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
-        <span class="self">self</span>.notify_result();
-    }
-}
-
-<span class="doccomment">/// Context to keep region metadata and buffer write requests.
-</span><span class="kw">struct </span>RegionWriteCtx {
-    <span class="doccomment">/// Region to write.
-    </span>region: MitoRegionRef,
-    <span class="doccomment">/// Version of the region while creating the context.
-    </span>version: VersionRef,
-    <span class="doccomment">/// Next sequence number to write.
-    ///
-    /// The context assigns a unique sequence number for each row.
-    </span>next_sequence: SequenceNumber,
-    <span class="doccomment">/// Next entry id of WAL to write.
-    </span>next_entry_id: EntryId,
-    <span class="doccomment">/// Valid WAL entry to write.
-    ///
-    /// We keep [WalEntry] instead of mutations to avoid taking mutations
-    /// out of the context to construct the wal entry when we write to the wal.
-    </span>wal_entry: WalEntry,
-    <span class="doccomment">/// Notifiers to send write results to waiters.
-    ///
-    /// The i-th notify is for i-th mutation.
-    </span>notifiers: Vec&lt;WriteNotify&gt;,
-}
-
-<span class="kw">impl </span>RegionWriteCtx {
-    <span class="doccomment">/// Returns an empty context.
-    </span><span class="kw">fn </span>new(region: MitoRegionRef) -&gt; RegionWriteCtx {
-        <span class="kw">let </span>VersionControlData {
-            version,
-            committed_sequence,
-            last_entry_id,
-        } = region.version_control.current();
-        RegionWriteCtx {
-            region,
-            version,
-            next_sequence: committed_sequence + <span class="number">1</span>,
-            next_entry_id: last_entry_id + <span class="number">1</span>,
-            wal_entry: WalEntry::default(),
-            notifiers: Vec::new(),
-        }
-    }
-
-    <span class="doccomment">/// Push [SenderWriteRequest] to the context.
-    </span><span class="kw">fn </span>push_sender_request(<span class="kw-2">&amp;mut </span><span class="self">self</span>, sender_req: SenderWriteRequest) {
-        <span class="kw">let </span>num_rows = sender_req.request.rows.rows.len() <span class="kw">as </span>u64;
-
-        <span class="self">self</span>.wal_entry.mutations.push(Mutation {
-            op_type: sender_req.request.op_type <span class="kw">as </span>i32,
-            sequence: <span class="self">self</span>.next_sequence,
-            rows: <span class="prelude-val">Some</span>(sender_req.request.rows),
-        });
-        <span class="comment">// Notifiers are 1:1 map to mutations.
-        </span><span class="self">self</span>.notifiers.push(WriteNotify::new(sender_req.sender));
-
-        <span class="comment">// Increase sequence number.
-        </span><span class="self">self</span>.next_sequence += num_rows;
-    }
-
-    <span class="doccomment">/// Encode and add WAL entry to the writer.
-    </span><span class="kw">fn </span>add_wal_entry&lt;S: LogStore&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, wal_writer: <span class="kw-2">&amp;mut </span>WalWriter&lt;S&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        wal_writer.add_entry(<span class="self">self</span>.region.region_id, <span class="self">self</span>.next_entry_id, <span class="kw-2">&amp;</span><span class="self">self</span>.wal_entry)
-    }
-
-    <span class="doccomment">/// Sets error and marks all write operations are failed.
-    </span><span class="kw">fn </span>set_error(<span class="kw-2">&amp;mut </span><span class="self">self</span>, err: Arc&lt;Error&gt;) {
-        <span class="comment">// Set error for all notifiers
-        </span><span class="kw">for </span>notify <span class="kw">in </span><span class="kw-2">&amp;mut </span><span class="self">self</span>.notifiers {
-            notify.err = <span class="prelude-val">Some</span>(err.clone());
-        }
-    }
-
-    <span class="doccomment">/// Consumes mutations and writes them into mutable memtable.
-    </span><span class="kw">fn </span>write_memtable(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
-        <span class="macro">debug_assert_eq!</span>(<span class="self">self</span>.notifiers.len(), <span class="self">self</span>.wal_entry.mutations.len());
-
-        <span class="kw">let </span>mutable = <span class="self">self</span>.version.memtables.mutable();
-        <span class="comment">// Takes mutations from the wal entry.
-        </span><span class="kw">let </span>mutations = mem::take(<span class="kw-2">&amp;mut </span><span class="self">self</span>.wal_entry.mutations);
-        <span class="kw">for </span>(mutation, notify) <span class="kw">in </span>mutations.into_iter().zip(<span class="kw-2">&amp;mut </span><span class="self">self</span>.notifiers) {
-            <span class="comment">// Write mutation to the memtable.
-            </span><span class="kw">let </span><span class="prelude-val">Some</span>(kvs) = KeyValues::new(<span class="kw-2">&amp;</span><span class="self">self</span>.version.metadata, mutation) <span class="kw">else </span>{
-                <span class="kw">continue</span>;
-            };
-            <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = mutable.write(<span class="kw-2">&amp;</span>kvs) {
-                notify.err = <span class="prelude-val">Some</span>(Arc::new(e));
-            }
-        }
-    }
 }
 </code></pre></div></section></main></body></html>

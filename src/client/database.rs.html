@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/client/src/database.rs`."><title>database.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="client" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../client/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/client/src/database.rs`."><title>database.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="client" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -360,25 +361,16 @@
 <a href="#360" id="360">360</a>
 <a href="#361" id="361">361</a>
 <a href="#362" id="362">362</a>
-<a href="#363" id="363">363</a>
-<a href="#364" id="364">364</a>
-<a href="#365" id="365">365</a>
-<a href="#366" id="366">366</a>
-<a href="#367" id="367">367</a>
-<a href="#368" id="368">368</a>
-<a href="#369" id="369">369</a>
-<a href="#370" id="370">370</a>
-<a href="#371" id="371">371</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -388,26 +380,30 @@
 <span class="kw">use </span>api::v1::greptime_request::Request;
 <span class="kw">use </span>api::v1::query_request::Query;
 <span class="kw">use </span>api::v1::{
-    AlterExpr, AuthHeader, CompactTableExpr, CreateTableExpr, DdlRequest, DeleteRequests,
-    DropTableExpr, FlushTableExpr, GreptimeRequest, InsertRequests, PromRangeQuery, QueryRequest,
-    RequestHeader, TruncateTableExpr,
+    AlterExpr, AuthHeader, CreateTableExpr, DdlRequest, DeleteRequests, DropTableExpr,
+    GreptimeRequest, InsertRequests, PromRangeQuery, QueryRequest, RequestHeader,
+    RowInsertRequests, TruncateTableExpr,
 };
-<span class="kw">use </span>arrow_flight::{FlightData, Ticket};
+<span class="kw">use </span>arrow_flight::Ticket;
+<span class="kw">use </span>async_stream::stream;
 <span class="kw">use </span>common_error::ext::{BoxedError, ErrorExt};
-<span class="kw">use </span>common_grpc::flight::{flight_messages_to_recordbatches, FlightDecoder, FlightMessage};
+<span class="kw">use </span>common_grpc::flight::{FlightDecoder, FlightMessage};
 <span class="kw">use </span>common_query::Output;
-<span class="kw">use </span>common_telemetry::{logging, timer};
-<span class="kw">use </span>futures_util::{TryFutureExt, TryStreamExt};
+<span class="kw">use </span>common_recordbatch::error::ExternalSnafu;
+<span class="kw">use </span>common_recordbatch::RecordBatchStreamWrapper;
+<span class="kw">use </span>common_telemetry::logging;
+<span class="kw">use </span>common_telemetry::tracing_context::W3cTrace;
+<span class="kw">use </span>futures_util::StreamExt;
 <span class="kw">use </span>prost::Message;
 <span class="kw">use </span>snafu::{ensure, ResultExt};
 
-<span class="kw">use </span><span class="kw">crate</span>::error::{ConvertFlightDataSnafu, IllegalFlightMessagesSnafu, ServerSnafu};
+<span class="kw">use </span><span class="kw">crate</span>::error::{ConvertFlightDataSnafu, Error, IllegalFlightMessagesSnafu, ServerSnafu};
 <span class="kw">use crate</span>::{error, from_grpc_response, metrics, Client, <span class="prelude-ty">Result</span>, StreamInserter};
 
 <span class="attr">#[derive(Clone, Debug, Default)]
 </span><span class="kw">pub struct </span>Database {
-    <span class="comment">// The &quot;catalog&quot; and &quot;schema&quot; to be used in processing the requests at the server side.
-    // They are the &quot;hint&quot; or &quot;context&quot;, just like how the &quot;database&quot; in &quot;USE&quot; statement is treated in MySQL.
+    <span class="comment">// The "catalog" and "schema" to be used in processing the requests at the server side.
+    // They are the "hint" or "context", just like how the "database" in "USE" statement is treated in MySQL.
     // They will be carried in the request header.
     </span>catalog: String,
     schema: String,
@@ -425,7 +421,7 @@
         <span class="self">Self </span>{
             catalog: catalog.into(),
             schema: schema.into(),
-            dbname: <span class="string">&quot;&quot;</span>.to_string(),
+            dbname: <span class="string">""</span>.to_string(),
             client,
             ctx: FlightContext::default(),
         }
@@ -440,8 +436,8 @@
     /// environment
     </span><span class="kw">pub fn </span>new_with_dbname(dbname: <span class="kw">impl </span>Into&lt;String&gt;, client: Client) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            catalog: <span class="string">&quot;&quot;</span>.to_string(),
-            schema: <span class="string">&quot;&quot;</span>.to_string(),
+            catalog: <span class="string">""</span>.to_string(),
+            schema: <span class="string">""</span>.to_string(),
             dbname: dbname.into(),
             client,
             ctx: FlightContext::default(),
@@ -479,8 +475,13 @@
     }
 
     <span class="kw">pub async fn </span>insert(<span class="kw-2">&amp;</span><span class="self">self</span>, requests: InsertRequests) -&gt; <span class="prelude-ty">Result</span>&lt;u32&gt; {
-        <span class="kw">let </span>_timer = <span class="macro">timer!</span>(metrics::METRIC_GRPC_INSERT);
+        <span class="kw">let </span>_timer = metrics::METRIC_GRPC_INSERT.start_timer();
         <span class="self">self</span>.handle(Request::Inserts(requests)).<span class="kw">await
+    </span>}
+
+    <span class="kw">pub async fn </span>row_insert(<span class="kw-2">&amp;</span><span class="self">self</span>, requests: RowInsertRequests) -&gt; <span class="prelude-ty">Result</span>&lt;u32&gt; {
+        <span class="kw">let </span>_timer = metrics::METRIC_GRPC_INSERT.start_timer();
+        <span class="self">self</span>.handle(Request::RowInserts(requests)).<span class="kw">await
     </span>}
 
     <span class="kw">pub fn </span>streaming_inserter(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;StreamInserter&gt; {
@@ -504,55 +505,48 @@
     }
 
     <span class="kw">pub async fn </span>delete(<span class="kw-2">&amp;</span><span class="self">self</span>, request: DeleteRequests) -&gt; <span class="prelude-ty">Result</span>&lt;u32&gt; {
-        <span class="kw">let </span>_timer = <span class="macro">timer!</span>(metrics::METRIC_GRPC_DELETE);
+        <span class="kw">let </span>_timer = metrics::METRIC_GRPC_DELETE.start_timer();
         <span class="self">self</span>.handle(Request::Deletes(request)).<span class="kw">await
     </span>}
 
     <span class="kw">async fn </span>handle(<span class="kw-2">&amp;</span><span class="self">self</span>, request: Request) -&gt; <span class="prelude-ty">Result</span>&lt;u32&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.client.make_database_client()<span class="question-mark">?</span>.inner;
-        <span class="kw">let </span>request = <span class="self">self</span>.to_rpc_request(request, <span class="prelude-val">None</span>);
+        <span class="kw">let </span>request = <span class="self">self</span>.to_rpc_request(request);
         <span class="kw">let </span>response = client.handle(request).<span class="kw">await</span><span class="question-mark">?</span>.into_inner();
         from_grpc_response(response)
     }
 
     <span class="attr">#[inline]
-    </span><span class="kw">fn </span>to_rpc_request(<span class="kw-2">&amp;</span><span class="self">self</span>, request: Request, trace_id: <span class="prelude-ty">Option</span>&lt;u64&gt;) -&gt; GreptimeRequest {
+    </span><span class="kw">fn </span>to_rpc_request(<span class="kw-2">&amp;</span><span class="self">self</span>, request: Request) -&gt; GreptimeRequest {
         GreptimeRequest {
             header: <span class="prelude-val">Some</span>(RequestHeader {
                 catalog: <span class="self">self</span>.catalog.clone(),
                 schema: <span class="self">self</span>.schema.clone(),
                 authorization: <span class="self">self</span>.ctx.auth_header.clone(),
                 dbname: <span class="self">self</span>.dbname.clone(),
-                trace_id,
-                span_id: <span class="prelude-val">None</span>,
+                <span class="comment">// TODO(Taylor-lagrange): add client grpc tracing
+                </span>tracing_context: W3cTrace::new(),
             }),
             request: <span class="prelude-val">Some</span>(request),
         }
     }
 
-    <span class="kw">pub async fn </span>sql(<span class="kw-2">&amp;</span><span class="self">self</span>, sql: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;Output&gt; {
-        <span class="kw">let </span>_timer = <span class="macro">timer!</span>(metrics::METRIC_GRPC_SQL);
-        <span class="self">self</span>.do_get(
-            Request::Query(QueryRequest {
-                query: <span class="prelude-val">Some</span>(Query::Sql(sql.to_string())),
-            }),
-            <span class="prelude-val">None</span>,
-        )
+    <span class="kw">pub async fn </span>sql&lt;S&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, sql: S) -&gt; <span class="prelude-ty">Result</span>&lt;Output&gt;
+    <span class="kw">where
+        </span>S: AsRef&lt;str&gt;,
+    {
+        <span class="kw">let </span>_timer = metrics::METRIC_GRPC_SQL.start_timer();
+        <span class="self">self</span>.do_get(Request::Query(QueryRequest {
+            query: <span class="prelude-val">Some</span>(Query::Sql(sql.as_ref().to_string())),
+        }))
         .<span class="kw">await
     </span>}
 
-    <span class="kw">pub async fn </span>logical_plan(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        logical_plan: Vec&lt;u8&gt;,
-        trace_id: <span class="prelude-ty">Option</span>&lt;u64&gt;,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;Output&gt; {
-        <span class="kw">let </span>_timer = <span class="macro">timer!</span>(metrics::METRIC_GRPC_LOGICAL_PLAN);
-        <span class="self">self</span>.do_get(
-            Request::Query(QueryRequest {
-                query: <span class="prelude-val">Some</span>(Query::LogicalPlan(logical_plan)),
-            }),
-            trace_id,
-        )
+    <span class="kw">pub async fn </span>logical_plan(<span class="kw-2">&amp;</span><span class="self">self</span>, logical_plan: Vec&lt;u8&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Output&gt; {
+        <span class="kw">let </span>_timer = metrics::METRIC_GRPC_LOGICAL_PLAN.start_timer();
+        <span class="self">self</span>.do_get(Request::Query(QueryRequest {
+            query: <span class="prelude-val">Some</span>(Query::LogicalPlan(logical_plan)),
+        }))
         .<span class="kw">await
     </span>}
 
@@ -563,146 +557,135 @@
         end: <span class="kw-2">&amp;</span>str,
         step: <span class="kw-2">&amp;</span>str,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;Output&gt; {
-        <span class="kw">let </span>_timer = <span class="macro">timer!</span>(metrics::METRIC_GRPC_PROMQL_RANGE_QUERY);
-        <span class="self">self</span>.do_get(
-            Request::Query(QueryRequest {
-                query: <span class="prelude-val">Some</span>(Query::PromRangeQuery(PromRangeQuery {
-                    query: promql.to_string(),
-                    start: start.to_string(),
-                    end: end.to_string(),
-                    step: step.to_string(),
-                })),
-            }),
-            <span class="prelude-val">None</span>,
-        )
+        <span class="kw">let </span>_timer = metrics::METRIC_GRPC_PROMQL_RANGE_QUERY.start_timer();
+        <span class="self">self</span>.do_get(Request::Query(QueryRequest {
+            query: <span class="prelude-val">Some</span>(Query::PromRangeQuery(PromRangeQuery {
+                query: promql.to_string(),
+                start: start.to_string(),
+                end: end.to_string(),
+                step: step.to_string(),
+            })),
+        }))
         .<span class="kw">await
     </span>}
 
     <span class="kw">pub async fn </span>create(<span class="kw-2">&amp;</span><span class="self">self</span>, expr: CreateTableExpr) -&gt; <span class="prelude-ty">Result</span>&lt;Output&gt; {
-        <span class="kw">let </span>_timer = <span class="macro">timer!</span>(metrics::METRIC_GRPC_CREATE_TABLE);
-        <span class="self">self</span>.do_get(
-            Request::Ddl(DdlRequest {
-                expr: <span class="prelude-val">Some</span>(DdlExpr::CreateTable(expr)),
-            }),
-            <span class="prelude-val">None</span>,
-        )
+        <span class="kw">let </span>_timer = metrics::METRIC_GRPC_CREATE_TABLE.start_timer();
+        <span class="self">self</span>.do_get(Request::Ddl(DdlRequest {
+            expr: <span class="prelude-val">Some</span>(DdlExpr::CreateTable(expr)),
+        }))
         .<span class="kw">await
     </span>}
 
     <span class="kw">pub async fn </span>alter(<span class="kw-2">&amp;</span><span class="self">self</span>, expr: AlterExpr) -&gt; <span class="prelude-ty">Result</span>&lt;Output&gt; {
-        <span class="kw">let </span>_timer = <span class="macro">timer!</span>(metrics::METRIC_GRPC_ALTER);
-        <span class="self">self</span>.do_get(
-            Request::Ddl(DdlRequest {
-                expr: <span class="prelude-val">Some</span>(DdlExpr::Alter(expr)),
-            }),
-            <span class="prelude-val">None</span>,
-        )
+        <span class="kw">let </span>_timer = metrics::METRIC_GRPC_ALTER.start_timer();
+        <span class="self">self</span>.do_get(Request::Ddl(DdlRequest {
+            expr: <span class="prelude-val">Some</span>(DdlExpr::Alter(expr)),
+        }))
         .<span class="kw">await
     </span>}
 
     <span class="kw">pub async fn </span>drop_table(<span class="kw-2">&amp;</span><span class="self">self</span>, expr: DropTableExpr) -&gt; <span class="prelude-ty">Result</span>&lt;Output&gt; {
-        <span class="kw">let </span>_timer = <span class="macro">timer!</span>(metrics::METRIC_GRPC_DROP_TABLE);
-        <span class="self">self</span>.do_get(
-            Request::Ddl(DdlRequest {
-                expr: <span class="prelude-val">Some</span>(DdlExpr::DropTable(expr)),
-            }),
-            <span class="prelude-val">None</span>,
-        )
-        .<span class="kw">await
-    </span>}
-
-    <span class="kw">pub async fn </span>flush_table(<span class="kw-2">&amp;</span><span class="self">self</span>, expr: FlushTableExpr) -&gt; <span class="prelude-ty">Result</span>&lt;Output&gt; {
-        <span class="kw">let </span>_timer = <span class="macro">timer!</span>(metrics::METRIC_GRPC_FLUSH_TABLE);
-        <span class="self">self</span>.do_get(
-            Request::Ddl(DdlRequest {
-                expr: <span class="prelude-val">Some</span>(DdlExpr::FlushTable(expr)),
-            }),
-            <span class="prelude-val">None</span>,
-        )
-        .<span class="kw">await
-    </span>}
-
-    <span class="kw">pub async fn </span>compact_table(<span class="kw-2">&amp;</span><span class="self">self</span>, expr: CompactTableExpr) -&gt; <span class="prelude-ty">Result</span>&lt;Output&gt; {
-        <span class="kw">let </span>_timer = <span class="macro">timer!</span>(metrics::METRIC_GRPC_COMPACT_TABLE);
-        <span class="self">self</span>.do_get(
-            Request::Ddl(DdlRequest {
-                expr: <span class="prelude-val">Some</span>(DdlExpr::CompactTable(expr)),
-            }),
-            <span class="prelude-val">None</span>,
-        )
+        <span class="kw">let </span>_timer = metrics::METRIC_GRPC_DROP_TABLE.start_timer();
+        <span class="self">self</span>.do_get(Request::Ddl(DdlRequest {
+            expr: <span class="prelude-val">Some</span>(DdlExpr::DropTable(expr)),
+        }))
         .<span class="kw">await
     </span>}
 
     <span class="kw">pub async fn </span>truncate_table(<span class="kw-2">&amp;</span><span class="self">self</span>, expr: TruncateTableExpr) -&gt; <span class="prelude-ty">Result</span>&lt;Output&gt; {
-        <span class="kw">let </span>_timer = <span class="macro">timer!</span>(metrics::METRIC_GRPC_TRUNCATE_TABLE);
-        <span class="self">self</span>.do_get(
-            Request::Ddl(DdlRequest {
-                expr: <span class="prelude-val">Some</span>(DdlExpr::TruncateTable(expr)),
-            }),
-            <span class="prelude-val">None</span>,
-        )
+        <span class="kw">let </span>_timer = metrics::METRIC_GRPC_TRUNCATE_TABLE.start_timer();
+        <span class="self">self</span>.do_get(Request::Ddl(DdlRequest {
+            expr: <span class="prelude-val">Some</span>(DdlExpr::TruncateTable(expr)),
+        }))
         .<span class="kw">await
     </span>}
 
-    <span class="kw">async fn </span>do_get(<span class="kw-2">&amp;</span><span class="self">self</span>, request: Request, trace_id: <span class="prelude-ty">Option</span>&lt;u64&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Output&gt; {
+    <span class="kw">async fn </span>do_get(<span class="kw-2">&amp;</span><span class="self">self</span>, request: Request) -&gt; <span class="prelude-ty">Result</span>&lt;Output&gt; {
         <span class="comment">// FIXME(paomian): should be added some labels for metrics
-        </span><span class="kw">let </span>_timer = <span class="macro">timer!</span>(metrics::METRIC_GRPC_DO_GET);
-        <span class="kw">let </span>request = <span class="self">self</span>.to_rpc_request(request, trace_id);
+        </span><span class="kw">let </span>_timer = metrics::METRIC_GRPC_DO_GET.start_timer();
+        <span class="kw">let </span>request = <span class="self">self</span>.to_rpc_request(request);
         <span class="kw">let </span>request = Ticket {
             ticket: request.encode_to_vec().into(),
         };
 
         <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.client.make_flight_client()<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>flight_data: Vec&lt;FlightData&gt; = client
-            .mut_inner()
-            .do_get(request)
-            .and_then(|response| response.into_inner().try_collect())
-            .<span class="kw">await
-            </span>.map_err(|e| {
-                <span class="kw">let </span>tonic_code = e.code();
-                <span class="kw">let </span>e: error::Error = e.into();
-                <span class="kw">let </span>code = e.status_code();
-                <span class="kw">let </span>msg = e.to_string();
-                ServerSnafu { code, msg }
-                    .fail::&lt;()&gt;()
-                    .map_err(BoxedError::new)
-                    .context(error::FlightGetSnafu {
-                        tonic_code,
-                        addr: client.addr(),
-                    })
-                    .map_err(|error| {
-                        <span class="macro">logging::error!</span>(
-                            <span class="string">&quot;Failed to do Flight get, addr: {}, code: {}, source: {}&quot;</span>,
-                            client.addr(),
-                            tonic_code,
-                            error
-                        );
-                        error
-                    })
-                    .unwrap_err()
-            })<span class="question-mark">?</span>;
-
-        <span class="kw">let </span>decoder = <span class="kw-2">&amp;mut </span>FlightDecoder::default();
-        <span class="kw">let </span>flight_messages = flight_data
-            .into_iter()
-            .map(|x| decoder.try_decode(x).context(ConvertFlightDataSnafu))
-            .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;&gt;()<span class="question-mark">?</span>;
-
-        <span class="kw">let </span>output = <span class="kw">if let </span><span class="prelude-val">Some</span>(FlightMessage::AffectedRows(rows)) = flight_messages.get(<span class="number">0</span>) {
-            <span class="macro">ensure!</span>(
-                flight_messages.len() == <span class="number">1</span>,
-                IllegalFlightMessagesSnafu {
-                    reason: <span class="string">&quot;Expect &#39;AffectedRows&#39; Flight messages to be one and only!&quot;
-                </span>}
+        <span class="kw">let </span>response = client.mut_inner().do_get(request).<span class="kw">await</span>.map_err(|e| {
+            <span class="kw">let </span>tonic_code = e.code();
+            <span class="kw">let </span>e: error::Error = e.into();
+            <span class="kw">let </span>code = e.status_code();
+            <span class="kw">let </span>msg = e.to_string();
+            <span class="kw">let </span>error = Error::FlightGet {
+                tonic_code,
+                addr: client.addr().to_string(),
+                source: BoxedError::new(ServerSnafu { code, msg }.build()),
+            };
+            <span class="macro">logging::error!</span>(
+                <span class="string">"Failed to do Flight get, addr: {}, code: {}, source: {:?}"</span>,
+                client.addr(),
+                tonic_code,
+                error
             );
-            Output::AffectedRows(<span class="kw-2">*</span>rows)
-        } <span class="kw">else </span>{
-            <span class="kw">let </span>recordbatches = flight_messages_to_recordbatches(flight_messages)
-                .context(ConvertFlightDataSnafu)<span class="question-mark">?</span>;
-            Output::RecordBatches(recordbatches)
+            error
+        })<span class="question-mark">?</span>;
+
+        <span class="kw">let </span>flight_data_stream = response.into_inner();
+        <span class="kw">let </span><span class="kw-2">mut </span>decoder = FlightDecoder::default();
+
+        <span class="kw">let </span><span class="kw-2">mut </span>flight_message_stream = flight_data_stream.map(<span class="kw">move </span>|flight_data| {
+            flight_data
+                .map_err(Error::from)
+                .and_then(|data| decoder.try_decode(data).context(ConvertFlightDataSnafu))
+        });
+
+        <span class="kw">let </span><span class="prelude-val">Some</span>(first_flight_message) = flight_message_stream.next().<span class="kw">await else </span>{
+            <span class="kw">return </span>IllegalFlightMessagesSnafu {
+                reason: <span class="string">"Expect the response not to be empty"</span>,
+            }
+            .fail();
         };
-        <span class="prelude-val">Ok</span>(output)
+
+        <span class="kw">let </span>first_flight_message = first_flight_message<span class="question-mark">?</span>;
+
+        <span class="kw">match </span>first_flight_message {
+            FlightMessage::AffectedRows(rows) =&gt; {
+                <span class="macro">ensure!</span>(
+                    flight_message_stream.next().<span class="kw">await</span>.is_none(),
+                    IllegalFlightMessagesSnafu {
+                        reason: <span class="string">"Expect 'AffectedRows' Flight messages to be the one and the only!"
+                    </span>}
+                );
+                <span class="prelude-val">Ok</span>(Output::AffectedRows(rows))
+            }
+            FlightMessage::Recordbatch(<span class="kw">_</span>) =&gt; IllegalFlightMessagesSnafu {
+                reason: <span class="string">"The first flight message cannot be a RecordBatch message"</span>,
+            }
+            .fail(),
+            FlightMessage::Schema(schema) =&gt; {
+                <span class="kw">let </span>stream = Box::pin(<span class="macro">stream!</span>({
+                    <span class="kw">while let </span><span class="prelude-val">Some</span>(flight_message) = flight_message_stream.next().<span class="kw">await </span>{
+                        <span class="kw">let </span>flight_message = flight_message
+                            .map_err(BoxedError::new)
+                            .context(ExternalSnafu)<span class="question-mark">?</span>;
+                        <span class="kw">let </span>FlightMessage::Recordbatch(record_batch) = flight_message <span class="kw">else </span>{
+                            <span class="kw">yield </span>IllegalFlightMessagesSnafu {reason: <span class="string">"A Schema message must be succeeded exclusively by a set of RecordBatch messages"</span>}
+                                        .fail()
+                                        .map_err(BoxedError::new)
+                                        .context(ExternalSnafu);
+                            <span class="kw">break</span>;
+                        };
+                        <span class="kw">yield </span><span class="prelude-val">Ok</span>(record_batch);
+                    }
+                }));
+                <span class="kw">let </span>record_batch_stream = RecordBatchStreamWrapper {
+                    schema,
+                    stream,
+                    output_ordering: <span class="prelude-val">None</span>,
+                };
+                <span class="prelude-val">Ok</span>(Output::Stream(Box::pin(record_batch_stream)))
+            }
+        }
     }
 }
 
@@ -724,8 +707,8 @@
         <span class="macro">assert!</span>(ctx.auth_header.is_none());
 
         <span class="kw">let </span>basic = AuthScheme::Basic(Basic {
-            username: <span class="string">&quot;u&quot;</span>.to_string(),
-            password: <span class="string">&quot;p&quot;</span>.to_string(),
+            username: <span class="string">"u"</span>.to_string(),
+            password: <span class="string">"p"</span>.to_string(),
         });
 
         ctx.auth_header = <span class="prelude-val">Some</span>(AuthHeader {

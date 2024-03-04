@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["OpenRegionHandler"]};
+window.SIDEBAR_ITEMS = {};

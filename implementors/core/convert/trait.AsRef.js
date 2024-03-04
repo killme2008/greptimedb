@@ -1,3 +1,0 @@
-(function() {var implementors = {
-"script":[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/convert/trait.AsRef.html\" title=\"trait core::convert::AsRef\">AsRef</a>&lt;<a class=\"struct\" href=\"script/python/ffi_types/vector/struct.PyVector.html\" title=\"struct script::python::ffi_types::vector::PyVector\">PyVector</a>&gt; for <a class=\"struct\" href=\"script/python/ffi_types/vector/struct.PyVector.html\" title=\"struct script::python::ffi_types::vector::PyVector\">PyVector</a>"]]
-};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

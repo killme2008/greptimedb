@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/servers/src/opentsdb/handler.rs`."><title>handler.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="servers" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../servers/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/servers/src/opentsdb/handler.rs`."><title>handler.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="servers" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -202,23 +203,24 @@
 <a href="#202" id="202">202</a>
 <a href="#203" id="203">203</a>
 <a href="#204" id="204">204</a>
+<a href="#205" id="205">205</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-</span><span class="doccomment">//! Modified from Tokio&#39;s mini-redis example.
+</span><span class="doccomment">//! Modified from Tokio's mini-redis example.
 
-</span><span class="kw">use </span>common_telemetry::timer;
+</span><span class="kw">use </span>common_error::ext::ErrorExt;
 <span class="kw">use </span>session::context::QueryContextBuilder;
 <span class="kw">use </span>tokio::io::{AsyncRead, AsyncWrite};
 
@@ -229,7 +231,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::shutdown::Shutdown;
 
 <span class="doccomment">/// Per-connection handler. Reads requests from `connection` and applies the OpenTSDB metric to
-/// [OpentsdbLineProtocolHandler].
+/// [OpentsdbProtocolHandlerRef].
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct </span>Handler&lt;S: AsyncWrite + AsyncRead + Unpin&gt; {
     query_handler: OpentsdbProtocolHandlerRef,
 
@@ -285,25 +287,26 @@
                 <span class="prelude-val">None </span>=&gt; <span class="kw">return </span><span class="prelude-val">Ok</span>(()),
             };
 
-            <span class="comment">// Close connection upon receiving &quot;quit&quot; line. With actual OpenTSDB, telnet just won&#39;t
+            <span class="comment">// Close connection upon receiving "quit" line. With actual OpenTSDB, telnet just won't
             // quit, the connection to OpenTSDB server can be closed only via terminating telnet
             // session manually, for example, close the terminal window. That is a little annoying,
-            // so I added &quot;quit&quot; command to the line protocol, to make telnet client able to quit
+            // so I added "quit" command to the line protocol, to make telnet client able to quit
             // gracefully.
-            </span><span class="kw">if </span>line.trim().eq_ignore_ascii_case(<span class="string">&quot;quit&quot;</span>) {
+            </span><span class="kw">if </span>line.trim().eq_ignore_ascii_case(<span class="string">"quit"</span>) {
                 <span class="kw">return </span><span class="prelude-val">Ok</span>(());
             }
 
             <span class="kw">match </span>DataPoint::try_create(<span class="kw-2">&amp;</span>line) {
                 <span class="prelude-val">Ok</span>(data_point) =&gt; {
-                    <span class="kw">let </span>_timer = <span class="macro">timer!</span>(<span class="kw">crate</span>::metrics::METRIC_TCP_OPENTSDB_LINE_WRITE_ELAPSED);
-                    <span class="kw">let </span>result = <span class="self">self</span>.query_handler.exec(<span class="kw-2">&amp;</span>data_point, ctx.clone()).<span class="kw">await</span>;
+                    <span class="kw">let </span>_timer =
+                        <span class="kw">crate</span>::metrics::METRIC_TCP_OPENTSDB_LINE_WRITE_ELAPSED.start_timer();
+                    <span class="kw">let </span>result = <span class="self">self</span>.query_handler.exec(<span class="macro">vec!</span>[data_point], ctx.clone()).<span class="kw">await</span>;
                     <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = result {
-                        <span class="self">self</span>.connection.write_line(e.to_string()).<span class="kw">await</span><span class="question-mark">?</span>;
+                        <span class="self">self</span>.connection.write_line(e.output_msg()).<span class="kw">await</span><span class="question-mark">?</span>;
                     }
                 }
                 <span class="prelude-val">Err</span>(e) =&gt; {
-                    <span class="self">self</span>.connection.write_line(e.to_string()).<span class="kw">await</span><span class="question-mark">?</span>;
+                    <span class="self">self</span>.connection.write_line(e.output_msg()).<span class="kw">await</span><span class="question-mark">?</span>;
                 }
             }
         }
@@ -331,16 +334,16 @@
 
     <span class="attr">#[async_trait]
     </span><span class="kw">impl </span>OpentsdbProtocolHandler <span class="kw">for </span>DummyQueryHandler {
-        <span class="kw">async fn </span>exec(<span class="kw-2">&amp;</span><span class="self">self</span>, data_point: <span class="kw-2">&amp;</span>DataPoint, _ctx: QueryContextRef) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-            <span class="kw">let </span>metric = data_point.metric();
-            <span class="kw">if </span>metric == <span class="string">&quot;should_failed&quot; </span>{
+        <span class="kw">async fn </span>exec(<span class="kw-2">&amp;</span><span class="self">self</span>, data_points: Vec&lt;DataPoint&gt;, _ctx: QueryContextRef) -&gt; <span class="prelude-ty">Result</span>&lt;usize&gt; {
+            <span class="kw">let </span>metric = data_points.first().unwrap().metric();
+            <span class="kw">if </span>metric == <span class="string">"should_failed" </span>{
                 <span class="kw">return </span>error::InternalSnafu {
-                    err_msg: <span class="string">&quot;expected&quot;</span>,
+                    err_msg: <span class="string">"expected"</span>,
                 }
                 .fail();
             }
             <span class="self">self</span>.tx.send(metric.to_string()).<span class="kw">await</span>.unwrap();
-            <span class="prelude-val">Ok</span>(())
+            <span class="prelude-val">Ok</span>(data_points.len())
         }
     }
 
@@ -356,29 +359,29 @@
         <span class="kw">let </span><span class="kw-2">mut </span>client = Connection::new(stream);
 
         client
-            .write_line(<span class="string">&quot;put my_metric_1 1000 1.0 host=web01&quot;</span>.to_string())
+            .write_line(<span class="string">"put my_metric_1 1000 1.0 host=web01"</span>.to_string())
             .<span class="kw">await
             </span>.unwrap();
-        <span class="macro">assert_eq!</span>(rx.recv().<span class="kw">await</span>.unwrap(), <span class="string">&quot;my_metric_1&quot;</span>);
+        <span class="macro">assert_eq!</span>(rx.recv().<span class="kw">await</span>.unwrap(), <span class="string">"my_metric_1"</span>);
 
         client
-            .write_line(<span class="string">&quot;put my_metric_2 1000 1.0 host=web01&quot;</span>.to_string())
+            .write_line(<span class="string">"put my_metric_2 1000 1.0 host=web01"</span>.to_string())
             .<span class="kw">await
             </span>.unwrap();
-        <span class="macro">assert_eq!</span>(rx.recv().<span class="kw">await</span>.unwrap(), <span class="string">&quot;my_metric_2&quot;</span>);
+        <span class="macro">assert_eq!</span>(rx.recv().<span class="kw">await</span>.unwrap(), <span class="string">"my_metric_2"</span>);
 
         client
-            .write_line(<span class="string">&quot;put should_failed 1000 1.0 host=web01&quot;</span>.to_string())
+            .write_line(<span class="string">"put should_failed 1000 1.0 host=web01"</span>.to_string())
             .<span class="kw">await
             </span>.unwrap();
         <span class="kw">let </span>resp = client.read_line().<span class="kw">await</span>.unwrap();
-        <span class="macro">assert_eq!</span>(resp, <span class="prelude-val">Some</span>(<span class="string">&quot;Internal error: expected&quot;</span>.to_string()));
+        <span class="macro">assert_eq!</span>(resp, <span class="prelude-val">Some</span>(<span class="string">"Internal error: 1003"</span>.to_string()));
 
-        client.write_line(<span class="string">&quot;get&quot;</span>.to_string()).<span class="kw">await</span>.unwrap();
+        client.write_line(<span class="string">"get"</span>.to_string()).<span class="kw">await</span>.unwrap();
         <span class="kw">let </span>resp = client.read_line().<span class="kw">await</span>.unwrap();
         <span class="macro">assert_eq!</span>(
             resp,
-            <span class="prelude-val">Some</span>(<span class="string">&quot;Invalid query: unknown command get.&quot;</span>.to_string())
+            <span class="prelude-val">Some</span>(<span class="string">"Invalid query: unknown command get."</span>.to_string())
         );
     }
 
@@ -386,7 +389,7 @@
         query_handler: OpentsdbProtocolHandlerRef,
         notify_shutdown: broadcast::Sender&lt;()&gt;,
     ) -&gt; SocketAddr {
-        <span class="kw">let </span>listener = TcpListener::bind(<span class="string">&quot;127.0.0.1:0&quot;</span>).<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span>listener = TcpListener::bind(<span class="string">"127.0.0.1:0"</span>).<span class="kw">await</span>.unwrap();
         <span class="kw">let </span>addr = listener.local_addr().unwrap();
 
         <span class="kw">let </span>_handle = common_runtime::spawn_read(<span class="kw">async move </span>{

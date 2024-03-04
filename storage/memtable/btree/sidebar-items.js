@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["collect_iter","rows_to_vectors"],"struct":["BTreeIterator","BTreeMemtable","InnerKey","IterRow","MapIterWrapper","RowValue"],"trait":["RowsProvider"],"type":["RwLockMap"]};

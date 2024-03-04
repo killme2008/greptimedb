@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["pretty_fmt"],"struct":["RouteHandler"]};
+window.SIDEBAR_ITEMS = {"struct":["RouteHandler"]};

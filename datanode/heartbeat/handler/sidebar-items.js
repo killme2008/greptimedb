@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["close_region","open_region"]};
+window.SIDEBAR_ITEMS = {"mod":["close_region","downgrade_region","open_region","upgrade_region"],"struct":["HandlerContext","RegionHeartbeatResponseHandler"],"type":["InstructionHandler"]};

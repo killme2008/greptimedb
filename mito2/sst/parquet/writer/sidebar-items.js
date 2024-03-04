@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["ParquetWriter"]};
+window.SIDEBAR_ITEMS = {"struct":["ParquetWriter","SourceStats"]};

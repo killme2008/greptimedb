@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/common/meta/src/rpc/ddl.rs`."><title>ddl.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="common_meta" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../common_meta/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/common/meta/src/rpc/ddl.rs`."><title>ddl.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="common_meta" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -438,16 +439,55 @@
 <a href="#438" id="438">438</a>
 <a href="#439" id="439">439</a>
 <a href="#440" id="440">440</a>
+<a href="#441" id="441">441</a>
+<a href="#442" id="442">442</a>
+<a href="#443" id="443">443</a>
+<a href="#444" id="444">444</a>
+<a href="#445" id="445">445</a>
+<a href="#446" id="446">446</a>
+<a href="#447" id="447">447</a>
+<a href="#448" id="448">448</a>
+<a href="#449" id="449">449</a>
+<a href="#450" id="450">450</a>
+<a href="#451" id="451">451</a>
+<a href="#452" id="452">452</a>
+<a href="#453" id="453">453</a>
+<a href="#454" id="454">454</a>
+<a href="#455" id="455">455</a>
+<a href="#456" id="456">456</a>
+<a href="#457" id="457">457</a>
+<a href="#458" id="458">458</a>
+<a href="#459" id="459">459</a>
+<a href="#460" id="460">460</a>
+<a href="#461" id="461">461</a>
+<a href="#462" id="462">462</a>
+<a href="#463" id="463">463</a>
+<a href="#464" id="464">464</a>
+<a href="#465" id="465">465</a>
+<a href="#466" id="466">466</a>
+<a href="#467" id="467">467</a>
+<a href="#468" id="468">468</a>
+<a href="#469" id="469">469</a>
+<a href="#470" id="470">470</a>
+<a href="#471" id="471">471</a>
+<a href="#472" id="472">472</a>
+<a href="#473" id="473">473</a>
+<a href="#474" id="474">474</a>
+<a href="#475" id="475">475</a>
+<a href="#476" id="476">476</a>
+<a href="#477" id="477">477</a>
+<a href="#478" id="478">478</a>
+<a href="#479" id="479">479</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -461,6 +501,8 @@
     SubmitDdlTaskResponse <span class="kw">as </span>PbSubmitDdlTaskResponse, TruncateTableTask <span class="kw">as </span>PbTruncateTableTask,
 };
 <span class="kw">use </span>api::v1::{AlterExpr, CreateTableExpr, DropTableExpr, TruncateTableExpr};
+<span class="kw">use </span>base64::engine::general_purpose;
+<span class="kw">use </span>base64::Engine <span class="kw">as _</span>;
 <span class="kw">use </span>prost::Message;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>snafu::{OptionExt, ResultExt};
@@ -470,7 +512,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::error::{<span class="self">self</span>, <span class="prelude-ty">Result</span>};
 <span class="kw">use </span><span class="kw">crate</span>::table_name::TableName;
 
-<span class="attr">#[derive(Debug)]
+<span class="attr">#[derive(Debug, Clone)]
 </span><span class="kw">pub enum </span>DdlTask {
     CreateTable(CreateTableTask),
     DropTable(DropTableTask),
@@ -492,12 +534,14 @@
         schema: String,
         table: String,
         table_id: TableId,
+        drop_if_exists: bool,
     ) -&gt; <span class="self">Self </span>{
         DdlTask::DropTable(DropTableTask {
             catalog,
             schema,
             table,
             table_id,
+            drop_if_exists,
         })
     }
 
@@ -505,8 +549,18 @@
         DdlTask::AlterTable(AlterTableTask { alter_table })
     }
 
-    <span class="kw">pub fn </span>new_truncate_table(truncate_table: TruncateTableExpr) -&gt; <span class="self">Self </span>{
-        DdlTask::TruncateTable(TruncateTableTask { truncate_table })
+    <span class="kw">pub fn </span>new_truncate_table(
+        catalog: String,
+        schema: String,
+        table: String,
+        table_id: TableId,
+    ) -&gt; <span class="self">Self </span>{
+        DdlTask::TruncateTable(TruncateTableTask {
+            catalog,
+            schema,
+            table,
+            table_id,
+        })
     }
 }
 
@@ -526,7 +580,8 @@
     }
 }
 
-<span class="kw">pub struct </span>SubmitDdlTaskRequest {
+<span class="attr">#[derive(Clone)]
+</span><span class="kw">pub struct </span>SubmitDdlTaskRequest {
     <span class="kw">pub </span>task: DdlTask,
 }
 
@@ -546,13 +601,19 @@
                     schema_name: task.schema,
                     table_name: task.table,
                     table_id: <span class="prelude-val">Some</span>(api::v1::TableId { id: task.table_id }),
+                    drop_if_exists: task.drop_if_exists,
                 }),
             }),
             DdlTask::AlterTable(task) =&gt; Task::AlterTableTask(PbAlterTableTask {
                 alter_table: <span class="prelude-val">Some</span>(task.alter_table),
             }),
             DdlTask::TruncateTable(task) =&gt; Task::TruncateTableTask(PbTruncateTableTask {
-                truncate_table: <span class="prelude-val">Some</span>(task.truncate_table),
+                truncate_table: <span class="prelude-val">Some</span>(TruncateTableExpr {
+                    catalog_name: task.catalog,
+                    schema_name: task.schema,
+                    table_name: task.table,
+                    table_id: <span class="prelude-val">Some</span>(api::v1::TableId { id: task.table_id }),
+                }),
             }),
         };
 
@@ -563,7 +624,8 @@
     }
 }
 
-<span class="kw">pub struct </span>SubmitDdlTaskResponse {
+<span class="attr">#[derive(Debug, Default)]
+</span><span class="kw">pub struct </span>SubmitDdlTaskResponse {
     <span class="kw">pub </span>key: Vec&lt;u8&gt;,
     <span class="kw">pub </span>table_id: <span class="prelude-ty">Option</span>&lt;TableId&gt;,
 }
@@ -580,12 +642,26 @@
     }
 }
 
-<span class="attr">#[derive(Debug, PartialEq, Serialize, Deserialize)]
+<span class="kw">impl </span>From&lt;SubmitDdlTaskResponse&gt; <span class="kw">for </span>PbSubmitDdlTaskResponse {
+    <span class="kw">fn </span>from(val: SubmitDdlTaskResponse) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            key: val.key,
+            table_id: val
+                .table_id
+                .map(|table_id| api::v1::meta::TableId { id: table_id }),
+            ..Default::default()
+        }
+    }
+}
+
+<span class="attr">#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 </span><span class="kw">pub struct </span>DropTableTask {
     <span class="kw">pub </span>catalog: String,
     <span class="kw">pub </span>schema: String,
     <span class="kw">pub </span>table: String,
     <span class="kw">pub </span>table_id: TableId,
+    <span class="attr">#[serde(default)]
+    </span><span class="kw">pub </span>drop_if_exists: bool,
 }
 
 <span class="kw">impl </span>DropTableTask {
@@ -611,7 +687,7 @@
 
     <span class="kw">fn </span>try_from(pb: PbDropTableTask) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
         <span class="kw">let </span>drop_table = pb.drop_table.context(error::InvalidProtoMsgSnafu {
-            err_msg: <span class="string">&quot;expected drop table&quot;</span>,
+            err_msg: <span class="string">"expected drop table"</span>,
         })<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
@@ -621,14 +697,15 @@
             table_id: drop_table
                 .table_id
                 .context(error::InvalidProtoMsgSnafu {
-                    err_msg: <span class="string">&quot;expected table_id&quot;</span>,
+                    err_msg: <span class="string">"expected table_id"</span>,
                 })<span class="question-mark">?
                 </span>.id,
+            drop_if_exists: drop_table.drop_if_exists,
         })
     }
 }
 
-<span class="attr">#[derive(Debug, PartialEq)]
+<span class="attr">#[derive(Debug, PartialEq, Clone)]
 </span><span class="kw">pub struct </span>CreateTableTask {
     <span class="kw">pub </span>create_table: CreateTableExpr,
     <span class="kw">pub </span>partitions: Vec&lt;Partition&gt;,
@@ -643,7 +720,7 @@
 
         <span class="prelude-val">Ok</span>(CreateTableTask::new(
             pb.create_table.context(error::InvalidProtoMsgSnafu {
-                err_msg: <span class="string">&quot;expected create table&quot;</span>,
+                err_msg: <span class="string">"expected create table"</span>,
             })<span class="question-mark">?</span>,
             pb.partitions,
             table_info,
@@ -699,16 +776,20 @@
             table_info,
         };
         <span class="kw">let </span>buf = pb.encode_to_vec();
-        serializer.serialize_bytes(<span class="kw-2">&amp;</span>buf)
+        <span class="kw">let </span>encoded = general_purpose::STANDARD_NO_PAD.encode(buf);
+        serializer.serialize_str(<span class="kw-2">&amp;</span>encoded)
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;de</span>&gt; Deserialize&lt;<span class="lifetime">&#39;de</span>&gt; <span class="kw">for </span>CreateTableTask {
+<span class="kw">impl</span>&lt;<span class="lifetime">'de</span>&gt; Deserialize&lt;<span class="lifetime">'de</span>&gt; <span class="kw">for </span>CreateTableTask {
     <span class="kw">fn </span>deserialize&lt;D&gt;(deserializer: D) -&gt; result::Result&lt;<span class="self">Self</span>, D::Error&gt;
     <span class="kw">where
-        </span>D: serde::Deserializer&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>D: serde::Deserializer&lt;<span class="lifetime">'de</span>&gt;,
     {
-        <span class="kw">let </span>buf = Vec::&lt;u8&gt;::deserialize(deserializer)<span class="question-mark">?</span>;
+        <span class="kw">let </span>encoded = String::deserialize(deserializer)<span class="question-mark">?</span>;
+        <span class="kw">let </span>buf = general_purpose::STANDARD_NO_PAD
+            .decode(encoded)
+            .map_err(|err| serde::de::Error::custom(err.to_string()))<span class="question-mark">?</span>;
         <span class="kw">let </span>expr: PbCreateTableTask = PbCreateTableTask::decode(<span class="kw-2">&amp;*</span>buf)
             .map_err(|err| serde::de::Error::custom(err.to_string()))<span class="question-mark">?</span>;
 
@@ -719,7 +800,7 @@
     }
 }
 
-<span class="attr">#[derive(Debug, PartialEq)]
+<span class="attr">#[derive(Debug, PartialEq, Clone)]
 </span><span class="kw">pub struct </span>AlterTableTask {
     <span class="kw">pub </span>alter_table: AlterExpr,
 }
@@ -749,7 +830,7 @@
 
     <span class="kw">fn </span>try_from(pb: PbAlterTableTask) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
         <span class="kw">let </span>alter_table = pb.alter_table.context(error::InvalidProtoMsgSnafu {
-            err_msg: <span class="string">&quot;expected alter_table&quot;</span>,
+            err_msg: <span class="string">"expected alter_table"</span>,
         })<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(AlterTableTask { alter_table })
@@ -765,16 +846,20 @@
             alter_table: <span class="prelude-val">Some</span>(<span class="self">self</span>.alter_table.clone()),
         };
         <span class="kw">let </span>buf = pb.encode_to_vec();
-        serializer.serialize_bytes(<span class="kw-2">&amp;</span>buf)
+        <span class="kw">let </span>encoded = general_purpose::STANDARD_NO_PAD.encode(buf);
+        serializer.serialize_str(<span class="kw-2">&amp;</span>encoded)
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;de</span>&gt; Deserialize&lt;<span class="lifetime">&#39;de</span>&gt; <span class="kw">for </span>AlterTableTask {
+<span class="kw">impl</span>&lt;<span class="lifetime">'de</span>&gt; Deserialize&lt;<span class="lifetime">'de</span>&gt; <span class="kw">for </span>AlterTableTask {
     <span class="kw">fn </span>deserialize&lt;D&gt;(deserializer: D) -&gt; result::Result&lt;<span class="self">Self</span>, D::Error&gt;
     <span class="kw">where
-        </span>D: serde::Deserializer&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>D: serde::Deserializer&lt;<span class="lifetime">'de</span>&gt;,
     {
-        <span class="kw">let </span>buf = Vec::&lt;u8&gt;::deserialize(deserializer)<span class="question-mark">?</span>;
+        <span class="kw">let </span>encoded = String::deserialize(deserializer)<span class="question-mark">?</span>;
+        <span class="kw">let </span>buf = general_purpose::STANDARD_NO_PAD
+            .decode(encoded)
+            .map_err(|err| serde::de::Error::custom(err.to_string()))<span class="question-mark">?</span>;
         <span class="kw">let </span>expr: PbAlterTableTask = PbAlterTableTask::decode(<span class="kw-2">&amp;*</span>buf)
             .map_err(|err| serde::de::Error::custom(err.to_string()))<span class="question-mark">?</span>;
 
@@ -785,27 +870,28 @@
     }
 }
 
-<span class="attr">#[derive(Debug, PartialEq)]
+<span class="attr">#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 </span><span class="kw">pub struct </span>TruncateTableTask {
-    <span class="kw">pub </span>truncate_table: TruncateTableExpr,
+    <span class="kw">pub </span>catalog: String,
+    <span class="kw">pub </span>schema: String,
+    <span class="kw">pub </span>table: String,
+    <span class="kw">pub </span>table_id: TableId,
 }
 
 <span class="kw">impl </span>TruncateTableTask {
     <span class="kw">pub fn </span>table_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; TableReference {
         TableReference {
-            catalog: <span class="kw-2">&amp;</span><span class="self">self</span>.truncate_table.catalog_name,
-            schema: <span class="kw-2">&amp;</span><span class="self">self</span>.truncate_table.schema_name,
-            table: <span class="kw-2">&amp;</span><span class="self">self</span>.truncate_table.table_name,
+            catalog: <span class="kw-2">&amp;</span><span class="self">self</span>.catalog,
+            schema: <span class="kw-2">&amp;</span><span class="self">self</span>.schema,
+            table: <span class="kw-2">&amp;</span><span class="self">self</span>.table,
         }
     }
 
     <span class="kw">pub fn </span>table_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; TableName {
-        <span class="kw">let </span>table = <span class="kw-2">&amp;</span><span class="self">self</span>.truncate_table;
-
         TableName {
-            catalog_name: table.catalog_name.to_string(),
-            schema_name: table.schema_name.to_string(),
-            table_name: table.table_name.to_string(),
+            catalog_name: <span class="self">self</span>.catalog.to_string(),
+            schema_name: <span class="self">self</span>.schema.to_string(),
+            table_name: <span class="self">self</span>.table.to_string(),
         }
     }
 }
@@ -815,39 +901,20 @@
 
     <span class="kw">fn </span>try_from(pb: PbTruncateTableTask) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
         <span class="kw">let </span>truncate_table = pb.truncate_table.context(error::InvalidProtoMsgSnafu {
-            err_msg: <span class="string">&quot;expected truncate_table&quot;</span>,
+            err_msg: <span class="string">"expected drop table"</span>,
         })<span class="question-mark">?</span>;
 
-        <span class="prelude-val">Ok</span>(TruncateTableTask { truncate_table })
-    }
-}
-
-<span class="kw">impl </span>Serialize <span class="kw">for </span>TruncateTableTask {
-    <span class="kw">fn </span>serialize&lt;S&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, serializer: S) -&gt; result::Result&lt;S::Ok, S::Error&gt;
-    <span class="kw">where
-        </span>S: serde::Serializer,
-    {
-        <span class="kw">let </span>pb = PbTruncateTableTask {
-            truncate_table: <span class="prelude-val">Some</span>(<span class="self">self</span>.truncate_table.clone()),
-        };
-        <span class="kw">let </span>buf = pb.encode_to_vec();
-        serializer.serialize_bytes(<span class="kw-2">&amp;</span>buf)
-    }
-}
-
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;de</span>&gt; Deserialize&lt;<span class="lifetime">&#39;de</span>&gt; <span class="kw">for </span>TruncateTableTask {
-    <span class="kw">fn </span>deserialize&lt;D&gt;(deserializer: D) -&gt; result::Result&lt;<span class="self">Self</span>, D::Error&gt;
-    <span class="kw">where
-        </span>D: serde::Deserializer&lt;<span class="lifetime">&#39;de</span>&gt;,
-    {
-        <span class="kw">let </span>buf = Vec::&lt;u8&gt;::deserialize(deserializer)<span class="question-mark">?</span>;
-        <span class="kw">let </span>task: PbTruncateTableTask = PbTruncateTableTask::decode(<span class="kw-2">&amp;*</span>buf)
-            .map_err(|err| serde::de::Error::custom(err.to_string()))<span class="question-mark">?</span>;
-
-        <span class="kw">let </span>task = TruncateTableTask::try_from(task)
-            .map_err(|err| serde::de::Error::custom(err.to_string()))<span class="question-mark">?</span>;
-
-        <span class="prelude-val">Ok</span>(task)
+        <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
+            catalog: truncate_table.catalog_name,
+            schema: truncate_table.schema_name,
+            table: truncate_table.table_name,
+            table_id: truncate_table
+                .table_id
+                .context(error::InvalidProtoMsgSnafu {
+                    err_msg: <span class="string">"expected table_id"</span>,
+                })<span class="question-mark">?
+                </span>.id,
+        })
     }
 }
 
@@ -855,22 +922,34 @@
 </span><span class="kw">mod </span>tests {
     <span class="kw">use </span>std::sync::Arc;
 
-    <span class="kw">use </span>api::v1::CreateTableExpr;
+    <span class="kw">use </span>api::v1::{AlterExpr, CreateTableExpr};
     <span class="kw">use </span>datatypes::schema::SchemaBuilder;
     <span class="kw">use </span>table::metadata::RawTableInfo;
     <span class="kw">use </span>table::test_util::table_info::test_table_info;
 
-    <span class="kw">use </span><span class="kw">super</span>::CreateTableTask;
+    <span class="kw">use super</span>::{AlterTableTask, CreateTableTask};
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_basic_ser_de_create_table_task() {
         <span class="kw">let </span>schema = SchemaBuilder::default().build().unwrap();
-        <span class="kw">let </span>table_info = test_table_info(<span class="number">1025</span>, <span class="string">&quot;foo&quot;</span>, <span class="string">&quot;bar&quot;</span>, <span class="string">&quot;baz&quot;</span>, Arc::new(schema));
+        <span class="kw">let </span>table_info = test_table_info(<span class="number">1025</span>, <span class="string">"foo"</span>, <span class="string">"bar"</span>, <span class="string">"baz"</span>, Arc::new(schema));
         <span class="kw">let </span>task = CreateTableTask::new(
             CreateTableExpr::default(),
             Vec::new(),
             RawTableInfo::from(table_info),
         );
+
+        <span class="kw">let </span>output = serde_json::to_vec(<span class="kw-2">&amp;</span>task).unwrap();
+
+        <span class="kw">let </span>de = serde_json::from_slice(<span class="kw-2">&amp;</span>output).unwrap();
+        <span class="macro">assert_eq!</span>(task, de);
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_basic_ser_de_alter_table_task() {
+        <span class="kw">let </span>task = AlterTableTask {
+            alter_table: AlterExpr::default(),
+        };
 
         <span class="kw">let </span>output = serde_json::to_vec(<span class="kw-2">&amp;</span>task).unwrap();
 

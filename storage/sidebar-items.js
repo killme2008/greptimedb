@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"mod":["chunk","codec","compaction","config","engine","error","file_purger","flush","manifest","memtable","metadata","metrics","proto","read","region","scheduler","schema","snapshot","sst","sync","version","wal","window_infer","write_batch"],"struct":["EngineImpl","ParquetWriter"]};

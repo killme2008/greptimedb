@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `tests-integration/src/instance.rs`."><title>instance.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="tests_integration" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../tests_integration/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `tests-integration/src/instance.rs`."><title>instance.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="tests_integration" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -416,16 +417,43 @@
 <a href="#416" id="416">416</a>
 <a href="#417" id="417">417</a>
 <a href="#418" id="418">418</a>
+<a href="#419" id="419">419</a>
+<a href="#420" id="420">420</a>
+<a href="#421" id="421">421</a>
+<a href="#422" id="422">422</a>
+<a href="#423" id="423">423</a>
+<a href="#424" id="424">424</a>
+<a href="#425" id="425">425</a>
+<a href="#426" id="426">426</a>
+<a href="#427" id="427">427</a>
+<a href="#428" id="428">428</a>
+<a href="#429" id="429">429</a>
+<a href="#430" id="430">430</a>
+<a href="#431" id="431">431</a>
+<a href="#432" id="432">432</a>
+<a href="#433" id="433">433</a>
+<a href="#434" id="434">434</a>
+<a href="#435" id="435">435</a>
+<a href="#436" id="436">436</a>
+<a href="#437" id="437">437</a>
+<a href="#438" id="438">438</a>
+<a href="#439" id="439">439</a>
+<a href="#440" id="440">440</a>
+<a href="#441" id="441">441</a>
+<a href="#442" id="442">442</a>
+<a href="#443" id="443">443</a>
+<a href="#444" id="444">444</a>
+<a href="#445" id="445">445</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -437,28 +465,37 @@
     <span class="kw">use </span>std::sync::atomic::AtomicU32;
     <span class="kw">use </span>std::sync::Arc;
 
+    <span class="kw">use </span>api::v1::region::QueryRequest;
     <span class="kw">use </span>common_base::Plugins;
     <span class="kw">use </span>common_catalog::consts::{DEFAULT_CATALOG_NAME, DEFAULT_SCHEMA_NAME};
     <span class="kw">use </span>common_meta::key::table_name::TableNameKey;
+    <span class="kw">use </span>common_meta::rpc::router::region_distribution;
     <span class="kw">use </span>common_query::Output;
     <span class="kw">use </span>common_recordbatch::RecordBatches;
+    <span class="kw">use </span>common_telemetry::debug;
     <span class="kw">use </span>frontend::error::{<span class="self">self</span>, Error, <span class="prelude-ty">Result</span>};
     <span class="kw">use </span>frontend::instance::Instance;
     <span class="kw">use </span>query::parser::QueryLanguageParser;
+    <span class="kw">use </span>query::plan::LogicalPlan;
     <span class="kw">use </span>servers::interceptor::{SqlQueryInterceptor, SqlQueryInterceptorRef};
     <span class="kw">use </span>servers::query_handler::sql::SqlQueryHandler;
     <span class="kw">use </span>session::context::{QueryContext, QueryContextRef};
     <span class="kw">use </span>sql::statements::statement::Statement;
+    <span class="kw">use </span>store_api::storage::RegionId;
+    <span class="kw">use </span>substrait::{DFLogicalSubstraitConvertor, SubstraitPlan};
 
+    <span class="kw">use </span><span class="kw">crate</span>::standalone::GreptimeDbStandaloneBuilder;
     <span class="kw">use </span><span class="kw">crate</span>::tests;
     <span class="kw">use </span><span class="kw">crate</span>::tests::MockDistributedInstance;
 
-    <span class="attr">#[tokio::test(flavor = <span class="string">&quot;multi_thread&quot;</span>)]
+    <span class="attr">#[tokio::test(flavor = <span class="string">"multi_thread"</span>)]
     </span><span class="kw">async fn </span>test_standalone_exec_sql() {
-        <span class="kw">let </span>standalone = tests::create_standalone_instance(<span class="string">&quot;test_standalone_exec_sql&quot;</span>).<span class="kw">await</span>;
+        <span class="kw">let </span>standalone = GreptimeDbStandaloneBuilder::new(<span class="string">"test_standalone_exec_sql"</span>)
+            .build()
+            .<span class="kw">await</span>;
         <span class="kw">let </span>instance = standalone.instance.as_ref();
 
-        <span class="kw">let </span>sql = <span class="string">r#&quot;
+        <span class="kw">let </span>sql = <span class="string">r#"
             CREATE TABLE demo(
                 host STRING,
                 ts TIMESTAMP,
@@ -467,7 +504,7 @@
                 disk_util DOUBLE DEFAULT 9.9,
                 TIME INDEX (ts),
                 PRIMARY KEY(host)
-            ) engine=mito&quot;#</span>;
+            ) engine=mito"#</span>;
         create_table(instance, sql).<span class="kw">await</span>;
 
         insert_and_query(instance).<span class="kw">await</span>;
@@ -475,13 +512,15 @@
         drop_table(instance).<span class="kw">await</span>;
     }
 
-    <span class="attr">#[tokio::test(flavor = <span class="string">&quot;multi_thread&quot;</span>)]
+    <span class="attr">#[tokio::test(flavor = <span class="string">"multi_thread"</span>)]
     </span><span class="kw">async fn </span>test_distributed_exec_sql() {
-        <span class="kw">let </span>distributed = tests::create_distributed_instance(<span class="string">&quot;test_distributed_exec_sql&quot;</span>).<span class="kw">await</span>;
+        common_telemetry::init_default_ut_logging();
+
+        <span class="kw">let </span>distributed = tests::create_distributed_instance(<span class="string">"test_distributed_exec_sql"</span>).<span class="kw">await</span>;
         <span class="kw">let </span>frontend = distributed.frontend();
         <span class="kw">let </span>instance = frontend.as_ref();
 
-        <span class="kw">let </span>sql = <span class="string">r#&quot;
+        <span class="kw">let </span>sql = <span class="string">r#"
             CREATE TABLE demo(
                 host STRING,
                 ts TIMESTAMP,
@@ -492,12 +531,12 @@
                 PRIMARY KEY(host)
             )
             PARTITION BY RANGE COLUMNS (host) (
-                PARTITION r0 VALUES LESS THAN (&#39;550-A&#39;),
-                PARTITION r1 VALUES LESS THAN (&#39;550-W&#39;),
-                PARTITION r2 VALUES LESS THAN (&#39;MOSS&#39;),
+                PARTITION r0 VALUES LESS THAN ('550-A'),
+                PARTITION r1 VALUES LESS THAN ('550-W'),
+                PARTITION r2 VALUES LESS THAN ('MOSS'),
                 PARTITION r3 VALUES LESS THAN (MAXVALUE),
             )
-            engine=mito&quot;#</span>;
+            engine=mito"#</span>;
         create_table(instance, sql).<span class="kw">await</span>;
 
         insert_and_query(instance).<span class="kw">await</span>;
@@ -507,39 +546,39 @@
             HashMap::from([
                 (
                     <span class="number">0u32</span>,
-                    <span class="string">&quot;\
+                    <span class="string">"\
 +---------------------+------+
 | ts                  | host |
 +---------------------+------+
 | 2013-12-31T16:00:00 | 490  |
-+---------------------+------+&quot;</span>,
++---------------------+------+"</span>,
                 ),
                 (
                     <span class="number">1u32</span>,
-                    <span class="string">&quot;\
+                    <span class="string">"\
 +---------------------+-------+
 | ts                  | host  |
 +---------------------+-------+
 | 2022-12-31T16:00:00 | 550-A |
-+---------------------+-------+&quot;</span>,
++---------------------+-------+"</span>,
                 ),
                 (
                     <span class="number">2u32</span>,
-                    <span class="string">&quot;\
+                    <span class="string">"\
 +---------------------+-------+
 | ts                  | host  |
 +---------------------+-------+
 | 2023-12-31T16:00:00 | 550-W |
-+---------------------+-------+&quot;</span>,
++---------------------+-------+"</span>,
                 ),
                 (
                     <span class="number">3u32</span>,
-                    <span class="string">&quot;\
+                    <span class="string">"\
 +---------------------+------+
 | ts                  | host |
 +---------------------+------+
 | 2043-12-31T16:00:00 | MOSS |
-+---------------------+------+&quot;</span>,
++---------------------+------+"</span>,
                 ),
             ]),
         )
@@ -566,26 +605,26 @@
     }
 
     <span class="kw">async fn </span>insert_and_query(instance: <span class="kw-2">&amp;</span>Instance) {
-        <span class="kw">let </span>sql = <span class="string">r#&quot;INSERT INTO demo(host, cpu, memory, ts) VALUES
-                                (&#39;490&#39;, 0.1, 1, 1388505600000),
-                                (&#39;550-A&#39;, 1, 100, 1672502400000),
-                                (&#39;550-W&#39;, 10000, 1000000, 1704038400000),
-                                (&#39;MOSS&#39;, 100000000, 10000000000, 2335190400000)
-                                &quot;#</span>;
+        <span class="kw">let </span>sql = <span class="string">r#"INSERT INTO demo(host, cpu, memory, ts) VALUES
+                                ('490', 0.1, 1, 1388505600000),
+                                ('550-A', 1, 100, 1672502400000),
+                                ('550-W', 10000, 1000000, 1704038400000),
+                                ('MOSS', 100000000, 10000000000, 2335190400000)
+                                "#</span>;
         <span class="kw">let </span>output = query(instance, sql).<span class="kw">await</span>;
         <span class="kw">let </span>Output::AffectedRows(x) = output <span class="kw">else </span>{
             <span class="macro">unreachable!</span>()
         };
         <span class="macro">assert_eq!</span>(x, <span class="number">4</span>);
 
-        <span class="kw">let </span>sql = <span class="string">&quot;SELECT * FROM demo WHERE ts &gt; cast(1000000000 as timestamp) ORDER BY host&quot;</span>; <span class="comment">// use nanoseconds as where condition
+        <span class="kw">let </span>sql = <span class="string">"SELECT * FROM demo WHERE ts &gt; cast(1000000000 as timestamp) ORDER BY host"</span>; <span class="comment">// use nanoseconds as where condition
         </span><span class="kw">let </span>output = query(instance, sql).<span class="kw">await</span>;
         <span class="kw">let </span>Output::Stream(s) = output <span class="kw">else </span>{
             <span class="macro">unreachable!</span>()
         };
         <span class="kw">let </span>batches = common_recordbatch::util::collect_batches(s).<span class="kw">await</span>.unwrap();
         <span class="kw">let </span>pretty_print = batches.pretty_print().unwrap();
-        <span class="kw">let </span>expected = <span class="string">&quot;\
+        <span class="kw">let </span>expected = <span class="string">"\
 +-------+---------------------+-------------+-----------+-----------+
 | host  | ts                  | cpu         | memory    | disk_util |
 +-------+---------------------+-------------+-----------+-----------+
@@ -593,7 +632,7 @@
 | 550-A | 2022-12-31T16:00:00 | 1.0         | 100.0     | 9.9       |
 | 550-W | 2023-12-31T16:00:00 | 10000.0     | 1000000.0 | 9.9       |
 | MOSS  | 2043-12-31T16:00:00 | 100000000.0 | 1.0e10    | 9.9       |
-+-------+---------------------+-------------+-----------+-----------+&quot;</span>;
++-------+---------------------+-------------+-----------+-----------+"</span>;
         <span class="macro">assert_eq!</span>(pretty_print, expected);
     }
 
@@ -607,39 +646,52 @@
             .get(TableNameKey::new(
                 DEFAULT_CATALOG_NAME,
                 DEFAULT_SCHEMA_NAME,
-                <span class="string">&quot;demo&quot;</span>,
+                <span class="string">"demo"</span>,
             ))
             .<span class="kw">await
             </span>.unwrap()
             .unwrap()
             .table_id();
+        <span class="macro">debug!</span>(<span class="string">"Reading table {table_id}"</span>);
 
-        <span class="kw">let </span>table_region_value = manager
-            .table_region_manager()
+        <span class="kw">let </span>table_route_value = manager
+            .table_route_manager()
             .get(table_id)
             .<span class="kw">await
             </span>.unwrap()
-            .unwrap();
-        <span class="kw">let </span>region_to_dn_map = table_region_value
-            .region_distribution
+            .unwrap()
+            .into_inner();
+
+        <span class="kw">let </span>region_to_dn_map = region_distribution(table_route_value.region_routes())
+            .unwrap()
             .iter()
             .map(|(k, v)| (v[<span class="number">0</span>], <span class="kw-2">*</span>k))
             .collect::&lt;HashMap&lt;u32, u64&gt;&gt;();
-        <span class="macro">assert_eq!</span>(region_to_dn_map.len(), expected_distribution.len());
+        <span class="macro">assert!</span>(region_to_dn_map.len() &lt;= instance.datanodes().len());
 
-        <span class="kw">let </span>stmt = QueryLanguageParser::parse_sql(<span class="string">&quot;SELECT ts, host FROM demo ORDER BY ts&quot;</span>).unwrap();
+        <span class="kw">let </span>stmt = QueryLanguageParser::parse_sql(<span class="string">"SELECT ts, host FROM demo ORDER BY ts"</span>).unwrap();
+        <span class="kw">let </span>LogicalPlan::DfPlan(plan) = instance
+            .frontend()
+            .statement_executor()
+            .plan(stmt, QueryContext::arc())
+            .<span class="kw">await
+            </span>.unwrap();
+        <span class="kw">let </span>plan = DFLogicalSubstraitConvertor.encode(<span class="kw-2">&amp;</span>plan).unwrap();
+
         <span class="kw">for </span>(region, dn) <span class="kw">in </span>region_to_dn_map.iter() {
-            <span class="kw">let </span>dn = instance.datanodes().get(dn).unwrap();
-            <span class="kw">let </span>engine = dn.query_engine();
-            <span class="kw">let </span>plan = engine
-                .planner()
-                .plan(stmt.clone(), QueryContext::arc())
+            <span class="kw">let </span>region_server = instance.datanodes().get(dn).unwrap().region_server();
+
+            <span class="kw">let </span>region_id = RegionId::new(table_id, <span class="kw-2">*</span>region);
+
+            <span class="kw">let </span>stream = region_server
+                .handle_read(QueryRequest {
+                    region_id: region_id.as_u64(),
+                    plan: plan.to_vec(),
+                    ..Default::default()
+                })
                 .<span class="kw">await
                 </span>.unwrap();
-            <span class="kw">let </span>output = engine.execute(plan, QueryContext::arc()).<span class="kw">await</span>.unwrap();
-            <span class="kw">let </span>Output::Stream(stream) = output <span class="kw">else </span>{
-                <span class="macro">unreachable!</span>()
-            };
+
             <span class="kw">let </span>recordbatches = RecordBatches::try_collect(stream).<span class="kw">await</span>.unwrap();
             <span class="kw">let </span>actual = recordbatches.pretty_print().unwrap();
 
@@ -649,26 +701,25 @@
     }
 
     <span class="kw">async fn </span>drop_table(instance: <span class="kw-2">&amp;</span>Instance) {
-        <span class="kw">let </span>sql = <span class="string">&quot;DROP TABLE demo&quot;</span>;
+        <span class="kw">let </span>sql = <span class="string">"DROP TABLE demo"</span>;
         <span class="kw">let </span>output = query(instance, sql).<span class="kw">await</span>;
         <span class="kw">let </span>Output::AffectedRows(x) = output <span class="kw">else </span>{
             <span class="macro">unreachable!</span>()
         };
-        <span class="macro">assert_eq!</span>(x, <span class="number">1</span>);
+        <span class="macro">assert_eq!</span>(x, <span class="number">0</span>);
     }
 
     <span class="kw">async fn </span>verify_table_is_dropped(instance: <span class="kw-2">&amp;</span>MockDistributedInstance) {
-        <span class="kw">for </span>(<span class="kw">_</span>, dn) <span class="kw">in </span>instance.datanodes().iter() {
-            <span class="macro">assert!</span>(dn
-                .catalog_manager()
-                .table(<span class="string">&quot;greptime&quot;</span>, <span class="string">&quot;public&quot;</span>, <span class="string">&quot;demo&quot;</span>)
-                .<span class="kw">await
-                </span>.unwrap()
-                .is_none())
-        }
+        <span class="macro">assert!</span>(instance
+            .frontend()
+            .catalog_manager()
+            .table(<span class="string">"greptime"</span>, <span class="string">"public"</span>, <span class="string">"demo"</span>)
+            .<span class="kw">await
+            </span>.unwrap()
+            .is_none())
     }
 
-    <span class="attr">#[tokio::test(flavor = <span class="string">&quot;multi_thread&quot;</span>)]
+    <span class="attr">#[tokio::test(flavor = <span class="string">"multi_thread"</span>)]
     </span><span class="kw">async fn </span>test_sql_interceptor_plugin() {
         <span class="attr">#[derive(Default)]
         </span><span class="kw">struct </span>AssertionHook {
@@ -678,13 +729,13 @@
         <span class="kw">impl </span>SqlQueryInterceptor <span class="kw">for </span>AssertionHook {
             <span class="kw">type </span>Error = Error;
 
-            <span class="kw">fn </span>pre_parsing&lt;<span class="lifetime">&#39;a</span>&gt;(
+            <span class="kw">fn </span>pre_parsing&lt;<span class="lifetime">'a</span>&gt;(
                 <span class="kw-2">&amp;</span><span class="self">self</span>,
-                query: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str,
+                query: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str,
                 _query_ctx: QueryContextRef,
-            ) -&gt; <span class="prelude-ty">Result</span>&lt;Cow&lt;<span class="lifetime">&#39;a</span>, str&gt;&gt; {
+            ) -&gt; <span class="prelude-ty">Result</span>&lt;Cow&lt;<span class="lifetime">'a</span>, str&gt;&gt; {
                 <span class="kw">let _ </span>= <span class="self">self</span>.c.fetch_add(<span class="number">1</span>, std::sync::atomic::Ordering::Relaxed);
-                <span class="macro">assert!</span>(query.starts_with(<span class="string">&quot;CREATE TABLE demo&quot;</span>));
+                <span class="macro">assert!</span>(query.starts_with(<span class="string">"CREATE TABLE demo"</span>));
                 <span class="prelude-val">Ok</span>(Cow::Borrowed(query))
             }
 
@@ -726,15 +777,17 @@
             }
         }
 
-        <span class="kw">let </span>standalone = tests::create_standalone_instance(<span class="string">&quot;test_hook&quot;</span>).<span class="kw">await</span>;
-        <span class="kw">let </span><span class="kw-2">mut </span>instance = standalone.instance;
-
         <span class="kw">let </span>plugins = Plugins::new();
         <span class="kw">let </span>counter_hook = Arc::new(AssertionHook::default());
         plugins.insert::&lt;SqlQueryInterceptorRef&lt;Error&gt;&gt;(counter_hook.clone());
-        Arc::make_mut(<span class="kw-2">&amp;mut </span>instance).set_plugins(Arc::new(plugins));
 
-        <span class="kw">let </span>sql = <span class="string">r#&quot;CREATE TABLE demo(
+        <span class="kw">let </span>standalone = GreptimeDbStandaloneBuilder::new(<span class="string">"test_sql_interceptor_plugin"</span>)
+            .with_plugin(plugins)
+            .build()
+            .<span class="kw">await</span>;
+        <span class="kw">let </span>instance = standalone.instance;
+
+        <span class="kw">let </span>sql = <span class="string">r#"CREATE TABLE demo(
                             host STRING,
                             ts TIMESTAMP,
                             cpu DOUBLE NULL,
@@ -742,7 +795,7 @@
                             disk_util DOUBLE DEFAULT 9.9,
                             TIME INDEX (ts),
                             PRIMARY KEY(host)
-                        ) engine=mito with(regions=1);&quot;#</span>;
+                        ) engine=mito with(regions=1);"#</span>;
         <span class="kw">let </span>output = SqlQueryHandler::do_query(<span class="kw-2">&amp;*</span>instance, sql, QueryContext::arc())
             .<span class="kw">await
             </span>.remove(<span class="number">0</span>)
@@ -756,7 +809,7 @@
         }
     }
 
-    <span class="attr">#[tokio::test(flavor = <span class="string">&quot;multi_thread&quot;</span>)]
+    <span class="attr">#[tokio::test(flavor = <span class="string">"multi_thread"</span>)]
     </span><span class="kw">async fn </span>test_disable_db_operation_plugin() {
         <span class="attr">#[derive(Default)]
         </span><span class="kw">struct </span>DisableDBOpHook;
@@ -773,7 +826,7 @@
                     <span class="kw">match </span>s {
                         Statement::CreateDatabase(<span class="kw">_</span>) | Statement::ShowDatabases(<span class="kw">_</span>) =&gt; {
                             <span class="kw">return </span><span class="prelude-val">Err</span>(Error::NotSupported {
-                                feat: <span class="string">&quot;Database operations&quot;</span>.to_owned(),
+                                feat: <span class="string">"Database operations"</span>.to_owned(),
                             })
                         }
                         <span class="kw">_ </span>=&gt; {}
@@ -786,15 +839,17 @@
 
         <span class="kw">let </span>query_ctx = QueryContext::arc();
 
-        <span class="kw">let </span>standalone = tests::create_standalone_instance(<span class="string">&quot;test_db_hook&quot;</span>).<span class="kw">await</span>;
-        <span class="kw">let </span><span class="kw-2">mut </span>instance = standalone.instance;
-
         <span class="kw">let </span>plugins = Plugins::new();
         <span class="kw">let </span>hook = Arc::new(DisableDBOpHook);
         plugins.insert::&lt;SqlQueryInterceptorRef&lt;Error&gt;&gt;(hook.clone());
-        Arc::make_mut(<span class="kw-2">&amp;mut </span>instance).set_plugins(Arc::new(plugins));
 
-        <span class="kw">let </span>sql = <span class="string">r#&quot;CREATE TABLE demo(
+        <span class="kw">let </span>standalone = GreptimeDbStandaloneBuilder::new(<span class="string">"test_disable_db_operation_plugin"</span>)
+            .with_plugin(plugins)
+            .build()
+            .<span class="kw">await</span>;
+        <span class="kw">let </span>instance = standalone.instance;
+
+        <span class="kw">let </span>sql = <span class="string">r#"CREATE TABLE demo(
                             host STRING,
                             ts TIMESTAMP,
                             cpu DOUBLE NULL,
@@ -802,7 +857,7 @@
                             disk_util DOUBLE DEFAULT 9.9,
                             TIME INDEX (ts),
                             PRIMARY KEY(host)
-                        ) engine=mito with(regions=1);&quot;#</span>;
+                        ) engine=mito with(regions=1);"#</span>;
         <span class="kw">let </span>output = SqlQueryHandler::do_query(<span class="kw-2">&amp;*</span>instance, sql, query_ctx.clone())
             .<span class="kw">await
             </span>.remove(<span class="number">0</span>)
@@ -813,7 +868,7 @@
             <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
         }
 
-        <span class="kw">let </span>sql = <span class="string">r#&quot;CREATE DATABASE tomcat&quot;#</span>;
+        <span class="kw">let </span>sql = <span class="string">r#"CREATE DATABASE tomcat"#</span>;
         <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = SqlQueryHandler::do_query(<span class="kw-2">&amp;*</span>instance, sql, query_ctx.clone())
             .<span class="kw">await
             </span>.remove(<span class="number">0</span>)
@@ -823,7 +878,7 @@
             <span class="macro">unreachable!</span>();
         }
 
-        <span class="kw">let </span>sql = <span class="string">r#&quot;SELECT 1; SHOW DATABASES&quot;#</span>;
+        <span class="kw">let </span>sql = <span class="string">r#"SELECT 1; SHOW DATABASES"#</span>;
         <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = SqlQueryHandler::do_query(<span class="kw-2">&amp;*</span>instance, sql, query_ctx.clone())
             .<span class="kw">await
             </span>.remove(<span class="number">0</span>)

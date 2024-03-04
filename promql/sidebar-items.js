@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["error","extension_plan","functions","planner","range_array"]};
+window.SIDEBAR_ITEMS = {"mod":["error","extension_plan","functions","metrics","planner","range_array"]};

@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"constant":["STATE_AWAIT_TERMINATION","STATE_RUNNING","STATE_STOP"],"mod":["dedup_deque","rate_limit"],"struct":["HandlerLoop","LocalScheduler","SchedulerConfig"],"trait":["Handler","Request","Scheduler"]};

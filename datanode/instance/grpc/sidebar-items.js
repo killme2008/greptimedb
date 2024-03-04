@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["new_dummy_catalog_list"],"struct":["DummySchemaProvider"]};

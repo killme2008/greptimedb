@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["ServerGrpcQueryHandlerAdaptor"],"trait":["GrpcQueryHandler"],"type":["GrpcQueryHandlerRef","ServerGrpcQueryHandlerRef"]};
+window.SIDEBAR_ITEMS = {"struct":["ServerGrpcQueryHandlerAdapter"],"trait":["GrpcQueryHandler"],"type":["GrpcQueryHandlerRef","ServerGrpcQueryHandlerRef"]};

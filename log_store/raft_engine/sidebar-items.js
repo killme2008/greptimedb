@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["log_store","protos"]};
+window.SIDEBAR_ITEMS = {"mod":["backend","log_store","protos"],"struct":["Config","RaftEngineBackend"]};

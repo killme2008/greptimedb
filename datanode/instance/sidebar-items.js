@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["create_compaction_scheduler","create_log_store","create_procedure_manager","new_metasrv_client"],"mod":["grpc","sql"],"struct":["Instance"],"type":["DefaultEngine","InstanceRef"]};

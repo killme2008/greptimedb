@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["parse_column_orders","parse_parquet_metadata"]};

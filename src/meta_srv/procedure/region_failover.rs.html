@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/meta-srv/src/procedure/region_failover.rs`."><title>region_failover.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="meta_srv" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../meta_srv/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/meta-srv/src/procedure/region_failover.rs`."><title>region_failover.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="meta_srv" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -694,16 +695,106 @@
 <a href="#694" id="694">694</a>
 <a href="#695" id="695">695</a>
 <a href="#696" id="696">696</a>
+<a href="#697" id="697">697</a>
+<a href="#698" id="698">698</a>
+<a href="#699" id="699">699</a>
+<a href="#700" id="700">700</a>
+<a href="#701" id="701">701</a>
+<a href="#702" id="702">702</a>
+<a href="#703" id="703">703</a>
+<a href="#704" id="704">704</a>
+<a href="#705" id="705">705</a>
+<a href="#706" id="706">706</a>
+<a href="#707" id="707">707</a>
+<a href="#708" id="708">708</a>
+<a href="#709" id="709">709</a>
+<a href="#710" id="710">710</a>
+<a href="#711" id="711">711</a>
+<a href="#712" id="712">712</a>
+<a href="#713" id="713">713</a>
+<a href="#714" id="714">714</a>
+<a href="#715" id="715">715</a>
+<a href="#716" id="716">716</a>
+<a href="#717" id="717">717</a>
+<a href="#718" id="718">718</a>
+<a href="#719" id="719">719</a>
+<a href="#720" id="720">720</a>
+<a href="#721" id="721">721</a>
+<a href="#722" id="722">722</a>
+<a href="#723" id="723">723</a>
+<a href="#724" id="724">724</a>
+<a href="#725" id="725">725</a>
+<a href="#726" id="726">726</a>
+<a href="#727" id="727">727</a>
+<a href="#728" id="728">728</a>
+<a href="#729" id="729">729</a>
+<a href="#730" id="730">730</a>
+<a href="#731" id="731">731</a>
+<a href="#732" id="732">732</a>
+<a href="#733" id="733">733</a>
+<a href="#734" id="734">734</a>
+<a href="#735" id="735">735</a>
+<a href="#736" id="736">736</a>
+<a href="#737" id="737">737</a>
+<a href="#738" id="738">738</a>
+<a href="#739" id="739">739</a>
+<a href="#740" id="740">740</a>
+<a href="#741" id="741">741</a>
+<a href="#742" id="742">742</a>
+<a href="#743" id="743">743</a>
+<a href="#744" id="744">744</a>
+<a href="#745" id="745">745</a>
+<a href="#746" id="746">746</a>
+<a href="#747" id="747">747</a>
+<a href="#748" id="748">748</a>
+<a href="#749" id="749">749</a>
+<a href="#750" id="750">750</a>
+<a href="#751" id="751">751</a>
+<a href="#752" id="752">752</a>
+<a href="#753" id="753">753</a>
+<a href="#754" id="754">754</a>
+<a href="#755" id="755">755</a>
+<a href="#756" id="756">756</a>
+<a href="#757" id="757">757</a>
+<a href="#758" id="758">758</a>
+<a href="#759" id="759">759</a>
+<a href="#760" id="760">760</a>
+<a href="#761" id="761">761</a>
+<a href="#762" id="762">762</a>
+<a href="#763" id="763">763</a>
+<a href="#764" id="764">764</a>
+<a href="#765" id="765">765</a>
+<a href="#766" id="766">766</a>
+<a href="#767" id="767">767</a>
+<a href="#768" id="768">768</a>
+<a href="#769" id="769">769</a>
+<a href="#770" id="770">770</a>
+<a href="#771" id="771">771</a>
+<a href="#772" id="772">772</a>
+<a href="#773" id="773">773</a>
+<a href="#774" id="774">774</a>
+<a href="#775" id="775">775</a>
+<a href="#776" id="776">776</a>
+<a href="#777" id="777">777</a>
+<a href="#778" id="778">778</a>
+<a href="#779" id="779">779</a>
+<a href="#780" id="780">780</a>
+<a href="#781" id="781">781</a>
+<a href="#782" id="782">782</a>
+<a href="#783" id="783">783</a>
+<a href="#784" id="784">784</a>
+<a href="#785" id="785">785</a>
+<a href="#786" id="786">786</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -721,8 +812,9 @@
 <span class="kw">use </span>std::time::Duration;
 
 <span class="kw">use </span>async_trait::async_trait;
-<span class="kw">use </span>common_meta::ident::TableIdent;
+<span class="kw">use </span>common_meta::key::datanode_table::DatanodeTableKey;
 <span class="kw">use </span>common_meta::key::TableMetadataManagerRef;
+<span class="kw">use </span>common_meta::kv_backend::ResettableKvBackendRef;
 <span class="kw">use </span>common_meta::{ClusterId, RegionIdent};
 <span class="kw">use </span>common_procedure::error::{
     Error <span class="kw">as </span>ProcedureError, FromJsonSnafu, <span class="prelude-ty">Result </span><span class="kw">as </span>ProcedureResult, ToJsonSnafu,
@@ -736,21 +828,21 @@
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>snafu::ResultExt;
 <span class="kw">use </span>store_api::storage::RegionNumber;
+<span class="kw">use </span>table::metadata::TableId;
 
 <span class="kw">use </span><span class="kw">crate</span>::error::{Error, RegisterProcedureLoaderSnafu, <span class="prelude-ty">Result</span>, TableMetadataManagerSnafu};
 <span class="kw">use </span><span class="kw">crate</span>::lock::DistLockRef;
 <span class="kw">use </span><span class="kw">crate</span>::metasrv::{SelectorContext, SelectorRef};
+<span class="kw">use </span><span class="kw">crate</span>::procedure::utils::region_lock_key;
 <span class="kw">use </span><span class="kw">crate</span>::service::mailbox::MailboxRef;
-<span class="kw">use </span><span class="kw">crate</span>::service::store::kv::ResettableKvStoreRef;
 
 <span class="kw">const </span>OPEN_REGION_MESSAGE_TIMEOUT: Duration = Duration::from_secs(<span class="number">30</span>);
-<span class="kw">const </span>CLOSE_REGION_MESSAGE_TIMEOUT: Duration = Duration::from_secs(<span class="number">2</span>);
 
 <span class="doccomment">/// A key for the preventing running multiple failover procedures for the same region.
 </span><span class="attr">#[derive(PartialEq, Eq, Hash, Clone)]
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct </span>RegionFailoverKey {
     <span class="kw">pub</span>(<span class="kw">crate</span>) cluster_id: ClusterId,
-    <span class="kw">pub</span>(<span class="kw">crate</span>) table_ident: TableIdent,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) table_id: TableId,
     <span class="kw">pub</span>(<span class="kw">crate</span>) region_number: RegionNumber,
 }
 
@@ -758,14 +850,15 @@
     <span class="kw">fn </span>from(region_ident: RegionIdent) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             cluster_id: region_ident.cluster_id,
-            table_ident: region_ident.table_ident,
+            table_id: region_ident.table_id,
             region_number: region_ident.region_number,
         }
     }
 }
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct </span>RegionFailoverManager {
-    in_memory: ResettableKvStoreRef,
+    region_lease_secs: u64,
+    in_memory: ResettableKvBackendRef,
     mailbox: MailboxRef,
     procedure_manager: ProcedureManagerRef,
     selector: SelectorRef,
@@ -788,15 +881,16 @@
 
 <span class="kw">impl </span>RegionFailoverManager {
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new(
-        in_memory: ResettableKvStoreRef,
+        region_lease_secs: u64,
+        in_memory: ResettableKvBackendRef,
         mailbox: MailboxRef,
         procedure_manager: ProcedureManagerRef,
-        selector: SelectorRef,
-        selector_ctx: SelectorContext,
+        (selector, selector_ctx): (SelectorRef, SelectorContext),
         dist_lock: DistLockRef,
         table_metadata_manager: TableMetadataManagerRef,
     ) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
+            region_lease_secs,
             in_memory,
             mailbox,
             procedure_manager,
@@ -810,6 +904,7 @@
 
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>create_context(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; RegionFailoverContext {
         RegionFailoverContext {
+            region_lease_secs: <span class="self">self</span>.region_lease_secs,
             in_memory: <span class="self">self</span>.in_memory.clone(),
             mailbox: <span class="self">self</span>.mailbox.clone(),
             selector: <span class="self">self</span>.selector.clone(),
@@ -852,7 +947,7 @@
 
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>do_region_failover(<span class="kw-2">&amp;</span><span class="self">self</span>, failed_region: <span class="kw-2">&amp;</span>RegionIdent) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="kw">let </span><span class="prelude-val">Some</span>(guard) = <span class="self">self</span>.insert_running_procedures(failed_region) <span class="kw">else </span>{
-            <span class="macro">warn!</span>(<span class="string">&quot;Region failover procedure for region {failed_region} is already running!&quot;</span>);
+            <span class="macro">warn!</span>(<span class="string">"Region failover procedure for region {failed_region} is already running!"</span>);
             <span class="kw">return </span><span class="prelude-val">Ok</span>(());
         };
 
@@ -864,11 +959,16 @@
             </span><span class="kw">return </span><span class="prelude-val">Ok</span>(());
         }
 
+        <span class="kw">if </span>!<span class="self">self</span>.failed_region_exists(failed_region).<span class="kw">await</span><span class="question-mark">? </span>{
+            <span class="comment">// The failed region could be failover by another procedure.
+            </span><span class="kw">return </span><span class="prelude-val">Ok</span>(());
+        }
+
         <span class="kw">let </span>context = <span class="self">self</span>.create_context();
         <span class="kw">let </span>procedure = RegionFailoverProcedure::new(failed_region.clone(), context);
         <span class="kw">let </span>procedure_with_id = ProcedureWithId::with_random_id(Box::new(procedure));
         <span class="kw">let </span>procedure_id = procedure_with_id.id;
-        <span class="macro">info!</span>(<span class="string">&quot;Starting region failover procedure {procedure_id} for region {failed_region:?}&quot;</span>);
+        <span class="macro">info!</span>(<span class="string">"Starting region failover procedure {procedure_id} for region {failed_region:?}"</span>);
 
         <span class="kw">let </span>procedure_manager = <span class="self">self</span>.procedure_manager.clone();
         <span class="kw">let </span>failed_region = failed_region.clone();
@@ -878,45 +978,66 @@
             <span class="kw">let </span>watcher = <span class="kw-2">&amp;mut </span><span class="kw">match </span>procedure_manager.submit(procedure_with_id).<span class="kw">await </span>{
                 <span class="prelude-val">Ok</span>(watcher) =&gt; watcher,
                 <span class="prelude-val">Err</span>(e) =&gt; {
-                    <span class="macro">error!</span>(e; <span class="string">&quot;Failed to submit region failover procedure {procedure_id} for region {failed_region}&quot;</span>);
+                    <span class="macro">error!</span>(e; <span class="string">"Failed to submit region failover procedure {procedure_id} for region {failed_region}"</span>);
                     <span class="kw">return</span>;
                 }
             };
 
             <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = watcher::wait(watcher).<span class="kw">await </span>{
-                <span class="macro">error!</span>(e; <span class="string">&quot;Failed to wait region failover procedure {procedure_id} for region {failed_region}&quot;</span>);
+                <span class="macro">error!</span>(e; <span class="string">"Failed to wait region failover procedure {procedure_id} for region {failed_region}"</span>);
                 <span class="kw">return</span>;
             }
 
-            <span class="macro">info!</span>(<span class="string">&quot;Region failover procedure {procedure_id} for region {failed_region} is finished successfully!&quot;</span>);
+            <span class="macro">info!</span>(<span class="string">"Region failover procedure {procedure_id} for region {failed_region} is finished successfully!"</span>);
         });
         <span class="prelude-val">Ok</span>(())
     }
 
     <span class="kw">async fn </span>table_exists(<span class="kw-2">&amp;</span><span class="self">self</span>, failed_region: <span class="kw-2">&amp;</span>RegionIdent) -&gt; <span class="prelude-ty">Result</span>&lt;bool&gt; {
-        <span class="kw">let </span>table_ident = <span class="kw-2">&amp;</span>failed_region.table_ident;
         <span class="prelude-val">Ok</span>(<span class="self">self
             </span>.table_metadata_manager
-            .table_region_manager()
-            .get(table_ident.table_id)
+            .table_route_manager()
+            .get_region_distribution(failed_region.table_id)
             .<span class="kw">await
             </span>.context(TableMetadataManagerSnafu)<span class="question-mark">?
             </span>.is_some())
     }
+
+    <span class="kw">async fn </span>failed_region_exists(<span class="kw-2">&amp;</span><span class="self">self</span>, failed_region: <span class="kw-2">&amp;</span>RegionIdent) -&gt; <span class="prelude-ty">Result</span>&lt;bool&gt; {
+        <span class="kw">let </span>table_id = failed_region.table_id;
+        <span class="kw">let </span>datanode_id = failed_region.datanode_id;
+
+        <span class="kw">let </span>value = <span class="self">self
+            </span>.table_metadata_manager
+            .datanode_table_manager()
+            .get(<span class="kw-2">&amp;</span>DatanodeTableKey::new(datanode_id, table_id))
+            .<span class="kw">await
+            </span>.context(TableMetadataManagerSnafu)<span class="question-mark">?</span>;
+
+        <span class="prelude-val">Ok</span>(value
+            .map(|value| {
+                value
+                    .regions
+                    .iter()
+                    .any(|region| <span class="kw-2">*</span>region == failed_region.region_number)
+            })
+            .unwrap_or_default())
+    }
 }
 
-<span class="doccomment">/// A &quot;Node&quot; in the state machine of region failover procedure.
+<span class="doccomment">/// A "Node" in the state machine of region failover procedure.
 /// Contains the current state and the data.
 </span><span class="attr">#[derive(Serialize, Deserialize, Debug)]
 </span><span class="kw">struct </span>Node {
     failed_region: RegionIdent,
-    state: <span class="prelude-ty">Option</span>&lt;Box&lt;<span class="kw">dyn </span>State&gt;&gt;,
+    state: Box&lt;<span class="kw">dyn </span>State&gt;,
 }
 
-<span class="doccomment">/// The &quot;Context&quot; of region failover procedure state machine.
+<span class="doccomment">/// The "Context" of region failover procedure state machine.
 </span><span class="attr">#[derive(Clone)]
 </span><span class="kw">pub struct </span>RegionFailoverContext {
-    <span class="kw">pub </span>in_memory: ResettableKvStoreRef,
+    <span class="kw">pub </span>region_lease_secs: u64,
+    <span class="kw">pub </span>in_memory: ResettableKvBackendRef,
     <span class="kw">pub </span>mailbox: MailboxRef,
     <span class="kw">pub </span>selector: SelectorRef,
     <span class="kw">pub </span>selector_ctx: SelectorContext,
@@ -926,10 +1047,10 @@
 
 <span class="doccomment">/// The state machine of region failover procedure. Driven by the call to `next`.
 </span><span class="attr">#[async_trait]
-#[typetag::serde(tag = <span class="string">&quot;region_failover_state&quot;</span>)]
+#[typetag::serde(tag = <span class="string">"region_failover_state"</span>)]
 </span><span class="kw">trait </span>State: Sync + Send + Debug {
     <span class="kw">async fn </span>next(
-        <span class="kw-2">mut </span><span class="self">self</span>: Box&lt;<span class="self">Self</span>&gt;,
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
         ctx: <span class="kw-2">&amp;</span>RegionFailoverContext,
         failed_region: <span class="kw-2">&amp;</span>RegionIdent,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;Box&lt;<span class="kw">dyn </span>State&gt;&gt;;
@@ -950,10 +1071,10 @@
 ///                  ┌─────────┐    │ to place the failed region
 ///                  │         │    │
 ///  If replied with │     ┌───▼────▼───────┐
-///  &quot;Close region   │     │DeactivateRegion│
-///  failed&quot;         │     └───┬────┬───────┘
+///  "Close region   │     │DeactivateRegion│
+///  failed"         │     └───┬────┬───────┘
 ///                  │         │    │
-///                  └─────────┘    │ Sends &quot;Close Region&quot; request
+///                  └─────────┘    │ Sends "Close Region" request
 ///                                 │ to the failed Datanode, and
 ///                                 | wait for the Region lease expiry
 ///                  ┌─────────┐    │ seconds
@@ -962,7 +1083,7 @@
 /// Wait candidate   │      │ActivateRegion◄───────────────────────┐
 /// response timeout │      └──┬────┬──────┘                       │
 ///                  │         │    │                              │
-///                  └─────────┘    │ Sends &quot;Open Region&quot; request  │
+///                  └─────────┘    │ Sends "Open Region" request  │
 ///                                 │ to the candidate Datanode,   │
 ///                                 │ and wait for 30 seconds      │
 ///                                 │                              │
@@ -994,13 +1115,13 @@
 }
 
 <span class="kw">impl </span>RegionFailoverProcedure {
-    <span class="kw">const </span>TYPE_NAME: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;metasrv-procedure::RegionFailover&quot;</span>;
+    <span class="kw">const </span>TYPE_NAME: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str = <span class="string">"metasrv-procedure::RegionFailover"</span>;
 
     <span class="kw">pub fn </span>new(failed_region: RegionIdent, context: RegionFailoverContext) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span>state = RegionFailoverStart::new();
         <span class="kw">let </span>node = Node {
             failed_region,
-            state: <span class="prelude-val">Some</span>(Box::new(state)),
+            state: Box::new(state),
         };
         <span class="self">Self </span>{ node, context }
     }
@@ -1018,25 +1139,18 @@
     }
 
     <span class="kw">async fn </span>execute(<span class="kw-2">&amp;mut </span><span class="self">self</span>, _ctx: <span class="kw-2">&amp;</span>ProcedureContext) -&gt; ProcedureResult&lt;Status&gt; {
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(state) = <span class="self">self</span>.node.state.take() {
-            <span class="kw">let </span>next_state = state
-                .next(<span class="kw-2">&amp;</span><span class="self">self</span>.context, <span class="kw-2">&amp;</span><span class="self">self</span>.node.failed_region)
-                .<span class="kw">await
-                </span>.map_err(|e| {
-                    <span class="kw">if </span><span class="macro">matches!</span>(e, Error::RetryLater { .. }) {
-                        ProcedureError::retry_later(e)
-                    } <span class="kw">else </span>{
-                        ProcedureError::external(e)
-                    }
-                })<span class="question-mark">?</span>;
-            <span class="self">self</span>.node.state = <span class="prelude-val">Some</span>(next_state);
-        }
-        <span class="prelude-val">Ok</span>(<span class="self">self
-            </span>.node
-            .state
-            .as_ref()
-            .map(|s| s.status())
-            .unwrap_or(Status::Done))
+        <span class="kw">let </span>state = <span class="kw-2">&amp;mut </span><span class="self">self</span>.node.state;
+        <span class="kw-2">*</span>state = state
+            .next(<span class="kw-2">&amp;</span><span class="self">self</span>.context, <span class="kw-2">&amp;</span><span class="self">self</span>.node.failed_region)
+            .<span class="kw">await
+            </span>.map_err(|e| {
+                <span class="kw">if </span><span class="macro">matches!</span>(e, Error::RetryLater { .. }) {
+                    ProcedureError::retry_later(e)
+                } <span class="kw">else </span>{
+                    ProcedureError::external(e)
+                }
+            })<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(state.status())
     }
 
     <span class="kw">fn </span>dump(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; ProcedureResult&lt;String&gt; {
@@ -1045,28 +1159,27 @@
 
     <span class="kw">fn </span>lock_key(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; LockKey {
         <span class="kw">let </span>region_ident = <span class="kw-2">&amp;</span><span class="self">self</span>.node.failed_region;
-        <span class="kw">let </span>table_key = common_catalog::format_full_table_name(
-            <span class="kw-2">&amp;</span>region_ident.table_ident.catalog,
-            <span class="kw-2">&amp;</span>region_ident.table_ident.schema,
-            <span class="kw-2">&amp;</span>region_ident.table_ident.table,
-        );
-        <span class="kw">let </span>region_key = <span class="macro">format!</span>(<span class="string">&quot;{}/region-{}&quot;</span>, table_key, region_ident.region_number);
-        LockKey::new(<span class="macro">vec!</span>[table_key, region_key])
+        <span class="kw">let </span>region_key = region_lock_key(region_ident.table_id, region_ident.region_number);
+        LockKey::single(region_key)
     }
 }
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use </span>std::collections::HashMap;
+    <span class="kw">use </span>std::sync::Mutex;
 
     <span class="kw">use </span>api::v1::meta::mailbox_message::Payload;
     <span class="kw">use </span>api::v1::meta::{HeartbeatResponse, MailboxMessage, Peer, RequestHeader};
-    <span class="kw">use </span>common_catalog::consts::{DEFAULT_CATALOG_NAME, DEFAULT_SCHEMA_NAME, MITO_ENGINE};
-    <span class="kw">use </span>common_meta::ident::TableIdent;
-    <span class="kw">use </span>common_meta::instruction::{Instruction, InstructionReply, SimpleReply};
+    <span class="kw">use </span>common_catalog::consts::{DEFAULT_CATALOG_NAME, DEFAULT_SCHEMA_NAME};
+    <span class="kw">use </span>common_meta::ddl::utils::region_storage_path;
+    <span class="kw">use </span>common_meta::instruction::{Instruction, InstructionReply, OpenRegion, SimpleReply};
     <span class="kw">use </span>common_meta::key::TableMetadataManager;
+    <span class="kw">use </span>common_meta::kv_backend::memory::MemoryKvBackend;
+    <span class="kw">use </span>common_meta::sequence::SequenceBuilder;
     <span class="kw">use </span>common_meta::DatanodeId;
-    <span class="kw">use </span>common_procedure::BoxedProcedure;
+    <span class="kw">use </span>common_procedure::{BoxedProcedure, ProcedureId};
+    <span class="kw">use </span>common_procedure_test::MockContextProvider;
     <span class="kw">use </span>rand::prelude::SliceRandom;
     <span class="kw">use </span>tokio::sync::mpsc::Receiver;
 
@@ -1074,12 +1187,9 @@
     <span class="kw">use </span><span class="kw">crate</span>::cluster::MetaPeerClientBuilder;
     <span class="kw">use </span><span class="kw">crate</span>::handler::{HeartbeatMailbox, Pusher, Pushers};
     <span class="kw">use </span><span class="kw">crate</span>::lock::memory::MemLock;
-    <span class="kw">use </span><span class="kw">crate</span>::selector::{Namespace, Selector};
-    <span class="kw">use </span><span class="kw">crate</span>::sequence::Sequence;
+    <span class="kw">use </span><span class="kw">crate</span>::selector::{Namespace, Selector, SelectorOptions};
     <span class="kw">use </span><span class="kw">crate</span>::service::mailbox::Channel;
-    <span class="kw">use </span><span class="kw">crate</span>::service::store::kv::{KvBackendAdapter, KvStoreRef};
-    <span class="kw">use </span><span class="kw">crate</span>::service::store::memory::MemStore;
-    <span class="kw">use </span><span class="kw">crate</span>::table_routes;
+    <span class="kw">use </span><span class="kw">crate</span>::test_util;
 
     <span class="kw">struct </span>RandomNodeSelector {
         nodes: Vec&lt;Peer&gt;,
@@ -1090,7 +1200,12 @@
         <span class="kw">type </span>Context = SelectorContext;
         <span class="kw">type </span>Output = Vec&lt;Peer&gt;;
 
-        <span class="kw">async fn </span>select(<span class="kw-2">&amp;</span><span class="self">self</span>, _ns: Namespace, _ctx: <span class="kw-2">&amp;</span><span class="self">Self</span>::Context) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Output&gt; {
+        <span class="kw">async fn </span>select(
+            <span class="kw-2">&amp;</span><span class="self">self</span>,
+            _ns: Namespace,
+            _ctx: <span class="kw-2">&amp;</span><span class="self">Self</span>::Context,
+            _opts: SelectorOptions,
+        ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Output&gt; {
             <span class="kw">let </span><span class="kw-2">mut </span>rng = rand::thread_rng();
             <span class="kw">let </span><span class="kw-2">mut </span>nodes = <span class="self">self</span>.nodes.clone();
             nodes.shuffle(<span class="kw-2">&amp;mut </span>rng);
@@ -1102,20 +1217,20 @@
         <span class="kw">pub </span>context: RegionFailoverContext,
         <span class="kw">pub </span>heartbeat_receivers: HashMap&lt;DatanodeId, Receiver&lt;tonic::Result&lt;HeartbeatResponse&gt;&gt;&gt;,
         <span class="kw">pub </span>pushers: Pushers,
+        <span class="kw">pub </span>path: String,
     }
 
     <span class="kw">impl </span>TestingEnv {
         <span class="kw">pub async fn </span>failed_region(<span class="kw-2">&amp;</span><span class="self">self</span>, region_number: u32) -&gt; RegionIdent {
-            <span class="kw">let </span>value = <span class="self">self
+            <span class="kw">let </span>region_distribution = <span class="self">self
                 </span>.context
                 .table_metadata_manager
-                .table_region_manager()
-                .get(<span class="number">1</span>)
+                .table_route_manager()
+                .get_region_distribution(<span class="number">1</span>)
                 .<span class="kw">await
                 </span>.unwrap()
                 .unwrap();
-            <span class="kw">let </span>failed_datanode = value
-                .region_distribution
+            <span class="kw">let </span>failed_datanode = region_distribution
                 .iter()
                 .find_map(|(<span class="kw-2">&amp;</span>datanode_id, regions)| {
                     <span class="kw">if </span>regions.contains(<span class="kw-2">&amp;</span>region_number) {
@@ -1129,13 +1244,8 @@
                 cluster_id: <span class="number">0</span>,
                 region_number,
                 datanode_id: failed_datanode,
-                table_ident: TableIdent {
-                    table_id: <span class="number">1</span>,
-                    engine: MITO_ENGINE.to_string(),
-                    catalog: DEFAULT_CATALOG_NAME.to_string(),
-                    schema: DEFAULT_SCHEMA_NAME.to_string(),
-                    table: <span class="string">&quot;my_table&quot;</span>.to_string(),
-                },
+                table_id: <span class="number">1</span>,
+                engine: <span class="string">"mito2"</span>.to_string(),
             }
         }
     }
@@ -1149,40 +1259,32 @@
             <span class="self">Self </span>{ selector: <span class="prelude-val">None </span>}
         }
 
-        <span class="attr">#[allow(unused)]
-        </span><span class="kw">pub fn </span>with_selector(<span class="kw-2">mut </span><span class="self">self</span>, selector: SelectorRef) -&gt; <span class="self">Self </span>{
+        <span class="kw">fn </span>with_selector(<span class="kw-2">mut </span><span class="self">self</span>, selector: SelectorRef) -&gt; <span class="self">Self </span>{
             <span class="self">self</span>.selector = <span class="prelude-val">Some</span>(selector);
             <span class="self">self
         </span>}
 
         <span class="kw">pub async fn </span>build(<span class="self">self</span>) -&gt; TestingEnv {
-            <span class="kw">let </span>in_memory = Arc::new(MemStore::new());
-            <span class="kw">let </span>kv_store: KvStoreRef = Arc::new(MemStore::new());
+            <span class="kw">let </span>in_memory = Arc::new(MemoryKvBackend::new());
+            <span class="kw">let </span>kv_backend = Arc::new(MemoryKvBackend::new());
             <span class="kw">let </span>meta_peer_client = MetaPeerClientBuilder::default()
                 .election(<span class="prelude-val">None</span>)
-                .in_memory(Arc::new(MemStore::new()))
+                .in_memory(Arc::new(MemoryKvBackend::new()))
                 .build()
                 .map(Arc::new)
                 <span class="comment">// Safety: all required fields set at initialization
                 </span>.unwrap();
 
-            <span class="kw">let </span>table = <span class="string">&quot;my_table&quot;</span>;
-            <span class="kw">let </span>table_metadata_manager = Arc::new(TableMetadataManager::new(
-                KvBackendAdapter::wrap(kv_store.clone()),
-            ));
-            table_routes::tests::prepare_table_region_and_info_value(
-                <span class="kw-2">&amp;</span>table_metadata_manager,
-                table,
-            )
-            .<span class="kw">await</span>;
-            <span class="kw">let </span>table_region_value = table_metadata_manager
-                .table_region_manager()
-                .get(<span class="number">1</span>)
+            <span class="kw">let </span>table_id = <span class="number">1</span>;
+            <span class="kw">let </span>table = <span class="string">"my_table"</span>;
+            <span class="kw">let </span>table_metadata_manager = Arc::new(TableMetadataManager::new(kv_backend.clone()));
+            test_util::prepare_table_region_and_info_value(<span class="kw-2">&amp;</span>table_metadata_manager, table).<span class="kw">await</span>;
+            <span class="kw">let </span>region_distribution = table_metadata_manager
+                .table_route_manager()
+                .get_region_distribution(<span class="number">1</span>)
                 .<span class="kw">await
                 </span>.unwrap()
                 .unwrap();
-
-            <span class="kw">let _ </span>= table_routes::tests::prepare_table_route_value(<span class="kw-2">&amp;</span>kv_store, table).<span class="kw">await</span>;
 
             <span class="kw">let </span>pushers = Pushers::default();
             <span class="kw">let </span><span class="kw-2">mut </span>heartbeat_receivers = HashMap::with_capacity(<span class="number">3</span>);
@@ -1197,30 +1299,32 @@
             }
 
             <span class="kw">let </span>mailbox_sequence =
-                Sequence::new(<span class="string">&quot;test_heartbeat_mailbox&quot;</span>, <span class="number">0</span>, <span class="number">100</span>, kv_store.clone());
+                SequenceBuilder::new(<span class="string">"test_heartbeat_mailbox"</span>, kv_backend.clone())
+                    .initial(<span class="number">0</span>)
+                    .step(<span class="number">100</span>)
+                    .build();
             <span class="kw">let </span>mailbox = HeartbeatMailbox::create(pushers.clone(), mailbox_sequence);
 
             <span class="kw">let </span>selector = <span class="self">self</span>.selector.unwrap_or_else(|| {
-                <span class="kw">let </span>nodes = (<span class="number">1</span>..=table_region_value.region_distribution.len())
+                <span class="kw">let </span>nodes = (<span class="number">1</span>..=region_distribution.len())
                     .map(|id| Peer {
                         id: id <span class="kw">as </span>u64,
-                        addr: <span class="string">&quot;&quot;</span>.to_string(),
+                        addr: <span class="string">""</span>.to_string(),
                     })
                     .collect();
                 Arc::new(RandomNodeSelector { nodes })
             });
             <span class="kw">let </span>selector_ctx = SelectorContext {
                 datanode_lease_secs: <span class="number">10</span>,
-                server_addr: <span class="string">&quot;127.0.0.1:3002&quot;</span>.to_string(),
-                kv_store: kv_store.clone(),
+                server_addr: <span class="string">"127.0.0.1:3002"</span>.to_string(),
+                kv_backend: kv_backend.clone(),
                 meta_peer_client,
-                catalog: <span class="prelude-val">Some</span>(DEFAULT_CATALOG_NAME.to_string()),
-                schema: <span class="prelude-val">Some</span>(DEFAULT_SCHEMA_NAME.to_string()),
-                table: <span class="prelude-val">Some</span>(table.to_string()),
+                table_id: <span class="prelude-val">Some</span>(table_id),
             };
 
             TestingEnv {
                 context: RegionFailoverContext {
+                    region_lease_secs: <span class="number">10</span>,
                     in_memory,
                     mailbox,
                     selector,
@@ -1230,14 +1334,13 @@
                 },
                 pushers,
                 heartbeat_receivers,
+                path: region_storage_path(DEFAULT_CATALOG_NAME, DEFAULT_SCHEMA_NAME).to_string(),
             }
         }
     }
 
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>test_region_failover_procedure() {
-        common_telemetry::init_default_ut_logging();
-
         <span class="kw">let </span><span class="kw-2">mut </span>env = TestingEnvBuilder::new().build().<span class="kw">await</span>;
         <span class="kw">let </span>failed_region = env.failed_region(<span class="number">1</span>).<span class="kw">await</span>;
 
@@ -1269,9 +1372,9 @@
                     <span class="number">1</span>,
                     <span class="prelude-val">Ok</span>(MailboxMessage {
                         id: <span class="number">1</span>,
-                        subject: <span class="string">&quot;Deactivate Region&quot;</span>.to_string(),
-                        from: <span class="macro">format!</span>(<span class="string">&quot;Datanode-{}&quot;</span>, failed_region.datanode_id),
-                        to: <span class="string">&quot;Metasrv&quot;</span>.to_string(),
+                        subject: <span class="string">"Deactivate Region"</span>.to_string(),
+                        from: <span class="macro">format!</span>(<span class="string">"Datanode-{}"</span>, failed_region.datanode_id),
+                        to: <span class="string">"Metasrv"</span>.to_string(),
                         timestamp_millis: common_time::util::current_time_millis(),
                         payload: <span class="prelude-val">Some</span>(Payload::Json(
                             serde_json::to_string(<span class="kw-2">&amp;</span>InstructionReply::CloseRegion(SimpleReply {
@@ -1289,7 +1392,11 @@
         <span class="kw">let </span>(candidate_tx, <span class="kw-2">mut </span>candidate_rx) = tokio::sync::mpsc::channel(<span class="number">1</span>);
         <span class="kw">for </span>(datanode_id, <span class="kw-2">mut </span>recv) <span class="kw">in </span>env.heartbeat_receivers.into_iter() {
             <span class="kw">let </span>mailbox_clone = env.context.mailbox.clone();
-            <span class="kw">let </span>failed_region_clone = failed_region.clone();
+            <span class="kw">let </span>opening_region = RegionIdent {
+                datanode_id,
+                ..failed_region.clone()
+            };
+            <span class="kw">let </span>path = env.path.to_string();
             <span class="kw">let </span>candidate_tx = candidate_tx.clone();
             <span class="kw">let </span>_handle = common_runtime::spawn_bg(<span class="kw">async move </span>{
                 <span class="kw">let </span>resp = recv.recv().<span class="kw">await</span>.unwrap().unwrap();
@@ -1297,9 +1404,13 @@
                 <span class="macro">assert_eq!</span>(
                     received.payload,
                     <span class="prelude-val">Some</span>(Payload::Json(
-                        serde_json::to_string(<span class="kw-2">&amp;</span>Instruction::OpenRegion(
-                            failed_region_clone.clone()
-                        ))
+                        serde_json::to_string(<span class="kw-2">&amp;</span>Instruction::OpenRegion(OpenRegion::new(
+                            opening_region,
+                            <span class="kw-2">&amp;</span>path,
+                            HashMap::new(),
+                            HashMap::new(),
+                            <span class="bool-val">false
+                        </span>)))
                         .unwrap(),
                     ))
                 );
@@ -1311,13 +1422,13 @@
                     .on_recv(
                         <span class="comment">// Very tricky here:
                         // the procedure only sends two messages in sequence, the second one is
-                        // &quot;Activate Region&quot;, and its message id is 2.
+                        // "Activate Region", and its message id is 2.
                         </span><span class="number">2</span>,
                         <span class="prelude-val">Ok</span>(MailboxMessage {
                             id: <span class="number">2</span>,
-                            subject: <span class="string">&quot;Activate Region&quot;</span>.to_string(),
-                            from: <span class="macro">format!</span>(<span class="string">&quot;Datanode-{datanode_id}&quot;</span>),
-                            to: <span class="string">&quot;Metasrv&quot;</span>.to_string(),
+                            subject: <span class="string">"Activate Region"</span>.to_string(),
+                            from: <span class="macro">format!</span>(<span class="string">"Datanode-{datanode_id}"</span>),
+                            to: <span class="string">"Metasrv"</span>.to_string(),
                             timestamp_millis: common_time::util::current_time_millis(),
                             payload: <span class="prelude-val">Some</span>(Payload::Json(
                                 serde_json::to_string(<span class="kw-2">&amp;</span>InstructionReply::OpenRegion(SimpleReply {
@@ -1337,27 +1448,23 @@
 
         <span class="macro">assert_eq!</span>(
             procedure.dump().unwrap(),
-            <span class="string">r#&quot;{&quot;failed_region&quot;:{&quot;cluster_id&quot;:0,&quot;datanode_id&quot;:1,&quot;table_ident&quot;:{&quot;catalog&quot;:&quot;greptime&quot;,&quot;schema&quot;:&quot;public&quot;,&quot;table&quot;:&quot;my_table&quot;,&quot;table_id&quot;:1,&quot;engine&quot;:&quot;mito&quot;},&quot;region_number&quot;:1},&quot;state&quot;:{&quot;region_failover_state&quot;:&quot;RegionFailoverEnd&quot;}}&quot;#
+            <span class="string">r#"{"failed_region":{"cluster_id":0,"datanode_id":1,"table_id":1,"region_number":1,"engine":"mito2"},"state":{"region_failover_state":"RegionFailoverEnd"}}"#
         </span>);
 
         <span class="comment">// Verifies that the failed region (region 1) is moved from failed datanode (datanode 1) to the candidate datanode.
-        </span><span class="kw">let </span>value = env
+        </span><span class="kw">let </span>region_distribution = env
             .context
             .table_metadata_manager
-            .table_region_manager()
-            .get(<span class="number">1</span>)
+            .table_route_manager()
+            .get_region_distribution(<span class="number">1</span>)
             .<span class="kw">await
             </span>.unwrap()
             .unwrap();
         <span class="macro">assert_eq!</span>(
-            value
-                .region_distribution
-                .get(<span class="kw-2">&amp;</span>failed_region.datanode_id)
-                .unwrap(),
+            region_distribution.get(<span class="kw-2">&amp;</span>failed_region.datanode_id).unwrap(),
             <span class="kw-2">&amp;</span><span class="macro">vec!</span>[<span class="number">2</span>]
         );
-        <span class="macro">assert!</span>(value
-            .region_distribution
+        <span class="macro">assert!</span>(region_distribution
             .get(<span class="kw-2">&amp;</span>candidate_rx.recv().<span class="kw">await</span>.unwrap())
             .unwrap()
             .contains(<span class="kw-2">&amp;</span><span class="number">1</span>));
@@ -1371,7 +1478,7 @@
         <span class="kw">let </span>state = RegionFailoverStart::new();
         <span class="kw">let </span>node = Node {
             failed_region,
-            state: <span class="prelude-val">Some</span>(Box::new(state)),
+            state: Box::new(state),
         };
         <span class="kw">let </span>procedure = RegionFailoverProcedure {
             node,
@@ -1381,13 +1488,87 @@
         <span class="kw">let </span>s = procedure.dump().unwrap();
         <span class="macro">assert_eq!</span>(
             s,
-            <span class="string">r#&quot;{&quot;failed_region&quot;:{&quot;cluster_id&quot;:0,&quot;datanode_id&quot;:1,&quot;table_ident&quot;:{&quot;catalog&quot;:&quot;greptime&quot;,&quot;schema&quot;:&quot;public&quot;,&quot;table&quot;:&quot;my_table&quot;,&quot;table_id&quot;:1,&quot;engine&quot;:&quot;mito&quot;},&quot;region_number&quot;:1},&quot;state&quot;:{&quot;region_failover_state&quot;:&quot;RegionFailoverStart&quot;,&quot;failover_candidate&quot;:null}}&quot;#
+            <span class="string">r#"{"failed_region":{"cluster_id":0,"datanode_id":1,"table_id":1,"region_number":1,"engine":"mito2"},"state":{"region_failover_state":"RegionFailoverStart","failover_candidate":null}}"#
         </span>);
         <span class="kw">let </span>n: Node = serde_json::from_str(<span class="kw-2">&amp;</span>s).unwrap();
         <span class="macro">assert_eq!</span>(
-            <span class="macro">format!</span>(<span class="string">&quot;{n:?}&quot;</span>),
-            <span class="string">r#&quot;Node { failed_region: RegionIdent { cluster_id: 0, datanode_id: 1, table_ident: TableIdent { catalog: &quot;greptime&quot;, schema: &quot;public&quot;, table: &quot;my_table&quot;, table_id: 1, engine: &quot;mito&quot; }, region_number: 1 }, state: Some(RegionFailoverStart { failover_candidate: None }) }&quot;#
+            <span class="macro">format!</span>(<span class="string">"{n:?}"</span>),
+            <span class="string">r#"Node { failed_region: RegionIdent { cluster_id: 0, datanode_id: 1, table_id: 1, region_number: 1, engine: "mito2" }, state: RegionFailoverStart { failover_candidate: None } }"#
         </span>);
+    }
+
+    <span class="attr">#[tokio::test]
+    </span><span class="kw">async fn </span>test_state_not_changed_upon_failure() {
+        <span class="kw">struct </span>MySelector {
+            peers: Arc&lt;Mutex&lt;Vec&lt;<span class="prelude-ty">Option</span>&lt;Peer&gt;&gt;&gt;&gt;,
+        }
+
+        <span class="attr">#[async_trait]
+        </span><span class="kw">impl </span>Selector <span class="kw">for </span>MySelector {
+            <span class="kw">type </span>Context = SelectorContext;
+            <span class="kw">type </span>Output = Vec&lt;Peer&gt;;
+
+            <span class="kw">async fn </span>select(
+                <span class="kw-2">&amp;</span><span class="self">self</span>,
+                _ns: Namespace,
+                _ctx: <span class="kw-2">&amp;</span><span class="self">Self</span>::Context,
+                _opts: SelectorOptions,
+            ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Output&gt; {
+                <span class="kw">let </span><span class="kw-2">mut </span>peers = <span class="self">self</span>.peers.lock().unwrap();
+                <span class="prelude-val">Ok</span>(<span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="prelude-val">Some</span>(peer)) = peers.pop() {
+                    <span class="macro">vec!</span>[peer]
+                } <span class="kw">else </span>{
+                    <span class="macro">vec!</span>[]
+                })
+            }
+        }
+
+        <span class="comment">// Returns a valid peer the second time called "select".
+        </span><span class="kw">let </span>selector = MySelector {
+            peers: Arc::new(Mutex::new(<span class="macro">vec!</span>[
+                <span class="prelude-val">Some</span>(Peer {
+                    id: <span class="number">42</span>,
+                    addr: <span class="string">""</span>.to_string(),
+                }),
+                <span class="prelude-val">None</span>,
+            ])),
+        };
+
+        <span class="kw">let </span>env = TestingEnvBuilder::new()
+            .with_selector(Arc::new(selector))
+            .build()
+            .<span class="kw">await</span>;
+        <span class="kw">let </span>failed_region = env.failed_region(<span class="number">1</span>).<span class="kw">await</span>;
+
+        <span class="kw">let </span>state = RegionFailoverStart::new();
+        <span class="kw">let </span>node = Node {
+            failed_region,
+            state: Box::new(state),
+        };
+        <span class="kw">let </span><span class="kw-2">mut </span>procedure = RegionFailoverProcedure {
+            node,
+            context: env.context,
+        };
+
+        <span class="kw">let </span>ctx = ProcedureContext {
+            procedure_id: ProcedureId::random(),
+            provider: Arc::new(MockContextProvider::default()),
+        };
+
+        <span class="kw">let </span>result = procedure.execute(<span class="kw-2">&amp;</span>ctx).<span class="kw">await</span>;
+        <span class="macro">assert!</span>(result.is_err());
+        <span class="macro">assert!</span>(result.unwrap_err().is_retry_later());
+        <span class="macro">assert_eq!</span>(
+            <span class="string">r#"{"region_failover_state":"RegionFailoverStart","failover_candidate":null}"#</span>,
+            serde_json::to_string(<span class="kw-2">&amp;</span>procedure.node.state).unwrap()
+        );
+
+        <span class="kw">let </span>result = procedure.execute(<span class="kw-2">&amp;</span>ctx).<span class="kw">await</span>;
+        <span class="macro">assert!</span>(<span class="macro">matches!</span>(result, <span class="prelude-val">Ok</span>(Status::Executing { persist: <span class="bool-val">true </span>})));
+        <span class="macro">assert_eq!</span>(
+            <span class="string">r#"{"region_failover_state":"DeactivateRegion","candidate":{"id":42,"addr":""}}"#</span>,
+            serde_json::to_string(<span class="kw-2">&amp;</span>procedure.node.state).unwrap()
+        );
     }
 }
 </code></pre></div></section></main></body></html>

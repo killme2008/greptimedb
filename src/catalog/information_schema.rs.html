@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/catalog/src/information_schema.rs`."><title>information_schema.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="catalog" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../catalog/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/catalog/src/information_schema.rs`."><title>information_schema.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="catalog" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -247,272 +248,252 @@
 <a href="#247" id="247">247</a>
 <a href="#248" id="248">248</a>
 <a href="#249" id="249">249</a>
-<a href="#250" id="250">250</a>
-<a href="#251" id="251">251</a>
-<a href="#252" id="252">252</a>
-<a href="#253" id="253">253</a>
-<a href="#254" id="254">254</a>
-<a href="#255" id="255">255</a>
-<a href="#256" id="256">256</a>
-<a href="#257" id="257">257</a>
-<a href="#258" id="258">258</a>
-<a href="#259" id="259">259</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
 </span><span class="kw">mod </span>columns;
+<span class="kw">mod </span>memory_table;
+<span class="kw">mod </span>table_names;
 <span class="kw">mod </span>tables;
 
-<span class="kw">use </span>std::any::Any;
 <span class="kw">use </span>std::collections::HashMap;
 <span class="kw">use </span>std::sync::{Arc, Weak};
 
-<span class="kw">use </span>async_trait::async_trait;
-<span class="kw">use </span>common_catalog::consts::{
-    INFORMATION_SCHEMA_COLUMNS_TABLE_ID, INFORMATION_SCHEMA_NAME,
-    INFORMATION_SCHEMA_TABLES_TABLE_ID,
-};
+<span class="kw">use </span>common_catalog::consts::{<span class="self">self</span>, INFORMATION_SCHEMA_NAME};
 <span class="kw">use </span>common_error::ext::BoxedError;
-<span class="kw">use </span>common_recordbatch::{RecordBatchStreamAdaptor, SendableRecordBatchStream};
+<span class="kw">use </span>common_recordbatch::{RecordBatchStreamWrapper, SendableRecordBatchStream};
 <span class="kw">use </span>datatypes::schema::SchemaRef;
 <span class="kw">use </span>futures_util::StreamExt;
+<span class="kw">use </span>lazy_static::lazy_static;
+<span class="kw">use </span>paste::paste;
 <span class="kw">use </span>snafu::ResultExt;
+<span class="kw">use </span>store_api::data_source::DataSource;
 <span class="kw">use </span>store_api::storage::{ScanRequest, TableId};
-<span class="kw">use </span>table::data_source::DataSource;
 <span class="kw">use </span>table::error::{SchemaConversionSnafu, TablesRecordBatchSnafu};
-<span class="kw">use </span>table::metadata::{TableIdent, TableInfoBuilder, TableMetaBuilder, TableType};
-<span class="kw">use </span>table::{<span class="prelude-ty">Result </span><span class="kw">as </span>TableResult, Table, TableRef};
+<span class="kw">use </span>table::metadata::{
+    FilterPushDownType, TableInfoBuilder, TableInfoRef, TableMetaBuilder, TableType,
+};
+<span class="kw">use </span>table::thin_table::{ThinTable, ThinTableAdapter};
+<span class="kw">use </span>table::TableRef;
+<span class="kw">pub use </span>table_names::<span class="kw-2">*</span>;
 
 <span class="kw">use </span><span class="self">self</span>::columns::InformationSchemaColumns;
 <span class="kw">use </span><span class="kw">crate</span>::error::Result;
+<span class="kw">use </span><span class="kw">crate</span>::information_schema::memory_table::{get_schema_columns, MemoryTable};
 <span class="kw">use </span><span class="kw">crate</span>::information_schema::tables::InformationSchemaTables;
-<span class="kw">use </span><span class="kw">crate</span>::table_factory::TableFactory;
 <span class="kw">use </span><span class="kw">crate</span>::CatalogManager;
 
-<span class="kw">pub const </span>TABLES: <span class="kw-2">&amp;</span>str = <span class="string">&quot;tables&quot;</span>;
-<span class="kw">pub const </span>COLUMNS: <span class="kw-2">&amp;</span>str = <span class="string">&quot;columns&quot;</span>;
+<span class="macro">lazy_static! </span>{
+    <span class="comment">// Memory tables in `information_schema`.
+    </span><span class="kw">static </span><span class="kw-2">ref </span>MEMORY_TABLES: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>[<span class="kw-2">&amp;</span><span class="lifetime">'static </span>str] = <span class="kw-2">&amp;</span>[
+        ENGINES,
+        COLUMN_PRIVILEGES,
+        COLUMN_STATISTICS,
+        BUILD_INFO,
+    ];
+}
 
-<span class="kw">pub struct </span>InformationSchemaProvider {
+<span class="macro">macro_rules! </span>setup_memory_table {
+    (<span class="macro-nonterminal">$name</span>: expr) =&gt; {
+        <span class="macro">paste! </span>{
+            {
+                <span class="kw">let </span>(schema, columns) = get_schema_columns(<span class="macro-nonterminal">$name</span>);
+                <span class="prelude-val">Some</span>(Arc::new(MemoryTable::new(
+                    consts::[&lt;INFORMATION_SCHEMA_ <span class="macro-nonterminal">$name  </span>_TABLE_ID&gt;],
+                    <span class="macro-nonterminal">$name</span>,
+                    schema,
+                    columns
+                )) <span class="kw">as _</span>)
+            }
+        }
+    };
+}
+
+<span class="doccomment">/// The `information_schema` tables info provider.
+</span><span class="kw">pub struct </span>InformationSchemaProvider {
     catalog_name: String,
     catalog_manager: Weak&lt;<span class="kw">dyn </span>CatalogManager&gt;,
+    tables: HashMap&lt;String, TableRef&gt;,
 }
 
 <span class="kw">impl </span>InformationSchemaProvider {
     <span class="kw">pub fn </span>new(catalog_name: String, catalog_manager: Weak&lt;<span class="kw">dyn </span>CatalogManager&gt;) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
+        <span class="kw">let </span><span class="kw-2">mut </span>provider = <span class="self">Self </span>{
             catalog_name,
             catalog_manager,
+            tables: HashMap::new(),
+        };
+
+        provider.build_tables();
+
+        provider
+    }
+
+    <span class="doccomment">/// Returns table names in the order of table id.
+    </span><span class="kw">pub fn </span>table_names(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;String&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>tables = <span class="self">self</span>.tables.values().clone().collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
+
+        tables.sort_by(|t1, t2| {
+            t1.table_info()
+                .table_id()
+                .partial_cmp(<span class="kw-2">&amp;</span>t2.table_info().table_id())
+                .unwrap()
+        });
+        tables
+            .into_iter()
+            .map(|t| t.table_info().name.clone())
+            .collect()
+    }
+
+    <span class="doccomment">/// Returns a map of [TableRef] in information schema.
+    </span><span class="kw">pub fn </span>tables(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>HashMap&lt;String, TableRef&gt; {
+        <span class="macro">assert!</span>(!<span class="self">self</span>.tables.is_empty());
+
+        <span class="kw-2">&amp;</span><span class="self">self</span>.tables
+    }
+
+    <span class="doccomment">/// Returns the [TableRef] by table name.
+    </span><span class="kw">pub fn </span>table(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;TableRef&gt; {
+        <span class="self">self</span>.tables.get(name).cloned()
+    }
+
+    <span class="kw">fn </span>build_tables(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="kw">let </span><span class="kw-2">mut </span>tables = HashMap::new();
+        tables.insert(TABLES.to_string(), <span class="self">self</span>.build_table(TABLES).unwrap());
+        tables.insert(COLUMNS.to_string(), <span class="self">self</span>.build_table(COLUMNS).unwrap());
+
+        <span class="comment">// Add memory tables
+        </span><span class="kw">for </span>name <span class="kw">in </span>MEMORY_TABLES.iter() {
+            tables.insert((<span class="kw-2">*</span>name).to_string(), <span class="self">self</span>.build_table(name).unwrap());
+        }
+
+        <span class="self">self</span>.tables = tables;
+    }
+
+    <span class="kw">fn </span>build_table(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;TableRef&gt; {
+        <span class="self">self</span>.information_table(name).map(|table| {
+            <span class="kw">let </span>table_info = <span class="self">Self</span>::table_info(<span class="self">self</span>.catalog_name.clone(), <span class="kw-2">&amp;</span>table);
+            <span class="kw">let </span>filter_pushdown = FilterPushDownType::Unsupported;
+            <span class="kw">let </span>thin_table = ThinTable::new(table_info, filter_pushdown);
+
+            <span class="kw">let </span>data_source = Arc::new(InformationTableDataSource::new(table));
+            Arc::new(ThinTableAdapter::new(thin_table, data_source)) <span class="kw">as _
+        </span>})
+    }
+
+    <span class="kw">fn </span>information_table(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;InformationTableRef&gt; {
+        <span class="kw">match </span>name.to_ascii_lowercase().as_str() {
+            TABLES =&gt; <span class="prelude-val">Some</span>(Arc::new(InformationSchemaTables::new(
+                <span class="self">self</span>.catalog_name.clone(),
+                <span class="self">self</span>.catalog_manager.clone(),
+            )) <span class="kw">as _</span>),
+            COLUMNS =&gt; <span class="prelude-val">Some</span>(Arc::new(InformationSchemaColumns::new(
+                <span class="self">self</span>.catalog_name.clone(),
+                <span class="self">self</span>.catalog_manager.clone(),
+            )) <span class="kw">as _</span>),
+            ENGINES =&gt; <span class="macro">setup_memory_table!</span>(ENGINES),
+            COLUMN_PRIVILEGES =&gt; <span class="macro">setup_memory_table!</span>(COLUMN_PRIVILEGES),
+            COLUMN_STATISTICS =&gt; <span class="macro">setup_memory_table!</span>(COLUMN_STATISTICS),
+            BUILD_INFO =&gt; <span class="macro">setup_memory_table!</span>(BUILD_INFO),
+            <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
         }
     }
 
-    <span class="doccomment">/// Build a map of [TableRef] in information schema.
-    /// Including `tables` and `columns`.
-    </span><span class="kw">pub fn </span>build(
-        catalog_name: String,
-        catalog_manager: Weak&lt;<span class="kw">dyn </span>CatalogManager&gt;,
-    ) -&gt; HashMap&lt;String, TableRef&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>schema = HashMap::new();
-
-        schema.insert(
-            TABLES.to_string(),
-            Arc::new(InformationTable::new(
-                catalog_name.clone(),
-                INFORMATION_SCHEMA_TABLES_TABLE_ID,
-                TABLES.to_string(),
-                Arc::new(InformationSchemaTables::new(
-                    catalog_name.clone(),
-                    catalog_manager.clone(),
-                )),
-            )) <span class="kw">as _</span>,
-        );
-        schema.insert(
-            COLUMNS.to_string(),
-            Arc::new(InformationTable::new(
-                catalog_name.clone(),
-                INFORMATION_SCHEMA_COLUMNS_TABLE_ID,
-                COLUMNS.to_string(),
-                Arc::new(InformationSchemaColumns::new(catalog_name, catalog_manager)),
-            )) <span class="kw">as _</span>,
-        );
-
-        schema
-    }
-
-    <span class="kw">pub fn </span>table(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;TableRef&gt;&gt; {
-        <span class="kw">let </span>(stream_builder, table_id) = <span class="kw">match </span>name.to_ascii_lowercase().as_ref() {
-            TABLES =&gt; (
-                Arc::new(InformationSchemaTables::new(
-                    <span class="self">self</span>.catalog_name.clone(),
-                    <span class="self">self</span>.catalog_manager.clone(),
-                )) <span class="kw">as _</span>,
-                INFORMATION_SCHEMA_TABLES_TABLE_ID,
-            ),
-            COLUMNS =&gt; (
-                Arc::new(InformationSchemaColumns::new(
-                    <span class="self">self</span>.catalog_name.clone(),
-                    <span class="self">self</span>.catalog_manager.clone(),
-                )) <span class="kw">as _</span>,
-                INFORMATION_SCHEMA_COLUMNS_TABLE_ID,
-            ),
-            <span class="kw">_ </span>=&gt; {
-                <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>);
-            }
-        };
-
-        <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(Arc::new(InformationTable::new(
-            <span class="self">self</span>.catalog_name.clone(),
-            table_id,
-            name.to_string(),
-            stream_builder,
-        ))))
-    }
-
-    <span class="kw">pub fn </span>table_factory(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;TableFactory&gt;&gt; {
-        <span class="kw">let </span>(stream_builder, table_id) = <span class="kw">match </span>name.to_ascii_lowercase().as_ref() {
-            TABLES =&gt; (
-                Arc::new(InformationSchemaTables::new(
-                    <span class="self">self</span>.catalog_name.clone(),
-                    <span class="self">self</span>.catalog_manager.clone(),
-                )) <span class="kw">as _</span>,
-                INFORMATION_SCHEMA_TABLES_TABLE_ID,
-            ),
-            COLUMNS =&gt; (
-                Arc::new(InformationSchemaColumns::new(
-                    <span class="self">self</span>.catalog_name.clone(),
-                    <span class="self">self</span>.catalog_manager.clone(),
-                )) <span class="kw">as _</span>,
-                INFORMATION_SCHEMA_COLUMNS_TABLE_ID,
-            ),
-            <span class="kw">_ </span>=&gt; {
-                <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>);
-            }
-        };
-        <span class="kw">let </span>data_source = Arc::new(InformationTable::new(
-            <span class="self">self</span>.catalog_name.clone(),
-            table_id,
-            name.to_string(),
-            stream_builder,
-        ));
-
-        <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(Arc::new(<span class="kw">move </span>|| data_source.clone())))
-    }
-}
-
-<span class="comment">// TODO(ruihang): make it a more generic trait:
-// https://github.com/GreptimeTeam/greptimedb/pull/1639#discussion_r1205001903
-</span><span class="kw">pub trait </span>InformationStreamBuilder: Send + Sync {
-    <span class="kw">fn </span>to_stream(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;SendableRecordBatchStream&gt;;
-
-    <span class="kw">fn </span>schema(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; SchemaRef;
-}
-
-<span class="kw">pub struct </span>InformationTable {
-    catalog_name: String,
-    table_id: TableId,
-    name: String,
-    stream_builder: Arc&lt;<span class="kw">dyn </span>InformationStreamBuilder&gt;,
-}
-
-<span class="kw">impl </span>InformationTable {
-    <span class="kw">pub fn </span>new(
-        catalog_name: String,
-        table_id: TableId,
-        name: String,
-        stream_builder: Arc&lt;<span class="kw">dyn </span>InformationStreamBuilder&gt;,
-    ) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
-            catalog_name,
-            table_id,
-            name,
-            stream_builder,
-        }
-    }
-}
-
-<span class="attr">#[async_trait]
-</span><span class="kw">impl </span>Table <span class="kw">for </span>InformationTable {
-    <span class="kw">fn </span>as_any(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="kw">dyn </span>Any {
-        <span class="self">self
-    </span>}
-
-    <span class="kw">fn </span>schema(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; SchemaRef {
-        <span class="self">self</span>.stream_builder.schema()
-    }
-
-    <span class="kw">fn </span>table_info(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; table::metadata::TableInfoRef {
+    <span class="kw">fn </span>table_info(catalog_name: String, table: <span class="kw-2">&amp;</span>InformationTableRef) -&gt; TableInfoRef {
         <span class="kw">let </span>table_meta = TableMetaBuilder::default()
-            .schema(<span class="self">self</span>.stream_builder.schema())
+            .schema(table.schema())
             .primary_key_indices(<span class="macro">vec!</span>[])
             .next_column_id(<span class="number">0</span>)
             .build()
             .unwrap();
-        Arc::new(
-            TableInfoBuilder::default()
-                .ident(TableIdent {
-                    table_id: <span class="self">self</span>.table_id,
-                    version: <span class="number">0</span>,
-                })
-                .name(<span class="self">self</span>.name.clone())
-                .catalog_name(<span class="self">self</span>.catalog_name.clone())
-                .schema_name(INFORMATION_SCHEMA_NAME.to_string())
-                .meta(table_meta)
-                .table_type(TableType::Temporary)
-                .build()
-                .unwrap(),
-        )
+        <span class="kw">let </span>table_info = TableInfoBuilder::default()
+            .table_id(table.table_id())
+            .name(table.table_name().to_string())
+            .catalog_name(catalog_name)
+            .schema_name(INFORMATION_SCHEMA_NAME.to_string())
+            .meta(table_meta)
+            .table_type(table.table_type())
+            .build()
+            .unwrap();
+        Arc::new(table_info)
     }
+}
+
+<span class="kw">trait </span>InformationTable {
+    <span class="kw">fn </span>table_id(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; TableId;
+
+    <span class="kw">fn </span>table_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str;
+
+    <span class="kw">fn </span>schema(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; SchemaRef;
+
+    <span class="kw">fn </span>to_stream(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;SendableRecordBatchStream&gt;;
 
     <span class="kw">fn </span>table_type(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; TableType {
         TableType::Temporary
     }
+}
 
-    <span class="kw">async fn </span>scan_to_stream(<span class="kw-2">&amp;</span><span class="self">self</span>, request: ScanRequest) -&gt; TableResult&lt;SendableRecordBatchStream&gt; {
-        <span class="self">self</span>.get_stream(request)
+<span class="kw">type </span>InformationTableRef = Arc&lt;<span class="kw">dyn </span>InformationTable + Send + Sync&gt;;
+
+<span class="kw">struct </span>InformationTableDataSource {
+    table: InformationTableRef,
+}
+
+<span class="kw">impl </span>InformationTableDataSource {
+    <span class="kw">fn </span>new(table: InformationTableRef) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{ table }
+    }
+
+    <span class="kw">fn </span>try_project(<span class="kw-2">&amp;</span><span class="self">self</span>, projection: <span class="kw-2">&amp;</span>[usize]) -&gt; std::result::Result&lt;SchemaRef, BoxedError&gt; {
+        <span class="kw">let </span>schema = <span class="self">self
+            </span>.table
+            .schema()
+            .try_project(projection)
+            .context(SchemaConversionSnafu)
+            .map_err(BoxedError::new)<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(Arc::new(schema))
     }
 }
 
-<span class="kw">impl </span>DataSource <span class="kw">for </span>InformationTable {
-    <span class="kw">fn </span>get_stream(<span class="kw-2">&amp;</span><span class="self">self</span>, request: ScanRequest) -&gt; TableResult&lt;SendableRecordBatchStream&gt; {
+<span class="kw">impl </span>DataSource <span class="kw">for </span>InformationTableDataSource {
+    <span class="kw">fn </span>get_stream(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        request: ScanRequest,
+    ) -&gt; std::result::Result&lt;SendableRecordBatchStream, BoxedError&gt; {
         <span class="kw">let </span>projection = request.projection;
-        <span class="kw">let </span>projected_schema = <span class="kw">if let </span><span class="prelude-val">Some</span>(projection) = <span class="kw-2">&amp;</span>projection {
-            Arc::new(
-                <span class="self">self</span>.schema()
-                    .try_project(projection)
-                    .context(SchemaConversionSnafu)<span class="question-mark">?</span>,
-            )
-        } <span class="kw">else </span>{
-            <span class="self">self</span>.schema()
+        <span class="kw">let </span>projected_schema = <span class="kw">match </span><span class="kw-2">&amp;</span>projection {
+            <span class="prelude-val">Some</span>(projection) =&gt; <span class="self">self</span>.try_project(projection)<span class="question-mark">?</span>,
+            <span class="prelude-val">None </span>=&gt; <span class="self">self</span>.table.schema(),
         };
+
         <span class="kw">let </span>stream = <span class="self">self
-            </span>.stream_builder
+            </span>.table
             .to_stream()
             .map_err(BoxedError::new)
-            .context(TablesRecordBatchSnafu)<span class="question-mark">?
-            </span>.map(<span class="kw">move </span>|batch| {
-                batch.and_then(|batch| {
-                    <span class="kw">if let </span><span class="prelude-val">Some</span>(projection) = <span class="kw-2">&amp;</span>projection {
-                        batch.try_project(projection)
-                    } <span class="kw">else </span>{
-                        <span class="prelude-val">Ok</span>(batch)
-                    }
-                })
+            .context(TablesRecordBatchSnafu)
+            .map_err(BoxedError::new)<span class="question-mark">?
+            </span>.map(<span class="kw">move </span>|batch| <span class="kw">match </span><span class="kw-2">&amp;</span>projection {
+                <span class="prelude-val">Some</span>(p) =&gt; batch.and_then(|b| b.try_project(p)),
+                <span class="prelude-val">None </span>=&gt; batch,
             });
-        <span class="kw">let </span>stream = RecordBatchStreamAdaptor {
+
+        <span class="kw">let </span>stream = RecordBatchStreamWrapper {
             schema: projected_schema,
             stream: Box::pin(stream),
             output_ordering: <span class="prelude-val">None</span>,
         };
+
         <span class="prelude-val">Ok</span>(Box::pin(stream))
     }
 }

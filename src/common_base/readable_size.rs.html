@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/common/base/src/readable_size.rs`."><title>readable_size.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="common_base" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../common_base/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/common/base/src/readable_size.rs`."><title>readable_size.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="common_base" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -323,26 +324,30 @@
 <a href="#323" id="323">323</a>
 <a href="#324" id="324">324</a>
 <a href="#325" id="325">325</a>
+<a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
+<a href="#330" id="330">330</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright (c) 2017-present, PingCAP, Inc. Licensed under Apache-2.0.
 
 // Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// This file is copied from https://github.com/tikv/raft-engine/blob/8dd2a39f359ff16f5295f35343f626e0c10132fa/src/util.rs without any modification.
+// This file is copied from https://github.com/tikv/raft-engine/blob/8dd2a39f359ff16f5295f35343f626e0c10132fa/src/util.rs
 
-</span><span class="kw">use </span>std::fmt;
-<span class="kw">use </span>std::fmt::{Display, Write};
+</span><span class="kw">use </span>std::fmt::{<span class="self">self</span>, Debug, Display, Write};
 <span class="kw">use </span>std::ops::{Div, Mul};
 <span class="kw">use </span>std::str::FromStr;
 
@@ -359,7 +364,7 @@
 <span class="kw">pub const </span>TIB: u64 = GIB * BINARY_DATA_MAGNITUDE;
 <span class="kw">pub const </span>PIB: u64 = TIB * BINARY_DATA_MAGNITUDE;
 
-<span class="attr">#[derive(Clone, Debug, Copy, PartialEq, Eq, PartialOrd)]
+<span class="attr">#[derive(Clone, Copy, PartialEq, Eq, PartialOrd)]
 </span><span class="kw">pub struct </span>ReadableSize(<span class="kw">pub </span>u64);
 
 <span class="kw">impl </span>ReadableSize {
@@ -416,17 +421,17 @@
         <span class="kw">let </span>size = <span class="self">self</span>.<span class="number">0</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>buffer = String::new();
         <span class="kw">if </span>size == <span class="number">0 </span>{
-            <span class="macro">write!</span>(buffer, <span class="string">&quot;{}KiB&quot;</span>, size).unwrap();
+            <span class="macro">write!</span>(buffer, <span class="string">"{}KiB"</span>, size).unwrap();
         } <span class="kw">else if </span>size % PIB == <span class="number">0 </span>{
-            <span class="macro">write!</span>(buffer, <span class="string">&quot;{}PiB&quot;</span>, size / PIB).unwrap();
+            <span class="macro">write!</span>(buffer, <span class="string">"{}PiB"</span>, size / PIB).unwrap();
         } <span class="kw">else if </span>size % TIB == <span class="number">0 </span>{
-            <span class="macro">write!</span>(buffer, <span class="string">&quot;{}TiB&quot;</span>, size / TIB).unwrap();
+            <span class="macro">write!</span>(buffer, <span class="string">"{}TiB"</span>, size / TIB).unwrap();
         } <span class="kw">else if </span>size % GIB <span class="kw">as </span>u64 == <span class="number">0 </span>{
-            <span class="macro">write!</span>(buffer, <span class="string">&quot;{}GiB&quot;</span>, size / GIB).unwrap();
+            <span class="macro">write!</span>(buffer, <span class="string">"{}GiB"</span>, size / GIB).unwrap();
         } <span class="kw">else if </span>size % MIB <span class="kw">as </span>u64 == <span class="number">0 </span>{
-            <span class="macro">write!</span>(buffer, <span class="string">&quot;{}MiB&quot;</span>, size / MIB).unwrap();
+            <span class="macro">write!</span>(buffer, <span class="string">"{}MiB"</span>, size / MIB).unwrap();
         } <span class="kw">else if </span>size % KIB <span class="kw">as </span>u64 == <span class="number">0 </span>{
-            <span class="macro">write!</span>(buffer, <span class="string">&quot;{}KiB&quot;</span>, size / KIB).unwrap();
+            <span class="macro">write!</span>(buffer, <span class="string">"{}KiB"</span>, size / KIB).unwrap();
         } <span class="kw">else </span>{
             <span class="kw">return </span>serializer.serialize_u64(size);
         }
@@ -441,33 +446,33 @@
     </span><span class="kw">fn </span>from_str(s: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;ReadableSize, String&gt; {
         <span class="kw">let </span>size_str = s.trim();
         <span class="kw">if </span>size_str.is_empty() {
-            <span class="kw">return </span><span class="prelude-val">Err</span>(<span class="macro">format!</span>(<span class="string">&quot;{:?} is not a valid size.&quot;</span>, s));
+            <span class="kw">return </span><span class="prelude-val">Err</span>(<span class="macro">format!</span>(<span class="string">"{:?} is not a valid size."</span>, s));
         }
 
         <span class="kw">if </span>!size_str.is_ascii() {
-            <span class="kw">return </span><span class="prelude-val">Err</span>(<span class="macro">format!</span>(<span class="string">&quot;ASCII string is expected, but got {:?}&quot;</span>, s));
+            <span class="kw">return </span><span class="prelude-val">Err</span>(<span class="macro">format!</span>(<span class="string">"ASCII string is expected, but got {:?}"</span>, s));
         }
 
-        <span class="comment">// size: digits and &#39;.&#39; as decimal separator
+        <span class="comment">// size: digits and '.' as decimal separator
         </span><span class="kw">let </span>size_len = size_str
             .to_string()
             .chars()
-            .take_while(|c| char::is_ascii_digit(c) || [<span class="string">&#39;.&#39;</span>, <span class="string">&#39;e&#39;</span>, <span class="string">&#39;E&#39;</span>, <span class="string">&#39;-&#39;</span>, <span class="string">&#39;+&#39;</span>].contains(c))
+            .take_while(|c| char::is_ascii_digit(c) || [<span class="string">'.'</span>, <span class="string">'e'</span>, <span class="string">'E'</span>, <span class="string">'-'</span>, <span class="string">'+'</span>].contains(c))
             .count();
 
         <span class="comment">// unit: alphabetic characters
         </span><span class="kw">let </span>(size, unit) = size_str.split_at(size_len);
 
         <span class="kw">let </span>unit = <span class="kw">match </span>unit.trim() {
-            <span class="string">&quot;K&quot; </span>| <span class="string">&quot;KB&quot; </span>| <span class="string">&quot;KiB&quot; </span>=&gt; KIB,
-            <span class="string">&quot;M&quot; </span>| <span class="string">&quot;MB&quot; </span>| <span class="string">&quot;MiB&quot; </span>=&gt; MIB,
-            <span class="string">&quot;G&quot; </span>| <span class="string">&quot;GB&quot; </span>| <span class="string">&quot;GiB&quot; </span>=&gt; GIB,
-            <span class="string">&quot;T&quot; </span>| <span class="string">&quot;TB&quot; </span>| <span class="string">&quot;TiB&quot; </span>=&gt; TIB,
-            <span class="string">&quot;P&quot; </span>| <span class="string">&quot;PB&quot; </span>| <span class="string">&quot;PiB&quot; </span>=&gt; PIB,
-            <span class="string">&quot;B&quot; </span>| <span class="string">&quot;&quot; </span>=&gt; B,
+            <span class="string">"K" </span>| <span class="string">"KB" </span>| <span class="string">"KiB" </span>=&gt; KIB,
+            <span class="string">"M" </span>| <span class="string">"MB" </span>| <span class="string">"MiB" </span>=&gt; MIB,
+            <span class="string">"G" </span>| <span class="string">"GB" </span>| <span class="string">"GiB" </span>=&gt; GIB,
+            <span class="string">"T" </span>| <span class="string">"TB" </span>| <span class="string">"TiB" </span>=&gt; TIB,
+            <span class="string">"P" </span>| <span class="string">"PB" </span>| <span class="string">"PiB" </span>=&gt; PIB,
+            <span class="string">"B" </span>| <span class="string">"" </span>=&gt; B,
             <span class="kw">_ </span>=&gt; {
                 <span class="kw">return </span><span class="prelude-val">Err</span>(<span class="macro">format!</span>(
-                    <span class="string">&quot;only B, KB, KiB, MB, MiB, GB, GiB, TB, TiB, PB, and PiB are supported: {:?}&quot;</span>,
+                    <span class="string">"only B, KB, KiB, MB, MiB, GB, GiB, TB, TiB, PB, and PiB are supported: {:?}"</span>,
                     s
                 ));
             }
@@ -475,41 +480,47 @@
 
         <span class="kw">match </span>size.parse::&lt;f64&gt;() {
             <span class="prelude-val">Ok</span>(n) =&gt; <span class="prelude-val">Ok</span>(ReadableSize((n * unit <span class="kw">as </span>f64) <span class="kw">as </span>u64)),
-            <span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; <span class="prelude-val">Err</span>(<span class="macro">format!</span>(<span class="string">&quot;invalid size string: {:?}&quot;</span>, s)),
+            <span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; <span class="prelude-val">Err</span>(<span class="macro">format!</span>(<span class="string">"invalid size string: {:?}"</span>, s)),
         }
+    }
+}
+
+<span class="kw">impl </span>Debug <span class="kw">for </span>ReadableSize {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; fmt::Result {
+        <span class="macro">write!</span>(f, <span class="string">"{}"</span>, <span class="self">self</span>)
     }
 }
 
 <span class="kw">impl </span>Display <span class="kw">for </span>ReadableSize {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; fmt::Result {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; fmt::Result {
         <span class="kw">if </span><span class="self">self</span>.<span class="number">0 </span>&gt;= PIB {
-            <span class="macro">write!</span>(f, <span class="string">&quot;{:.1}PiB&quot;</span>, <span class="self">self</span>.<span class="number">0 </span><span class="kw">as </span>f64 / PIB <span class="kw">as </span>f64)
+            <span class="macro">write!</span>(f, <span class="string">"{:.1}PiB"</span>, <span class="self">self</span>.<span class="number">0 </span><span class="kw">as </span>f64 / PIB <span class="kw">as </span>f64)
         } <span class="kw">else if </span><span class="self">self</span>.<span class="number">0 </span>&gt;= TIB {
-            <span class="macro">write!</span>(f, <span class="string">&quot;{:.1}TiB&quot;</span>, <span class="self">self</span>.<span class="number">0 </span><span class="kw">as </span>f64 / TIB <span class="kw">as </span>f64)
+            <span class="macro">write!</span>(f, <span class="string">"{:.1}TiB"</span>, <span class="self">self</span>.<span class="number">0 </span><span class="kw">as </span>f64 / TIB <span class="kw">as </span>f64)
         } <span class="kw">else if </span><span class="self">self</span>.<span class="number">0 </span>&gt;= GIB {
-            <span class="macro">write!</span>(f, <span class="string">&quot;{:.1}GiB&quot;</span>, <span class="self">self</span>.<span class="number">0 </span><span class="kw">as </span>f64 / GIB <span class="kw">as </span>f64)
+            <span class="macro">write!</span>(f, <span class="string">"{:.1}GiB"</span>, <span class="self">self</span>.<span class="number">0 </span><span class="kw">as </span>f64 / GIB <span class="kw">as </span>f64)
         } <span class="kw">else if </span><span class="self">self</span>.<span class="number">0 </span>&gt;= MIB {
-            <span class="macro">write!</span>(f, <span class="string">&quot;{:.1}MiB&quot;</span>, <span class="self">self</span>.<span class="number">0 </span><span class="kw">as </span>f64 / MIB <span class="kw">as </span>f64)
+            <span class="macro">write!</span>(f, <span class="string">"{:.1}MiB"</span>, <span class="self">self</span>.<span class="number">0 </span><span class="kw">as </span>f64 / MIB <span class="kw">as </span>f64)
         } <span class="kw">else if </span><span class="self">self</span>.<span class="number">0 </span>&gt;= KIB {
-            <span class="macro">write!</span>(f, <span class="string">&quot;{:.1}KiB&quot;</span>, <span class="self">self</span>.<span class="number">0 </span><span class="kw">as </span>f64 / KIB <span class="kw">as </span>f64)
+            <span class="macro">write!</span>(f, <span class="string">"{:.1}KiB"</span>, <span class="self">self</span>.<span class="number">0 </span><span class="kw">as </span>f64 / KIB <span class="kw">as </span>f64)
         } <span class="kw">else </span>{
-            <span class="macro">write!</span>(f, <span class="string">&quot;{}B&quot;</span>, <span class="self">self</span>.<span class="number">0</span>)
+            <span class="macro">write!</span>(f, <span class="string">"{}B"</span>, <span class="self">self</span>.<span class="number">0</span>)
         }
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;de</span>&gt; Deserialize&lt;<span class="lifetime">&#39;de</span>&gt; <span class="kw">for </span>ReadableSize {
+<span class="kw">impl</span>&lt;<span class="lifetime">'de</span>&gt; Deserialize&lt;<span class="lifetime">'de</span>&gt; <span class="kw">for </span>ReadableSize {
     <span class="kw">fn </span>deserialize&lt;D&gt;(deserializer: D) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, D::Error&gt;
     <span class="kw">where
-        </span>D: Deserializer&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>D: Deserializer&lt;<span class="lifetime">'de</span>&gt;,
     {
         <span class="kw">struct </span>SizeVisitor;
 
-        <span class="kw">impl</span>&lt;<span class="lifetime">&#39;de</span>&gt; Visitor&lt;<span class="lifetime">&#39;de</span>&gt; <span class="kw">for </span>SizeVisitor {
+        <span class="kw">impl</span>&lt;<span class="lifetime">'de</span>&gt; Visitor&lt;<span class="lifetime">'de</span>&gt; <span class="kw">for </span>SizeVisitor {
             <span class="kw">type </span>Value = ReadableSize;
 
-            <span class="kw">fn </span>expecting(<span class="kw-2">&amp;</span><span class="self">self</span>, formatter: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; fmt::Result {
-                formatter.write_str(<span class="string">&quot;valid size&quot;</span>)
+            <span class="kw">fn </span>expecting(<span class="kw-2">&amp;</span><span class="self">self</span>, formatter: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; fmt::Result {
+                formatter.write_str(<span class="string">"valid size"</span>)
             }
 
             <span class="kw">fn </span>visit_i64&lt;E&gt;(<span class="self">self</span>, size: i64) -&gt; <span class="prelude-ty">Result</span>&lt;ReadableSize, E&gt;
@@ -571,19 +582,19 @@
         }
 
         <span class="kw">let </span>legal_cases = <span class="macro">vec!</span>[
-            (<span class="number">0</span>, <span class="string">&quot;0KiB&quot;</span>),
-            (<span class="number">2 </span>* KIB, <span class="string">&quot;2KiB&quot;</span>),
-            (<span class="number">4 </span>* MIB, <span class="string">&quot;4MiB&quot;</span>),
-            (<span class="number">5 </span>* GIB, <span class="string">&quot;5GiB&quot;</span>),
-            (<span class="number">7 </span>* TIB, <span class="string">&quot;7TiB&quot;</span>),
-            (<span class="number">11 </span>* PIB, <span class="string">&quot;11PiB&quot;</span>),
+            (<span class="number">0</span>, <span class="string">"0KiB"</span>),
+            (<span class="number">2 </span>* KIB, <span class="string">"2KiB"</span>),
+            (<span class="number">4 </span>* MIB, <span class="string">"4MiB"</span>),
+            (<span class="number">5 </span>* GIB, <span class="string">"5GiB"</span>),
+            (<span class="number">7 </span>* TIB, <span class="string">"7TiB"</span>),
+            (<span class="number">11 </span>* PIB, <span class="string">"11PiB"</span>),
         ];
         <span class="kw">for </span>(size, exp) <span class="kw">in </span>legal_cases {
             <span class="kw">let </span>c = SizeHolder {
                 s: ReadableSize(size),
             };
             <span class="kw">let </span>res_str = toml::to_string(<span class="kw-2">&amp;</span>c).unwrap();
-            <span class="kw">let </span>exp_str = <span class="macro">format!</span>(<span class="string">&quot;s = {:?}\n&quot;</span>, exp);
+            <span class="kw">let </span>exp_str = <span class="macro">format!</span>(<span class="string">"s = {:?}\n"</span>, exp);
             <span class="macro">assert_eq!</span>(res_str, exp_str);
             <span class="kw">let </span>res_size: SizeHolder = toml::from_str(<span class="kw-2">&amp;</span>exp_str).unwrap();
             <span class="macro">assert_eq!</span>(res_size.s.<span class="number">0</span>, size);
@@ -593,58 +604,58 @@
             s: ReadableSize(<span class="number">512</span>),
         };
         <span class="kw">let </span>res_str = toml::to_string(<span class="kw-2">&amp;</span>c).unwrap();
-        <span class="macro">assert_eq!</span>(res_str, <span class="string">&quot;s = 512\n&quot;</span>);
+        <span class="macro">assert_eq!</span>(res_str, <span class="string">"s = 512\n"</span>);
         <span class="kw">let </span>res_size: SizeHolder = toml::from_str(<span class="kw-2">&amp;</span>res_str).unwrap();
         <span class="macro">assert_eq!</span>(res_size.s.<span class="number">0</span>, c.s.<span class="number">0</span>);
 
         <span class="kw">let </span>decode_cases = <span class="macro">vec!</span>[
-            (<span class="string">&quot; 0.5 PB&quot;</span>, PIB / <span class="number">2</span>),
-            (<span class="string">&quot;0.5 TB&quot;</span>, TIB / <span class="number">2</span>),
-            (<span class="string">&quot;0.5GB &quot;</span>, GIB / <span class="number">2</span>),
-            (<span class="string">&quot;0.5MB&quot;</span>, MIB / <span class="number">2</span>),
-            (<span class="string">&quot;0.5KB&quot;</span>, KIB / <span class="number">2</span>),
-            (<span class="string">&quot;0.5P&quot;</span>, PIB / <span class="number">2</span>),
-            (<span class="string">&quot;0.5T&quot;</span>, TIB / <span class="number">2</span>),
-            (<span class="string">&quot;0.5G&quot;</span>, GIB / <span class="number">2</span>),
-            (<span class="string">&quot;0.5M&quot;</span>, MIB / <span class="number">2</span>),
-            (<span class="string">&quot;0.5K&quot;</span>, KIB / <span class="number">2</span>),
-            (<span class="string">&quot;23&quot;</span>, <span class="number">23</span>),
-            (<span class="string">&quot;1&quot;</span>, <span class="number">1</span>),
-            (<span class="string">&quot;1024B&quot;</span>, KIB),
+            (<span class="string">" 0.5 PB"</span>, PIB / <span class="number">2</span>),
+            (<span class="string">"0.5 TB"</span>, TIB / <span class="number">2</span>),
+            (<span class="string">"0.5GB "</span>, GIB / <span class="number">2</span>),
+            (<span class="string">"0.5MB"</span>, MIB / <span class="number">2</span>),
+            (<span class="string">"0.5KB"</span>, KIB / <span class="number">2</span>),
+            (<span class="string">"0.5P"</span>, PIB / <span class="number">2</span>),
+            (<span class="string">"0.5T"</span>, TIB / <span class="number">2</span>),
+            (<span class="string">"0.5G"</span>, GIB / <span class="number">2</span>),
+            (<span class="string">"0.5M"</span>, MIB / <span class="number">2</span>),
+            (<span class="string">"0.5K"</span>, KIB / <span class="number">2</span>),
+            (<span class="string">"23"</span>, <span class="number">23</span>),
+            (<span class="string">"1"</span>, <span class="number">1</span>),
+            (<span class="string">"1024B"</span>, KIB),
             <span class="comment">// units with binary prefixes
-            </span>(<span class="string">&quot; 0.5 PiB&quot;</span>, PIB / <span class="number">2</span>),
-            (<span class="string">&quot;1PiB&quot;</span>, PIB),
-            (<span class="string">&quot;0.5 TiB&quot;</span>, TIB / <span class="number">2</span>),
-            (<span class="string">&quot;2 TiB&quot;</span>, TIB * <span class="number">2</span>),
-            (<span class="string">&quot;0.5GiB &quot;</span>, GIB / <span class="number">2</span>),
-            (<span class="string">&quot;787GiB &quot;</span>, GIB * <span class="number">787</span>),
-            (<span class="string">&quot;0.5MiB&quot;</span>, MIB / <span class="number">2</span>),
-            (<span class="string">&quot;3MiB&quot;</span>, MIB * <span class="number">3</span>),
-            (<span class="string">&quot;0.5KiB&quot;</span>, KIB / <span class="number">2</span>),
-            (<span class="string">&quot;1 KiB&quot;</span>, KIB),
+            </span>(<span class="string">" 0.5 PiB"</span>, PIB / <span class="number">2</span>),
+            (<span class="string">"1PiB"</span>, PIB),
+            (<span class="string">"0.5 TiB"</span>, TIB / <span class="number">2</span>),
+            (<span class="string">"2 TiB"</span>, TIB * <span class="number">2</span>),
+            (<span class="string">"0.5GiB "</span>, GIB / <span class="number">2</span>),
+            (<span class="string">"787GiB "</span>, GIB * <span class="number">787</span>),
+            (<span class="string">"0.5MiB"</span>, MIB / <span class="number">2</span>),
+            (<span class="string">"3MiB"</span>, MIB * <span class="number">3</span>),
+            (<span class="string">"0.5KiB"</span>, KIB / <span class="number">2</span>),
+            (<span class="string">"1 KiB"</span>, KIB),
             <span class="comment">// scientific notation
-            </span>(<span class="string">&quot;0.5e6 B&quot;</span>, B * <span class="number">500000</span>),
-            (<span class="string">&quot;0.5E6 B&quot;</span>, B * <span class="number">500000</span>),
-            (<span class="string">&quot;1e6B&quot;</span>, B * <span class="number">1000000</span>),
-            (<span class="string">&quot;8E6B&quot;</span>, B * <span class="number">8000000</span>),
-            (<span class="string">&quot;8e7&quot;</span>, B * <span class="number">80000000</span>),
-            (<span class="string">&quot;1e-1MB&quot;</span>, MIB / <span class="number">10</span>),
-            (<span class="string">&quot;1e+1MB&quot;</span>, MIB * <span class="number">10</span>),
-            (<span class="string">&quot;0e+10MB&quot;</span>, <span class="number">0</span>),
+            </span>(<span class="string">"0.5e6 B"</span>, B * <span class="number">500000</span>),
+            (<span class="string">"0.5E6 B"</span>, B * <span class="number">500000</span>),
+            (<span class="string">"1e6B"</span>, B * <span class="number">1000000</span>),
+            (<span class="string">"8E6B"</span>, B * <span class="number">8000000</span>),
+            (<span class="string">"8e7"</span>, B * <span class="number">80000000</span>),
+            (<span class="string">"1e-1MB"</span>, MIB / <span class="number">10</span>),
+            (<span class="string">"1e+1MB"</span>, MIB * <span class="number">10</span>),
+            (<span class="string">"0e+10MB"</span>, <span class="number">0</span>),
         ];
         <span class="kw">for </span>(src, exp) <span class="kw">in </span>decode_cases {
-            <span class="kw">let </span>src = <span class="macro">format!</span>(<span class="string">&quot;s = {:?}&quot;</span>, src);
+            <span class="kw">let </span>src = <span class="macro">format!</span>(<span class="string">"s = {:?}"</span>, src);
             <span class="kw">let </span>res: SizeHolder = toml::from_str(<span class="kw-2">&amp;</span>src).unwrap();
             <span class="macro">assert_eq!</span>(res.s.<span class="number">0</span>, exp);
         }
 
         <span class="kw">let </span>illegal_cases = <span class="macro">vec!</span>[
-            <span class="string">&quot;0.5kb&quot;</span>, <span class="string">&quot;0.5kB&quot;</span>, <span class="string">&quot;0.5Kb&quot;</span>, <span class="string">&quot;0.5k&quot;</span>, <span class="string">&quot;0.5g&quot;</span>, <span class="string">&quot;b&quot;</span>, <span class="string">&quot;gb&quot;</span>, <span class="string">&quot;1b&quot;</span>, <span class="string">&quot;B&quot;</span>, <span class="string">&quot;1K24B&quot;</span>, <span class="string">&quot; 5_KB&quot;</span>,
-            <span class="string">&quot;4B7&quot;</span>, <span class="string">&quot;5M_&quot;</span>,
+            <span class="string">"0.5kb"</span>, <span class="string">"0.5kB"</span>, <span class="string">"0.5Kb"</span>, <span class="string">"0.5k"</span>, <span class="string">"0.5g"</span>, <span class="string">"b"</span>, <span class="string">"gb"</span>, <span class="string">"1b"</span>, <span class="string">"B"</span>, <span class="string">"1K24B"</span>, <span class="string">" 5_KB"</span>,
+            <span class="string">"4B7"</span>, <span class="string">"5M_"</span>,
         ];
         <span class="kw">for </span>src <span class="kw">in </span>illegal_cases {
-            <span class="kw">let </span>src_str = <span class="macro">format!</span>(<span class="string">&quot;s = {:?}&quot;</span>, src);
-            <span class="macro">assert!</span>(toml::from_str::&lt;SizeHolder&gt;(<span class="kw-2">&amp;</span>src_str).is_err(), <span class="string">&quot;{}&quot;</span>, src);
+            <span class="kw">let </span>src_str = <span class="macro">format!</span>(<span class="string">"s = {:?}"</span>, src);
+            <span class="macro">assert!</span>(toml::from_str::&lt;SizeHolder&gt;(<span class="kw-2">&amp;</span>src_str).is_err(), <span class="string">"{}"</span>, src);
         }
     }
 }

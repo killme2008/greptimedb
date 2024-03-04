@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["to_flight_data_stream"],"mod":["stream"],"struct":["FlightHandler"],"type":["TonicStream"]};
+window.SIDEBAR_ITEMS = {"fn":["to_flight_data_stream"],"mod":["stream"],"struct":["FlightCraftWrapper","FlightRecordBatchStream"],"trait":["FlightCraft"],"type":["FlightCraftRef","TonicStream"]};

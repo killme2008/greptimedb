@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/mito2/src/request.rs`."><title>request.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="mito2" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../mito2/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/mito2/src/request.rs`."><title>request.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="mito2" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -690,16 +691,562 @@
 <a href="#690" id="690">690</a>
 <a href="#691" id="691">691</a>
 <a href="#692" id="692">692</a>
+<a href="#693" id="693">693</a>
+<a href="#694" id="694">694</a>
+<a href="#695" id="695">695</a>
+<a href="#696" id="696">696</a>
+<a href="#697" id="697">697</a>
+<a href="#698" id="698">698</a>
+<a href="#699" id="699">699</a>
+<a href="#700" id="700">700</a>
+<a href="#701" id="701">701</a>
+<a href="#702" id="702">702</a>
+<a href="#703" id="703">703</a>
+<a href="#704" id="704">704</a>
+<a href="#705" id="705">705</a>
+<a href="#706" id="706">706</a>
+<a href="#707" id="707">707</a>
+<a href="#708" id="708">708</a>
+<a href="#709" id="709">709</a>
+<a href="#710" id="710">710</a>
+<a href="#711" id="711">711</a>
+<a href="#712" id="712">712</a>
+<a href="#713" id="713">713</a>
+<a href="#714" id="714">714</a>
+<a href="#715" id="715">715</a>
+<a href="#716" id="716">716</a>
+<a href="#717" id="717">717</a>
+<a href="#718" id="718">718</a>
+<a href="#719" id="719">719</a>
+<a href="#720" id="720">720</a>
+<a href="#721" id="721">721</a>
+<a href="#722" id="722">722</a>
+<a href="#723" id="723">723</a>
+<a href="#724" id="724">724</a>
+<a href="#725" id="725">725</a>
+<a href="#726" id="726">726</a>
+<a href="#727" id="727">727</a>
+<a href="#728" id="728">728</a>
+<a href="#729" id="729">729</a>
+<a href="#730" id="730">730</a>
+<a href="#731" id="731">731</a>
+<a href="#732" id="732">732</a>
+<a href="#733" id="733">733</a>
+<a href="#734" id="734">734</a>
+<a href="#735" id="735">735</a>
+<a href="#736" id="736">736</a>
+<a href="#737" id="737">737</a>
+<a href="#738" id="738">738</a>
+<a href="#739" id="739">739</a>
+<a href="#740" id="740">740</a>
+<a href="#741" id="741">741</a>
+<a href="#742" id="742">742</a>
+<a href="#743" id="743">743</a>
+<a href="#744" id="744">744</a>
+<a href="#745" id="745">745</a>
+<a href="#746" id="746">746</a>
+<a href="#747" id="747">747</a>
+<a href="#748" id="748">748</a>
+<a href="#749" id="749">749</a>
+<a href="#750" id="750">750</a>
+<a href="#751" id="751">751</a>
+<a href="#752" id="752">752</a>
+<a href="#753" id="753">753</a>
+<a href="#754" id="754">754</a>
+<a href="#755" id="755">755</a>
+<a href="#756" id="756">756</a>
+<a href="#757" id="757">757</a>
+<a href="#758" id="758">758</a>
+<a href="#759" id="759">759</a>
+<a href="#760" id="760">760</a>
+<a href="#761" id="761">761</a>
+<a href="#762" id="762">762</a>
+<a href="#763" id="763">763</a>
+<a href="#764" id="764">764</a>
+<a href="#765" id="765">765</a>
+<a href="#766" id="766">766</a>
+<a href="#767" id="767">767</a>
+<a href="#768" id="768">768</a>
+<a href="#769" id="769">769</a>
+<a href="#770" id="770">770</a>
+<a href="#771" id="771">771</a>
+<a href="#772" id="772">772</a>
+<a href="#773" id="773">773</a>
+<a href="#774" id="774">774</a>
+<a href="#775" id="775">775</a>
+<a href="#776" id="776">776</a>
+<a href="#777" id="777">777</a>
+<a href="#778" id="778">778</a>
+<a href="#779" id="779">779</a>
+<a href="#780" id="780">780</a>
+<a href="#781" id="781">781</a>
+<a href="#782" id="782">782</a>
+<a href="#783" id="783">783</a>
+<a href="#784" id="784">784</a>
+<a href="#785" id="785">785</a>
+<a href="#786" id="786">786</a>
+<a href="#787" id="787">787</a>
+<a href="#788" id="788">788</a>
+<a href="#789" id="789">789</a>
+<a href="#790" id="790">790</a>
+<a href="#791" id="791">791</a>
+<a href="#792" id="792">792</a>
+<a href="#793" id="793">793</a>
+<a href="#794" id="794">794</a>
+<a href="#795" id="795">795</a>
+<a href="#796" id="796">796</a>
+<a href="#797" id="797">797</a>
+<a href="#798" id="798">798</a>
+<a href="#799" id="799">799</a>
+<a href="#800" id="800">800</a>
+<a href="#801" id="801">801</a>
+<a href="#802" id="802">802</a>
+<a href="#803" id="803">803</a>
+<a href="#804" id="804">804</a>
+<a href="#805" id="805">805</a>
+<a href="#806" id="806">806</a>
+<a href="#807" id="807">807</a>
+<a href="#808" id="808">808</a>
+<a href="#809" id="809">809</a>
+<a href="#810" id="810">810</a>
+<a href="#811" id="811">811</a>
+<a href="#812" id="812">812</a>
+<a href="#813" id="813">813</a>
+<a href="#814" id="814">814</a>
+<a href="#815" id="815">815</a>
+<a href="#816" id="816">816</a>
+<a href="#817" id="817">817</a>
+<a href="#818" id="818">818</a>
+<a href="#819" id="819">819</a>
+<a href="#820" id="820">820</a>
+<a href="#821" id="821">821</a>
+<a href="#822" id="822">822</a>
+<a href="#823" id="823">823</a>
+<a href="#824" id="824">824</a>
+<a href="#825" id="825">825</a>
+<a href="#826" id="826">826</a>
+<a href="#827" id="827">827</a>
+<a href="#828" id="828">828</a>
+<a href="#829" id="829">829</a>
+<a href="#830" id="830">830</a>
+<a href="#831" id="831">831</a>
+<a href="#832" id="832">832</a>
+<a href="#833" id="833">833</a>
+<a href="#834" id="834">834</a>
+<a href="#835" id="835">835</a>
+<a href="#836" id="836">836</a>
+<a href="#837" id="837">837</a>
+<a href="#838" id="838">838</a>
+<a href="#839" id="839">839</a>
+<a href="#840" id="840">840</a>
+<a href="#841" id="841">841</a>
+<a href="#842" id="842">842</a>
+<a href="#843" id="843">843</a>
+<a href="#844" id="844">844</a>
+<a href="#845" id="845">845</a>
+<a href="#846" id="846">846</a>
+<a href="#847" id="847">847</a>
+<a href="#848" id="848">848</a>
+<a href="#849" id="849">849</a>
+<a href="#850" id="850">850</a>
+<a href="#851" id="851">851</a>
+<a href="#852" id="852">852</a>
+<a href="#853" id="853">853</a>
+<a href="#854" id="854">854</a>
+<a href="#855" id="855">855</a>
+<a href="#856" id="856">856</a>
+<a href="#857" id="857">857</a>
+<a href="#858" id="858">858</a>
+<a href="#859" id="859">859</a>
+<a href="#860" id="860">860</a>
+<a href="#861" id="861">861</a>
+<a href="#862" id="862">862</a>
+<a href="#863" id="863">863</a>
+<a href="#864" id="864">864</a>
+<a href="#865" id="865">865</a>
+<a href="#866" id="866">866</a>
+<a href="#867" id="867">867</a>
+<a href="#868" id="868">868</a>
+<a href="#869" id="869">869</a>
+<a href="#870" id="870">870</a>
+<a href="#871" id="871">871</a>
+<a href="#872" id="872">872</a>
+<a href="#873" id="873">873</a>
+<a href="#874" id="874">874</a>
+<a href="#875" id="875">875</a>
+<a href="#876" id="876">876</a>
+<a href="#877" id="877">877</a>
+<a href="#878" id="878">878</a>
+<a href="#879" id="879">879</a>
+<a href="#880" id="880">880</a>
+<a href="#881" id="881">881</a>
+<a href="#882" id="882">882</a>
+<a href="#883" id="883">883</a>
+<a href="#884" id="884">884</a>
+<a href="#885" id="885">885</a>
+<a href="#886" id="886">886</a>
+<a href="#887" id="887">887</a>
+<a href="#888" id="888">888</a>
+<a href="#889" id="889">889</a>
+<a href="#890" id="890">890</a>
+<a href="#891" id="891">891</a>
+<a href="#892" id="892">892</a>
+<a href="#893" id="893">893</a>
+<a href="#894" id="894">894</a>
+<a href="#895" id="895">895</a>
+<a href="#896" id="896">896</a>
+<a href="#897" id="897">897</a>
+<a href="#898" id="898">898</a>
+<a href="#899" id="899">899</a>
+<a href="#900" id="900">900</a>
+<a href="#901" id="901">901</a>
+<a href="#902" id="902">902</a>
+<a href="#903" id="903">903</a>
+<a href="#904" id="904">904</a>
+<a href="#905" id="905">905</a>
+<a href="#906" id="906">906</a>
+<a href="#907" id="907">907</a>
+<a href="#908" id="908">908</a>
+<a href="#909" id="909">909</a>
+<a href="#910" id="910">910</a>
+<a href="#911" id="911">911</a>
+<a href="#912" id="912">912</a>
+<a href="#913" id="913">913</a>
+<a href="#914" id="914">914</a>
+<a href="#915" id="915">915</a>
+<a href="#916" id="916">916</a>
+<a href="#917" id="917">917</a>
+<a href="#918" id="918">918</a>
+<a href="#919" id="919">919</a>
+<a href="#920" id="920">920</a>
+<a href="#921" id="921">921</a>
+<a href="#922" id="922">922</a>
+<a href="#923" id="923">923</a>
+<a href="#924" id="924">924</a>
+<a href="#925" id="925">925</a>
+<a href="#926" id="926">926</a>
+<a href="#927" id="927">927</a>
+<a href="#928" id="928">928</a>
+<a href="#929" id="929">929</a>
+<a href="#930" id="930">930</a>
+<a href="#931" id="931">931</a>
+<a href="#932" id="932">932</a>
+<a href="#933" id="933">933</a>
+<a href="#934" id="934">934</a>
+<a href="#935" id="935">935</a>
+<a href="#936" id="936">936</a>
+<a href="#937" id="937">937</a>
+<a href="#938" id="938">938</a>
+<a href="#939" id="939">939</a>
+<a href="#940" id="940">940</a>
+<a href="#941" id="941">941</a>
+<a href="#942" id="942">942</a>
+<a href="#943" id="943">943</a>
+<a href="#944" id="944">944</a>
+<a href="#945" id="945">945</a>
+<a href="#946" id="946">946</a>
+<a href="#947" id="947">947</a>
+<a href="#948" id="948">948</a>
+<a href="#949" id="949">949</a>
+<a href="#950" id="950">950</a>
+<a href="#951" id="951">951</a>
+<a href="#952" id="952">952</a>
+<a href="#953" id="953">953</a>
+<a href="#954" id="954">954</a>
+<a href="#955" id="955">955</a>
+<a href="#956" id="956">956</a>
+<a href="#957" id="957">957</a>
+<a href="#958" id="958">958</a>
+<a href="#959" id="959">959</a>
+<a href="#960" id="960">960</a>
+<a href="#961" id="961">961</a>
+<a href="#962" id="962">962</a>
+<a href="#963" id="963">963</a>
+<a href="#964" id="964">964</a>
+<a href="#965" id="965">965</a>
+<a href="#966" id="966">966</a>
+<a href="#967" id="967">967</a>
+<a href="#968" id="968">968</a>
+<a href="#969" id="969">969</a>
+<a href="#970" id="970">970</a>
+<a href="#971" id="971">971</a>
+<a href="#972" id="972">972</a>
+<a href="#973" id="973">973</a>
+<a href="#974" id="974">974</a>
+<a href="#975" id="975">975</a>
+<a href="#976" id="976">976</a>
+<a href="#977" id="977">977</a>
+<a href="#978" id="978">978</a>
+<a href="#979" id="979">979</a>
+<a href="#980" id="980">980</a>
+<a href="#981" id="981">981</a>
+<a href="#982" id="982">982</a>
+<a href="#983" id="983">983</a>
+<a href="#984" id="984">984</a>
+<a href="#985" id="985">985</a>
+<a href="#986" id="986">986</a>
+<a href="#987" id="987">987</a>
+<a href="#988" id="988">988</a>
+<a href="#989" id="989">989</a>
+<a href="#990" id="990">990</a>
+<a href="#991" id="991">991</a>
+<a href="#992" id="992">992</a>
+<a href="#993" id="993">993</a>
+<a href="#994" id="994">994</a>
+<a href="#995" id="995">995</a>
+<a href="#996" id="996">996</a>
+<a href="#997" id="997">997</a>
+<a href="#998" id="998">998</a>
+<a href="#999" id="999">999</a>
+<a href="#1000" id="1000">1000</a>
+<a href="#1001" id="1001">1001</a>
+<a href="#1002" id="1002">1002</a>
+<a href="#1003" id="1003">1003</a>
+<a href="#1004" id="1004">1004</a>
+<a href="#1005" id="1005">1005</a>
+<a href="#1006" id="1006">1006</a>
+<a href="#1007" id="1007">1007</a>
+<a href="#1008" id="1008">1008</a>
+<a href="#1009" id="1009">1009</a>
+<a href="#1010" id="1010">1010</a>
+<a href="#1011" id="1011">1011</a>
+<a href="#1012" id="1012">1012</a>
+<a href="#1013" id="1013">1013</a>
+<a href="#1014" id="1014">1014</a>
+<a href="#1015" id="1015">1015</a>
+<a href="#1016" id="1016">1016</a>
+<a href="#1017" id="1017">1017</a>
+<a href="#1018" id="1018">1018</a>
+<a href="#1019" id="1019">1019</a>
+<a href="#1020" id="1020">1020</a>
+<a href="#1021" id="1021">1021</a>
+<a href="#1022" id="1022">1022</a>
+<a href="#1023" id="1023">1023</a>
+<a href="#1024" id="1024">1024</a>
+<a href="#1025" id="1025">1025</a>
+<a href="#1026" id="1026">1026</a>
+<a href="#1027" id="1027">1027</a>
+<a href="#1028" id="1028">1028</a>
+<a href="#1029" id="1029">1029</a>
+<a href="#1030" id="1030">1030</a>
+<a href="#1031" id="1031">1031</a>
+<a href="#1032" id="1032">1032</a>
+<a href="#1033" id="1033">1033</a>
+<a href="#1034" id="1034">1034</a>
+<a href="#1035" id="1035">1035</a>
+<a href="#1036" id="1036">1036</a>
+<a href="#1037" id="1037">1037</a>
+<a href="#1038" id="1038">1038</a>
+<a href="#1039" id="1039">1039</a>
+<a href="#1040" id="1040">1040</a>
+<a href="#1041" id="1041">1041</a>
+<a href="#1042" id="1042">1042</a>
+<a href="#1043" id="1043">1043</a>
+<a href="#1044" id="1044">1044</a>
+<a href="#1045" id="1045">1045</a>
+<a href="#1046" id="1046">1046</a>
+<a href="#1047" id="1047">1047</a>
+<a href="#1048" id="1048">1048</a>
+<a href="#1049" id="1049">1049</a>
+<a href="#1050" id="1050">1050</a>
+<a href="#1051" id="1051">1051</a>
+<a href="#1052" id="1052">1052</a>
+<a href="#1053" id="1053">1053</a>
+<a href="#1054" id="1054">1054</a>
+<a href="#1055" id="1055">1055</a>
+<a href="#1056" id="1056">1056</a>
+<a href="#1057" id="1057">1057</a>
+<a href="#1058" id="1058">1058</a>
+<a href="#1059" id="1059">1059</a>
+<a href="#1060" id="1060">1060</a>
+<a href="#1061" id="1061">1061</a>
+<a href="#1062" id="1062">1062</a>
+<a href="#1063" id="1063">1063</a>
+<a href="#1064" id="1064">1064</a>
+<a href="#1065" id="1065">1065</a>
+<a href="#1066" id="1066">1066</a>
+<a href="#1067" id="1067">1067</a>
+<a href="#1068" id="1068">1068</a>
+<a href="#1069" id="1069">1069</a>
+<a href="#1070" id="1070">1070</a>
+<a href="#1071" id="1071">1071</a>
+<a href="#1072" id="1072">1072</a>
+<a href="#1073" id="1073">1073</a>
+<a href="#1074" id="1074">1074</a>
+<a href="#1075" id="1075">1075</a>
+<a href="#1076" id="1076">1076</a>
+<a href="#1077" id="1077">1077</a>
+<a href="#1078" id="1078">1078</a>
+<a href="#1079" id="1079">1079</a>
+<a href="#1080" id="1080">1080</a>
+<a href="#1081" id="1081">1081</a>
+<a href="#1082" id="1082">1082</a>
+<a href="#1083" id="1083">1083</a>
+<a href="#1084" id="1084">1084</a>
+<a href="#1085" id="1085">1085</a>
+<a href="#1086" id="1086">1086</a>
+<a href="#1087" id="1087">1087</a>
+<a href="#1088" id="1088">1088</a>
+<a href="#1089" id="1089">1089</a>
+<a href="#1090" id="1090">1090</a>
+<a href="#1091" id="1091">1091</a>
+<a href="#1092" id="1092">1092</a>
+<a href="#1093" id="1093">1093</a>
+<a href="#1094" id="1094">1094</a>
+<a href="#1095" id="1095">1095</a>
+<a href="#1096" id="1096">1096</a>
+<a href="#1097" id="1097">1097</a>
+<a href="#1098" id="1098">1098</a>
+<a href="#1099" id="1099">1099</a>
+<a href="#1100" id="1100">1100</a>
+<a href="#1101" id="1101">1101</a>
+<a href="#1102" id="1102">1102</a>
+<a href="#1103" id="1103">1103</a>
+<a href="#1104" id="1104">1104</a>
+<a href="#1105" id="1105">1105</a>
+<a href="#1106" id="1106">1106</a>
+<a href="#1107" id="1107">1107</a>
+<a href="#1108" id="1108">1108</a>
+<a href="#1109" id="1109">1109</a>
+<a href="#1110" id="1110">1110</a>
+<a href="#1111" id="1111">1111</a>
+<a href="#1112" id="1112">1112</a>
+<a href="#1113" id="1113">1113</a>
+<a href="#1114" id="1114">1114</a>
+<a href="#1115" id="1115">1115</a>
+<a href="#1116" id="1116">1116</a>
+<a href="#1117" id="1117">1117</a>
+<a href="#1118" id="1118">1118</a>
+<a href="#1119" id="1119">1119</a>
+<a href="#1120" id="1120">1120</a>
+<a href="#1121" id="1121">1121</a>
+<a href="#1122" id="1122">1122</a>
+<a href="#1123" id="1123">1123</a>
+<a href="#1124" id="1124">1124</a>
+<a href="#1125" id="1125">1125</a>
+<a href="#1126" id="1126">1126</a>
+<a href="#1127" id="1127">1127</a>
+<a href="#1128" id="1128">1128</a>
+<a href="#1129" id="1129">1129</a>
+<a href="#1130" id="1130">1130</a>
+<a href="#1131" id="1131">1131</a>
+<a href="#1132" id="1132">1132</a>
+<a href="#1133" id="1133">1133</a>
+<a href="#1134" id="1134">1134</a>
+<a href="#1135" id="1135">1135</a>
+<a href="#1136" id="1136">1136</a>
+<a href="#1137" id="1137">1137</a>
+<a href="#1138" id="1138">1138</a>
+<a href="#1139" id="1139">1139</a>
+<a href="#1140" id="1140">1140</a>
+<a href="#1141" id="1141">1141</a>
+<a href="#1142" id="1142">1142</a>
+<a href="#1143" id="1143">1143</a>
+<a href="#1144" id="1144">1144</a>
+<a href="#1145" id="1145">1145</a>
+<a href="#1146" id="1146">1146</a>
+<a href="#1147" id="1147">1147</a>
+<a href="#1148" id="1148">1148</a>
+<a href="#1149" id="1149">1149</a>
+<a href="#1150" id="1150">1150</a>
+<a href="#1151" id="1151">1151</a>
+<a href="#1152" id="1152">1152</a>
+<a href="#1153" id="1153">1153</a>
+<a href="#1154" id="1154">1154</a>
+<a href="#1155" id="1155">1155</a>
+<a href="#1156" id="1156">1156</a>
+<a href="#1157" id="1157">1157</a>
+<a href="#1158" id="1158">1158</a>
+<a href="#1159" id="1159">1159</a>
+<a href="#1160" id="1160">1160</a>
+<a href="#1161" id="1161">1161</a>
+<a href="#1162" id="1162">1162</a>
+<a href="#1163" id="1163">1163</a>
+<a href="#1164" id="1164">1164</a>
+<a href="#1165" id="1165">1165</a>
+<a href="#1166" id="1166">1166</a>
+<a href="#1167" id="1167">1167</a>
+<a href="#1168" id="1168">1168</a>
+<a href="#1169" id="1169">1169</a>
+<a href="#1170" id="1170">1170</a>
+<a href="#1171" id="1171">1171</a>
+<a href="#1172" id="1172">1172</a>
+<a href="#1173" id="1173">1173</a>
+<a href="#1174" id="1174">1174</a>
+<a href="#1175" id="1175">1175</a>
+<a href="#1176" id="1176">1176</a>
+<a href="#1177" id="1177">1177</a>
+<a href="#1178" id="1178">1178</a>
+<a href="#1179" id="1179">1179</a>
+<a href="#1180" id="1180">1180</a>
+<a href="#1181" id="1181">1181</a>
+<a href="#1182" id="1182">1182</a>
+<a href="#1183" id="1183">1183</a>
+<a href="#1184" id="1184">1184</a>
+<a href="#1185" id="1185">1185</a>
+<a href="#1186" id="1186">1186</a>
+<a href="#1187" id="1187">1187</a>
+<a href="#1188" id="1188">1188</a>
+<a href="#1189" id="1189">1189</a>
+<a href="#1190" id="1190">1190</a>
+<a href="#1191" id="1191">1191</a>
+<a href="#1192" id="1192">1192</a>
+<a href="#1193" id="1193">1193</a>
+<a href="#1194" id="1194">1194</a>
+<a href="#1195" id="1195">1195</a>
+<a href="#1196" id="1196">1196</a>
+<a href="#1197" id="1197">1197</a>
+<a href="#1198" id="1198">1198</a>
+<a href="#1199" id="1199">1199</a>
+<a href="#1200" id="1200">1200</a>
+<a href="#1201" id="1201">1201</a>
+<a href="#1202" id="1202">1202</a>
+<a href="#1203" id="1203">1203</a>
+<a href="#1204" id="1204">1204</a>
+<a href="#1205" id="1205">1205</a>
+<a href="#1206" id="1206">1206</a>
+<a href="#1207" id="1207">1207</a>
+<a href="#1208" id="1208">1208</a>
+<a href="#1209" id="1209">1209</a>
+<a href="#1210" id="1210">1210</a>
+<a href="#1211" id="1211">1211</a>
+<a href="#1212" id="1212">1212</a>
+<a href="#1213" id="1213">1213</a>
+<a href="#1214" id="1214">1214</a>
+<a href="#1215" id="1215">1215</a>
+<a href="#1216" id="1216">1216</a>
+<a href="#1217" id="1217">1217</a>
+<a href="#1218" id="1218">1218</a>
+<a href="#1219" id="1219">1219</a>
+<a href="#1220" id="1220">1220</a>
+<a href="#1221" id="1221">1221</a>
+<a href="#1222" id="1222">1222</a>
+<a href="#1223" id="1223">1223</a>
+<a href="#1224" id="1224">1224</a>
+<a href="#1225" id="1225">1225</a>
+<a href="#1226" id="1226">1226</a>
+<a href="#1227" id="1227">1227</a>
+<a href="#1228" id="1228">1228</a>
+<a href="#1229" id="1229">1229</a>
+<a href="#1230" id="1230">1230</a>
+<a href="#1231" id="1231">1231</a>
+<a href="#1232" id="1232">1232</a>
+<a href="#1233" id="1233">1233</a>
+<a href="#1234" id="1234">1234</a>
+<a href="#1235" id="1235">1235</a>
+<a href="#1236" id="1236">1236</a>
+<a href="#1237" id="1237">1237</a>
+<a href="#1238" id="1238">1238</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -707,80 +1254,39 @@
 </span><span class="doccomment">//! Worker requests.
 
 </span><span class="kw">use </span>std::collections::HashMap;
-<span class="kw">use </span>std::time::Duration;
+<span class="kw">use </span>std::sync::Arc;
+<span class="kw">use </span>std::time::{Duration, Instant};
 
 <span class="kw">use </span>api::helper::{
-    is_column_type_value_eq, is_semantic_type_eq, proto_value_type, to_column_data_type,
-    to_proto_value,
+    is_column_type_value_eq, is_semantic_type_eq, proto_value_type, to_proto_value,
+    ColumnDataTypeWrapper,
 };
-<span class="kw">use </span>api::v1::{ColumnDataType, ColumnSchema, OpType, Rows, Value};
-<span class="kw">use </span>common_base::readable_size::ReadableSize;
+<span class="kw">use </span>api::v1::{ColumnDataType, ColumnSchema, OpType, Rows, SemanticType, Value};
+<span class="kw">use </span>common_telemetry::{info, warn};
+<span class="kw">use </span>datatypes::prelude::DataType;
+<span class="kw">use </span>prometheus::HistogramTimer;
+<span class="kw">use </span>prost::Message;
+<span class="kw">use </span>smallvec::SmallVec;
 <span class="kw">use </span>snafu::{ensure, OptionExt, ResultExt};
 <span class="kw">use </span>store_api::metadata::{ColumnMetadata, RegionMetadata};
-<span class="kw">use </span>store_api::region_request::RegionRequest;
-<span class="kw">use </span>store_api::storage::{ColumnId, CompactionStrategy, RegionId};
+<span class="kw">use </span>store_api::region_engine::SetReadonlyResponse;
+<span class="kw">use </span>store_api::region_request::{
+    AffectedRows, RegionAlterRequest, RegionCatchupRequest, RegionCloseRequest,
+    RegionCompactRequest, RegionCreateRequest, RegionDropRequest, RegionFlushRequest,
+    RegionOpenRequest, RegionRequest, RegionTruncateRequest,
+};
+<span class="kw">use </span>store_api::storage::{RegionId, SequenceNumber};
 <span class="kw">use </span>tokio::sync::oneshot::{<span class="self">self</span>, Receiver, Sender};
 
-<span class="kw">use </span><span class="kw">crate</span>::config::DEFAULT_WRITE_BUFFER_SIZE;
-<span class="kw">use </span><span class="kw">crate</span>::error::{CreateDefaultSnafu, FillDefaultSnafu, InvalidRequestSnafu, <span class="prelude-ty">Result</span>};
-
-<span class="doccomment">/// Options that affect the entire region.
-///
-/// Users need to specify the options while creating/opening a region.
-</span><span class="attr">#[derive(Debug)]
-</span><span class="kw">pub struct </span>RegionOptions {
-    <span class="doccomment">/// Region memtable max size in bytes.
-    </span><span class="kw">pub </span>write_buffer_size: <span class="prelude-ty">Option</span>&lt;ReadableSize&gt;,
-    <span class="doccomment">/// Region SST files TTL.
-    </span><span class="kw">pub </span>ttl: <span class="prelude-ty">Option</span>&lt;Duration&gt;,
-    <span class="doccomment">/// Compaction strategy.
-    </span><span class="kw">pub </span>compaction_strategy: CompactionStrategy,
-}
-
-<span class="kw">impl </span>Default <span class="kw">for </span>RegionOptions {
-    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
-        RegionOptions {
-            write_buffer_size: <span class="prelude-val">Some</span>(DEFAULT_WRITE_BUFFER_SIZE),
-            ttl: <span class="prelude-val">None</span>,
-            compaction_strategy: CompactionStrategy::LeveledTimeWindow,
-        }
-    }
-}
-
-<span class="doccomment">/// Create region request.
-</span><span class="attr">#[derive(Debug)]
-</span><span class="kw">pub struct </span>CreateRequest {
-    <span class="doccomment">/// Region to create.
-    </span><span class="kw">pub </span>region_id: RegionId,
-    <span class="doccomment">/// Data directory of the region.
-    </span><span class="kw">pub </span>region_dir: String,
-    <span class="doccomment">/// Columns in this region.
-    </span><span class="kw">pub </span>column_metadatas: Vec&lt;ColumnMetadata&gt;,
-    <span class="doccomment">/// Columns in the primary key.
-    </span><span class="kw">pub </span>primary_key: Vec&lt;ColumnId&gt;,
-    <span class="doccomment">/// Create region if not exists.
-    </span><span class="kw">pub </span>create_if_not_exists: bool,
-    <span class="doccomment">/// Options of the created region.
-    </span><span class="kw">pub </span>options: RegionOptions,
-}
-
-<span class="doccomment">/// Open region request.
-</span><span class="attr">#[derive(Debug)]
-</span><span class="kw">pub struct </span>OpenRequest {
-    <span class="doccomment">/// Region to open.
-    </span><span class="kw">pub </span>region_id: RegionId,
-    <span class="doccomment">/// Data directory of the region.
-    </span><span class="kw">pub </span>region_dir: String,
-    <span class="doccomment">/// Options of the created region.
-    </span><span class="kw">pub </span>options: RegionOptions,
-}
-
-<span class="doccomment">/// Close region request.
-</span><span class="attr">#[derive(Debug)]
-</span><span class="kw">pub struct </span>CloseRequest {
-    <span class="doccomment">/// Region to close.
-    </span><span class="kw">pub </span>region_id: RegionId,
-}
+<span class="kw">use </span><span class="kw">crate</span>::error::{
+    CompactRegionSnafu, ConvertColumnDataTypeSnafu, CreateDefaultSnafu, Error, FillDefaultSnafu,
+    FlushRegionSnafu, InvalidRequestSnafu, <span class="prelude-ty">Result</span>,
+};
+<span class="kw">use </span><span class="kw">crate</span>::memtable::MemtableId;
+<span class="kw">use </span><span class="kw">crate</span>::metrics::COMPACTION_ELAPSED_TOTAL;
+<span class="kw">use </span><span class="kw">crate</span>::sst::file::FileMeta;
+<span class="kw">use </span><span class="kw">crate</span>::sst::file_purger::{FilePurgerRef, PurgeRequest};
+<span class="kw">use </span><span class="kw">crate</span>::wal::EntryId;
 
 <span class="doccomment">/// Request to write a region.
 </span><span class="attr">#[derive(Debug)]
@@ -810,7 +1316,7 @@
                     .is_none(),
                 InvalidRequestSnafu {
                     region_id,
-                    reason: <span class="macro">format!</span>(<span class="string">&quot;duplicate column {}&quot;</span>, column.column_name),
+                    reason: <span class="macro">format!</span>(<span class="string">"duplicate column {}"</span>, column.column_name),
                 }
             );
         }
@@ -822,7 +1328,7 @@
                 InvalidRequestSnafu {
                     region_id,
                     reason: <span class="macro">format!</span>(
-                        <span class="string">&quot;row has {} columns but schema has {}&quot;</span>,
+                        <span class="string">"row has {} columns but schema has {}"</span>,
                         row.values.len(),
                         rows.schema.len()
                     ),
@@ -847,8 +1353,19 @@
         })
     }
 
-    <span class="doccomment">/// Get column index by name.
-    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>column_index_by_name(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;usize&gt; {
+    <span class="doccomment">/// Returns estimated size of the request.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>estimated_size(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+        <span class="kw">let </span>row_size = <span class="self">self
+            </span>.rows
+            .rows
+            .first()
+            .map(|row| row.encoded_len())
+            .unwrap_or(<span class="number">0</span>);
+        row_size * <span class="self">self</span>.rows.rows.len()
+    }
+
+    <span class="doccomment">/// Gets column index by name.
+    </span><span class="kw">pub fn </span>column_index_by_name(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;usize&gt; {
         <span class="self">self</span>.name_to_index.get(name).copied()
     }
 
@@ -857,6 +1374,8 @@
     /// If column with default value is missing, it returns a special [FillDefault](crate::error::Error::FillDefault)
     /// error.
     </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>check_schema(<span class="kw-2">&amp;</span><span class="self">self</span>, metadata: <span class="kw-2">&amp;</span>RegionMetadata) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        <span class="macro">debug_assert_eq!</span>(<span class="self">self</span>.region_id, metadata.region_id);
+
         <span class="kw">let </span>region_id = <span class="self">self</span>.region_id;
         <span class="comment">// Index all columns in rows.
         </span><span class="kw">let </span><span class="kw-2">mut </span>rows_columns: HashMap&lt;<span class="kw">_</span>, <span class="kw">_</span>&gt; = <span class="self">self
@@ -866,21 +1385,26 @@
             .map(|column| (<span class="kw-2">&amp;</span>column.column_name, column))
             .collect();
 
+        <span class="kw">let </span><span class="kw-2">mut </span>need_fill_default = <span class="bool-val">false</span>;
         <span class="comment">// Checks all columns in this region.
         </span><span class="kw">for </span>column <span class="kw">in </span><span class="kw-2">&amp;</span>metadata.column_metadatas {
             <span class="kw">if let </span><span class="prelude-val">Some</span>(input_col) = rows_columns.remove(<span class="kw-2">&amp;</span>column.column_schema.name) {
                 <span class="comment">// Check data type.
                 </span><span class="macro">ensure!</span>(
-                    is_column_type_value_eq(input_col.datatype, <span class="kw-2">&amp;</span>column.column_schema.data_type),
+                    is_column_type_value_eq(
+                        input_col.datatype,
+                        input_col.datatype_extension.clone(),
+                        <span class="kw-2">&amp;</span>column.column_schema.data_type
+                    ),
                     InvalidRequestSnafu {
                         region_id,
                         reason: <span class="macro">format!</span>(
-                            <span class="string">&quot;column {} expect type {:?}, given: {}({})&quot;</span>,
+                            <span class="string">"column {} expect type {:?}, given: {}({})"</span>,
                             column.column_schema.name,
                             column.column_schema.data_type,
-                            ColumnDataType::from_i32(input_col.datatype)
+                            ColumnDataType::try_from(input_col.datatype)
                                 .map(|v| v.as_str_name())
-                                .unwrap_or(<span class="string">&quot;Unknown&quot;</span>),
+                                .unwrap_or(<span class="string">"Unknown"</span>),
                             input_col.datatype,
                         )
                     }
@@ -892,12 +1416,12 @@
                     InvalidRequestSnafu {
                         region_id,
                         reason: <span class="macro">format!</span>(
-                            <span class="string">&quot;column {} has semantic type {:?}, given: {}({})&quot;</span>,
+                            <span class="string">"column {} has semantic type {:?}, given: {}({})"</span>,
                             column.column_schema.name,
                             column.semantic_type,
-                            api::v1::SemanticType::from_i32(input_col.semantic_type)
+                            api::v1::SemanticType::try_from(input_col.semantic_type)
                                 .map(|v| v.as_str_name())
-                                .unwrap_or(<span class="string">&quot;Unknown&quot;</span>),
+                                .unwrap_or(<span class="string">"Unknown"</span>),
                             input_col.semantic_type
                         ),
                     }
@@ -910,21 +1434,17 @@
                     !has_null || column.column_schema.is_nullable(),
                     InvalidRequestSnafu {
                         region_id,
-                        reason: <span class="macro">format!</span>(<span class="string">&quot;column {} is not null&quot;</span>, column.column_schema.name),
+                        reason: <span class="macro">format!</span>(
+                            <span class="string">"column {} is not null but input has null"</span>,
+                            column.column_schema.name
+                        ),
                     }
                 );
             } <span class="kw">else </span>{
-                <span class="comment">// For columns not in rows, checks whether they have default value.
-                </span><span class="macro">ensure!</span>(
-                    column.column_schema.is_nullable()
-                        || column.column_schema.default_constraint().is_some(),
-                    InvalidRequestSnafu {
-                        region_id,
-                        reason: <span class="macro">format!</span>(<span class="string">&quot;missing column {}&quot;</span>, column.column_schema.name),
-                    }
-                );
+                <span class="comment">// Rows don't have this column.
+                </span><span class="self">self</span>.check_missing_column(column)<span class="question-mark">?</span>;
 
-                <span class="kw">return </span>FillDefaultSnafu { region_id }.fail();
+                need_fill_default = <span class="bool-val">true</span>;
             }
         }
 
@@ -933,56 +1453,37 @@
             <span class="kw">let </span>names: Vec&lt;<span class="kw">_</span>&gt; = rows_columns.into_keys().collect();
             <span class="kw">return </span>InvalidRequestSnafu {
                 region_id,
-                reason: <span class="macro">format!</span>(<span class="string">&quot;unknown columns: {:?}&quot;</span>, names),
+                reason: <span class="macro">format!</span>(<span class="string">"unknown columns: {:?}"</span>, names),
             }
             .fail();
         }
 
+        <span class="comment">// If we need to fill default values, return a special error.
+        </span><span class="macro">ensure!</span>(!need_fill_default, FillDefaultSnafu { region_id });
+
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="doccomment">/// Try to fill missing columns.
+    <span class="doccomment">/// Tries to fill missing columns.
     ///
     /// Currently, our protobuf format might be inefficient when we need to fill lots of null
     /// values.
     </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>fill_missing_columns(<span class="kw-2">&amp;mut </span><span class="self">self</span>, metadata: <span class="kw-2">&amp;</span>RegionMetadata) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        <span class="macro">debug_assert_eq!</span>(<span class="self">self</span>.region_id, metadata.region_id);
+
         <span class="kw">for </span>column <span class="kw">in </span><span class="kw-2">&amp;</span>metadata.column_metadatas {
             <span class="kw">if </span>!<span class="self">self</span>.name_to_index.contains_key(<span class="kw-2">&amp;</span>column.column_schema.name) {
-                <span class="self">self</span>.fill_column(metadata.region_id, column)<span class="question-mark">?</span>;
+                <span class="self">self</span>.fill_column(column)<span class="question-mark">?</span>;
             }
         }
 
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="doccomment">/// Fill default value for specific `column`.
-    </span><span class="kw">fn </span>fill_column(<span class="kw-2">&amp;mut </span><span class="self">self</span>, region_id: RegionId, column: <span class="kw-2">&amp;</span>ColumnMetadata) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="doccomment">/// Fills default value for specific `column`.
+    </span><span class="kw">fn </span>fill_column(<span class="kw-2">&amp;mut </span><span class="self">self</span>, column: <span class="kw-2">&amp;</span>ColumnMetadata) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="comment">// Need to add a default value for this column.
-        </span><span class="kw">let </span>default_value = column
-            .column_schema
-            .create_default()
-            .context(CreateDefaultSnafu {
-                region_id,
-                column: <span class="kw-2">&amp;</span>column.column_schema.name,
-            })<span class="question-mark">?
-            </span><span class="comment">// This column doesn&#39;t have default value.
-            </span>.with_context(|| InvalidRequestSnafu {
-                region_id,
-                reason: <span class="macro">format!</span>(
-                    <span class="string">&quot;column {} does not have default value&quot;</span>,
-                    column.column_schema.name
-                ),
-            })<span class="question-mark">?</span>;
-
-        <span class="comment">// Convert default value into proto&#39;s value.
-
-        </span><span class="kw">let </span>proto_value = to_proto_value(default_value).with_context(|| InvalidRequestSnafu {
-            region_id,
-            reason: <span class="macro">format!</span>(
-                <span class="string">&quot;no protobuf type for default value of column {} ({:?})&quot;</span>,
-                column.column_schema.name, column.column_schema.data_type
-            ),
-        })<span class="question-mark">?</span>;
+        </span><span class="kw">let </span>proto_value = <span class="self">self</span>.column_default_value(column)<span class="question-mark">?</span>;
 
         <span class="comment">// Insert default value to each row.
         </span><span class="kw">for </span>row <span class="kw">in </span><span class="kw-2">&amp;mut </span><span class="self">self</span>.rows.rows {
@@ -990,22 +1491,107 @@
         }
 
         <span class="comment">// Insert column schema.
-        </span><span class="kw">let </span>datatype = to_column_data_type(<span class="kw-2">&amp;</span>column.column_schema.data_type).with_context(|| {
-            InvalidRequestSnafu {
-                region_id,
-                reason: <span class="macro">format!</span>(
-                    <span class="string">&quot;no protobuf type for column {} ({:?})&quot;</span>,
-                    column.column_schema.name, column.column_schema.data_type
-                ),
-            }
-        })<span class="question-mark">?</span>;
+        </span><span class="kw">let </span>(datatype, datatype_ext) =
+            ColumnDataTypeWrapper::try_from(column.column_schema.data_type.clone())
+                .with_context(|<span class="kw">_</span>| ConvertColumnDataTypeSnafu {
+                    reason: <span class="macro">format!</span>(
+                        <span class="string">"no protobuf type for column {} ({:?})"</span>,
+                        column.column_schema.name, column.column_schema.data_type
+                    ),
+                })<span class="question-mark">?
+                </span>.to_parts();
         <span class="self">self</span>.rows.schema.push(ColumnSchema {
             column_name: column.column_schema.name.clone(),
             datatype: datatype <span class="kw">as </span>i32,
             semantic_type: column.semantic_type <span class="kw">as </span>i32,
+            datatype_extension: datatype_ext,
         });
 
         <span class="prelude-val">Ok</span>(())
+    }
+
+    <span class="doccomment">/// Checks whether we should allow a row doesn't provide this column.
+    </span><span class="kw">fn </span>check_missing_column(<span class="kw-2">&amp;</span><span class="self">self</span>, column: <span class="kw-2">&amp;</span>ColumnMetadata) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        <span class="kw">if </span><span class="self">self</span>.op_type == OpType::Delete {
+            <span class="kw">if </span>column.semantic_type == SemanticType::Field {
+                <span class="comment">// For delete request, all tags and timestamp is required. We don't fill default
+                // tag or timestamp while deleting rows.
+                </span><span class="kw">return </span><span class="prelude-val">Ok</span>(());
+            } <span class="kw">else </span>{
+                <span class="kw">return </span>InvalidRequestSnafu {
+                    region_id: <span class="self">self</span>.region_id,
+                    reason: <span class="macro">format!</span>(<span class="string">"delete requests need column {}"</span>, column.column_schema.name),
+                }
+                .fail();
+            }
+        }
+
+        <span class="comment">// Not a delete request. Checks whether they have default value.
+        </span><span class="macro">ensure!</span>(
+            column.column_schema.is_nullable()
+                || column.column_schema.default_constraint().is_some(),
+            InvalidRequestSnafu {
+                region_id: <span class="self">self</span>.region_id,
+                reason: <span class="macro">format!</span>(<span class="string">"missing column {}"</span>, column.column_schema.name),
+            }
+        );
+
+        <span class="prelude-val">Ok</span>(())
+    }
+
+    <span class="doccomment">/// Returns the default value for specific column.
+    </span><span class="kw">fn </span>column_default_value(<span class="kw-2">&amp;</span><span class="self">self</span>, column: <span class="kw-2">&amp;</span>ColumnMetadata) -&gt; <span class="prelude-ty">Result</span>&lt;Value&gt; {
+        <span class="kw">let </span>default_value = <span class="kw">match </span><span class="self">self</span>.op_type {
+            OpType::Delete =&gt; {
+                <span class="macro">ensure!</span>(
+                    column.semantic_type == SemanticType::Field,
+                    InvalidRequestSnafu {
+                        region_id: <span class="self">self</span>.region_id,
+                        reason: <span class="macro">format!</span>(
+                            <span class="string">"delete requests need column {}"</span>,
+                            column.column_schema.name
+                        ),
+                    }
+                );
+
+                <span class="comment">// For delete request, we need a default value for padding so we
+                // can delete a row even a field doesn't have a default value. So the
+                // value doesn't need to following the default value constraint of the
+                // column.
+                </span><span class="kw">if </span>column.column_schema.is_nullable() {
+                    datatypes::value::Value::Null
+                } <span class="kw">else </span>{
+                    column.column_schema.data_type.default_value()
+                }
+            }
+            OpType::Put =&gt; {
+                <span class="comment">// For put requests, we use the default value from column schema.
+                </span>column
+                    .column_schema
+                    .create_default()
+                    .context(CreateDefaultSnafu {
+                        region_id: <span class="self">self</span>.region_id,
+                        column: <span class="kw-2">&amp;</span>column.column_schema.name,
+                    })<span class="question-mark">?
+                    </span><span class="comment">// This column doesn't have default value.
+                    </span>.with_context(|| InvalidRequestSnafu {
+                        region_id: <span class="self">self</span>.region_id,
+                        reason: <span class="macro">format!</span>(
+                            <span class="string">"column {} does not have default value"</span>,
+                            column.column_schema.name
+                        ),
+                    })<span class="question-mark">?
+            </span>}
+        };
+
+        <span class="comment">// Convert default value into proto's value.
+        </span>to_proto_value(default_value).with_context(|| InvalidRequestSnafu {
+            region_id: <span class="self">self</span>.region_id,
+            reason: <span class="macro">format!</span>(
+                <span class="string">"no protobuf type for default value of column {} ({:?})"</span>,
+                column.column_schema.name, column.column_schema.data_type
+            ),
+        })
     }
 }
 
@@ -1021,10 +1607,11 @@
             InvalidRequestSnafu {
                 region_id,
                 reason: <span class="macro">format!</span>(
-                    <span class="string">&quot;column {} has type {:?}, but schema has type {:?}&quot;</span>,
-                    column_schema.column_name,
+                    <span class="string">"value has type {:?}, but column {} has type {:?}({})"</span>,
                     value_type,
-                    ColumnDataType::from_i32(column_schema.datatype)
+                    column_schema.column_name,
+                    ColumnDataType::try_from(column_schema.datatype),
+                    column_schema.datatype,
                 ),
             }
         );
@@ -1033,72 +1620,359 @@
     <span class="prelude-val">Ok</span>(())
 }
 
+<span class="doccomment">/// Oneshot output result sender.
+</span><span class="attr">#[derive(Debug)]
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct </span>OutputTx(Sender&lt;<span class="prelude-ty">Result</span>&lt;AffectedRows&gt;&gt;);
+
+<span class="kw">impl </span>OutputTx {
+    <span class="doccomment">/// Creates a new output sender.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new(sender: Sender&lt;<span class="prelude-ty">Result</span>&lt;AffectedRows&gt;&gt;) -&gt; OutputTx {
+        OutputTx(sender)
+    }
+
+    <span class="doccomment">/// Sends the `result`.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>send(<span class="self">self</span>, result: <span class="prelude-ty">Result</span>&lt;AffectedRows&gt;) {
+        <span class="comment">// Ignores send result.
+        </span><span class="kw">let _ </span>= <span class="self">self</span>.<span class="number">0</span>.send(result);
+    }
+}
+
+<span class="doccomment">/// Optional output result sender.
+</span><span class="attr">#[derive(Debug)]
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct </span>OptionOutputTx(<span class="prelude-ty">Option</span>&lt;OutputTx&gt;);
+
+<span class="kw">impl </span>OptionOutputTx {
+    <span class="doccomment">/// Creates a sender.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new(sender: <span class="prelude-ty">Option</span>&lt;OutputTx&gt;) -&gt; OptionOutputTx {
+        OptionOutputTx(sender)
+    }
+
+    <span class="doccomment">/// Creates an empty sender.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>none() -&gt; OptionOutputTx {
+        OptionOutputTx(<span class="prelude-val">None</span>)
+    }
+
+    <span class="doccomment">/// Sends the `result` and consumes the inner sender.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>send_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>, result: <span class="prelude-ty">Result</span>&lt;AffectedRows&gt;) {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(sender) = <span class="self">self</span>.<span class="number">0</span>.take() {
+            sender.send(result);
+        }
+    }
+
+    <span class="doccomment">/// Sends the `result` and consumes the sender.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>send(<span class="kw-2">mut </span><span class="self">self</span>, result: <span class="prelude-ty">Result</span>&lt;AffectedRows&gt;) {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(sender) = <span class="self">self</span>.<span class="number">0</span>.take() {
+            sender.send(result);
+        }
+    }
+
+    <span class="doccomment">/// Takes the inner sender.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>take_inner(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;OutputTx&gt; {
+        <span class="self">self</span>.<span class="number">0</span>.take()
+    }
+}
+
+<span class="kw">impl </span>From&lt;Sender&lt;<span class="prelude-ty">Result</span>&lt;AffectedRows&gt;&gt;&gt; <span class="kw">for </span>OptionOutputTx {
+    <span class="kw">fn </span>from(sender: Sender&lt;<span class="prelude-ty">Result</span>&lt;AffectedRows&gt;&gt;) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::new(<span class="prelude-val">Some</span>(OutputTx::new(sender)))
+    }
+}
+
+<span class="kw">impl </span>OnFailure <span class="kw">for </span>OptionOutputTx {
+    <span class="kw">fn </span>on_failure(<span class="kw-2">&amp;mut </span><span class="self">self</span>, err: Error) {
+        <span class="self">self</span>.send_mut(<span class="prelude-val">Err</span>(err));
+    }
+}
+
+<span class="doccomment">/// Callback on failure.
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">trait </span>OnFailure {
+    <span class="doccomment">/// Handles `err` on failure.
+    </span><span class="kw">fn </span>on_failure(<span class="kw-2">&amp;mut </span><span class="self">self</span>, err: Error);
+}
+
 <span class="doccomment">/// Sender and write request.
+</span><span class="attr">#[derive(Debug)]
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct </span>SenderWriteRequest {
     <span class="doccomment">/// Result sender.
-    </span><span class="kw">pub</span>(<span class="kw">crate</span>) sender: <span class="prelude-ty">Option</span>&lt;Sender&lt;<span class="prelude-ty">Result</span>&lt;()&gt;&gt;&gt;,
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) sender: OptionOutputTx,
     <span class="kw">pub</span>(<span class="kw">crate</span>) request: WriteRequest,
 }
 
 <span class="doccomment">/// Request sent to a worker
+</span><span class="attr">#[derive(Debug)]
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">enum </span>WorkerRequest {
-    <span class="doccomment">/// Region request.
-    </span>Region(RegionTask),
+    <span class="doccomment">/// Write to a region.
+    </span>Write(SenderWriteRequest),
+
+    <span class="doccomment">/// Ddl request to a region.
+    </span>Ddl(SenderDdlRequest),
+
+    <span class="doccomment">/// Notifications from internal background jobs.
+    </span>Background {
+        <span class="doccomment">/// Id of the region to send.
+        </span>region_id: RegionId,
+        <span class="doccomment">/// Internal notification.
+        </span>notify: BackgroundNotify,
+    },
+
+    <span class="doccomment">/// The internal commands.
+    </span>SetReadonlyGracefully {
+        <span class="doccomment">/// Id of the region to send.
+        </span>region_id: RegionId,
+        <span class="doccomment">/// The sender of [SetReadonlyResponse].
+        </span>sender: Sender&lt;SetReadonlyResponse&gt;,
+    },
 
     <span class="doccomment">/// Notify a worker to stop.
     </span>Stop,
 }
 
-<span class="doccomment">/// Request to modify a region.
-</span><span class="attr">#[derive(Debug)]
-</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct </span>RegionTask {
-    <span class="doccomment">/// Sender to send result.
-    ///
-    /// Now the result is a `Result&lt;()&gt;`, but we could replace the empty tuple
-    /// with an enum if we need to carry more information.
-    </span><span class="kw">pub</span>(<span class="kw">crate</span>) sender: <span class="prelude-ty">Option</span>&lt;Sender&lt;<span class="prelude-ty">Result</span>&lt;()&gt;&gt;&gt;,
-    <span class="doccomment">/// Request body.
-    </span><span class="kw">pub</span>(<span class="kw">crate</span>) request: RegionRequest,
-    <span class="doccomment">/// Region identifier.
-    </span><span class="kw">pub</span>(<span class="kw">crate</span>) region_id: RegionId,
-}
-
-<span class="kw">impl </span>RegionTask {
-    <span class="doccomment">/// Creates a [RegionTask] and a receiver from [RegionRequest].
-    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>from_request(
+<span class="kw">impl </span>WorkerRequest {
+    <span class="doccomment">/// Converts request from a [RegionRequest].
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>try_from_region_request(
         region_id: RegionId,
-        request: RegionRequest,
-    ) -&gt; (RegionTask, Receiver&lt;<span class="prelude-ty">Result</span>&lt;()&gt;&gt;) {
+        value: RegionRequest,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;(WorkerRequest, Receiver&lt;<span class="prelude-ty">Result</span>&lt;AffectedRows&gt;&gt;)&gt; {
         <span class="kw">let </span>(sender, receiver) = oneshot::channel();
-        (
-            RegionTask {
-                sender: <span class="prelude-val">Some</span>(sender),
-                request,
+        <span class="kw">let </span>worker_request = <span class="kw">match </span>value {
+            RegionRequest::Put(v) =&gt; {
+                <span class="kw">let </span>write_request = WriteRequest::new(region_id, OpType::Put, v.rows)<span class="question-mark">?</span>;
+                WorkerRequest::Write(SenderWriteRequest {
+                    sender: sender.into(),
+                    request: write_request,
+                })
+            }
+            RegionRequest::Delete(v) =&gt; {
+                <span class="kw">let </span>write_request = WriteRequest::new(region_id, OpType::Delete, v.rows)<span class="question-mark">?</span>;
+                WorkerRequest::Write(SenderWriteRequest {
+                    sender: sender.into(),
+                    request: write_request,
+                })
+            }
+            RegionRequest::Create(v) =&gt; WorkerRequest::Ddl(SenderDdlRequest {
                 region_id,
-            },
+                sender: sender.into(),
+                request: DdlRequest::Create(v),
+            }),
+            RegionRequest::Drop(v) =&gt; WorkerRequest::Ddl(SenderDdlRequest {
+                region_id,
+                sender: sender.into(),
+                request: DdlRequest::Drop(v),
+            }),
+            RegionRequest::Open(v) =&gt; WorkerRequest::Ddl(SenderDdlRequest {
+                region_id,
+                sender: sender.into(),
+                request: DdlRequest::Open(v),
+            }),
+            RegionRequest::Close(v) =&gt; WorkerRequest::Ddl(SenderDdlRequest {
+                region_id,
+                sender: sender.into(),
+                request: DdlRequest::Close(v),
+            }),
+            RegionRequest::Alter(v) =&gt; WorkerRequest::Ddl(SenderDdlRequest {
+                region_id,
+                sender: sender.into(),
+                request: DdlRequest::Alter(v),
+            }),
+            RegionRequest::Flush(v) =&gt; WorkerRequest::Ddl(SenderDdlRequest {
+                region_id,
+                sender: sender.into(),
+                request: DdlRequest::Flush(v),
+            }),
+            RegionRequest::Compact(v) =&gt; WorkerRequest::Ddl(SenderDdlRequest {
+                region_id,
+                sender: sender.into(),
+                request: DdlRequest::Compact(v),
+            }),
+            RegionRequest::Truncate(v) =&gt; WorkerRequest::Ddl(SenderDdlRequest {
+                region_id,
+                sender: sender.into(),
+                request: DdlRequest::Truncate(v),
+            }),
+            RegionRequest::Catchup(v) =&gt; WorkerRequest::Ddl(SenderDdlRequest {
+                region_id,
+                sender: sender.into(),
+                request: DdlRequest::Catchup(v),
+            }),
+        };
+
+        <span class="prelude-val">Ok</span>((worker_request, receiver))
+    }
+
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new_set_readonly_gracefully(
+        region_id: RegionId,
+    ) -&gt; (WorkerRequest, Receiver&lt;SetReadonlyResponse&gt;) {
+        <span class="kw">let </span>(sender, receiver) = oneshot::channel();
+
+        (
+            WorkerRequest::SetReadonlyGracefully { region_id, sender },
             receiver,
         )
     }
 }
 
-<span class="doccomment">/// Mito Region Engine&#39;s request validator
-</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct </span>RequestValidator;
+<span class="doccomment">/// DDL request to a region.
+</span><span class="attr">#[derive(Debug)]
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">enum </span>DdlRequest {
+    Create(RegionCreateRequest),
+    Drop(RegionDropRequest),
+    Open(RegionOpenRequest),
+    Close(RegionCloseRequest),
+    Alter(RegionAlterRequest),
+    Flush(RegionFlushRequest),
+    Compact(RegionCompactRequest),
+    Truncate(RegionTruncateRequest),
+    Catchup(RegionCatchupRequest),
+}
 
-<span class="kw">impl </span>RequestValidator {
-    <span class="doccomment">/// Validate the [WriteRequest].
-    </span><span class="kw">pub fn </span>write_request(_write_request: <span class="kw-2">&amp;</span>WriteRequest) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="comment">// - checks whether the request is too large.
-        // - checks whether each row in rows has the same schema.
-        // - checks whether each column match the schema in Rows.
-        // - checks rows don&#39;t have duplicate columns.
-        </span><span class="macro">unimplemented!</span>()
+<span class="doccomment">/// Sender and Ddl request.
+</span><span class="attr">#[derive(Debug)]
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct </span>SenderDdlRequest {
+    <span class="doccomment">/// Region id of the request.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) region_id: RegionId,
+    <span class="doccomment">/// Result sender.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) sender: OptionOutputTx,
+    <span class="doccomment">/// Ddl request.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) request: DdlRequest,
+}
+
+<span class="doccomment">/// Notification from a background job.
+</span><span class="attr">#[derive(Debug)]
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">enum </span>BackgroundNotify {
+    <span class="doccomment">/// Flush has finished.
+    </span>FlushFinished(FlushFinished),
+    <span class="doccomment">/// Flush has failed.
+    </span>FlushFailed(FlushFailed),
+    <span class="doccomment">/// Compaction has finished.
+    </span>CompactionFinished(CompactionFinished),
+    <span class="doccomment">/// Compaction has failed.
+    </span>CompactionFailed(CompactionFailed),
+}
+
+<span class="doccomment">/// Notifies a flush job is finished.
+</span><span class="attr">#[derive(Debug)]
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct </span>FlushFinished {
+    <span class="doccomment">/// Region id.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) region_id: RegionId,
+    <span class="doccomment">/// Meta of the flushed SSTs.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) file_metas: Vec&lt;FileMeta&gt;,
+    <span class="doccomment">/// Entry id of flushed data.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) flushed_entry_id: EntryId,
+    <span class="doccomment">/// Sequence of flushed data.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) flushed_sequence: SequenceNumber,
+    <span class="doccomment">/// Id of memtables to remove.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) memtables_to_remove: SmallVec&lt;[MemtableId; <span class="number">2</span>]&gt;,
+    <span class="doccomment">/// Flush result senders.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) senders: Vec&lt;OutputTx&gt;,
+    <span class="doccomment">/// File purger for cleaning files on failure.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) file_purger: FilePurgerRef,
+    <span class="doccomment">/// Flush timer.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) _timer: HistogramTimer,
+}
+
+<span class="kw">impl </span>FlushFinished {
+    <span class="doccomment">/// Marks the flush job as successful and observes the timer.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>on_success(<span class="self">self</span>) {
+        <span class="kw">for </span>sender <span class="kw">in </span><span class="self">self</span>.senders {
+            sender.send(<span class="prelude-val">Ok</span>(<span class="number">0</span>));
+        }
     }
+}
+
+<span class="kw">impl </span>OnFailure <span class="kw">for </span>FlushFinished {
+    <span class="kw">fn </span>on_failure(<span class="kw-2">&amp;mut </span><span class="self">self</span>, err: Error) {
+        <span class="kw">let </span>err = Arc::new(err);
+        <span class="kw">for </span>sender <span class="kw">in </span><span class="self">self</span>.senders.drain(..) {
+            sender.send(<span class="prelude-val">Err</span>(err.clone()).context(FlushRegionSnafu {
+                region_id: <span class="self">self</span>.region_id,
+            }));
+        }
+        <span class="comment">// Clean flushed files.
+        </span><span class="kw">for </span>file <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.file_metas {
+            <span class="self">self</span>.file_purger.send_request(PurgeRequest {
+                region_id: file.region_id,
+                file_id: file.file_id,
+            });
+        }
+    }
+}
+
+<span class="doccomment">/// Notifies a flush job is failed.
+</span><span class="attr">#[derive(Debug)]
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct </span>FlushFailed {
+    <span class="doccomment">/// The error source of the failure.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) err: Arc&lt;Error&gt;,
+}
+
+<span class="doccomment">/// Notifies a compaction job has finished.
+</span><span class="attr">#[derive(Debug)]
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct </span>CompactionFinished {
+    <span class="doccomment">/// Region id.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) region_id: RegionId,
+    <span class="doccomment">/// Compaction output files that are to be added to region version.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) compaction_outputs: Vec&lt;FileMeta&gt;,
+    <span class="doccomment">/// Compacted files that are to be removed from region version.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) compacted_files: Vec&lt;FileMeta&gt;,
+    <span class="doccomment">/// Compaction result senders.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) senders: Vec&lt;OutputTx&gt;,
+    <span class="doccomment">/// File purger for cleaning files on failure.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) file_purger: FilePurgerRef,
+    <span class="doccomment">/// Inferred Compaction time window.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) compaction_time_window: <span class="prelude-ty">Option</span>&lt;Duration&gt;,
+    <span class="doccomment">/// Start time of compaction task.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) start_time: Instant,
+}
+
+<span class="kw">impl </span>CompactionFinished {
+    <span class="kw">pub fn </span>on_success(<span class="self">self</span>) {
+        <span class="comment">// only update compaction time on success
+        </span>COMPACTION_ELAPSED_TOTAL.observe(<span class="self">self</span>.start_time.elapsed().as_secs_f64());
+
+        <span class="kw">for </span>sender <span class="kw">in </span><span class="self">self</span>.senders {
+            sender.send(<span class="prelude-val">Ok</span>(<span class="number">0</span>));
+        }
+        <span class="macro">info!</span>(<span class="string">"Successfully compacted region: {}"</span>, <span class="self">self</span>.region_id);
+    }
+}
+
+<span class="kw">impl </span>OnFailure <span class="kw">for </span>CompactionFinished {
+    <span class="doccomment">/// Compaction succeeded but failed to update manifest or region's already been dropped,
+    /// clean compaction output files.
+    </span><span class="kw">fn </span>on_failure(<span class="kw-2">&amp;mut </span><span class="self">self</span>, err: Error) {
+        <span class="kw">let </span>err = Arc::new(err);
+        <span class="kw">for </span>sender <span class="kw">in </span><span class="self">self</span>.senders.drain(..) {
+            sender.send(<span class="prelude-val">Err</span>(err.clone()).context(CompactRegionSnafu {
+                region_id: <span class="self">self</span>.region_id,
+            }));
+        }
+        <span class="kw">for </span>file <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.compacted_files {
+            <span class="kw">let </span>file_id = file.file_id;
+            <span class="macro">warn!</span>(
+                <span class="string">"Cleaning region {} compaction output file: {}"</span>,
+                <span class="self">self</span>.region_id, file_id
+            );
+            <span class="self">self</span>.file_purger.send_request(PurgeRequest {
+                region_id: <span class="self">self</span>.region_id,
+                file_id,
+            });
+        }
+    }
+}
+
+<span class="doccomment">/// A failing compaction result.
+</span><span class="attr">#[derive(Debug)]
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct </span>CompactionFailed {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) region_id: RegionId,
+    <span class="doccomment">/// The error source of the failure.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) err: Arc&lt;Error&gt;,
 }
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
+    <span class="kw">use </span>api::v1::value::ValueData;
     <span class="kw">use </span>api::v1::{Row, SemanticType};
     <span class="kw">use </span>datatypes::prelude::ConcreteDataType;
+    <span class="kw">use </span>datatypes::schema::ColumnDefaultConstraint;
     <span class="kw">use </span>store_api::metadata::RegionMetadataBuilder;
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
@@ -1114,6 +1988,7 @@
             column_name: name.to_string(),
             datatype: data_type <span class="kw">as </span>i32,
             semantic_type: semantic_type <span class="kw">as </span>i32,
+            ..Default::default()
         }
     }
 
@@ -1126,7 +2001,7 @@
         {
             <span class="macro">assert_eq!</span>(reason, expect);
         } <span class="kw">else </span>{
-            <span class="macro">panic!</span>(<span class="string">&quot;Unexpected error {err}&quot;</span>)
+            <span class="macro">panic!</span>(<span class="string">"Unexpected error {err}"</span>)
         }
     }
 
@@ -1134,22 +2009,22 @@
     </span><span class="kw">fn </span>test_write_request_duplicate_column() {
         <span class="kw">let </span>rows = Rows {
             schema: <span class="macro">vec!</span>[
-                new_column_schema(<span class="string">&quot;c0&quot;</span>, ColumnDataType::Int64, SemanticType::Tag),
-                new_column_schema(<span class="string">&quot;c0&quot;</span>, ColumnDataType::Int64, SemanticType::Tag),
+                new_column_schema(<span class="string">"c0"</span>, ColumnDataType::Int64, SemanticType::Tag),
+                new_column_schema(<span class="string">"c0"</span>, ColumnDataType::Int64, SemanticType::Tag),
             ],
             rows: <span class="macro">vec!</span>[],
         };
 
         <span class="kw">let </span>err = WriteRequest::new(RegionId::new(<span class="number">1</span>, <span class="number">1</span>), OpType::Put, rows).unwrap_err();
-        check_invalid_request(<span class="kw-2">&amp;</span>err, <span class="string">&quot;duplicate column c0&quot;</span>);
+        check_invalid_request(<span class="kw-2">&amp;</span>err, <span class="string">"duplicate column c0"</span>);
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_valid_write_request() {
         <span class="kw">let </span>rows = Rows {
             schema: <span class="macro">vec!</span>[
-                new_column_schema(<span class="string">&quot;c0&quot;</span>, ColumnDataType::Int64, SemanticType::Tag),
-                new_column_schema(<span class="string">&quot;c1&quot;</span>, ColumnDataType::Int64, SemanticType::Tag),
+                new_column_schema(<span class="string">"c0"</span>, ColumnDataType::Int64, SemanticType::Tag),
+                new_column_schema(<span class="string">"c1"</span>, ColumnDataType::Int64, SemanticType::Tag),
             ],
             rows: <span class="macro">vec!</span>[Row {
                 values: <span class="macro">vec!</span>[i64_value(<span class="number">1</span>), i64_value(<span class="number">2</span>)],
@@ -1157,17 +2032,17 @@
         };
 
         <span class="kw">let </span>request = WriteRequest::new(RegionId::new(<span class="number">1</span>, <span class="number">1</span>), OpType::Put, rows).unwrap();
-        <span class="macro">assert_eq!</span>(<span class="number">0</span>, request.column_index_by_name(<span class="string">&quot;c0&quot;</span>).unwrap());
-        <span class="macro">assert_eq!</span>(<span class="number">1</span>, request.column_index_by_name(<span class="string">&quot;c1&quot;</span>).unwrap());
-        <span class="macro">assert_eq!</span>(<span class="prelude-val">None</span>, request.column_index_by_name(<span class="string">&quot;c2&quot;</span>));
+        <span class="macro">assert_eq!</span>(<span class="number">0</span>, request.column_index_by_name(<span class="string">"c0"</span>).unwrap());
+        <span class="macro">assert_eq!</span>(<span class="number">1</span>, request.column_index_by_name(<span class="string">"c1"</span>).unwrap());
+        <span class="macro">assert_eq!</span>(<span class="prelude-val">None</span>, request.column_index_by_name(<span class="string">"c2"</span>));
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_write_request_column_num() {
         <span class="kw">let </span>rows = Rows {
             schema: <span class="macro">vec!</span>[
-                new_column_schema(<span class="string">&quot;c0&quot;</span>, ColumnDataType::Int64, SemanticType::Tag),
-                new_column_schema(<span class="string">&quot;c1&quot;</span>, ColumnDataType::Int64, SemanticType::Tag),
+                new_column_schema(<span class="string">"c0"</span>, ColumnDataType::Int64, SemanticType::Tag),
+                new_column_schema(<span class="string">"c1"</span>, ColumnDataType::Int64, SemanticType::Tag),
             ],
             rows: <span class="macro">vec!</span>[Row {
                 values: <span class="macro">vec!</span>[i64_value(<span class="number">1</span>), i64_value(<span class="number">2</span>), i64_value(<span class="number">3</span>)],
@@ -1175,7 +2050,7 @@
         };
 
         <span class="kw">let </span>err = WriteRequest::new(RegionId::new(<span class="number">1</span>, <span class="number">1</span>), OpType::Put, rows).unwrap_err();
-        check_invalid_request(<span class="kw-2">&amp;</span>err, <span class="string">&quot;row has 3 columns but schema has 2&quot;</span>);
+        check_invalid_request(<span class="kw-2">&amp;</span>err, <span class="string">"row has 3 columns but schema has 2"</span>);
     }
 
     <span class="kw">fn </span>new_region_metadata() -&gt; RegionMetadata {
@@ -1183,7 +2058,7 @@
         builder
             .push_column_metadata(ColumnMetadata {
                 column_schema: datatypes::schema::ColumnSchema::new(
-                    <span class="string">&quot;ts&quot;</span>,
+                    <span class="string">"ts"</span>,
                     ConcreteDataType::timestamp_millisecond_datatype(),
                     <span class="bool-val">false</span>,
                 ),
@@ -1192,7 +2067,7 @@
             })
             .push_column_metadata(ColumnMetadata {
                 column_schema: datatypes::schema::ColumnSchema::new(
-                    <span class="string">&quot;k0&quot;</span>,
+                    <span class="string">"k0"</span>,
                     ConcreteDataType::int64_datatype(),
                     <span class="bool-val">true</span>,
                 ),
@@ -1208,11 +2083,11 @@
         <span class="kw">let </span>rows = Rows {
             schema: <span class="macro">vec!</span>[
                 new_column_schema(
-                    <span class="string">&quot;ts&quot;</span>,
+                    <span class="string">"ts"</span>,
                     ColumnDataType::TimestampMillisecond,
                     SemanticType::Timestamp,
                 ),
-                new_column_schema(<span class="string">&quot;k0&quot;</span>, ColumnDataType::Int64, SemanticType::Tag),
+                new_column_schema(<span class="string">"k0"</span>, ColumnDataType::Int64, SemanticType::Tag),
             ],
             rows: <span class="macro">vec!</span>[Row {
                 values: <span class="macro">vec!</span>[ts_ms_value(<span class="number">1</span>), i64_value(<span class="number">2</span>)],
@@ -1228,8 +2103,8 @@
     </span><span class="kw">fn </span>test_column_type() {
         <span class="kw">let </span>rows = Rows {
             schema: <span class="macro">vec!</span>[
-                new_column_schema(<span class="string">&quot;ts&quot;</span>, ColumnDataType::Int64, SemanticType::Timestamp),
-                new_column_schema(<span class="string">&quot;k0&quot;</span>, ColumnDataType::Int64, SemanticType::Tag),
+                new_column_schema(<span class="string">"ts"</span>, ColumnDataType::Int64, SemanticType::Timestamp),
+                new_column_schema(<span class="string">"k0"</span>, ColumnDataType::Int64, SemanticType::Tag),
             ],
             rows: <span class="macro">vec!</span>[Row {
                 values: <span class="macro">vec!</span>[i64_value(<span class="number">1</span>), i64_value(<span class="number">2</span>)],
@@ -1239,7 +2114,7 @@
 
         <span class="kw">let </span>request = WriteRequest::new(RegionId::new(<span class="number">1</span>, <span class="number">1</span>), OpType::Put, rows).unwrap();
         <span class="kw">let </span>err = request.check_schema(<span class="kw-2">&amp;</span>metadata).unwrap_err();
-        check_invalid_request(<span class="kw-2">&amp;</span>err, <span class="string">&quot;column ts expect type Timestamp(Millisecond(TimestampMillisecondType)), given: INT64(4)&quot;</span>);
+        check_invalid_request(<span class="kw-2">&amp;</span>err, <span class="string">"column ts expect type Timestamp(Millisecond(TimestampMillisecondType)), given: INT64(4)"</span>);
     }
 
     <span class="attr">#[test]
@@ -1247,11 +2122,11 @@
         <span class="kw">let </span>rows = Rows {
             schema: <span class="macro">vec!</span>[
                 new_column_schema(
-                    <span class="string">&quot;ts&quot;</span>,
+                    <span class="string">"ts"</span>,
                     ColumnDataType::TimestampMillisecond,
                     SemanticType::Tag,
                 ),
-                new_column_schema(<span class="string">&quot;k0&quot;</span>, ColumnDataType::Int64, SemanticType::Tag),
+                new_column_schema(<span class="string">"k0"</span>, ColumnDataType::Int64, SemanticType::Tag),
             ],
             rows: <span class="macro">vec!</span>[Row {
                 values: <span class="macro">vec!</span>[ts_ms_value(<span class="number">1</span>), i64_value(<span class="number">2</span>)],
@@ -1261,7 +2136,7 @@
 
         <span class="kw">let </span>request = WriteRequest::new(RegionId::new(<span class="number">1</span>, <span class="number">1</span>), OpType::Put, rows).unwrap();
         <span class="kw">let </span>err = request.check_schema(<span class="kw-2">&amp;</span>metadata).unwrap_err();
-        check_invalid_request(<span class="kw-2">&amp;</span>err, <span class="string">&quot;column ts has semantic type Timestamp, given: TAG(0)&quot;</span>);
+        check_invalid_request(<span class="kw-2">&amp;</span>err, <span class="string">"column ts has semantic type Timestamp, given: TAG(0)"</span>);
     }
 
     <span class="attr">#[test]
@@ -1269,11 +2144,11 @@
         <span class="kw">let </span>rows = Rows {
             schema: <span class="macro">vec!</span>[
                 new_column_schema(
-                    <span class="string">&quot;ts&quot;</span>,
+                    <span class="string">"ts"</span>,
                     ColumnDataType::TimestampMillisecond,
                     SemanticType::Timestamp,
                 ),
-                new_column_schema(<span class="string">&quot;k0&quot;</span>, ColumnDataType::Int64, SemanticType::Tag),
+                new_column_schema(<span class="string">"k0"</span>, ColumnDataType::Int64, SemanticType::Tag),
             ],
             rows: <span class="macro">vec!</span>[Row {
                 values: <span class="macro">vec!</span>[Value { value_data: <span class="prelude-val">None </span>}, i64_value(<span class="number">2</span>)],
@@ -1283,14 +2158,14 @@
 
         <span class="kw">let </span>request = WriteRequest::new(RegionId::new(<span class="number">1</span>, <span class="number">1</span>), OpType::Put, rows).unwrap();
         <span class="kw">let </span>err = request.check_schema(<span class="kw-2">&amp;</span>metadata).unwrap_err();
-        check_invalid_request(<span class="kw-2">&amp;</span>err, <span class="string">&quot;column ts is not null&quot;</span>);
+        check_invalid_request(<span class="kw-2">&amp;</span>err, <span class="string">"column ts is not null but input has null"</span>);
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_column_default() {
         <span class="kw">let </span>rows = Rows {
             schema: <span class="macro">vec!</span>[new_column_schema(
-                <span class="string">&quot;k0&quot;</span>,
+                <span class="string">"k0"</span>,
                 ColumnDataType::Int64,
                 SemanticType::Tag,
             )],
@@ -1302,7 +2177,7 @@
 
         <span class="kw">let </span>request = WriteRequest::new(RegionId::new(<span class="number">1</span>, <span class="number">1</span>), OpType::Put, rows).unwrap();
         <span class="kw">let </span>err = request.check_schema(<span class="kw-2">&amp;</span>metadata).unwrap_err();
-        check_invalid_request(<span class="kw-2">&amp;</span>err, <span class="string">&quot;missing column ts&quot;</span>);
+        check_invalid_request(<span class="kw-2">&amp;</span>err, <span class="string">"missing column ts"</span>);
     }
 
     <span class="attr">#[test]
@@ -1310,12 +2185,12 @@
         <span class="kw">let </span>rows = Rows {
             schema: <span class="macro">vec!</span>[
                 new_column_schema(
-                    <span class="string">&quot;ts&quot;</span>,
+                    <span class="string">"ts"</span>,
                     ColumnDataType::TimestampMillisecond,
                     SemanticType::Timestamp,
                 ),
-                new_column_schema(<span class="string">&quot;k0&quot;</span>, ColumnDataType::Int64, SemanticType::Tag),
-                new_column_schema(<span class="string">&quot;k1&quot;</span>, ColumnDataType::Int64, SemanticType::Tag),
+                new_column_schema(<span class="string">"k0"</span>, ColumnDataType::Int64, SemanticType::Tag),
+                new_column_schema(<span class="string">"k1"</span>, ColumnDataType::Int64, SemanticType::Tag),
             ],
             rows: <span class="macro">vec!</span>[Row {
                 values: <span class="macro">vec!</span>[ts_ms_value(<span class="number">1</span>), i64_value(<span class="number">2</span>), i64_value(<span class="number">3</span>)],
@@ -1325,14 +2200,14 @@
 
         <span class="kw">let </span>request = WriteRequest::new(RegionId::new(<span class="number">1</span>, <span class="number">1</span>), OpType::Put, rows).unwrap();
         <span class="kw">let </span>err = request.check_schema(<span class="kw-2">&amp;</span>metadata).unwrap_err();
-        check_invalid_request(<span class="kw-2">&amp;</span>err, <span class="string">r#&quot;unknown columns: [&quot;k1&quot;]&quot;#</span>);
+        check_invalid_request(<span class="kw-2">&amp;</span>err, <span class="string">r#"unknown columns: ["k1"]"#</span>);
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_fill_missing_columns() {
         <span class="kw">let </span>rows = Rows {
             schema: <span class="macro">vec!</span>[new_column_schema(
-                <span class="string">&quot;ts&quot;</span>,
+                <span class="string">"ts"</span>,
                 ColumnDataType::TimestampMillisecond,
                 SemanticType::Timestamp,
             )],
@@ -1350,14 +2225,199 @@
         <span class="kw">let </span>expect_rows = Rows {
             schema: <span class="macro">vec!</span>[
                 new_column_schema(
-                    <span class="string">&quot;ts&quot;</span>,
+                    <span class="string">"ts"</span>,
                     ColumnDataType::TimestampMillisecond,
                     SemanticType::Timestamp,
                 ),
-                new_column_schema(<span class="string">&quot;k0&quot;</span>, ColumnDataType::Int64, SemanticType::Tag),
+                new_column_schema(<span class="string">"k0"</span>, ColumnDataType::Int64, SemanticType::Tag),
             ],
             rows: <span class="macro">vec!</span>[Row {
                 values: <span class="macro">vec!</span>[ts_ms_value(<span class="number">1</span>), Value { value_data: <span class="prelude-val">None </span>}],
+            }],
+        };
+        <span class="macro">assert_eq!</span>(expect_rows, request.rows);
+    }
+
+    <span class="kw">fn </span>builder_with_ts_tag() -&gt; RegionMetadataBuilder {
+        <span class="kw">let </span><span class="kw-2">mut </span>builder = RegionMetadataBuilder::new(RegionId::new(<span class="number">1</span>, <span class="number">1</span>));
+        builder
+            .push_column_metadata(ColumnMetadata {
+                column_schema: datatypes::schema::ColumnSchema::new(
+                    <span class="string">"ts"</span>,
+                    ConcreteDataType::timestamp_millisecond_datatype(),
+                    <span class="bool-val">false</span>,
+                ),
+                semantic_type: SemanticType::Timestamp,
+                column_id: <span class="number">1</span>,
+            })
+            .push_column_metadata(ColumnMetadata {
+                column_schema: datatypes::schema::ColumnSchema::new(
+                    <span class="string">"k0"</span>,
+                    ConcreteDataType::int64_datatype(),
+                    <span class="bool-val">true</span>,
+                ),
+                semantic_type: SemanticType::Tag,
+                column_id: <span class="number">2</span>,
+            })
+            .primary_key(<span class="macro">vec!</span>[<span class="number">2</span>]);
+        builder
+    }
+
+    <span class="kw">fn </span>region_metadata_two_fields() -&gt; RegionMetadata {
+        <span class="kw">let </span><span class="kw-2">mut </span>builder = builder_with_ts_tag();
+        builder
+            .push_column_metadata(ColumnMetadata {
+                column_schema: datatypes::schema::ColumnSchema::new(
+                    <span class="string">"f0"</span>,
+                    ConcreteDataType::int64_datatype(),
+                    <span class="bool-val">true</span>,
+                ),
+                semantic_type: SemanticType::Field,
+                column_id: <span class="number">3</span>,
+            })
+            <span class="comment">// Column is not nullable.
+            </span>.push_column_metadata(ColumnMetadata {
+                column_schema: datatypes::schema::ColumnSchema::new(
+                    <span class="string">"f1"</span>,
+                    ConcreteDataType::int64_datatype(),
+                    <span class="bool-val">false</span>,
+                )
+                .with_default_constraint(<span class="prelude-val">Some</span>(ColumnDefaultConstraint::Value(
+                    datatypes::value::Value::Int64(<span class="number">100</span>),
+                )))
+                .unwrap(),
+                semantic_type: SemanticType::Field,
+                column_id: <span class="number">4</span>,
+            });
+        builder.build().unwrap()
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_fill_missing_for_delete() {
+        <span class="kw">let </span>rows = Rows {
+            schema: <span class="macro">vec!</span>[new_column_schema(
+                <span class="string">"ts"</span>,
+                ColumnDataType::TimestampMillisecond,
+                SemanticType::Timestamp,
+            )],
+            rows: <span class="macro">vec!</span>[Row {
+                values: <span class="macro">vec!</span>[ts_ms_value(<span class="number">1</span>)],
+            }],
+        };
+        <span class="kw">let </span>metadata = region_metadata_two_fields();
+
+        <span class="kw">let </span><span class="kw-2">mut </span>request = WriteRequest::new(RegionId::new(<span class="number">1</span>, <span class="number">1</span>), OpType::Delete, rows).unwrap();
+        <span class="kw">let </span>err = request.check_schema(<span class="kw-2">&amp;</span>metadata).unwrap_err();
+        check_invalid_request(<span class="kw-2">&amp;</span>err, <span class="string">"delete requests need column k0"</span>);
+        <span class="kw">let </span>err = request.fill_missing_columns(<span class="kw-2">&amp;</span>metadata).unwrap_err();
+        check_invalid_request(<span class="kw-2">&amp;</span>err, <span class="string">"delete requests need column k0"</span>);
+
+        <span class="kw">let </span>rows = Rows {
+            schema: <span class="macro">vec!</span>[
+                new_column_schema(<span class="string">"k0"</span>, ColumnDataType::Int64, SemanticType::Tag),
+                new_column_schema(
+                    <span class="string">"ts"</span>,
+                    ColumnDataType::TimestampMillisecond,
+                    SemanticType::Timestamp,
+                ),
+            ],
+            rows: <span class="macro">vec!</span>[Row {
+                values: <span class="macro">vec!</span>[i64_value(<span class="number">100</span>), ts_ms_value(<span class="number">1</span>)],
+            }],
+        };
+        <span class="kw">let </span><span class="kw-2">mut </span>request = WriteRequest::new(RegionId::new(<span class="number">1</span>, <span class="number">1</span>), OpType::Delete, rows).unwrap();
+        <span class="kw">let </span>err = request.check_schema(<span class="kw-2">&amp;</span>metadata).unwrap_err();
+        <span class="macro">assert!</span>(err.is_fill_default());
+        request.fill_missing_columns(<span class="kw-2">&amp;</span>metadata).unwrap();
+
+        <span class="kw">let </span>expect_rows = Rows {
+            schema: <span class="macro">vec!</span>[
+                new_column_schema(<span class="string">"k0"</span>, ColumnDataType::Int64, SemanticType::Tag),
+                new_column_schema(
+                    <span class="string">"ts"</span>,
+                    ColumnDataType::TimestampMillisecond,
+                    SemanticType::Timestamp,
+                ),
+                new_column_schema(<span class="string">"f0"</span>, ColumnDataType::Int64, SemanticType::Field),
+                new_column_schema(<span class="string">"f1"</span>, ColumnDataType::Int64, SemanticType::Field),
+            ],
+            <span class="comment">// Column f1 is not nullable and we use 0 for padding.
+            </span>rows: <span class="macro">vec!</span>[Row {
+                values: <span class="macro">vec!</span>[
+                    i64_value(<span class="number">100</span>),
+                    ts_ms_value(<span class="number">1</span>),
+                    Value { value_data: <span class="prelude-val">None </span>},
+                    i64_value(<span class="number">0</span>),
+                ],
+            }],
+        };
+        <span class="macro">assert_eq!</span>(expect_rows, request.rows);
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_fill_missing_without_default_in_delete() {
+        <span class="kw">let </span><span class="kw-2">mut </span>builder = builder_with_ts_tag();
+        builder
+            <span class="comment">// f0 is nullable.
+            </span>.push_column_metadata(ColumnMetadata {
+                column_schema: datatypes::schema::ColumnSchema::new(
+                    <span class="string">"f0"</span>,
+                    ConcreteDataType::int64_datatype(),
+                    <span class="bool-val">true</span>,
+                ),
+                semantic_type: SemanticType::Field,
+                column_id: <span class="number">3</span>,
+            })
+            <span class="comment">// f1 is not nullable and don't has default.
+            </span>.push_column_metadata(ColumnMetadata {
+                column_schema: datatypes::schema::ColumnSchema::new(
+                    <span class="string">"f1"</span>,
+                    ConcreteDataType::int64_datatype(),
+                    <span class="bool-val">false</span>,
+                ),
+                semantic_type: SemanticType::Field,
+                column_id: <span class="number">4</span>,
+            });
+        <span class="kw">let </span>metadata = builder.build().unwrap();
+
+        <span class="kw">let </span>rows = Rows {
+            schema: <span class="macro">vec!</span>[
+                new_column_schema(<span class="string">"k0"</span>, ColumnDataType::Int64, SemanticType::Tag),
+                new_column_schema(
+                    <span class="string">"ts"</span>,
+                    ColumnDataType::TimestampMillisecond,
+                    SemanticType::Timestamp,
+                ),
+            ],
+            <span class="comment">// Missing f0 (nullable), f1 (not nullable).
+            </span>rows: <span class="macro">vec!</span>[Row {
+                values: <span class="macro">vec!</span>[i64_value(<span class="number">100</span>), ts_ms_value(<span class="number">1</span>)],
+            }],
+        };
+        <span class="kw">let </span><span class="kw-2">mut </span>request = WriteRequest::new(RegionId::new(<span class="number">1</span>, <span class="number">1</span>), OpType::Delete, rows).unwrap();
+        <span class="kw">let </span>err = request.check_schema(<span class="kw-2">&amp;</span>metadata).unwrap_err();
+        <span class="macro">assert!</span>(err.is_fill_default());
+        request.fill_missing_columns(<span class="kw-2">&amp;</span>metadata).unwrap();
+
+        <span class="kw">let </span>expect_rows = Rows {
+            schema: <span class="macro">vec!</span>[
+                new_column_schema(<span class="string">"k0"</span>, ColumnDataType::Int64, SemanticType::Tag),
+                new_column_schema(
+                    <span class="string">"ts"</span>,
+                    ColumnDataType::TimestampMillisecond,
+                    SemanticType::Timestamp,
+                ),
+                new_column_schema(<span class="string">"f0"</span>, ColumnDataType::Int64, SemanticType::Field),
+                new_column_schema(<span class="string">"f1"</span>, ColumnDataType::Int64, SemanticType::Field),
+            ],
+            <span class="comment">// Column f1 is not nullable and we use 0 for padding.
+            </span>rows: <span class="macro">vec!</span>[Row {
+                values: <span class="macro">vec!</span>[
+                    i64_value(<span class="number">100</span>),
+                    ts_ms_value(<span class="number">1</span>),
+                    Value { value_data: <span class="prelude-val">None </span>},
+                    i64_value(<span class="number">0</span>),
+                ],
             }],
         };
         <span class="macro">assert_eq!</span>(expect_rows, request.rows);
@@ -1367,7 +2427,7 @@
     </span><span class="kw">fn </span>test_no_default() {
         <span class="kw">let </span>rows = Rows {
             schema: <span class="macro">vec!</span>[new_column_schema(
-                <span class="string">&quot;k0&quot;</span>,
+                <span class="string">"k0"</span>,
                 ColumnDataType::Int64,
                 SemanticType::Tag,
             )],
@@ -1379,7 +2439,40 @@
 
         <span class="kw">let </span><span class="kw-2">mut </span>request = WriteRequest::new(RegionId::new(<span class="number">1</span>, <span class="number">1</span>), OpType::Put, rows).unwrap();
         <span class="kw">let </span>err = request.fill_missing_columns(<span class="kw-2">&amp;</span>metadata).unwrap_err();
-        check_invalid_request(<span class="kw-2">&amp;</span>err, <span class="string">&quot;column ts does not have default value&quot;</span>);
+        check_invalid_request(<span class="kw-2">&amp;</span>err, <span class="string">"column ts does not have default value"</span>);
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_missing_and_invalid() {
+        <span class="comment">// Missing f0 and f1 has invalid type (string).
+        </span><span class="kw">let </span>rows = Rows {
+            schema: <span class="macro">vec!</span>[
+                new_column_schema(<span class="string">"k0"</span>, ColumnDataType::Int64, SemanticType::Tag),
+                new_column_schema(
+                    <span class="string">"ts"</span>,
+                    ColumnDataType::TimestampMillisecond,
+                    SemanticType::Timestamp,
+                ),
+                new_column_schema(<span class="string">"f1"</span>, ColumnDataType::String, SemanticType::Field),
+            ],
+            rows: <span class="macro">vec!</span>[Row {
+                values: <span class="macro">vec!</span>[
+                    i64_value(<span class="number">100</span>),
+                    ts_ms_value(<span class="number">1</span>),
+                    Value {
+                        value_data: <span class="prelude-val">Some</span>(ValueData::StringValue(<span class="string">"xxxxx"</span>.to_string())),
+                    },
+                ],
+            }],
+        };
+        <span class="kw">let </span>metadata = region_metadata_two_fields();
+
+        <span class="kw">let </span>request = WriteRequest::new(RegionId::new(<span class="number">1</span>, <span class="number">1</span>), OpType::Put, rows).unwrap();
+        <span class="kw">let </span>err = request.check_schema(<span class="kw-2">&amp;</span>metadata).unwrap_err();
+        check_invalid_request(
+            <span class="kw-2">&amp;</span>err,
+            <span class="string">"column f1 expect type Int64(Int64Type), given: STRING(12)"</span>,
+        );
     }
 }
 </code></pre></div></section></main></body></html>

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["BoxedError","PlainError"],"trait":["ErrorExt"]};
+window.SIDEBAR_ITEMS = {"struct":["BoxedError","PlainError"],"trait":["ErrorExt","StackError"]};

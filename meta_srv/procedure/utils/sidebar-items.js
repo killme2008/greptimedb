@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["build_table_route_value","handle_request_datanode_error","handle_retry_error"]};
+window.SIDEBAR_ITEMS = {"fn":["region_lock_key"]};

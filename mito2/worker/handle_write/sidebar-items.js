@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["maybe_fill_missing_columns","send_result"],"struct":["RegionWriteCtx","WriteNotify"]};
+window.SIDEBAR_ITEMS = {"fn":["maybe_fill_missing_columns","reject_write_requests"]};

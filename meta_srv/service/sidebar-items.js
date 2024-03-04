@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["admin","cluster","ddl","heartbeat","lock","mailbox","router","store"],"type":["GrpcResult","GrpcStream"]};
+window.SIDEBAR_ITEMS = {"mod":["admin","cluster","ddl","heartbeat","lock","mailbox","store"],"type":["GrpcResult","GrpcStream"]};

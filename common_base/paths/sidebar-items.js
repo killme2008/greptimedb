@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"constant":["CLUSTER_DIR","DATA_DIR","WAL_DIR"]};

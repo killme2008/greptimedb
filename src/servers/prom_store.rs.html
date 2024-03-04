@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/servers/src/prom_store.rs`."><title>prom_store.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="servers" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../servers/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/servers/src/prom_store.rs`."><title>prom_store.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="servers" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -761,16 +762,40 @@
 <a href="#761" id="761">761</a>
 <a href="#762" id="762">762</a>
 <a href="#763" id="763">763</a>
+<a href="#764" id="764">764</a>
+<a href="#765" id="765">765</a>
+<a href="#766" id="766">766</a>
+<a href="#767" id="767">767</a>
+<a href="#768" id="768">768</a>
+<a href="#769" id="769">769</a>
+<a href="#770" id="770">770</a>
+<a href="#771" id="771">771</a>
+<a href="#772" id="772">772</a>
+<a href="#773" id="773">773</a>
+<a href="#774" id="774">774</a>
+<a href="#775" id="775">775</a>
+<a href="#776" id="776">776</a>
+<a href="#777" id="777">777</a>
+<a href="#778" id="778">778</a>
+<a href="#779" id="779">779</a>
+<a href="#780" id="780">780</a>
+<a href="#781" id="781">781</a>
+<a href="#782" id="782">782</a>
+<a href="#783" id="783">783</a>
+<a href="#784" id="784">784</a>
+<a href="#785" id="785">785</a>
+<a href="#786" id="786">786</a>
+<a href="#787" id="787">787</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -778,13 +803,12 @@
 </span><span class="doccomment">//! prometheus protocol supportings
 //! handles prometheus remote_write, remote_read logic
 </span><span class="kw">use </span>std::cmp::Ordering;
-<span class="kw">use </span>std::collections::{BTreeMap, HashMap};
+<span class="kw">use </span>std::collections::BTreeMap;
 <span class="kw">use </span>std::hash::{Hash, Hasher};
 
 <span class="kw">use </span>api::prom_store::remote::label_matcher::Type <span class="kw">as </span>MatcherType;
 <span class="kw">use </span>api::prom_store::remote::{Label, Query, Sample, TimeSeries, WriteRequest};
-<span class="kw">use </span>api::v1::{InsertRequest <span class="kw">as </span>GrpcInsertRequest, InsertRequests};
-<span class="kw">use </span>common_grpc::writer::{LinesWriter, Precision};
+<span class="kw">use </span>api::v1::RowInsertRequests;
 <span class="kw">use </span>common_recordbatch::{RecordBatch, RecordBatches};
 <span class="kw">use </span>common_time::timestamp::TimeUnit;
 <span class="kw">use </span>datafusion::prelude::{col, lit, regexp_match, Expr};
@@ -797,10 +821,11 @@
 <span class="kw">use </span>snap::raw::{Decoder, Encoder};
 
 <span class="kw">use </span><span class="kw">crate</span>::error::{<span class="self">self</span>, <span class="prelude-ty">Result</span>};
+<span class="kw">use </span><span class="kw">crate</span>::row_writer::{<span class="self">self</span>, MultiTableData};
 
-<span class="kw">pub const </span>TIMESTAMP_COLUMN_NAME: <span class="kw-2">&amp;</span>str = <span class="string">&quot;greptime_timestamp&quot;</span>;
-<span class="kw">pub const </span>FIELD_COLUMN_NAME: <span class="kw-2">&amp;</span>str = <span class="string">&quot;greptime_value&quot;</span>;
-<span class="kw">pub const </span>METRIC_NAME_LABEL: <span class="kw-2">&amp;</span>str = <span class="string">&quot;__name__&quot;</span>;
+<span class="kw">pub const </span>TIMESTAMP_COLUMN_NAME: <span class="kw-2">&amp;</span>str = <span class="string">"greptime_timestamp"</span>;
+<span class="kw">pub const </span>FIELD_COLUMN_NAME: <span class="kw-2">&amp;</span>str = <span class="string">"greptime_value"</span>;
+<span class="kw">pub const </span>METRIC_NAME_LABEL: <span class="kw-2">&amp;</span>str = <span class="string">"__name__"</span>;
 
 <span class="doccomment">/// Metrics for push gateway protocol
 </span><span class="kw">pub struct </span>Metrics {
@@ -821,7 +846,7 @@
             </span>}
         })
         .context(error::InvalidPromRemoteRequestSnafu {
-            msg: <span class="string">&quot;missing &#39;__name__&#39; label in timeseries&quot;</span>,
+            msg: <span class="string">"missing '__name__' label in timeseries"</span>,
         })
 }
 
@@ -848,10 +873,12 @@
         }
 
         <span class="kw">let </span>value = <span class="kw-2">&amp;</span>m.value;
-        <span class="kw">let </span>m_type =
-            MatcherType::from_i32(m.r#type).context(error::InvalidPromRemoteRequestSnafu {
-                msg: <span class="macro">format!</span>(<span class="string">&quot;invalid LabelMatcher type: {}&quot;</span>, m.r#type),
-            })<span class="question-mark">?</span>;
+        <span class="kw">let </span>m_type = MatcherType::try_from(m.r#type).map_err(|e| {
+            error::InvalidPromRemoteRequestSnafu {
+                msg: <span class="macro">format!</span>(<span class="string">"invalid LabelMatcher type, decode error: {e}"</span>,),
+            }
+            .build()
+        })<span class="question-mark">?</span>;
 
         <span class="kw">match </span>m_type {
             MatcherType::Eq =&gt; {
@@ -896,7 +923,7 @@
     labels: Vec&lt;Label&gt;,
 }
 
-<span class="doccomment">/// Because Label in protobuf doesn&#39;t impl `Eq`, so we have to do it by ourselves.
+<span class="doccomment">/// Because Label in protobuf doesn't impl `Eq`, so we have to do it by ourselves.
 </span><span class="kw">impl </span>PartialEq <span class="kw">for </span>TimeSeriesId {
     <span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
         <span class="kw">if </span><span class="self">self</span>.labels.len() != other.labels.len() {
@@ -951,8 +978,8 @@
     }
 }
 
-<span class="doccomment">/// Collect each row&#39;s timeseries id
-/// This processing is ugly, hope https://github.com/GreptimeTeam/greptimedb/issues/336 making some progress in future.
+<span class="doccomment">/// Collect each row's timeseries id
+/// This processing is ugly, hope &lt;https://github.com/GreptimeTeam/greptimedb/issues/336&gt; making some progress in future.
 </span><span class="kw">fn </span>collect_timeseries_ids(table_name: <span class="kw-2">&amp;</span>str, recordbatch: <span class="kw-2">&amp;</span>RecordBatch) -&gt; Vec&lt;TimeSeriesId&gt; {
     <span class="kw">let </span>row_count = recordbatch.num_rows();
     <span class="kw">let </span><span class="kw-2">mut </span>timeseries_ids = Vec::with_capacity(row_count);
@@ -1002,14 +1029,14 @@
 <span class="kw">fn </span>recordbatch_to_timeseries(table: <span class="kw-2">&amp;</span>str, recordbatch: RecordBatch) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;TimeSeries&gt;&gt; {
     <span class="kw">let </span>ts_column = recordbatch.column_by_name(TIMESTAMP_COLUMN_NAME).context(
         error::InvalidPromRemoteReadQueryResultSnafu {
-            msg: <span class="string">&quot;missing greptime_timestamp column in query result&quot;</span>,
+            msg: <span class="string">"missing greptime_timestamp column in query result"</span>,
         },
     )<span class="question-mark">?</span>;
     <span class="macro">ensure!</span>(
         ts_column.data_type() == ConcreteDataType::timestamp_millisecond_datatype(),
         error::InvalidPromRemoteReadQueryResultSnafu {
             msg: <span class="macro">format!</span>(
-                <span class="string">&quot;Expect timestamp column of datatype Timestamp(Millisecond), actual {:?}&quot;</span>,
+                <span class="string">"Expect timestamp column of datatype Timestamp(Millisecond), actual {:?}"</span>,
                 ts_column.data_type()
             )
         }
@@ -1017,22 +1044,22 @@
 
     <span class="kw">let </span>field_column = recordbatch.column_by_name(FIELD_COLUMN_NAME).context(
         error::InvalidPromRemoteReadQueryResultSnafu {
-            msg: <span class="string">&quot;missing greptime_value column in query result&quot;</span>,
+            msg: <span class="string">"missing greptime_value column in query result"</span>,
         },
     )<span class="question-mark">?</span>;
     <span class="macro">ensure!</span>(
         field_column.data_type() == ConcreteDataType::float64_datatype(),
         error::InvalidPromRemoteReadQueryResultSnafu {
             msg: <span class="macro">format!</span>(
-                <span class="string">&quot;Expect value column of datatype Float64, actual {:?}&quot;</span>,
+                <span class="string">"Expect value column of datatype Float64, actual {:?}"</span>,
                 field_column.data_type()
             )
         }
     );
 
-    <span class="comment">// First, collect each row&#39;s timeseries id
+    <span class="comment">// First, collect each row's timeseries id
     </span><span class="kw">let </span>timeseries_ids = collect_timeseries_ids(table, <span class="kw-2">&amp;</span>recordbatch);
-    <span class="comment">// Then, group timeseries by it&#39;s id.
+    <span class="comment">// Then, group timeseries by it's id.
     </span><span class="kw">let </span><span class="kw-2">mut </span>timeseries_map: BTreeMap&lt;<span class="kw-2">&amp;</span>TimeSeriesId, TimeSeries&gt; = BTreeMap::default();
 
     <span class="kw">for </span>(row, timeseries_id) <span class="kw">in </span>timeseries_ids.iter().enumerate() {
@@ -1049,11 +1076,11 @@
 
         <span class="kw">let </span>value: f64 = <span class="kw">match </span>field_column.get(row) {
             Value::Float64(value) =&gt; value.into(),
-            <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(<span class="string">&quot;checked by the \&quot;ensure\&quot; above&quot;</span>),
+            <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(<span class="string">"checked by the \"ensure\" above"</span>),
         };
         <span class="kw">let </span>timestamp = <span class="kw">match </span>ts_column.get(row) {
             Value::Timestamp(t) <span class="kw">if </span>t.unit() == TimeUnit::Millisecond =&gt; t.value(),
-            <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(<span class="string">&quot;checked by the \&quot;ensure\&quot; above&quot;</span>),
+            <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(<span class="string">"checked by the \"ensure\" above"</span>),
         };
         <span class="kw">let </span>sample = Sample { value, timestamp };
 
@@ -1063,10 +1090,11 @@
     <span class="prelude-val">Ok</span>(timeseries_map.into_values().collect())
 }
 
-<span class="kw">pub fn </span>to_grpc_insert_requests(request: WriteRequest) -&gt; <span class="prelude-ty">Result</span>&lt;(InsertRequests, usize)&gt; {
-    <span class="kw">let </span><span class="kw-2">mut </span>writers: HashMap&lt;String, LinesWriter&gt; = HashMap::new();
-    <span class="kw">for </span>timeseries <span class="kw">in </span><span class="kw-2">&amp;</span>request.timeseries {
-        <span class="kw">let </span>table_name = timeseries
+<span class="kw">pub fn </span>to_grpc_row_insert_requests(request: WriteRequest) -&gt; <span class="prelude-ty">Result</span>&lt;(RowInsertRequests, usize)&gt; {
+    <span class="kw">let </span><span class="kw-2">mut </span>multi_table_data = MultiTableData::new();
+
+    <span class="kw">for </span>series <span class="kw">in </span><span class="kw-2">&amp;</span>request.timeseries {
+        <span class="kw">let </span>table_name = <span class="kw-2">&amp;</span>series
             .labels
             .iter()
             .find(|label| {
@@ -1074,58 +1102,47 @@
                 </span>label.name == METRIC_NAME_LABEL
             })
             .context(error::InvalidPromRemoteRequestSnafu {
-                msg: <span class="string">&quot;missing &#39;__name__&#39; label in timeseries&quot;</span>,
+                msg: <span class="string">"missing '__name__' label in time-series"</span>,
             })<span class="question-mark">?
-            </span>.value
-            .clone();
+            </span>.value;
 
-        <span class="kw">let </span>writer = writers
-            .entry(table_name)
-            .or_insert_with(|| LinesWriter::with_lines(<span class="number">16</span>));
-        <span class="comment">// For each sample
-        </span><span class="kw">for </span>sample <span class="kw">in </span><span class="kw-2">&amp;</span>timeseries.samples {
-            <span class="comment">// Insert labels first.
-            </span><span class="kw">for </span>label <span class="kw">in </span><span class="kw-2">&amp;</span>timeseries.labels {
-                <span class="comment">// The metric name is a special label
-                </span><span class="kw">if </span>label.name == METRIC_NAME_LABEL {
-                    <span class="kw">continue</span>;
+        <span class="comment">// The metric name is a special label,
+        // num_columns = labels.len() - 1 + 1 (value) + 1 (timestamp)
+        </span><span class="kw">let </span>num_columns = series.labels.len() + <span class="number">1</span>;
+
+        <span class="kw">let </span>table_data = multi_table_data.get_or_default_table_data(
+            table_name,
+            num_columns,
+            series.samples.len(),
+        );
+
+        <span class="kw">for </span>Sample { value, timestamp } <span class="kw">in </span><span class="kw-2">&amp;</span>series.samples {
+            <span class="kw">let </span><span class="kw-2">mut </span>one_row = table_data.alloc_one_row();
+
+            <span class="comment">// labels
+            </span><span class="kw">let </span>kvs = series.labels.iter().filter_map(|label| {
+                <span class="kw">if </span>label.name == METRIC_NAME_LABEL {
+                    <span class="prelude-val">None
+                </span>} <span class="kw">else </span>{
+                    <span class="prelude-val">Some</span>((label.name.to_string(), label.value.as_str()))
                 }
+            });
+            row_writer::write_tags(table_data, kvs, <span class="kw-2">&amp;mut </span>one_row)<span class="question-mark">?</span>;
+            <span class="comment">// value
+            </span>row_writer::write_f64(table_data, FIELD_COLUMN_NAME, <span class="kw-2">*</span>value, <span class="kw-2">&amp;mut </span>one_row)<span class="question-mark">?</span>;
+            <span class="comment">// timestamp
+            </span>row_writer::write_ts_millis(
+                table_data,
+                TIMESTAMP_COLUMN_NAME,
+                <span class="prelude-val">Some</span>(<span class="kw-2">*</span>timestamp),
+                <span class="kw-2">&amp;mut </span>one_row,
+            )<span class="question-mark">?</span>;
 
-                writer
-                    .write_tag(<span class="kw-2">&amp;</span>label.name, <span class="kw-2">&amp;</span>label.value)
-                    .context(error::PromSeriesWriteSnafu)<span class="question-mark">?</span>;
-            }
-            <span class="comment">// Insert sample timestamp.
-            </span>writer
-                .write_ts(
-                    TIMESTAMP_COLUMN_NAME,
-                    (sample.timestamp, Precision::Millisecond),
-                )
-                .context(error::PromSeriesWriteSnafu)<span class="question-mark">?</span>;
-            <span class="comment">// Insert sample value.
-            </span>writer
-                .write_f64(FIELD_COLUMN_NAME, sample.value)
-                .context(error::PromSeriesWriteSnafu)<span class="question-mark">?</span>;
-
-            writer.commit();
+            table_data.add_row(one_row);
         }
     }
 
-    <span class="kw">let </span><span class="kw-2">mut </span>sample_counts = <span class="number">0</span>;
-    <span class="kw">let </span>inserts = writers
-        .into_iter()
-        .map(|(table_name, writer)| {
-            <span class="kw">let </span>(columns, row_count) = writer.finish();
-            sample_counts += row_count <span class="kw">as </span>usize;
-            GrpcInsertRequest {
-                table_name,
-                region_number: <span class="number">0</span>,
-                columns,
-                row_count,
-            }
-        })
-        .collect();
-    <span class="prelude-val">Ok</span>((InsertRequests { inserts }, sample_counts))
+    <span class="prelude-val">Ok</span>(multi_table_data.into_row_insert_requests())
 }
 
 <span class="attr">#[inline]
@@ -1141,7 +1158,7 @@
     <span class="kw">let </span><span class="kw-2">mut </span>encoder = Encoder::new();
     encoder
         .compress_vec(buf)
-        .context(error::DecompressPromRemoteRequestSnafu)
+        .context(error::CompressPromRemoteRequestSnafu)
 }
 
 <span class="doccomment">/// Mock timeseries for test, it is both used in servers and frontend crate
@@ -1150,8 +1167,8 @@
     <span class="macro">vec!</span>[
         TimeSeries {
             labels: <span class="macro">vec!</span>[
-                new_label(METRIC_NAME_LABEL.to_string(), <span class="string">&quot;metric1&quot;</span>.to_string()),
-                new_label(<span class="string">&quot;job&quot;</span>.to_string(), <span class="string">&quot;spark&quot;</span>.to_string()),
+                new_label(METRIC_NAME_LABEL.to_string(), <span class="string">"metric1"</span>.to_string()),
+                new_label(<span class="string">"job"</span>.to_string(), <span class="string">"spark"</span>.to_string()),
             ],
             samples: <span class="macro">vec!</span>[
                 Sample {
@@ -1167,9 +1184,9 @@
         },
         TimeSeries {
             labels: <span class="macro">vec!</span>[
-                new_label(METRIC_NAME_LABEL.to_string(), <span class="string">&quot;metric2&quot;</span>.to_string()),
-                new_label(<span class="string">&quot;instance&quot;</span>.to_string(), <span class="string">&quot;test_host1&quot;</span>.to_string()),
-                new_label(<span class="string">&quot;idc&quot;</span>.to_string(), <span class="string">&quot;z001&quot;</span>.to_string()),
+                new_label(METRIC_NAME_LABEL.to_string(), <span class="string">"metric2"</span>.to_string()),
+                new_label(<span class="string">"instance"</span>.to_string(), <span class="string">"test_host1"</span>.to_string()),
+                new_label(<span class="string">"idc"</span>.to_string(), <span class="string">"z001"</span>.to_string()),
             ],
             samples: <span class="macro">vec!</span>[
                 Sample {
@@ -1185,9 +1202,9 @@
         },
         TimeSeries {
             labels: <span class="macro">vec!</span>[
-                new_label(METRIC_NAME_LABEL.to_string(), <span class="string">&quot;metric3&quot;</span>.to_string()),
-                new_label(<span class="string">&quot;idc&quot;</span>.to_string(), <span class="string">&quot;z002&quot;</span>.to_string()),
-                new_label(<span class="string">&quot;app&quot;</span>.to_string(), <span class="string">&quot;biz&quot;</span>.to_string()),
+                new_label(METRIC_NAME_LABEL.to_string(), <span class="string">"metric3"</span>.to_string()),
+                new_label(<span class="string">"idc"</span>.to_string(), <span class="string">"z002"</span>.to_string()),
+                new_label(<span class="string">"app"</span>.to_string(), <span class="string">"biz"</span>.to_string()),
             ],
             samples: <span class="macro">vec!</span>[
                 Sample {
@@ -1213,6 +1230,7 @@
     <span class="kw">use </span>std::sync::Arc;
 
     <span class="kw">use </span>api::prom_store::remote::LabelMatcher;
+    <span class="kw">use </span>api::v1::{ColumnDataType, Row, SemanticType};
     <span class="kw">use </span>datafusion::prelude::SessionContext;
     <span class="kw">use </span>datatypes::schema::{ColumnSchema, Schema};
     <span class="kw">use </span>datatypes::vectors::{Float64Vector, StringVector, TimestampMillisecondVector};
@@ -1241,12 +1259,12 @@
             end_timestamp_ms: <span class="number">2000</span>,
             matchers: <span class="macro">vec!</span>[LabelMatcher {
                 name: METRIC_NAME_LABEL.to_string(),
-                value: <span class="string">&quot;test&quot;</span>.to_string(),
+                value: <span class="string">"test"</span>.to_string(),
                 r#type: EQ_TYPE,
             }],
             ..Default::default()
         };
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;test&quot;</span>, table_name(<span class="kw-2">&amp;</span>q).unwrap());
+        <span class="macro">assert_eq!</span>(<span class="string">"test"</span>, table_name(<span class="kw-2">&amp;</span>q).unwrap());
     }
 
     <span class="attr">#[test]
@@ -1256,7 +1274,7 @@
             end_timestamp_ms: <span class="number">2000</span>,
             matchers: <span class="macro">vec!</span>[LabelMatcher {
                 name: METRIC_NAME_LABEL.to_string(),
-                value: <span class="string">&quot;test&quot;</span>.to_string(),
+                value: <span class="string">"test"</span>.to_string(),
                 r#type: EQ_TYPE,
             }],
             ..Default::default()
@@ -1273,29 +1291,29 @@
                 ConcreteDataType::float64_datatype(),
                 <span class="bool-val">true</span>,
             ),
-            ColumnSchema::new(<span class="string">&quot;instance&quot;</span>, ConcreteDataType::string_datatype(), <span class="bool-val">true</span>),
-            ColumnSchema::new(<span class="string">&quot;job&quot;</span>, ConcreteDataType::string_datatype(), <span class="bool-val">true</span>),
+            ColumnSchema::new(<span class="string">"instance"</span>, ConcreteDataType::string_datatype(), <span class="bool-val">true</span>),
+            ColumnSchema::new(<span class="string">"job"</span>, ConcreteDataType::string_datatype(), <span class="bool-val">true</span>),
         ]));
         <span class="kw">let </span>recordbatch = RecordBatch::new(
             schema,
             <span class="macro">vec!</span>[
                 Arc::new(TimestampMillisecondVector::from_vec(<span class="macro">vec!</span>[<span class="number">1000</span>])) <span class="kw">as _</span>,
                 Arc::new(Float64Vector::from_vec(<span class="macro">vec!</span>[<span class="number">3.0</span>])) <span class="kw">as _</span>,
-                Arc::new(StringVector::from(<span class="macro">vec!</span>[<span class="string">&quot;host1&quot;</span>])) <span class="kw">as _</span>,
-                Arc::new(StringVector::from(<span class="macro">vec!</span>[<span class="string">&quot;job&quot;</span>])) <span class="kw">as _</span>,
+                Arc::new(StringVector::from(<span class="macro">vec!</span>[<span class="string">"host1"</span>])) <span class="kw">as _</span>,
+                Arc::new(StringVector::from(<span class="macro">vec!</span>[<span class="string">"job"</span>])) <span class="kw">as _</span>,
             ],
         )
         .unwrap();
 
         <span class="kw">let </span>ctx = SessionContext::new();
-        <span class="kw">let </span>table = Arc::new(MemTable::new(<span class="string">&quot;test&quot;</span>, recordbatch));
+        <span class="kw">let </span>table = MemTable::table(<span class="string">"test"</span>, recordbatch);
         <span class="kw">let </span>table_provider = Arc::new(DfTableProviderAdapter::new(table));
 
         <span class="kw">let </span>dataframe = ctx.read_table(table_provider.clone()).unwrap();
         <span class="kw">let </span>plan = query_to_plan(DataFrame::DataFusion(dataframe), <span class="kw-2">&amp;</span>q).unwrap();
-        <span class="kw">let </span>display_string = <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, plan.display_indent());
+        <span class="kw">let </span>display_string = <span class="macro">format!</span>(<span class="string">"{}"</span>, plan.display_indent());
 
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;Filter: ?table?.greptime_timestamp &gt;= TimestampMillisecond(1000, None) AND ?table?.greptime_timestamp &lt;= TimestampMillisecond(2000, None)\n  TableScan: ?table?&quot;</span>, display_string);
+        <span class="macro">assert_eq!</span>(<span class="string">"Filter: ?table?.greptime_timestamp &gt;= TimestampMillisecond(1000, None) AND ?table?.greptime_timestamp &lt;= TimestampMillisecond(2000, None)\n  TableScan: ?table?"</span>, display_string);
 
         <span class="kw">let </span>q = Query {
             start_timestamp_ms: <span class="number">1000</span>,
@@ -1303,17 +1321,17 @@
             matchers: <span class="macro">vec!</span>[
                 LabelMatcher {
                     name: METRIC_NAME_LABEL.to_string(),
-                    value: <span class="string">&quot;test&quot;</span>.to_string(),
+                    value: <span class="string">"test"</span>.to_string(),
                     r#type: EQ_TYPE,
                 },
                 LabelMatcher {
-                    name: <span class="string">&quot;job&quot;</span>.to_string(),
-                    value: <span class="string">&quot;*prom*&quot;</span>.to_string(),
+                    name: <span class="string">"job"</span>.to_string(),
+                    value: <span class="string">"*prom*"</span>.to_string(),
                     r#type: RE_TYPE,
                 },
                 LabelMatcher {
-                    name: <span class="string">&quot;instance&quot;</span>.to_string(),
-                    value: <span class="string">&quot;localhost&quot;</span>.to_string(),
+                    name: <span class="string">"instance"</span>.to_string(),
+                    value: <span class="string">"localhost"</span>.to_string(),
                     r#type: NEQ_TYPE,
                 },
             ],
@@ -1322,117 +1340,148 @@
 
         <span class="kw">let </span>dataframe = ctx.read_table(table_provider).unwrap();
         <span class="kw">let </span>plan = query_to_plan(DataFrame::DataFusion(dataframe), <span class="kw-2">&amp;</span>q).unwrap();
-        <span class="kw">let </span>display_string = <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, plan.display_indent());
+        <span class="kw">let </span>display_string = <span class="macro">format!</span>(<span class="string">"{}"</span>, plan.display_indent());
 
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;Filter: ?table?.greptime_timestamp &gt;= TimestampMillisecond(1000, None) AND ?table?.greptime_timestamp &lt;= TimestampMillisecond(2000, None) AND regexp_match(?table?.job, Utf8(\&quot;*prom*\&quot;)) IS NOT NULL AND ?table?.instance != Utf8(\&quot;localhost\&quot;)\n  TableScan: ?table?&quot;</span>, display_string);
+        <span class="macro">assert_eq!</span>(<span class="string">"Filter: ?table?.greptime_timestamp &gt;= TimestampMillisecond(1000, None) AND ?table?.greptime_timestamp &lt;= TimestampMillisecond(2000, None) AND regexp_match(?table?.job, Utf8(\"*prom*\")) IS NOT NULL AND ?table?.instance != Utf8(\"localhost\")\n  TableScan: ?table?"</span>, display_string);
+    }
+
+    <span class="kw">fn </span>column_schemas_with(
+        <span class="kw-2">mut </span>kts_iter: Vec&lt;(<span class="kw-2">&amp;</span>str, ColumnDataType, SemanticType)&gt;,
+    ) -&gt; Vec&lt;api::v1::ColumnSchema&gt; {
+        kts_iter.push((
+            <span class="string">"greptime_value"</span>,
+            ColumnDataType::Float64,
+            SemanticType::Field,
+        ));
+        kts_iter.push((
+            <span class="string">"greptime_timestamp"</span>,
+            ColumnDataType::TimestampMillisecond,
+            SemanticType::Timestamp,
+        ));
+
+        kts_iter
+            .into_iter()
+            .map(|(k, t, s)| api::v1::ColumnSchema {
+                column_name: k.to_string(),
+                datatype: t <span class="kw">as </span>i32,
+                semantic_type: s <span class="kw">as </span>i32,
+                ..Default::default()
+            })
+            .collect()
+    }
+
+    <span class="kw">fn </span>make_row_with_label(l1: <span class="kw-2">&amp;</span>str, value: f64, timestamp: i64) -&gt; Row {
+        Row {
+            values: <span class="macro">vec!</span>[
+                api::v1::Value {
+                    value_data: <span class="prelude-val">Some</span>(api::v1::value::ValueData::StringValue(l1.to_string())),
+                },
+                api::v1::Value {
+                    value_data: <span class="prelude-val">Some</span>(api::v1::value::ValueData::F64Value(value)),
+                },
+                api::v1::Value {
+                    value_data: <span class="prelude-val">Some</span>(api::v1::value::ValueData::TimestampMillisecondValue(
+                        timestamp,
+                    )),
+                },
+            ],
+        }
+    }
+
+    <span class="kw">fn </span>make_row_with_2_labels(l1: <span class="kw-2">&amp;</span>str, l2: <span class="kw-2">&amp;</span>str, value: f64, timestamp: i64) -&gt; Row {
+        Row {
+            values: <span class="macro">vec!</span>[
+                api::v1::Value {
+                    value_data: <span class="prelude-val">Some</span>(api::v1::value::ValueData::StringValue(l1.to_string())),
+                },
+                api::v1::Value {
+                    value_data: <span class="prelude-val">Some</span>(api::v1::value::ValueData::StringValue(l2.to_string())),
+                },
+                api::v1::Value {
+                    value_data: <span class="prelude-val">Some</span>(api::v1::value::ValueData::F64Value(value)),
+                },
+                api::v1::Value {
+                    value_data: <span class="prelude-val">Some</span>(api::v1::value::ValueData::TimestampMillisecondValue(
+                        timestamp,
+                    )),
+                },
+            ],
+        }
     }
 
     <span class="attr">#[test]
-    </span><span class="kw">fn </span>test_write_request_to_insert_exprs() {
+    </span><span class="kw">fn </span>test_write_request_to_row_insert_exprs() {
         <span class="kw">let </span>write_request = WriteRequest {
             timeseries: mock_timeseries(),
             ..Default::default()
         };
 
-        <span class="kw">let </span><span class="kw-2">mut </span>exprs = to_grpc_insert_requests(write_request).unwrap().<span class="number">0</span>.inserts;
+        <span class="kw">let </span><span class="kw-2">mut </span>exprs = to_grpc_row_insert_requests(write_request)
+            .unwrap()
+            .<span class="number">0
+            </span>.inserts;
         exprs.sort_unstable_by(|l, r| l.table_name.cmp(<span class="kw-2">&amp;</span>r.table_name));
         <span class="macro">assert_eq!</span>(<span class="number">3</span>, exprs.len());
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;metric1&quot;</span>, exprs[<span class="number">0</span>].table_name);
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;metric2&quot;</span>, exprs[<span class="number">1</span>].table_name);
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;metric3&quot;</span>, exprs[<span class="number">2</span>].table_name);
+        <span class="macro">assert_eq!</span>(<span class="string">"metric1"</span>, exprs[<span class="number">0</span>].table_name);
+        <span class="macro">assert_eq!</span>(<span class="string">"metric2"</span>, exprs[<span class="number">1</span>].table_name);
+        <span class="macro">assert_eq!</span>(<span class="string">"metric3"</span>, exprs[<span class="number">2</span>].table_name);
 
-        <span class="kw">let </span>expr = exprs.get_mut(<span class="number">0</span>).unwrap();
-        expr.columns
-            .sort_unstable_by(|l, r| l.column_name.cmp(<span class="kw-2">&amp;</span>r.column_name));
-
-        <span class="kw">let </span>columns = <span class="kw-2">&amp;</span>expr.columns;
-        <span class="kw">let </span>row_count = expr.row_count;
-
-        <span class="macro">assert_eq!</span>(<span class="number">2</span>, row_count);
-        <span class="macro">assert_eq!</span>(columns.len(), <span class="number">3</span>);
-
-        <span class="macro">assert_eq!</span>(columns[<span class="number">0</span>].column_name, TIMESTAMP_COLUMN_NAME);
+        <span class="kw">let </span>rows = exprs[<span class="number">0</span>].rows.as_ref().unwrap();
+        <span class="kw">let </span>schema = <span class="kw-2">&amp;</span>rows.schema;
+        <span class="kw">let </span>rows = <span class="kw-2">&amp;</span>rows.rows;
+        <span class="macro">assert_eq!</span>(<span class="number">2</span>, rows.len());
+        <span class="macro">assert_eq!</span>(<span class="number">3</span>, schema.len());
         <span class="macro">assert_eq!</span>(
-            columns[<span class="number">0</span>].values.as_ref().unwrap().ts_millisecond_values,
-            <span class="macro">vec!</span>[<span class="number">1000</span>, <span class="number">2000</span>]
+            column_schemas_with(<span class="macro">vec!</span>[(<span class="string">"job"</span>, ColumnDataType::String, SemanticType::Tag)]),
+            <span class="kw-2">*</span>schema
+        );
+        <span class="macro">assert_eq!</span>(
+            <span class="kw-2">&amp;</span><span class="macro">vec!</span>[
+                make_row_with_label(<span class="string">"spark"</span>, <span class="number">1.0</span>, <span class="number">1000</span>),
+                make_row_with_label(<span class="string">"spark"</span>, <span class="number">2.0</span>, <span class="number">2000</span>),
+            ],
+            rows
         );
 
-        <span class="macro">assert_eq!</span>(columns[<span class="number">1</span>].column_name, FIELD_COLUMN_NAME);
+        <span class="kw">let </span>rows = exprs[<span class="number">1</span>].rows.as_ref().unwrap();
+        <span class="kw">let </span>schema = <span class="kw-2">&amp;</span>rows.schema;
+        <span class="kw">let </span>rows = <span class="kw-2">&amp;</span>rows.rows;
+        <span class="macro">assert_eq!</span>(<span class="number">2</span>, rows.len());
+        <span class="macro">assert_eq!</span>(<span class="number">4</span>, schema.len());
         <span class="macro">assert_eq!</span>(
-            columns[<span class="number">1</span>].values.as_ref().unwrap().f64_values,
-            <span class="macro">vec!</span>[<span class="number">1.0</span>, <span class="number">2.0</span>]
+            column_schemas_with(<span class="macro">vec!</span>[
+                (<span class="string">"instance"</span>, ColumnDataType::String, SemanticType::Tag),
+                (<span class="string">"idc"</span>, ColumnDataType::String, SemanticType::Tag)
+            ]),
+            <span class="kw-2">*</span>schema
+        );
+        <span class="macro">assert_eq!</span>(
+            <span class="kw-2">&amp;</span><span class="macro">vec!</span>[
+                make_row_with_2_labels(<span class="string">"test_host1"</span>, <span class="string">"z001"</span>, <span class="number">3.0</span>, <span class="number">1000</span>),
+                make_row_with_2_labels(<span class="string">"test_host1"</span>, <span class="string">"z001"</span>, <span class="number">4.0</span>, <span class="number">2000</span>),
+            ],
+            rows
         );
 
-        <span class="macro">assert_eq!</span>(columns[<span class="number">2</span>].column_name, <span class="string">&quot;job&quot;</span>);
+        <span class="kw">let </span>rows = exprs[<span class="number">2</span>].rows.as_ref().unwrap();
+        <span class="kw">let </span>schema = <span class="kw-2">&amp;</span>rows.schema;
+        <span class="kw">let </span>rows = <span class="kw-2">&amp;</span>rows.rows;
+        <span class="macro">assert_eq!</span>(<span class="number">3</span>, rows.len());
+        <span class="macro">assert_eq!</span>(<span class="number">4</span>, schema.len());
         <span class="macro">assert_eq!</span>(
-            columns[<span class="number">2</span>].values.as_ref().unwrap().string_values,
-            <span class="macro">vec!</span>[<span class="string">&quot;spark&quot;</span>, <span class="string">&quot;spark&quot;</span>]
+            column_schemas_with(<span class="macro">vec!</span>[
+                (<span class="string">"idc"</span>, ColumnDataType::String, SemanticType::Tag),
+                (<span class="string">"app"</span>, ColumnDataType::String, SemanticType::Tag)
+            ]),
+            <span class="kw-2">*</span>schema
         );
-
-        <span class="kw">let </span>expr = exprs.get_mut(<span class="number">1</span>).unwrap();
-        expr.columns
-            .sort_unstable_by(|l, r| l.column_name.cmp(<span class="kw-2">&amp;</span>r.column_name));
-
-        <span class="kw">let </span>columns = <span class="kw-2">&amp;</span>expr.columns;
-        <span class="kw">let </span>row_count = expr.row_count;
-
-        <span class="macro">assert_eq!</span>(<span class="number">2</span>, row_count);
-        <span class="macro">assert_eq!</span>(columns.len(), <span class="number">4</span>);
-
-        <span class="macro">assert_eq!</span>(columns[<span class="number">0</span>].column_name, TIMESTAMP_COLUMN_NAME);
         <span class="macro">assert_eq!</span>(
-            columns[<span class="number">0</span>].values.as_ref().unwrap().ts_millisecond_values,
-            <span class="macro">vec!</span>[<span class="number">1000</span>, <span class="number">2000</span>]
-        );
-
-        <span class="macro">assert_eq!</span>(columns[<span class="number">1</span>].column_name, FIELD_COLUMN_NAME);
-        <span class="macro">assert_eq!</span>(
-            columns[<span class="number">1</span>].values.as_ref().unwrap().f64_values,
-            <span class="macro">vec!</span>[<span class="number">3.0</span>, <span class="number">4.0</span>]
-        );
-
-        <span class="macro">assert_eq!</span>(columns[<span class="number">2</span>].column_name, <span class="string">&quot;idc&quot;</span>);
-        <span class="macro">assert_eq!</span>(
-            columns[<span class="number">2</span>].values.as_ref().unwrap().string_values,
-            <span class="macro">vec!</span>[<span class="string">&quot;z001&quot;</span>, <span class="string">&quot;z001&quot;</span>]
-        );
-        <span class="macro">assert_eq!</span>(columns[<span class="number">3</span>].column_name, <span class="string">&quot;instance&quot;</span>);
-        <span class="macro">assert_eq!</span>(
-            columns[<span class="number">3</span>].values.as_ref().unwrap().string_values,
-            <span class="macro">vec!</span>[<span class="string">&quot;test_host1&quot;</span>, <span class="string">&quot;test_host1&quot;</span>]
-        );
-
-        <span class="kw">let </span>expr = exprs.get_mut(<span class="number">2</span>).unwrap();
-        expr.columns
-            .sort_unstable_by(|l, r| l.column_name.cmp(<span class="kw-2">&amp;</span>r.column_name));
-
-        <span class="kw">let </span>columns = <span class="kw-2">&amp;</span>expr.columns;
-        <span class="kw">let </span>row_count = expr.row_count;
-
-        <span class="macro">assert_eq!</span>(<span class="number">3</span>, row_count);
-        <span class="macro">assert_eq!</span>(columns.len(), <span class="number">4</span>);
-
-        <span class="macro">assert_eq!</span>(columns[<span class="number">0</span>].column_name, <span class="string">&quot;app&quot;</span>);
-        <span class="macro">assert_eq!</span>(
-            columns[<span class="number">0</span>].values.as_ref().unwrap().string_values,
-            <span class="macro">vec!</span>[<span class="string">&quot;biz&quot;</span>, <span class="string">&quot;biz&quot;</span>, <span class="string">&quot;biz&quot;</span>]
-        );
-        <span class="macro">assert_eq!</span>(columns[<span class="number">1</span>].column_name, TIMESTAMP_COLUMN_NAME);
-        <span class="macro">assert_eq!</span>(
-            columns[<span class="number">1</span>].values.as_ref().unwrap().ts_millisecond_values,
-            <span class="macro">vec!</span>[<span class="number">1000</span>, <span class="number">2000</span>, <span class="number">3000</span>]
-        );
-
-        <span class="macro">assert_eq!</span>(columns[<span class="number">2</span>].column_name, FIELD_COLUMN_NAME);
-        <span class="macro">assert_eq!</span>(
-            columns[<span class="number">2</span>].values.as_ref().unwrap().f64_values,
-            <span class="macro">vec!</span>[<span class="number">5.0</span>, <span class="number">6.0</span>, <span class="number">7.0</span>]
-        );
-
-        <span class="macro">assert_eq!</span>(columns[<span class="number">3</span>].column_name, <span class="string">&quot;idc&quot;</span>);
-        <span class="macro">assert_eq!</span>(
-            columns[<span class="number">3</span>].values.as_ref().unwrap().string_values,
-            <span class="macro">vec!</span>[<span class="string">&quot;z002&quot;</span>, <span class="string">&quot;z002&quot;</span>, <span class="string">&quot;z002&quot;</span>]
+            <span class="kw-2">&amp;</span><span class="macro">vec!</span>[
+                make_row_with_2_labels(<span class="string">"z002"</span>, <span class="string">"biz"</span>, <span class="number">5.0</span>, <span class="number">1000</span>),
+                make_row_with_2_labels(<span class="string">"z002"</span>, <span class="string">"biz"</span>, <span class="number">6.0</span>, <span class="number">2000</span>),
+                make_row_with_2_labels(<span class="string">"z002"</span>, <span class="string">"biz"</span>, <span class="number">7.0</span>, <span class="number">3000</span>),
+            ],
+            rows
         );
     }
 
@@ -1449,7 +1498,7 @@
                 ConcreteDataType::float64_datatype(),
                 <span class="bool-val">true</span>,
             ),
-            ColumnSchema::new(<span class="string">&quot;instance&quot;</span>, ConcreteDataType::string_datatype(), <span class="bool-val">true</span>),
+            ColumnSchema::new(<span class="string">"instance"</span>, ConcreteDataType::string_datatype(), <span class="bool-val">true</span>),
         ]));
 
         <span class="kw">let </span>recordbatches = RecordBatches::try_new(
@@ -1460,7 +1509,7 @@
                     <span class="macro">vec!</span>[
                         Arc::new(TimestampMillisecondVector::from_vec(<span class="macro">vec!</span>[<span class="number">1000</span>])) <span class="kw">as _</span>,
                         Arc::new(Float64Vector::from_vec(<span class="macro">vec!</span>[<span class="number">3.0</span>])) <span class="kw">as _</span>,
-                        Arc::new(StringVector::from(<span class="macro">vec!</span>[<span class="string">&quot;host1&quot;</span>])) <span class="kw">as _</span>,
+                        Arc::new(StringVector::from(<span class="macro">vec!</span>[<span class="string">"host1"</span>])) <span class="kw">as _</span>,
                     ],
                 )
                 .unwrap(),
@@ -1469,7 +1518,7 @@
                     <span class="macro">vec!</span>[
                         Arc::new(TimestampMillisecondVector::from_vec(<span class="macro">vec!</span>[<span class="number">2000</span>])) <span class="kw">as _</span>,
                         Arc::new(Float64Vector::from_vec(<span class="macro">vec!</span>[<span class="number">7.0</span>])) <span class="kw">as _</span>,
-                        Arc::new(StringVector::from(<span class="macro">vec!</span>[<span class="string">&quot;host2&quot;</span>])) <span class="kw">as _</span>,
+                        Arc::new(StringVector::from(<span class="macro">vec!</span>[<span class="string">"host2"</span>])) <span class="kw">as _</span>,
                     ],
                 )
                 .unwrap(),
@@ -1477,18 +1526,18 @@
         )
         .unwrap();
 
-        <span class="kw">let </span>timeseries = recordbatches_to_timeseries(<span class="string">&quot;metric1&quot;</span>, recordbatches).unwrap();
+        <span class="kw">let </span>timeseries = recordbatches_to_timeseries(<span class="string">"metric1"</span>, recordbatches).unwrap();
         <span class="macro">assert_eq!</span>(<span class="number">2</span>, timeseries.len());
 
         <span class="macro">assert_eq!</span>(
             <span class="macro">vec!</span>[
                 Label {
                     name: METRIC_NAME_LABEL.to_string(),
-                    value: <span class="string">&quot;metric1&quot;</span>.to_string(),
+                    value: <span class="string">"metric1"</span>.to_string(),
                 },
                 Label {
-                    name: <span class="string">&quot;instance&quot;</span>.to_string(),
-                    value: <span class="string">&quot;host1&quot;</span>.to_string(),
+                    name: <span class="string">"instance"</span>.to_string(),
+                    value: <span class="string">"host1"</span>.to_string(),
                 },
             ],
             timeseries[<span class="number">0</span>].labels
@@ -1506,11 +1555,11 @@
             <span class="macro">vec!</span>[
                 Label {
                     name: METRIC_NAME_LABEL.to_string(),
-                    value: <span class="string">&quot;metric1&quot;</span>.to_string(),
+                    value: <span class="string">"metric1"</span>.to_string(),
                 },
                 Label {
-                    name: <span class="string">&quot;instance&quot;</span>.to_string(),
-                    value: <span class="string">&quot;host2&quot;</span>.to_string(),
+                    name: <span class="string">"instance"</span>.to_string(),
+                    value: <span class="string">"host2"</span>.to_string(),
                 },
             ],
             timeseries[<span class="number">1</span>].labels

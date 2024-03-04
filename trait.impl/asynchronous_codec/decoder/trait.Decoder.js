@@ -1,0 +1,3 @@
+(function() {var implementors = {
+"index":[["impl Decoder for <a class=\"struct\" href=\"index/inverted_index/create/sort/intermediate_rw/codec_v1/struct.IntermediateCodecV1.html\" title=\"struct index::inverted_index::create::sort::intermediate_rw::codec_v1::IntermediateCodecV1\">IntermediateCodecV1</a>"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

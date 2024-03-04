@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["Client","Inner"]};
+window.SIDEBAR_ITEMS = {"fn":["is_not_leader","is_unreachable"],"struct":["Client","Inner"]};

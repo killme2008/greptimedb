@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["memory","txn"],"trait":["KvBackend"],"type":["KvBackendRef"]};
+window.SIDEBAR_ITEMS = {"mod":["chroot","etcd","memory","test","txn"],"trait":["KvBackend","ResettableKvBackend"],"type":["KvBackendRef","ResettableKvBackendRef"]};

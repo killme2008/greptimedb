@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["AlterOperation"],"struct":["AddColumn","AlterRequest","GetRequest","ScanRequest"],"trait":["WriteRequest"]};
+window.SIDEBAR_ITEMS = {"struct":["ScanRequest"]};

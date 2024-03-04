@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/common/function/src/scalars/timestamp/to_unixtime.rs`."><title>to_unixtime.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="common_function" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../common_function/index.html"><img class="rust-logo" src="../../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/common/function/src/scalars/timestamp/to_unixtime.rs`."><title>to_unixtime.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="common_function" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -311,16 +312,28 @@
 <a href="#311" id="311">311</a>
 <a href="#312" id="312">312</a>
 <a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
+<a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
+<a href="#325" id="325">325</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -331,36 +344,50 @@
 
 <span class="kw">use </span>common_query::error::{InvalidFuncArgsSnafu, <span class="prelude-ty">Result</span>, UnsupportedInputDataTypeSnafu};
 <span class="kw">use </span>common_query::prelude::{Signature, Volatility};
-<span class="kw">use </span>common_time::timestamp::TimeUnit;
-<span class="kw">use </span>common_time::Timestamp;
+<span class="kw">use </span>common_time::{Date, DateTime, Timestamp};
 <span class="kw">use </span>datatypes::prelude::ConcreteDataType;
-<span class="kw">use </span>datatypes::types::TimestampType;
-<span class="kw">use </span>datatypes::vectors::{
-    Int64Vector, StringVector, TimestampMicrosecondVector, TimestampMillisecondVector,
-    TimestampNanosecondVector, TimestampSecondVector, Vector, VectorRef,
-};
+<span class="kw">use </span>datatypes::vectors::{Int64Vector, VectorRef};
 <span class="kw">use </span>snafu::ensure;
 
-<span class="kw">use </span><span class="kw">crate</span>::scalars::function::{Function, FunctionContext};
+<span class="kw">use </span><span class="kw">crate</span>::function::{Function, FunctionContext};
 
-<span class="attr">#[derive(Clone, Debug, Default)]
+<span class="doccomment">/// A function to convert the column into the unix timestamp in seconds.
+</span><span class="attr">#[derive(Clone, Debug, Default)]
 </span><span class="kw">pub struct </span>ToUnixtimeFunction;
 
-<span class="kw">const </span>NAME: <span class="kw-2">&amp;</span>str = <span class="string">&quot;to_unixtime&quot;</span>;
+<span class="kw">const </span>NAME: <span class="kw-2">&amp;</span>str = <span class="string">"to_unixtime"</span>;
 
 <span class="kw">fn </span>convert_to_seconds(arg: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;i64&gt; {
-    <span class="kw">match </span>Timestamp::from_str(arg) {
-        <span class="prelude-val">Ok</span>(ts) =&gt; {
-            <span class="kw">let </span>sec_mul = (TimeUnit::Second.factor() / ts.unit().factor()) <span class="kw">as </span>i64;
-            <span class="prelude-val">Some</span>(ts.value().div_euclid(sec_mul))
-        }
-        <span class="prelude-val">Err</span>(_err) =&gt; <span class="prelude-val">None</span>,
+    <span class="kw">if let </span><span class="prelude-val">Ok</span>(dt) = DateTime::from_str(arg) {
+        <span class="kw">return </span><span class="prelude-val">Some</span>(dt.val() / <span class="number">1000</span>);
     }
+
+    <span class="kw">if let </span><span class="prelude-val">Ok</span>(ts) = Timestamp::from_str(arg) {
+        <span class="kw">return </span><span class="prelude-val">Some</span>(ts.split().<span class="number">0</span>);
+    }
+
+    <span class="kw">if let </span><span class="prelude-val">Ok</span>(date) = Date::from_str(arg) {
+        <span class="kw">return </span><span class="prelude-val">Some</span>(date.to_secs());
+    }
+
+    <span class="prelude-val">None
+</span>}
+
+<span class="kw">fn </span>convert_timestamps_to_seconds(vector: <span class="kw-2">&amp;</span>VectorRef) -&gt; Vec&lt;<span class="prelude-ty">Option</span>&lt;i64&gt;&gt; {
+    (<span class="number">0</span>..vector.len())
+        .map(|i| vector.get(i).as_timestamp().map(|ts| ts.split().<span class="number">0</span>))
+        .collect::&lt;Vec&lt;<span class="prelude-ty">Option</span>&lt;i64&gt;&gt;&gt;()
 }
 
-<span class="kw">fn </span>process_vector(vector: <span class="kw-2">&amp;</span><span class="kw">dyn </span>Vector) -&gt; Vec&lt;<span class="prelude-ty">Option</span>&lt;i64&gt;&gt; {
+<span class="kw">fn </span>convert_dates_to_seconds(vector: <span class="kw-2">&amp;</span>VectorRef) -&gt; Vec&lt;<span class="prelude-ty">Option</span>&lt;i64&gt;&gt; {
     (<span class="number">0</span>..vector.len())
-        .map(|i| <span class="macro">paste::expr!</span>((vector.get(i)).as_timestamp().map(|ts| ts.value())))
+        .map(|i| vector.get(i).as_date().map(|dt| dt.to_secs()))
+        .collect::&lt;Vec&lt;<span class="prelude-ty">Option</span>&lt;i64&gt;&gt;&gt;()
+}
+
+<span class="kw">fn </span>convert_datetimes_to_seconds(vector: <span class="kw-2">&amp;</span>VectorRef) -&gt; Vec&lt;<span class="prelude-ty">Option</span>&lt;i64&gt;&gt; {
+    (<span class="number">0</span>..vector.len())
+        .map(|i| vector.get(i).as_datetime().map(|dt| dt.val() / <span class="number">1000</span>))
         .collect::&lt;Vec&lt;<span class="prelude-ty">Option</span>&lt;i64&gt;&gt;&gt;()
 }
 
@@ -380,6 +407,8 @@
                 ConcreteDataType::string_datatype(),
                 ConcreteDataType::int32_datatype(),
                 ConcreteDataType::int64_datatype(),
+                ConcreteDataType::date_datatype(),
+                ConcreteDataType::datetime_datatype(),
                 ConcreteDataType::timestamp_second_datatype(),
                 ConcreteDataType::timestamp_millisecond_datatype(),
                 ConcreteDataType::timestamp_microsecond_datatype(),
@@ -394,57 +423,35 @@
             columns.len() == <span class="number">1</span>,
             InvalidFuncArgsSnafu {
                 err_msg: <span class="macro">format!</span>(
-                    <span class="string">&quot;The length of the args is not correct, expect exactly one, have: {}&quot;</span>,
+                    <span class="string">"The length of the args is not correct, expect exactly one, have: {}"</span>,
                     columns.len()
                 ),
             }
         );
 
+        <span class="kw">let </span>vector = <span class="kw-2">&amp;</span>columns[<span class="number">0</span>];
+
         <span class="kw">match </span>columns[<span class="number">0</span>].data_type() {
-            ConcreteDataType::String(<span class="kw">_</span>) =&gt; {
-                <span class="kw">let </span>array = columns[<span class="number">0</span>].to_arrow_array();
-                <span class="kw">let </span>vector = StringVector::try_from_arrow_array(<span class="kw-2">&amp;</span>array).unwrap();
-                <span class="prelude-val">Ok</span>(Arc::new(Int64Vector::from(
-                    (<span class="number">0</span>..vector.len())
-                        .map(|i| convert_to_seconds(<span class="kw-2">&amp;</span>vector.get(i).to_string()))
-                        .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;(),
-                )))
-            }
+            ConcreteDataType::String(<span class="kw">_</span>) =&gt; <span class="prelude-val">Ok</span>(Arc::new(Int64Vector::from(
+                (<span class="number">0</span>..vector.len())
+                    .map(|i| convert_to_seconds(<span class="kw-2">&amp;</span>vector.get(i).to_string()))
+                    .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;(),
+            ))),
             ConcreteDataType::Int64(<span class="kw">_</span>) | ConcreteDataType::Int32(<span class="kw">_</span>) =&gt; {
-                <span class="kw">let </span>array = columns[<span class="number">0</span>].to_arrow_array();
-                <span class="prelude-val">Ok</span>(Arc::new(Int64Vector::try_from_arrow_array(<span class="kw-2">&amp;</span>array).unwrap()))
+                <span class="comment">// Safety: cast always successfully at here
+                </span><span class="prelude-val">Ok</span>(vector.cast(<span class="kw-2">&amp;</span>ConcreteDataType::int64_datatype()).unwrap())
             }
-            ConcreteDataType::Timestamp(ts) =&gt; {
-                <span class="kw">let </span>array = columns[<span class="number">0</span>].to_arrow_array();
-                <span class="kw">let </span>value = <span class="kw">match </span>ts {
-                    TimestampType::Second(<span class="kw">_</span>) =&gt; {
-                        <span class="kw">let </span>vector = <span class="macro">paste::expr!</span>(TimestampSecondVector::try_from_arrow_array(
-                            array
-                        )
-                        .unwrap());
-                        process_vector(<span class="kw-2">&amp;</span>vector)
-                    }
-                    TimestampType::Millisecond(<span class="kw">_</span>) =&gt; {
-                        <span class="kw">let </span>vector = <span class="macro">paste::expr!</span>(
-                            TimestampMillisecondVector::try_from_arrow_array(array).unwrap()
-                        );
-                        process_vector(<span class="kw-2">&amp;</span>vector)
-                    }
-                    TimestampType::Microsecond(<span class="kw">_</span>) =&gt; {
-                        <span class="kw">let </span>vector = <span class="macro">paste::expr!</span>(
-                            TimestampMicrosecondVector::try_from_arrow_array(array).unwrap()
-                        );
-                        process_vector(<span class="kw-2">&amp;</span>vector)
-                    }
-                    TimestampType::Nanosecond(<span class="kw">_</span>) =&gt; {
-                        <span class="kw">let </span>vector = <span class="macro">paste::expr!</span>(TimestampNanosecondVector::try_from_arrow_array(
-                            array
-                        )
-                        .unwrap());
-                        process_vector(<span class="kw-2">&amp;</span>vector)
-                    }
-                };
-                <span class="prelude-val">Ok</span>(Arc::new(Int64Vector::from(value)))
+            ConcreteDataType::Date(<span class="kw">_</span>) =&gt; {
+                <span class="kw">let </span>seconds = convert_dates_to_seconds(vector);
+                <span class="prelude-val">Ok</span>(Arc::new(Int64Vector::from(seconds)))
+            }
+            ConcreteDataType::DateTime(<span class="kw">_</span>) =&gt; {
+                <span class="kw">let </span>seconds = convert_datetimes_to_seconds(vector);
+                <span class="prelude-val">Ok</span>(Arc::new(Int64Vector::from(seconds)))
+            }
+            ConcreteDataType::Timestamp(<span class="kw">_</span>) =&gt; {
+                <span class="kw">let </span>seconds = convert_timestamps_to_seconds(vector);
+                <span class="prelude-val">Ok</span>(Arc::new(Int64Vector::from(seconds)))
             }
             <span class="kw">_ </span>=&gt; UnsupportedInputDataTypeSnafu {
                 function: NAME,
@@ -457,51 +464,52 @@
 
 <span class="kw">impl </span>fmt::Display <span class="kw">for </span>ToUnixtimeFunction {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter) -&gt; fmt::Result {
-        <span class="macro">write!</span>(f, <span class="string">&quot;TO_UNIXTIME&quot;</span>)
+        <span class="macro">write!</span>(f, <span class="string">"TO_UNIXTIME"</span>)
     }
 }
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use </span>common_query::prelude::TypeSignature;
-    <span class="kw">use </span>datatypes::prelude::{ConcreteDataType, ScalarVectorBuilder};
-    <span class="kw">use </span>datatypes::scalars::ScalarVector;
-    <span class="kw">use </span>datatypes::timestamp::TimestampSecond;
+    <span class="kw">use </span>datatypes::prelude::ConcreteDataType;
     <span class="kw">use </span>datatypes::value::Value;
-    <span class="kw">use </span>datatypes::vectors::{StringVector, TimestampSecondVector};
+    <span class="kw">use </span>datatypes::vectors::{
+        DateTimeVector, DateVector, StringVector, TimestampMillisecondVector, TimestampSecondVector,
+    };
 
     <span class="kw">use super</span>::{ToUnixtimeFunction, <span class="kw-2">*</span>};
-    <span class="kw">use </span><span class="kw">crate</span>::scalars::Function;
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_string_to_unixtime() {
         <span class="kw">let </span>f = ToUnixtimeFunction;
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;to_unixtime&quot;</span>, f.name());
+        <span class="macro">assert_eq!</span>(<span class="string">"to_unixtime"</span>, f.name());
         <span class="macro">assert_eq!</span>(
             ConcreteDataType::int64_datatype(),
             f.return_type(<span class="kw-2">&amp;</span>[]).unwrap()
         );
 
         <span class="macro">assert!</span>(<span class="macro">matches!</span>(f.signature(),
-        Signature {
-                type_signature: TypeSignature::Uniform(<span class="number">1</span>, valid_types),
-                volatility: Volatility::Immutable
-            } <span class="kw">if  </span>valid_types == <span class="macro">vec!</span>[
-                ConcreteDataType::string_datatype(),
-                ConcreteDataType::int32_datatype(),
-                ConcreteDataType::int64_datatype(),
-                ConcreteDataType::timestamp_second_datatype(),
-                ConcreteDataType::timestamp_millisecond_datatype(),
-                ConcreteDataType::timestamp_microsecond_datatype(),
-                ConcreteDataType::timestamp_nanosecond_datatype(),
-            ]
+                         Signature {
+                             type_signature: TypeSignature::Uniform(<span class="number">1</span>, valid_types),
+                             volatility: Volatility::Immutable
+                         } <span class="kw">if  </span>valid_types == <span class="macro">vec!</span>[
+                             ConcreteDataType::string_datatype(),
+                             ConcreteDataType::int32_datatype(),
+                             ConcreteDataType::int64_datatype(),
+                             ConcreteDataType::date_datatype(),
+                             ConcreteDataType::datetime_datatype(),
+                             ConcreteDataType::timestamp_second_datatype(),
+                             ConcreteDataType::timestamp_millisecond_datatype(),
+                             ConcreteDataType::timestamp_microsecond_datatype(),
+                             ConcreteDataType::timestamp_nanosecond_datatype(),
+                         ]
         ));
 
         <span class="kw">let </span>times = <span class="macro">vec!</span>[
-            <span class="prelude-val">Some</span>(<span class="string">&quot;2023-03-01T06:35:02Z&quot;</span>),
+            <span class="prelude-val">Some</span>(<span class="string">"2023-03-01T06:35:02Z"</span>),
             <span class="prelude-val">None</span>,
-            <span class="prelude-val">Some</span>(<span class="string">&quot;2022-06-30T23:59:60Z&quot;</span>),
-            <span class="prelude-val">Some</span>(<span class="string">&quot;invalid_time_stamp&quot;</span>),
+            <span class="prelude-val">Some</span>(<span class="string">"2022-06-30T23:59:60Z"</span>),
+            <span class="prelude-val">Some</span>(<span class="string">"invalid_time_stamp"</span>),
         ];
         <span class="kw">let </span>results = [<span class="prelude-val">Some</span>(<span class="number">1677652502</span>), <span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="number">1656633600</span>), <span class="prelude-val">None</span>];
         <span class="kw">let </span>args: Vec&lt;VectorRef&gt; = <span class="macro">vec!</span>[Arc::new(StringVector::from(times.clone()))];
@@ -525,26 +533,6 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_int_to_unixtime() {
         <span class="kw">let </span>f = ToUnixtimeFunction;
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;to_unixtime&quot;</span>, f.name());
-        <span class="macro">assert_eq!</span>(
-            ConcreteDataType::int64_datatype(),
-            f.return_type(<span class="kw-2">&amp;</span>[]).unwrap()
-        );
-
-        <span class="macro">assert!</span>(<span class="macro">matches!</span>(f.signature(),
-        Signature {
-                type_signature: TypeSignature::Uniform(<span class="number">1</span>, valid_types),
-                volatility: Volatility::Immutable
-            } <span class="kw">if  </span>valid_types == <span class="macro">vec!</span>[
-                ConcreteDataType::string_datatype(),
-                ConcreteDataType::int32_datatype(),
-                ConcreteDataType::int64_datatype(),
-                ConcreteDataType::timestamp_second_datatype(),
-                ConcreteDataType::timestamp_millisecond_datatype(),
-                ConcreteDataType::timestamp_microsecond_datatype(),
-                ConcreteDataType::timestamp_nanosecond_datatype(),
-            ]
-        ));
 
         <span class="kw">let </span>times = <span class="macro">vec!</span>[<span class="prelude-val">Some</span>(<span class="number">3_i64</span>), <span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="number">5_i64</span>), <span class="prelude-val">None</span>];
         <span class="kw">let </span>results = [<span class="prelude-val">Some</span>(<span class="number">3</span>), <span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="number">5</span>), <span class="prelude-val">None</span>];
@@ -567,38 +555,13 @@
     }
 
     <span class="attr">#[test]
-    </span><span class="kw">fn </span>test_timestamp_to_unixtime() {
+    </span><span class="kw">fn </span>test_date_to_unixtime() {
         <span class="kw">let </span>f = ToUnixtimeFunction;
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;to_unixtime&quot;</span>, f.name());
-        <span class="macro">assert_eq!</span>(
-            ConcreteDataType::int64_datatype(),
-            f.return_type(<span class="kw-2">&amp;</span>[]).unwrap()
-        );
 
-        <span class="macro">assert!</span>(<span class="macro">matches!</span>(f.signature(),
-        Signature {
-                type_signature: TypeSignature::Uniform(<span class="number">1</span>, valid_types),
-                volatility: Volatility::Immutable
-            } <span class="kw">if  </span>valid_types == <span class="macro">vec!</span>[
-                ConcreteDataType::string_datatype(),
-                ConcreteDataType::int32_datatype(),
-                ConcreteDataType::int64_datatype(),
-                ConcreteDataType::timestamp_second_datatype(),
-                ConcreteDataType::timestamp_millisecond_datatype(),
-                ConcreteDataType::timestamp_microsecond_datatype(),
-                ConcreteDataType::timestamp_nanosecond_datatype(),
-            ]
-        ));
-
-        <span class="kw">let </span>times: Vec&lt;<span class="prelude-ty">Option</span>&lt;TimestampSecond&gt;&gt; = <span class="macro">vec!</span>[
-            <span class="prelude-val">Some</span>(TimestampSecond::new(<span class="number">123</span>)),
-            <span class="prelude-val">None</span>,
-            <span class="prelude-val">Some</span>(TimestampSecond::new(<span class="number">42</span>)),
-            <span class="prelude-val">None</span>,
-        ];
-        <span class="kw">let </span>results = [<span class="prelude-val">Some</span>(<span class="number">123</span>), <span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="number">42</span>), <span class="prelude-val">None</span>];
-        <span class="kw">let </span>ts_vector: TimestampSecondVector = build_vector_from_slice(<span class="kw-2">&amp;</span>times);
-        <span class="kw">let </span>args: Vec&lt;VectorRef&gt; = <span class="macro">vec!</span>[Arc::new(ts_vector)];
+        <span class="kw">let </span>times = <span class="macro">vec!</span>[<span class="prelude-val">Some</span>(<span class="number">123</span>), <span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="number">42</span>), <span class="prelude-val">None</span>];
+        <span class="kw">let </span>results = [<span class="prelude-val">Some</span>(<span class="number">10627200</span>), <span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="number">3628800</span>), <span class="prelude-val">None</span>];
+        <span class="kw">let </span>date_vector = DateVector::from(times.clone());
+        <span class="kw">let </span>args: Vec&lt;VectorRef&gt; = <span class="macro">vec!</span>[Arc::new(date_vector)];
         <span class="kw">let </span>vector = f.eval(FunctionContext::default(), <span class="kw-2">&amp;</span>args).unwrap();
         <span class="macro">assert_eq!</span>(<span class="number">4</span>, vector.len());
         <span class="kw">for </span>(i, _t) <span class="kw">in </span>times.iter().enumerate() {
@@ -616,12 +579,74 @@
         }
     }
 
-    <span class="kw">fn </span>build_vector_from_slice&lt;T: ScalarVector&gt;(items: <span class="kw-2">&amp;</span>[<span class="prelude-ty">Option</span>&lt;T::RefItem&lt;<span class="lifetime">&#39;_</span>&gt;&gt;]) -&gt; T {
-        <span class="kw">let </span><span class="kw-2">mut </span>builder = T::Builder::with_capacity(items.len());
-        <span class="kw">for </span>item <span class="kw">in </span>items {
-            builder.push(<span class="kw-2">*</span>item);
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_datetime_to_unixtime() {
+        <span class="kw">let </span>f = ToUnixtimeFunction;
+
+        <span class="kw">let </span>times = <span class="macro">vec!</span>[<span class="prelude-val">Some</span>(<span class="number">123000</span>), <span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="number">42000</span>), <span class="prelude-val">None</span>];
+        <span class="kw">let </span>results = [<span class="prelude-val">Some</span>(<span class="number">123</span>), <span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="number">42</span>), <span class="prelude-val">None</span>];
+        <span class="kw">let </span>date_vector = DateTimeVector::from(times.clone());
+        <span class="kw">let </span>args: Vec&lt;VectorRef&gt; = <span class="macro">vec!</span>[Arc::new(date_vector)];
+        <span class="kw">let </span>vector = f.eval(FunctionContext::default(), <span class="kw-2">&amp;</span>args).unwrap();
+        <span class="macro">assert_eq!</span>(<span class="number">4</span>, vector.len());
+        <span class="kw">for </span>(i, _t) <span class="kw">in </span>times.iter().enumerate() {
+            <span class="kw">let </span>v = vector.get(i);
+            <span class="kw">if </span>i == <span class="number">1 </span>|| i == <span class="number">3 </span>{
+                <span class="macro">assert_eq!</span>(Value::Null, v);
+                <span class="kw">continue</span>;
+            }
+            <span class="kw">match </span>v {
+                Value::Int64(ts) =&gt; {
+                    <span class="macro">assert_eq!</span>(ts, (<span class="kw-2">*</span>results.get(i).unwrap()).unwrap());
+                }
+                <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
+            }
         }
-        builder.finish()
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_timestamp_to_unixtime() {
+        <span class="kw">let </span>f = ToUnixtimeFunction;
+
+        <span class="kw">let </span>times = <span class="macro">vec!</span>[<span class="prelude-val">Some</span>(<span class="number">123</span>), <span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="number">42</span>), <span class="prelude-val">None</span>];
+        <span class="kw">let </span>results = [<span class="prelude-val">Some</span>(<span class="number">123</span>), <span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="number">42</span>), <span class="prelude-val">None</span>];
+        <span class="kw">let </span>ts_vector = TimestampSecondVector::from(times.clone());
+        <span class="kw">let </span>args: Vec&lt;VectorRef&gt; = <span class="macro">vec!</span>[Arc::new(ts_vector)];
+        <span class="kw">let </span>vector = f.eval(FunctionContext::default(), <span class="kw-2">&amp;</span>args).unwrap();
+        <span class="macro">assert_eq!</span>(<span class="number">4</span>, vector.len());
+        <span class="kw">for </span>(i, _t) <span class="kw">in </span>times.iter().enumerate() {
+            <span class="kw">let </span>v = vector.get(i);
+            <span class="kw">if </span>i == <span class="number">1 </span>|| i == <span class="number">3 </span>{
+                <span class="macro">assert_eq!</span>(Value::Null, v);
+                <span class="kw">continue</span>;
+            }
+            <span class="kw">match </span>v {
+                Value::Int64(ts) =&gt; {
+                    <span class="macro">assert_eq!</span>(ts, (<span class="kw-2">*</span>results.get(i).unwrap()).unwrap());
+                }
+                <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
+            }
+        }
+
+        <span class="kw">let </span>times = <span class="macro">vec!</span>[<span class="prelude-val">Some</span>(<span class="number">123000</span>), <span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="number">42000</span>), <span class="prelude-val">None</span>];
+        <span class="kw">let </span>results = [<span class="prelude-val">Some</span>(<span class="number">123</span>), <span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="number">42</span>), <span class="prelude-val">None</span>];
+        <span class="kw">let </span>ts_vector = TimestampMillisecondVector::from(times.clone());
+        <span class="kw">let </span>args: Vec&lt;VectorRef&gt; = <span class="macro">vec!</span>[Arc::new(ts_vector)];
+        <span class="kw">let </span>vector = f.eval(FunctionContext::default(), <span class="kw-2">&amp;</span>args).unwrap();
+        <span class="macro">assert_eq!</span>(<span class="number">4</span>, vector.len());
+        <span class="kw">for </span>(i, _t) <span class="kw">in </span>times.iter().enumerate() {
+            <span class="kw">let </span>v = vector.get(i);
+            <span class="kw">if </span>i == <span class="number">1 </span>|| i == <span class="number">3 </span>{
+                <span class="macro">assert_eq!</span>(Value::Null, v);
+                <span class="kw">continue</span>;
+            }
+            <span class="kw">match </span>v {
+                Value::Int64(ts) =&gt; {
+                    <span class="macro">assert_eq!</span>(ts, (<span class="kw-2">*</span>results.get(i).unwrap()).unwrap());
+                }
+                <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
+            }
+        }
     }
 }
 </code></pre></div></section></main></body></html>

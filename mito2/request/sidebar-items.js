@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["WorkerRequest"],"fn":["validate_proto_value"],"struct":["CloseRequest","CreateRequest","OpenRequest","RegionOptions","RegionTask","RequestValidator","SenderWriteRequest","WriteRequest"]};
+window.SIDEBAR_ITEMS = {"enum":["BackgroundNotify","DdlRequest","WorkerRequest"],"fn":["validate_proto_value"],"struct":["CompactionFailed","CompactionFinished","FlushFailed","FlushFinished","OptionOutputTx","OutputTx","SenderDdlRequest","SenderWriteRequest","WriteRequest"],"trait":["OnFailure"]};

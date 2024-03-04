@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/cmd/src/datanode.rs`."><title>datanode.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="cmd" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../cmd/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/cmd/src/datanode.rs`."><title>datanode.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="cmd" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -474,42 +475,111 @@
 <a href="#474" id="474">474</a>
 <a href="#475" id="475">475</a>
 <a href="#476" id="476">476</a>
+<a href="#477" id="477">477</a>
+<a href="#478" id="478">478</a>
+<a href="#479" id="479">479</a>
+<a href="#480" id="480">480</a>
+<a href="#481" id="481">481</a>
+<a href="#482" id="482">482</a>
+<a href="#483" id="483">483</a>
+<a href="#484" id="484">484</a>
+<a href="#485" id="485">485</a>
+<a href="#486" id="486">486</a>
+<a href="#487" id="487">487</a>
+<a href="#488" id="488">488</a>
+<a href="#489" id="489">489</a>
+<a href="#490" id="490">490</a>
+<a href="#491" id="491">491</a>
+<a href="#492" id="492">492</a>
+<a href="#493" id="493">493</a>
+<a href="#494" id="494">494</a>
+<a href="#495" id="495">495</a>
+<a href="#496" id="496">496</a>
+<a href="#497" id="497">497</a>
+<a href="#498" id="498">498</a>
+<a href="#499" id="499">499</a>
+<a href="#500" id="500">500</a>
+<a href="#501" id="501">501</a>
+<a href="#502" id="502">502</a>
+<a href="#503" id="503">503</a>
+<a href="#504" id="504">504</a>
+<a href="#505" id="505">505</a>
+<a href="#506" id="506">506</a>
+<a href="#507" id="507">507</a>
+<a href="#508" id="508">508</a>
+<a href="#509" id="509">509</a>
+<a href="#510" id="510">510</a>
+<a href="#511" id="511">511</a>
+<a href="#512" id="512">512</a>
+<a href="#513" id="513">513</a>
+<a href="#514" id="514">514</a>
+<a href="#515" id="515">515</a>
+<a href="#516" id="516">516</a>
+<a href="#517" id="517">517</a>
+<a href="#518" id="518">518</a>
+<a href="#519" id="519">519</a>
+<a href="#520" id="520">520</a>
+<a href="#521" id="521">521</a>
+<a href="#522" id="522">522</a>
+<a href="#523" id="523">523</a>
+<a href="#524" id="524">524</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-</span><span class="kw">use </span>std::time::Duration;
+</span><span class="kw">use </span>std::sync::Arc;
+<span class="kw">use </span>std::time::Duration;
 
+<span class="kw">use </span>async_trait::async_trait;
+<span class="kw">use </span>catalog::kvbackend::MetaKvBackend;
 <span class="kw">use </span>clap::Parser;
-<span class="kw">use </span>common_telemetry::logging;
-<span class="kw">use </span>datanode::datanode::{Datanode, DatanodeOptions};
+<span class="kw">use </span>common_config::WalConfig;
+<span class="kw">use </span>common_telemetry::{info, logging};
+<span class="kw">use </span>datanode::config::DatanodeOptions;
+<span class="kw">use </span>datanode::datanode::{Datanode, DatanodeBuilder};
 <span class="kw">use </span>meta_client::MetaClientOptions;
 <span class="kw">use </span>servers::Mode;
-<span class="kw">use </span>snafu::ResultExt;
+<span class="kw">use </span>snafu::{OptionExt, ResultExt};
 
 <span class="kw">use </span><span class="kw">crate</span>::error::{MissingConfigSnafu, <span class="prelude-ty">Result</span>, ShutdownDatanodeSnafu, StartDatanodeSnafu};
-<span class="kw">use </span><span class="kw">crate</span>::options::{Options, TopLevelOptions};
+<span class="kw">use </span><span class="kw">crate</span>::options::{CliOptions, Options};
+<span class="kw">use </span><span class="kw">crate</span>::App;
 
 <span class="kw">pub struct </span>Instance {
     datanode: Datanode,
 }
 
 <span class="kw">impl </span>Instance {
-    <span class="kw">pub async fn </span>start(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="kw">fn </span>new(datanode: Datanode) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{ datanode }
+    }
+}
+
+<span class="attr">#[async_trait]
+</span><span class="kw">impl </span>App <span class="kw">for </span>Instance {
+    <span class="kw">fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
+        <span class="string">"greptime-datanode"
+    </span>}
+
+    <span class="kw">async fn </span>start(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        plugins::start_datanode_plugins(<span class="self">self</span>.datanode.plugins())
+            .<span class="kw">await
+            </span>.context(StartDatanodeSnafu)<span class="question-mark">?</span>;
+
         <span class="self">self</span>.datanode.start().<span class="kw">await</span>.context(StartDatanodeSnafu)
     }
 
-    <span class="kw">pub async fn </span>stop(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="kw">async fn </span>stop(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.datanode
             .shutdown()
             .<span class="kw">await
@@ -528,8 +598,8 @@
         <span class="self">self</span>.subcmd.build(opts).<span class="kw">await
     </span>}
 
-    <span class="kw">pub fn </span>load_options(<span class="kw-2">&amp;</span><span class="self">self</span>, top_level_opts: TopLevelOptions) -&gt; <span class="prelude-ty">Result</span>&lt;Options&gt; {
-        <span class="self">self</span>.subcmd.load_options(top_level_opts)
+    <span class="kw">pub fn </span>load_options(<span class="kw-2">&amp;</span><span class="self">self</span>, cli_options: <span class="kw-2">&amp;</span>CliOptions) -&gt; <span class="prelude-ty">Result</span>&lt;Options&gt; {
+        <span class="self">self</span>.subcmd.load_options(cli_options)
     }
 }
 
@@ -545,9 +615,9 @@
         }
     }
 
-    <span class="kw">fn </span>load_options(<span class="kw-2">&amp;</span><span class="self">self</span>, top_level_opts: TopLevelOptions) -&gt; <span class="prelude-ty">Result</span>&lt;Options&gt; {
+    <span class="kw">fn </span>load_options(<span class="kw-2">&amp;</span><span class="self">self</span>, cli_options: <span class="kw-2">&amp;</span>CliOptions) -&gt; <span class="prelude-ty">Result</span>&lt;Options&gt; {
         <span class="kw">match </span><span class="self">self </span>{
-            SubCommand::Start(cmd) =&gt; cmd.load_options(top_level_opts),
+            SubCommand::Start(cmd) =&gt; cmd.load_options(cli_options),
         }
     }
 }
@@ -560,7 +630,7 @@
     </span>rpc_addr: <span class="prelude-ty">Option</span>&lt;String&gt;,
     <span class="attr">#[clap(long)]
     </span>rpc_hostname: <span class="prelude-ty">Option</span>&lt;String&gt;,
-    <span class="attr">#[clap(long, multiple = <span class="bool-val">true</span>, value_delimiter = <span class="string">&#39;,&#39;</span>)]
+    <span class="attr">#[clap(long, value_delimiter = <span class="string">','</span>, num_args = <span class="number">1</span>..)]
     </span>metasrv_addr: <span class="prelude-ty">Option</span>&lt;Vec&lt;String&gt;&gt;,
     <span class="attr">#[clap(short, long)]
     </span>config_file: <span class="prelude-ty">Option</span>&lt;String&gt;,
@@ -572,24 +642,24 @@
     </span>http_addr: <span class="prelude-ty">Option</span>&lt;String&gt;,
     <span class="attr">#[clap(long)]
     </span>http_timeout: <span class="prelude-ty">Option</span>&lt;u64&gt;,
-    <span class="attr">#[clap(long, default_value = <span class="string">&quot;GREPTIMEDB_DATANODE&quot;</span>)]
+    <span class="attr">#[clap(long, default_value = <span class="string">"GREPTIMEDB_DATANODE"</span>)]
     </span>env_prefix: String,
 }
 
 <span class="kw">impl </span>StartCommand {
-    <span class="kw">fn </span>load_options(<span class="kw-2">&amp;</span><span class="self">self</span>, top_level_opts: TopLevelOptions) -&gt; <span class="prelude-ty">Result</span>&lt;Options&gt; {
+    <span class="kw">fn </span>load_options(<span class="kw-2">&amp;</span><span class="self">self</span>, cli_options: <span class="kw-2">&amp;</span>CliOptions) -&gt; <span class="prelude-ty">Result</span>&lt;Options&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>opts: DatanodeOptions = Options::load_layered_options(
             <span class="self">self</span>.config_file.as_deref(),
             <span class="self">self</span>.env_prefix.as_ref(),
             DatanodeOptions::env_list_keys(),
         )<span class="question-mark">?</span>;
 
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(dir) = top_level_opts.log_dir {
-            opts.logging.dir = dir;
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(dir) = <span class="kw-2">&amp;</span>cli_options.log_dir {
+            opts.logging.dir = dir.clone();
         }
 
-        <span class="kw">if </span>top_level_opts.log_level.is_some() {
-            opts.logging.level = top_level_opts.log_level;
+        <span class="kw">if </span>cli_options.log_level.is_some() {
+            opts.logging.level = cli_options.log_level.clone();
         }
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(addr) = <span class="kw-2">&amp;</span><span class="self">self</span>.rpc_addr {
@@ -605,7 +675,7 @@
         }
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(metasrv_addrs) = <span class="kw-2">&amp;</span><span class="self">self</span>.metasrv_addr {
-            opts.meta_client_options
+            opts.meta_client
                 .get_or_insert_with(MetaClientOptions::default)
                 .metasrv_addrs = metasrv_addrs.clone();
             opts.mode = Mode::Distributed;
@@ -613,7 +683,7 @@
 
         <span class="kw">if let </span>(Mode::Distributed, <span class="prelude-val">None</span>) = (<span class="kw-2">&amp;</span>opts.mode, <span class="kw-2">&amp;</span>opts.node_id) {
             <span class="kw">return </span>MissingConfigSnafu {
-                msg: <span class="string">&quot;Missing node id option&quot;</span>,
+                msg: <span class="string">"Missing node id option"</span>,
             }
             .fail();
         }
@@ -622,33 +692,68 @@
             opts.storage.data_home = data_home.clone();
         }
 
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(wal_dir) = <span class="kw-2">&amp;</span><span class="self">self</span>.wal_dir {
-            opts.wal.dir = <span class="prelude-val">Some</span>(wal_dir.clone());
+        <span class="comment">// `wal_dir` only affects raft-engine config.
+        </span><span class="kw">if let </span><span class="prelude-val">Some</span>(wal_dir) = <span class="kw-2">&amp;</span><span class="self">self</span>.wal_dir
+            &amp;&amp; <span class="kw">let </span>WalConfig::RaftEngine(raft_engine_config) = <span class="kw-2">&amp;mut </span>opts.wal
+        {
+            <span class="kw">if </span>raft_engine_config
+                .dir
+                .as_ref()
+                .is_some_and(|original_dir| original_dir != wal_dir)
+            {
+                <span class="macro">info!</span>(<span class="string">"The wal dir of raft-engine is altered to {wal_dir}"</span>);
+            }
+            raft_engine_config.dir.replace(wal_dir.clone());
         }
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(http_addr) = <span class="kw-2">&amp;</span><span class="self">self</span>.http_addr {
-            opts.http_opts.addr = http_addr.clone();
+            opts.http.addr = http_addr.clone();
         }
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(http_timeout) = <span class="self">self</span>.http_timeout {
-            opts.http_opts.timeout = Duration::from_secs(http_timeout)
+            opts.http.timeout = Duration::from_secs(http_timeout)
         }
 
         <span class="comment">// Disable dashboard in datanode.
-        </span>opts.http_opts.disable_dashboard = <span class="bool-val">true</span>;
+        </span>opts.http.disable_dashboard = <span class="bool-val">true</span>;
 
         <span class="prelude-val">Ok</span>(Options::Datanode(Box::new(opts)))
     }
 
-    <span class="kw">async fn </span>build(<span class="self">self</span>, opts: DatanodeOptions) -&gt; <span class="prelude-ty">Result</span>&lt;Instance&gt; {
-        <span class="macro">logging::info!</span>(<span class="string">&quot;Datanode start command: {:#?}&quot;</span>, <span class="self">self</span>);
-        <span class="macro">logging::info!</span>(<span class="string">&quot;Datanode options: {:#?}&quot;</span>, opts);
-
-        <span class="kw">let </span>datanode = Datanode::new(opts, Default::default())
+    <span class="kw">async fn </span>build(<span class="self">self</span>, <span class="kw-2">mut </span>opts: DatanodeOptions) -&gt; <span class="prelude-ty">Result</span>&lt;Instance&gt; {
+        <span class="kw">let </span>plugins = plugins::setup_datanode_plugins(<span class="kw-2">&amp;mut </span>opts)
             .<span class="kw">await
             </span>.context(StartDatanodeSnafu)<span class="question-mark">?</span>;
 
-        <span class="prelude-val">Ok</span>(Instance { datanode })
+        <span class="macro">logging::info!</span>(<span class="string">"Datanode start command: {:#?}"</span>, <span class="self">self</span>);
+        <span class="macro">logging::info!</span>(<span class="string">"Datanode options: {:#?}"</span>, opts);
+
+        <span class="kw">let </span>node_id = opts
+            .node_id
+            .context(MissingConfigSnafu { msg: <span class="string">"'node_id'" </span>})<span class="question-mark">?</span>;
+
+        <span class="kw">let </span>meta_config = opts.meta_client.as_ref().context(MissingConfigSnafu {
+            msg: <span class="string">"'meta_client_options'"</span>,
+        })<span class="question-mark">?</span>;
+
+        <span class="kw">let </span>meta_client = datanode::heartbeat::new_metasrv_client(node_id, meta_config)
+            .<span class="kw">await
+            </span>.context(StartDatanodeSnafu)<span class="question-mark">?</span>;
+
+        <span class="kw">let </span>meta_backend = Arc::new(MetaKvBackend {
+            client: Arc::new(meta_client.clone()),
+        });
+
+        <span class="kw">let </span>datanode = DatanodeBuilder::new(opts, plugins)
+            .with_meta_client(meta_client)
+            .with_kv_backend(meta_backend)
+            .enable_region_server_service()
+            .enable_http_service()
+            .build()
+            .<span class="kw">await
+            </span>.context(StartDatanodeSnafu)<span class="question-mark">?</span>;
+
+        <span class="prelude-val">Ok</span>(Instance::new(datanode))
     }
 }
 
@@ -657,128 +762,131 @@
     <span class="kw">use </span>std::io::Write;
     <span class="kw">use </span>std::time::Duration;
 
-    <span class="kw">use </span>common_base::readable_size::ReadableSize;
     <span class="kw">use </span>common_test_util::temp_dir::create_named_temp_file;
-    <span class="kw">use </span>datanode::datanode::{
-        CompactionConfig, FileConfig, ObjectStoreConfig, RegionManifestConfig,
-    };
+    <span class="kw">use </span>datanode::config::{FileConfig, GcsConfig, ObjectStoreConfig, S3Config};
+    <span class="kw">use </span>servers::heartbeat_options::HeartbeatOptions;
     <span class="kw">use </span>servers::Mode;
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use </span><span class="kw">crate</span>::options::ENV_VAR_SEP;
+    <span class="kw">use </span><span class="kw">crate</span>::options::{CliOptions, ENV_VAR_SEP};
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_read_from_config_file() {
         <span class="kw">let </span><span class="kw-2">mut </span>file = create_named_temp_file();
-        <span class="kw">let </span>toml_str = <span class="string">r#&quot;
-            mode = &quot;distributed&quot;
+        <span class="kw">let </span>toml_str = <span class="string">r#"
+            mode = "distributed"
             enable_memory_catalog = false
             node_id = 42
-            rpc_addr = &quot;127.0.0.1:3001&quot;
-            rpc_hostname = &quot;127.0.0.1&quot;
+            rpc_addr = "127.0.0.1:3001"
+            rpc_hostname = "127.0.0.1"
             rpc_runtime_size = 8
 
-            [meta_client_options]
-            metasrv_addrs = [&quot;127.0.0.1:3002&quot;]
-            timeout_millis = 3000
-            connect_timeout_millis = 5000
-            ddl_timeout_millis= 10000
+            [heartbeat]
+            interval = "300ms"
+
+            [meta_client]
+            metasrv_addrs = ["127.0.0.1:3002"]
+            timeout = "3s"
+            connect_timeout = "5s"
+            ddl_timeout = "10s"
             tcp_nodelay = true
 
             [wal]
-            dir = &quot;/other/wal&quot;
-            file_size = &quot;1GB&quot;
-            purge_threshold = &quot;50GB&quot;
-            purge_interval = &quot;10m&quot;
+            provider = "raft_engine"
+            dir = "/other/wal"
+            file_size = "1GB"
+            purge_threshold = "50GB"
+            purge_interval = "10m"
             read_batch_size = 128
             sync_write = false
 
             [storage]
-            type = &quot;File&quot;
-            data_home = &quot;/tmp/greptimedb/&quot;
+            data_home = "/tmp/greptimedb/"
+            type = "File"
 
-            [storage.compaction]
-            max_inflight_tasks = 3
-            max_files_in_level0 = 7
-            max_purge_tasks = 32
+            [[storage.providers]]
+            type = "Gcs"
+            bucket = "foo"
+            endpoint = "bar"
 
-            [storage.manifest]
-            checkpoint_margin = 9
-            gc_duration = &#39;7s&#39;
-            checkpoint_on_startup = true
-            compress = true
+            [[storage.providers]]
+            type = "S3"
+            bucket = "foo"
 
             [logging]
-            level = &quot;debug&quot;
-            dir = &quot;/tmp/greptimedb/test/logs&quot;
-        &quot;#</span>;
-        <span class="macro">write!</span>(file, <span class="string">&quot;{}&quot;</span>, toml_str).unwrap();
+            level = "debug"
+            dir = "/tmp/greptimedb/test/logs"
+        "#</span>;
+        <span class="macro">write!</span>(file, <span class="string">"{}"</span>, toml_str).unwrap();
 
         <span class="kw">let </span>cmd = StartCommand {
             config_file: <span class="prelude-val">Some</span>(file.path().to_str().unwrap().to_string()),
             ..Default::default()
         };
 
-        <span class="kw">let </span>Options::Datanode(options) = cmd.load_options(TopLevelOptions::default()).unwrap()
-        <span class="kw">else </span>{
+        <span class="kw">let </span>Options::Datanode(options) = cmd.load_options(<span class="kw-2">&amp;</span>CliOptions::default()).unwrap() <span class="kw">else </span>{
             <span class="macro">unreachable!</span>()
         };
 
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;127.0.0.1:3001&quot;</span>.to_string(), options.rpc_addr);
+        <span class="macro">assert_eq!</span>(<span class="string">"127.0.0.1:3001"</span>.to_string(), options.rpc_addr);
         <span class="macro">assert_eq!</span>(<span class="prelude-val">Some</span>(<span class="number">42</span>), options.node_id);
 
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;/other/wal&quot;</span>, options.wal.dir.unwrap());
-        <span class="macro">assert_eq!</span>(Duration::from_secs(<span class="number">600</span>), options.wal.purge_interval);
-        <span class="macro">assert_eq!</span>(<span class="number">1024 </span>* <span class="number">1024 </span>* <span class="number">1024</span>, options.wal.file_size.<span class="number">0</span>);
-        <span class="macro">assert_eq!</span>(<span class="number">1024 </span>* <span class="number">1024 </span>* <span class="number">1024 </span>* <span class="number">50</span>, options.wal.purge_threshold.<span class="number">0</span>);
-        <span class="macro">assert!</span>(!options.wal.sync_write);
+        <span class="kw">let </span>WalConfig::RaftEngine(raft_engine_config) = options.wal <span class="kw">else </span>{
+            <span class="macro">unreachable!</span>()
+        };
+        <span class="macro">assert_eq!</span>(<span class="string">"/other/wal"</span>, raft_engine_config.dir.unwrap());
+        <span class="macro">assert_eq!</span>(Duration::from_secs(<span class="number">600</span>), raft_engine_config.purge_interval);
+        <span class="macro">assert_eq!</span>(<span class="number">1024 </span>* <span class="number">1024 </span>* <span class="number">1024</span>, raft_engine_config.file_size.<span class="number">0</span>);
+        <span class="macro">assert_eq!</span>(
+            <span class="number">1024 </span>* <span class="number">1024 </span>* <span class="number">1024 </span>* <span class="number">50</span>,
+            raft_engine_config.purge_threshold.<span class="number">0
+        </span>);
+        <span class="macro">assert!</span>(!raft_engine_config.sync_write);
+
+        <span class="kw">let </span>HeartbeatOptions {
+            interval: heart_beat_interval,
+            ..
+        } = options.heartbeat;
+
+        <span class="macro">assert_eq!</span>(<span class="number">300</span>, heart_beat_interval.as_millis());
 
         <span class="kw">let </span>MetaClientOptions {
             metasrv_addrs: metasrv_addr,
-            timeout_millis,
-            connect_timeout_millis,
+            timeout,
+            connect_timeout,
+            ddl_timeout,
             tcp_nodelay,
-            ddl_timeout_millis,
-        } = options.meta_client_options.unwrap();
+            ..
+        } = options.meta_client.unwrap();
 
-        <span class="macro">assert_eq!</span>(<span class="macro">vec!</span>[<span class="string">&quot;127.0.0.1:3002&quot;</span>.to_string()], metasrv_addr);
-        <span class="macro">assert_eq!</span>(<span class="number">5000</span>, connect_timeout_millis);
-        <span class="macro">assert_eq!</span>(<span class="number">10000</span>, ddl_timeout_millis);
-        <span class="macro">assert_eq!</span>(<span class="number">3000</span>, timeout_millis);
+        <span class="macro">assert_eq!</span>(<span class="macro">vec!</span>[<span class="string">"127.0.0.1:3002"</span>.to_string()], metasrv_addr);
+        <span class="macro">assert_eq!</span>(<span class="number">5000</span>, connect_timeout.as_millis());
+        <span class="macro">assert_eq!</span>(<span class="number">10000</span>, ddl_timeout.as_millis());
+        <span class="macro">assert_eq!</span>(<span class="number">3000</span>, timeout.as_millis());
         <span class="macro">assert!</span>(tcp_nodelay);
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;/tmp/greptimedb/&quot;</span>, options.storage.data_home);
+        <span class="macro">assert_eq!</span>(<span class="string">"/tmp/greptimedb/"</span>, options.storage.data_home);
         <span class="macro">assert!</span>(<span class="macro">matches!</span>(
             <span class="kw-2">&amp;</span>options.storage.store,
             ObjectStoreConfig::File(FileConfig { .. })
         ));
+        <span class="macro">assert_eq!</span>(options.storage.providers.len(), <span class="number">2</span>);
+        <span class="macro">assert!</span>(<span class="macro">matches!</span>(
+            options.storage.providers[<span class="number">0</span>],
+            ObjectStoreConfig::Gcs(GcsConfig { .. })
+        ));
+        <span class="macro">assert!</span>(<span class="macro">matches!</span>(
+            options.storage.providers[<span class="number">1</span>],
+            ObjectStoreConfig::S3(S3Config { .. })
+        ));
 
-        <span class="macro">assert_eq!</span>(
-            CompactionConfig {
-                max_inflight_tasks: <span class="number">3</span>,
-                max_files_in_level0: <span class="number">7</span>,
-                max_purge_tasks: <span class="number">32</span>,
-                sst_write_buffer_size: ReadableSize::mb(<span class="number">8</span>),
-            },
-            options.storage.compaction,
-        );
-        <span class="macro">assert_eq!</span>(
-            RegionManifestConfig {
-                checkpoint_margin: <span class="prelude-val">Some</span>(<span class="number">9</span>),
-                gc_duration: <span class="prelude-val">Some</span>(Duration::from_secs(<span class="number">7</span>)),
-                checkpoint_on_startup: <span class="bool-val">true</span>,
-                compress: <span class="bool-val">true
-            </span>},
-            options.storage.manifest,
-        );
-
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;debug&quot;</span>, options.logging.level.unwrap());
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;/tmp/greptimedb/test/logs&quot;</span>.to_string(), options.logging.dir);
+        <span class="macro">assert_eq!</span>(<span class="string">"debug"</span>, options.logging.level.unwrap());
+        <span class="macro">assert_eq!</span>(<span class="string">"/tmp/greptimedb/test/logs"</span>.to_string(), options.logging.dir);
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_try_from_cmd() {
         <span class="kw">if let </span>Options::Datanode(opt) = StartCommand::default()
-            .load_options(TopLevelOptions::default())
+            .load_options(<span class="kw-2">&amp;</span>CliOptions::default())
             .unwrap()
         {
             <span class="macro">assert_eq!</span>(Mode::Standalone, opt.mode)
@@ -786,20 +894,20 @@
 
         <span class="kw">if let </span>Options::Datanode(opt) = (StartCommand {
             node_id: <span class="prelude-val">Some</span>(<span class="number">42</span>),
-            metasrv_addr: <span class="prelude-val">Some</span>(<span class="macro">vec!</span>[<span class="string">&quot;127.0.0.1:3002&quot;</span>.to_string()]),
+            metasrv_addr: <span class="prelude-val">Some</span>(<span class="macro">vec!</span>[<span class="string">"127.0.0.1:3002"</span>.to_string()]),
             ..Default::default()
         })
-        .load_options(TopLevelOptions::default())
+        .load_options(<span class="kw-2">&amp;</span>CliOptions::default())
         .unwrap()
         {
             <span class="macro">assert_eq!</span>(Mode::Distributed, opt.mode)
         }
 
         <span class="macro">assert!</span>((StartCommand {
-            metasrv_addr: <span class="prelude-val">Some</span>(<span class="macro">vec!</span>[<span class="string">&quot;127.0.0.1:3002&quot;</span>.to_string()]),
+            metasrv_addr: <span class="prelude-val">Some</span>(<span class="macro">vec!</span>[<span class="string">"127.0.0.1:3002"</span>.to_string()]),
             ..Default::default()
         })
-        .load_options(TopLevelOptions::default())
+        .load_options(<span class="kw-2">&amp;</span>CliOptions::default())
         .is_err());
 
         <span class="comment">// Providing node_id but leave metasrv_addr absent is ok since metasrv_addr has default value
@@ -807,145 +915,134 @@
             node_id: <span class="prelude-val">Some</span>(<span class="number">42</span>),
             ..Default::default()
         })
-        .load_options(TopLevelOptions::default())
+        .load_options(<span class="kw-2">&amp;</span>CliOptions::default())
         .is_ok());
     }
 
     <span class="attr">#[test]
-    </span><span class="kw">fn </span>test_top_level_options() {
+    </span><span class="kw">fn </span>test_load_log_options_from_cli() {
         <span class="kw">let </span>cmd = StartCommand::default();
 
         <span class="kw">let </span>options = cmd
-            .load_options(TopLevelOptions {
-                log_dir: <span class="prelude-val">Some</span>(<span class="string">&quot;/tmp/greptimedb/test/logs&quot;</span>.to_string()),
-                log_level: <span class="prelude-val">Some</span>(<span class="string">&quot;debug&quot;</span>.to_string()),
+            .load_options(<span class="kw-2">&amp;</span>CliOptions {
+                log_dir: <span class="prelude-val">Some</span>(<span class="string">"/tmp/greptimedb/test/logs"</span>.to_string()),
+                log_level: <span class="prelude-val">Some</span>(<span class="string">"debug"</span>.to_string()),
+
+                <span class="attr">#[cfg(feature = <span class="string">"tokio-console"</span>)]
+                </span>tokio_console_addr: <span class="prelude-val">None</span>,
             })
             .unwrap();
 
         <span class="kw">let </span>logging_opt = options.logging_options();
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;/tmp/greptimedb/test/logs&quot;</span>, logging_opt.dir);
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;debug&quot;</span>, logging_opt.level.as_ref().unwrap());
+        <span class="macro">assert_eq!</span>(<span class="string">"/tmp/greptimedb/test/logs"</span>, logging_opt.dir);
+        <span class="macro">assert_eq!</span>(<span class="string">"debug"</span>, logging_opt.level.as_ref().unwrap());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_config_precedence_order() {
         <span class="kw">let </span><span class="kw-2">mut </span>file = create_named_temp_file();
-        <span class="kw">let </span>toml_str = <span class="string">r#&quot;
-            mode = &quot;distributed&quot;
+        <span class="kw">let </span>toml_str = <span class="string">r#"
+            mode = "distributed"
             enable_memory_catalog = false
             node_id = 42
-            rpc_addr = &quot;127.0.0.1:3001&quot;
-            rpc_hostname = &quot;127.0.0.1&quot;
+            rpc_addr = "127.0.0.1:3001"
+            rpc_hostname = "127.0.0.1"
             rpc_runtime_size = 8
 
-            [meta_client_options]
-            timeout_millis = 3000
-            connect_timeout_millis = 5000
+            [meta_client]
+            timeout = "3s"
+            connect_timeout = "5s"
             tcp_nodelay = true
 
             [wal]
-            file_size = &quot;1GB&quot;
-            purge_threshold = &quot;50GB&quot;
-            purge_interval = &quot;10m&quot;
-            read_batch_size = 128
+            provider = "raft_engine"
+            file_size = "1GB"
+            purge_threshold = "50GB"
+            purge_interval = "5m"
             sync_write = false
 
             [storage]
-            type = &quot;File&quot;
-            data_home = &quot;/tmp/greptimedb/&quot;
-
-            [storage.compaction]
-            max_inflight_tasks = 3
-            max_files_in_level0 = 7
-            max_purge_tasks = 32
-
-            [storage.manifest]
-            checkpoint_on_startup = true
+            type = "File"
+            data_home = "/tmp/greptimedb/"
 
             [logging]
-            level = &quot;debug&quot;
-            dir = &quot;/tmp/greptimedb/test/logs&quot;
-        &quot;#</span>;
-        <span class="macro">write!</span>(file, <span class="string">&quot;{}&quot;</span>, toml_str).unwrap();
+            level = "debug"
+            dir = "/tmp/greptimedb/test/logs"
+        "#</span>;
+        <span class="macro">write!</span>(file, <span class="string">"{}"</span>, toml_str).unwrap();
 
-        <span class="kw">let </span>env_prefix = <span class="string">&quot;DATANODE_UT&quot;</span>;
+        <span class="kw">let </span>env_prefix = <span class="string">"DATANODE_UT"</span>;
         temp_env::with_vars(
             [
                 (
-                    <span class="comment">// storage.manifest.gc_duration = 9s
+                    <span class="comment">// wal.purge_interval = 1m
                     </span>[
                         env_prefix.to_string(),
-                        <span class="string">&quot;storage&quot;</span>.to_uppercase(),
-                        <span class="string">&quot;manifest&quot;</span>.to_uppercase(),
-                        <span class="string">&quot;gc_duration&quot;</span>.to_uppercase(),
+                        <span class="string">"wal"</span>.to_uppercase(),
+                        <span class="string">"purge_interval"</span>.to_uppercase(),
                     ]
                     .join(ENV_VAR_SEP),
-                    <span class="prelude-val">Some</span>(<span class="string">&quot;9s&quot;</span>),
+                    <span class="prelude-val">Some</span>(<span class="string">"1m"</span>),
                 ),
                 (
-                    <span class="comment">// storage.compaction.max_purge_tasks = 99
+                    <span class="comment">// wal.read_batch_size = 100
                     </span>[
                         env_prefix.to_string(),
-                        <span class="string">&quot;storage&quot;</span>.to_uppercase(),
-                        <span class="string">&quot;compaction&quot;</span>.to_uppercase(),
-                        <span class="string">&quot;max_purge_tasks&quot;</span>.to_uppercase(),
+                        <span class="string">"wal"</span>.to_uppercase(),
+                        <span class="string">"read_batch_size"</span>.to_uppercase(),
                     ]
                     .join(ENV_VAR_SEP),
-                    <span class="prelude-val">Some</span>(<span class="string">&quot;99&quot;</span>),
+                    <span class="prelude-val">Some</span>(<span class="string">"100"</span>),
                 ),
                 (
-                    <span class="comment">// meta_client_options.metasrv_addrs = 127.0.0.1:3001,127.0.0.1:3002,127.0.0.1:3003
+                    <span class="comment">// meta_client.metasrv_addrs = 127.0.0.1:3001,127.0.0.1:3002,127.0.0.1:3003
                     </span>[
                         env_prefix.to_string(),
-                        <span class="string">&quot;meta_client_options&quot;</span>.to_uppercase(),
-                        <span class="string">&quot;metasrv_addrs&quot;</span>.to_uppercase(),
+                        <span class="string">"meta_client"</span>.to_uppercase(),
+                        <span class="string">"metasrv_addrs"</span>.to_uppercase(),
                     ]
                     .join(ENV_VAR_SEP),
-                    <span class="prelude-val">Some</span>(<span class="string">&quot;127.0.0.1:3001,127.0.0.1:3002,127.0.0.1:3003&quot;</span>),
+                    <span class="prelude-val">Some</span>(<span class="string">"127.0.0.1:3001,127.0.0.1:3002,127.0.0.1:3003"</span>),
                 ),
             ],
             || {
                 <span class="kw">let </span>command = StartCommand {
                     config_file: <span class="prelude-val">Some</span>(file.path().to_str().unwrap().to_string()),
-                    wal_dir: <span class="prelude-val">Some</span>(<span class="string">&quot;/other/wal/dir&quot;</span>.to_string()),
+                    wal_dir: <span class="prelude-val">Some</span>(<span class="string">"/other/wal/dir"</span>.to_string()),
                     env_prefix: env_prefix.to_string(),
                     ..Default::default()
                 };
 
-                <span class="kw">let </span>Options::Datanode(opts) =
-                    command.load_options(TopLevelOptions::default()).unwrap()
+                <span class="kw">let </span>Options::Datanode(opts) = command.load_options(<span class="kw-2">&amp;</span>CliOptions::default()).unwrap()
                 <span class="kw">else </span>{
                     <span class="macro">unreachable!</span>()
                 };
 
                 <span class="comment">// Should be read from env, env &gt; default values.
-                </span><span class="macro">assert_eq!</span>(
-                    opts.storage.manifest.gc_duration,
-                    <span class="prelude-val">Some</span>(Duration::from_secs(<span class="number">9</span>))
-                );
+                </span><span class="kw">let </span>WalConfig::RaftEngine(raft_engine_config) = opts.wal <span class="kw">else </span>{
+                    <span class="macro">unreachable!</span>()
+                };
+                <span class="macro">assert_eq!</span>(raft_engine_config.read_batch_size, <span class="number">100</span>);
                 <span class="macro">assert_eq!</span>(
-                    opts.meta_client_options.unwrap().metasrv_addrs,
+                    opts.meta_client.unwrap().metasrv_addrs,
                     <span class="macro">vec!</span>[
-                        <span class="string">&quot;127.0.0.1:3001&quot;</span>.to_string(),
-                        <span class="string">&quot;127.0.0.1:3002&quot;</span>.to_string(),
-                        <span class="string">&quot;127.0.0.1:3003&quot;</span>.to_string()
+                        <span class="string">"127.0.0.1:3001"</span>.to_string(),
+                        <span class="string">"127.0.0.1:3002"</span>.to_string(),
+                        <span class="string">"127.0.0.1:3003"</span>.to_string()
                     ]
                 );
 
                 <span class="comment">// Should be read from config file, config file &gt; env &gt; default values.
-                </span><span class="macro">assert_eq!</span>(opts.storage.compaction.max_purge_tasks, <span class="number">32</span>);
+                </span><span class="macro">assert_eq!</span>(
+                    raft_engine_config.purge_interval,
+                    Duration::from_secs(<span class="number">60 </span>* <span class="number">5</span>)
+                );
 
                 <span class="comment">// Should be read from cli, cli &gt; config file &gt; env &gt; default values.
-                </span><span class="macro">assert_eq!</span>(opts.wal.dir.unwrap(), <span class="string">&quot;/other/wal/dir&quot;</span>);
+                </span><span class="macro">assert_eq!</span>(raft_engine_config.dir.unwrap(), <span class="string">"/other/wal/dir"</span>);
 
                 <span class="comment">// Should be default value.
-                </span><span class="macro">assert_eq!</span>(
-                    opts.storage.manifest.checkpoint_margin,
-                    DatanodeOptions::default()
-                        .storage
-                        .manifest
-                        .checkpoint_margin
-                );
+                </span><span class="macro">assert_eq!</span>(opts.http.addr, DatanodeOptions::default().http.addr);
             },
         );
     }

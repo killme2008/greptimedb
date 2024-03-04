@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/script/src/python/rspython/copr_impl.rs`."><title>copr_impl.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="script" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../script/index.html"><img class="rust-logo" src="../../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/script/src/python/rspython/copr_impl.rs`."><title>copr_impl.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="script" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -229,14 +230,14 @@
 <a href="#229" id="229">229</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -247,7 +248,7 @@
 <span class="kw">use </span>std::result::Result <span class="kw">as </span>StdResult;
 
 <span class="kw">use </span>common_recordbatch::RecordBatch;
-<span class="kw">use </span>common_telemetry::{info, timer};
+<span class="kw">use </span>common_telemetry::info;
 <span class="kw">use </span>datatypes::vectors::VectorRef;
 <span class="kw">use </span>rustpython_vm::builtins::{PyBaseExceptionRef, PyDict, PyStr, PyTuple};
 <span class="kw">use </span>rustpython_vm::class::PyClassImpl;
@@ -274,7 +275,7 @@
     rb: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;RecordBatch&gt;,
     params: <span class="kw-2">&amp;</span>HashMap&lt;String, String&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;RecordBatch&gt; {
-    <span class="kw">let </span>_t = <span class="macro">timer!</span>(metric::METRIC_RSPY_EXEC_TOTAL_ELAPSED);
+    <span class="kw">let </span>_t = metric::METRIC_RSPY_EXEC_TOTAL_ELAPSED.start_timer();
     <span class="comment">// 3. get args from `rb`, and cast them into PyVector
     </span><span class="kw">let </span>args: Vec&lt;PyVector&gt; = <span class="kw">if let </span><span class="prelude-val">Some</span>(rb) = rb {
         <span class="kw">let </span>arg_names = copr.deco_args.arg_names.clone().unwrap_or_default();
@@ -331,12 +332,12 @@
     vm: <span class="kw-2">&amp;</span>Rc&lt;Interpreter&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;RecordBatch&gt; {
     vm.enter(|vm| -&gt; <span class="prelude-ty">Result</span>&lt;RecordBatch&gt; {
-        <span class="kw">let </span>_t = <span class="macro">timer!</span>(metric::METRIC_RSPY_EXEC_ELAPSED);
+        <span class="kw">let </span>_t = metric::METRIC_RSPY_EXEC_ELAPSED.start_timer();
 
         <span class="comment">// set arguments with given name and values
         </span><span class="kw">let </span>scope = vm.new_scope_with_builtins();
         <span class="kw">if let </span><span class="prelude-val">Some</span>(rb) = rb {
-            set_dataframe_in_scope(<span class="kw-2">&amp;</span>scope, vm, <span class="string">&quot;__dataframe__&quot;</span>, rb)<span class="question-mark">?</span>;
+            set_dataframe_in_scope(<span class="kw-2">&amp;</span>scope, vm, <span class="string">"__dataframe__"</span>, rb)<span class="question-mark">?</span>;
         }
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(arg_names) = <span class="kw-2">&amp;</span>copr.deco_args.arg_names {
@@ -348,7 +349,7 @@
             <span class="kw">let </span>query_engine = PyQueryEngine::from_weakref(engine.clone());
 
             <span class="comment">// put a object named with query of class PyQueryEngine in scope
-            </span>set_query_engine_in_scope(<span class="kw-2">&amp;</span>scope, vm, <span class="string">&quot;__query__&quot;</span>, query_engine)<span class="question-mark">?</span>;
+            </span>set_query_engine_in_scope(<span class="kw-2">&amp;</span>scope, vm, <span class="string">"__query__"</span>, query_engine)<span class="question-mark">?</span>;
         }
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(kwarg) = <span class="kw-2">&amp;</span>copr.kwarg {
@@ -364,7 +365,7 @@
                 .map_err(|e| format_py_error(e, vm))<span class="question-mark">?</span>;
         }
 
-        <span class="comment">// It&#39;s safe to unwrap code_object, it&#39;s already compiled before.
+        <span class="comment">// It's safe to unwrap code_object, it's already compiled before.
         </span><span class="kw">let </span>code_obj = vm.ctx.new_code(copr.code_obj.clone().unwrap());
         <span class="kw">let </span>ret = vm
             .run_code_obj(code_obj, scope)
@@ -377,14 +378,14 @@
             cols.len() == copr.deco_args.ret_names.len(),
             OtherSnafu {
                 reason: <span class="macro">format!</span>(
-                    <span class="string">&quot;The number of return Vector is wrong, expect {}, found {}&quot;</span>,
+                    <span class="string">"The number of return Vector is wrong, expect {}, found {}"</span>,
                     copr.deco_args.ret_names.len(),
                     cols.len()
                 )
             }
         );
 
-        <span class="comment">// if cols and schema&#39;s data types is not match, try coerce it to given type(if annotated)(if error occur, return relevant error with question mark)
+        <span class="comment">// if cols and schema's data types is not match, try coerce it to given type(if annotated)(if error occur, return relevant error with question mark)
         </span>copr.check_and_cast_type(<span class="kw-2">&amp;mut </span>cols)<span class="question-mark">?</span>;
 
         <span class="comment">// 6. return a assembled DfRecordBatch
@@ -404,7 +405,7 @@
     <span class="kw">if </span>is_instance::&lt;PyTuple&gt;(obj, vm) {
         <span class="kw">let </span>tuple = obj
             .payload::&lt;PyTuple&gt;()
-            .with_context(|| ret_other_error_with(<span class="macro">format!</span>(<span class="string">&quot;can&#39;t cast obj {obj:?} to PyTuple)&quot;</span>)))<span class="question-mark">?</span>;
+            .with_context(|| ret_other_error_with(<span class="macro">format!</span>(<span class="string">"can't cast obj {obj:?} to PyTuple)"</span>)))<span class="question-mark">?</span>;
         <span class="kw">let </span>cols = tuple
             .iter()
             .map(|obj| py_obj_to_vec(obj, vm, col_len))
@@ -418,15 +419,15 @@
 
 <span class="doccomment">/// init interpreter with type PyVector and Module: greptime
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>init_interpreter() -&gt; Rc&lt;Interpreter&gt; {
-    <span class="kw">let </span>_t = <span class="macro">timer!</span>(metric::METRIC_RSPY_INIT_ELAPSED);
+    <span class="kw">let </span>_t = metric::METRIC_RSPY_INIT_ELAPSED.start_timer();
     INTERPRETER.with(|i| {
         i.borrow_mut()
             .get_or_insert_with(|| {
                 <span class="comment">// we limit stdlib imports for safety reason, i.e `fcntl` is not allowed here
                 </span><span class="kw">let </span>native_module_allow_list = HashSet::from([
-                    <span class="string">&quot;array&quot;</span>, <span class="string">&quot;cmath&quot;</span>, <span class="string">&quot;gc&quot;</span>, <span class="string">&quot;hashlib&quot;</span>, <span class="string">&quot;_json&quot;</span>, <span class="string">&quot;_random&quot;</span>, <span class="string">&quot;math&quot;</span>,
+                    <span class="string">"array"</span>, <span class="string">"cmath"</span>, <span class="string">"gc"</span>, <span class="string">"hashlib"</span>, <span class="string">"_json"</span>, <span class="string">"_random"</span>, <span class="string">"math"</span>,
                 ]);
-                <span class="comment">// edge cases, can&#39;t use &quot;..Default::default&quot; because Settings is `#[non_exhaustive]`
+                <span class="comment">// edge cases, can't use "..Default::default" because Settings is `#[non_exhaustive]`
                 // so more in here: https://internals.rust-lang.org/t/allow-constructing-non-exhaustive-structs-using-default-default/13868
                 </span><span class="kw">let </span><span class="kw-2">mut </span>settings = vm::Settings::default();
                 <span class="comment">// disable SIG_INT handler so our own binary can take ctrl_c handler
@@ -441,16 +442,16 @@
                     <span class="comment">// We are freezing the stdlib to include the standard library inside the binary.
                     // so according to this issue:
                     // https://github.com/RustPython/RustPython/issues/4292
-                    // add this line for stdlib, so rustpython can found stdlib&#39;s python part in bytecode format
+                    // add this line for stdlib, so rustpython can found stdlib's python part in bytecode format
                     </span>vm.add_frozen(rustpython_pylib::FROZEN_STDLIB);
                     <span class="comment">// add our own custom datatype and module
                     </span><span class="kw">let _ </span>= PyVector::make_class(<span class="kw-2">&amp;</span>vm.ctx);
                     <span class="kw">let _ </span>= PyQueryEngine::make_class(<span class="kw-2">&amp;</span>vm.ctx);
                     <span class="kw">let _ </span>= PyRecordBatch::make_class(<span class="kw-2">&amp;</span>vm.ctx);
-                    init_greptime_builtins(<span class="string">&quot;greptime&quot;</span>, vm);
-                    init_data_frame(<span class="string">&quot;data_frame&quot;</span>, vm);
+                    init_greptime_builtins(<span class="string">"greptime"</span>, vm);
+                    init_data_frame(<span class="string">"data_frame"</span>, vm);
                 }));
-                <span class="macro">info!</span>(<span class="string">&quot;Initialized Python interpreter.&quot;</span>);
+                <span class="macro">info!</span>(<span class="string">"Initialized Python interpreter."</span>);
                 interpreter
             })
             .clone()

@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/meta-srv/src/metasrv/builder.rs`."><title>builder.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="meta_srv" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../meta_srv/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/meta-srv/src/metasrv/builder.rs`."><title>builder.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="meta_srv" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -357,77 +358,151 @@
 <a href="#357" id="357">357</a>
 <a href="#358" id="358">358</a>
 <a href="#359" id="359">359</a>
+<a href="#360" id="360">360</a>
+<a href="#361" id="361">361</a>
+<a href="#362" id="362">362</a>
+<a href="#363" id="363">363</a>
+<a href="#364" id="364">364</a>
+<a href="#365" id="365">365</a>
+<a href="#366" id="366">366</a>
+<a href="#367" id="367">367</a>
+<a href="#368" id="368">368</a>
+<a href="#369" id="369">369</a>
+<a href="#370" id="370">370</a>
+<a href="#371" id="371">371</a>
+<a href="#372" id="372">372</a>
+<a href="#373" id="373">373</a>
+<a href="#374" id="374">374</a>
+<a href="#375" id="375">375</a>
+<a href="#376" id="376">376</a>
+<a href="#377" id="377">377</a>
+<a href="#378" id="378">378</a>
+<a href="#379" id="379">379</a>
+<a href="#380" id="380">380</a>
+<a href="#381" id="381">381</a>
+<a href="#382" id="382">382</a>
+<a href="#383" id="383">383</a>
+<a href="#384" id="384">384</a>
+<a href="#385" id="385">385</a>
+<a href="#386" id="386">386</a>
+<a href="#387" id="387">387</a>
+<a href="#388" id="388">388</a>
+<a href="#389" id="389">389</a>
+<a href="#390" id="390">390</a>
+<a href="#391" id="391">391</a>
+<a href="#392" id="392">392</a>
+<a href="#393" id="393">393</a>
+<a href="#394" id="394">394</a>
+<a href="#395" id="395">395</a>
+<a href="#396" id="396">396</a>
+<a href="#397" id="397">397</a>
+<a href="#398" id="398">398</a>
+<a href="#399" id="399">399</a>
+<a href="#400" id="400">400</a>
+<a href="#401" id="401">401</a>
+<a href="#402" id="402">402</a>
+<a href="#403" id="403">403</a>
+<a href="#404" id="404">404</a>
+<a href="#405" id="405">405</a>
+<a href="#406" id="406">406</a>
+<a href="#407" id="407">407</a>
+<a href="#408" id="408">408</a>
+<a href="#409" id="409">409</a>
+<a href="#410" id="410">410</a>
+<a href="#411" id="411">411</a>
+<a href="#412" id="412">412</a>
+<a href="#413" id="413">413</a>
+<a href="#414" id="414">414</a>
+<a href="#415" id="415">415</a>
+<a href="#416" id="416">416</a>
+<a href="#417" id="417">417</a>
+<a href="#418" id="418">418</a>
+<a href="#419" id="419">419</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
 </span><span class="kw">use </span>std::sync::atomic::AtomicBool;
-<span class="kw">use </span>std::sync::Arc;
+<span class="kw">use </span>std::sync::{Arc, RwLock};
 <span class="kw">use </span>std::time::Duration;
 
 <span class="kw">use </span>client::client_manager::DatanodeClients;
+<span class="kw">use </span>common_base::Plugins;
+<span class="kw">use </span>common_catalog::consts::MIN_USER_TABLE_ID;
 <span class="kw">use </span>common_grpc::channel_manager::ChannelConfig;
+<span class="kw">use </span>common_meta::datanode_manager::DatanodeManagerRef;
+<span class="kw">use </span>common_meta::ddl::TableMetadataAllocatorRef;
+<span class="kw">use </span>common_meta::ddl_manager::{DdlManager, DdlManagerRef};
+<span class="kw">use </span>common_meta::distributed_time_constants;
 <span class="kw">use </span>common_meta::key::{TableMetadataManager, TableMetadataManagerRef};
+<span class="kw">use </span>common_meta::kv_backend::memory::MemoryKvBackend;
+<span class="kw">use </span>common_meta::kv_backend::{KvBackendRef, ResettableKvBackendRef};
+<span class="kw">use </span>common_meta::region_keeper::{MemoryRegionKeeper, MemoryRegionKeeperRef};
+<span class="kw">use </span>common_meta::sequence::SequenceBuilder;
+<span class="kw">use </span>common_meta::state_store::KvStateStore;
+<span class="kw">use </span>common_meta::wal::WalOptionsAllocator;
 <span class="kw">use </span>common_procedure::local::{LocalManager, ManagerConfig};
 <span class="kw">use </span>common_procedure::ProcedureManagerRef;
+<span class="kw">use </span>snafu::ResultExt;
 
+<span class="kw">use </span><span class="kw">crate</span>::cache_invalidator::MetasrvCacheInvalidator;
 <span class="kw">use </span><span class="kw">crate</span>::cluster::{MetaPeerClientBuilder, MetaPeerClientRef};
-<span class="kw">use </span><span class="kw">crate</span>::ddl::{DdlManager, DdlManagerRef};
-<span class="kw">use </span><span class="kw">crate</span>::error::Result;
+<span class="kw">use </span><span class="kw">crate</span>::error::{<span class="self">self</span>, <span class="prelude-ty">Result</span>};
 <span class="kw">use </span><span class="kw">crate</span>::greptimedb_telemetry::get_greptimedb_telemetry_task;
+<span class="kw">use </span><span class="kw">crate</span>::handler::check_leader_handler::CheckLeaderHandler;
+<span class="kw">use </span><span class="kw">crate</span>::handler::collect_stats_handler::CollectStatsHandler;
+<span class="kw">use </span><span class="kw">crate</span>::handler::failure_handler::RegionFailureHandler;
+<span class="kw">use </span><span class="kw">crate</span>::handler::filter_inactive_region_stats::FilterInactiveRegionStatsHandler;
+<span class="kw">use </span><span class="kw">crate</span>::handler::keep_lease_handler::KeepLeaseHandler;
 <span class="kw">use </span><span class="kw">crate</span>::handler::mailbox_handler::MailboxHandler;
+<span class="kw">use </span><span class="kw">crate</span>::handler::on_leader_start_handler::OnLeaderStartHandler;
+<span class="kw">use </span><span class="kw">crate</span>::handler::persist_stats_handler::PersistStatsHandler;
 <span class="kw">use </span><span class="kw">crate</span>::handler::publish_heartbeat_handler::PublishHeartbeatHandler;
 <span class="kw">use </span><span class="kw">crate</span>::handler::region_lease_handler::RegionLeaseHandler;
-<span class="kw">use </span><span class="kw">crate</span>::handler::{
-    CheckLeaderHandler, CollectStatsHandler, HeartbeatHandlerGroup, HeartbeatMailbox,
-    KeepLeaseHandler, OnLeaderStartHandler, PersistStatsHandler, Pushers, RegionFailureHandler,
-    ResponseHeaderHandler,
-};
+<span class="kw">use </span><span class="kw">crate</span>::handler::response_header_handler::ResponseHeaderHandler;
+<span class="kw">use </span><span class="kw">crate</span>::handler::{HeartbeatHandlerGroup, HeartbeatMailbox, Pushers};
 <span class="kw">use </span><span class="kw">crate</span>::lock::memory::MemLock;
 <span class="kw">use </span><span class="kw">crate</span>::lock::DistLockRef;
-<span class="kw">use </span><span class="kw">crate</span>::metadata_service::{DefaultMetadataService, MetadataServiceRef};
 <span class="kw">use </span><span class="kw">crate</span>::metasrv::{
-    ElectionRef, MetaSrv, MetaSrvOptions, SelectorContext, SelectorRef, TABLE_ID_SEQ,
+    ElectionRef, MetaSrv, MetaSrvOptions, MetasrvInfo, SelectorContext, SelectorRef, TABLE_ID_SEQ,
 };
 <span class="kw">use </span><span class="kw">crate</span>::procedure::region_failover::RegionFailoverManager;
-<span class="kw">use </span><span class="kw">crate</span>::procedure::state_store::MetaStateStore;
-<span class="kw">use </span><span class="kw">crate</span>::pubsub::{PublishRef, SubscribeManagerRef};
+<span class="kw">use </span><span class="kw">crate</span>::pubsub::PublishRef;
 <span class="kw">use </span><span class="kw">crate</span>::selector::lease_based::LeaseBasedSelector;
-<span class="kw">use </span><span class="kw">crate</span>::sequence::Sequence;
 <span class="kw">use </span><span class="kw">crate</span>::service::mailbox::MailboxRef;
-<span class="kw">use </span><span class="kw">crate</span>::service::store::cached_kv::{CheckLeader, LeaderCachedKvStore};
-<span class="kw">use </span><span class="kw">crate</span>::service::store::kv::{KvBackendAdapter, KvStoreRef, ResettableKvStoreRef};
-<span class="kw">use </span><span class="kw">crate</span>::service::store::memory::MemStore;
+<span class="kw">use </span><span class="kw">crate</span>::service::store::cached_kv::{CheckLeader, LeaderCachedKvBackend};
+<span class="kw">use </span><span class="kw">crate</span>::state::State;
+<span class="kw">use </span><span class="kw">crate</span>::table_meta_alloc::MetaSrvTableMetadataAllocator;
 
 <span class="comment">// TODO(fys): try use derive_builder macro
 </span><span class="kw">pub struct </span>MetaSrvBuilder {
     options: <span class="prelude-ty">Option</span>&lt;MetaSrvOptions&gt;,
-    kv_store: <span class="prelude-ty">Option</span>&lt;KvStoreRef&gt;,
-    in_memory: <span class="prelude-ty">Option</span>&lt;ResettableKvStoreRef&gt;,
+    kv_backend: <span class="prelude-ty">Option</span>&lt;KvBackendRef&gt;,
+    in_memory: <span class="prelude-ty">Option</span>&lt;ResettableKvBackendRef&gt;,
     selector: <span class="prelude-ty">Option</span>&lt;SelectorRef&gt;,
     handler_group: <span class="prelude-ty">Option</span>&lt;HeartbeatHandlerGroup&gt;,
     election: <span class="prelude-ty">Option</span>&lt;ElectionRef&gt;,
     meta_peer_client: <span class="prelude-ty">Option</span>&lt;MetaPeerClientRef&gt;,
     lock: <span class="prelude-ty">Option</span>&lt;DistLockRef&gt;,
-    metadata_service: <span class="prelude-ty">Option</span>&lt;MetadataServiceRef&gt;,
-    datanode_clients: <span class="prelude-ty">Option</span>&lt;Arc&lt;DatanodeClients&gt;&gt;,
-    pubsub: <span class="prelude-ty">Option</span>&lt;(PublishRef, SubscribeManagerRef)&gt;,
+    datanode_manager: <span class="prelude-ty">Option</span>&lt;DatanodeManagerRef&gt;,
+    plugins: <span class="prelude-ty">Option</span>&lt;Plugins&gt;,
+    table_metadata_allocator: <span class="prelude-ty">Option</span>&lt;TableMetadataAllocatorRef&gt;,
 }
 
 <span class="kw">impl </span>MetaSrvBuilder {
     <span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            kv_store: <span class="prelude-val">None</span>,
+            kv_backend: <span class="prelude-val">None</span>,
             in_memory: <span class="prelude-val">None</span>,
             selector: <span class="prelude-val">None</span>,
             handler_group: <span class="prelude-val">None</span>,
@@ -435,9 +510,9 @@
             election: <span class="prelude-val">None</span>,
             options: <span class="prelude-val">None</span>,
             lock: <span class="prelude-val">None</span>,
-            metadata_service: <span class="prelude-val">None</span>,
-            datanode_clients: <span class="prelude-val">None</span>,
-            pubsub: <span class="prelude-val">None</span>,
+            datanode_manager: <span class="prelude-val">None</span>,
+            plugins: <span class="prelude-val">None</span>,
+            table_metadata_allocator: <span class="prelude-val">None</span>,
         }
     }
 
@@ -446,12 +521,12 @@
         <span class="self">self
     </span>}
 
-    <span class="kw">pub fn </span>kv_store(<span class="kw-2">mut </span><span class="self">self</span>, kv_store: KvStoreRef) -&gt; <span class="self">Self </span>{
-        <span class="self">self</span>.kv_store = <span class="prelude-val">Some</span>(kv_store);
+    <span class="kw">pub fn </span>kv_backend(<span class="kw-2">mut </span><span class="self">self</span>, kv_backend: KvBackendRef) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.kv_backend = <span class="prelude-val">Some</span>(kv_backend);
         <span class="self">self
     </span>}
 
-    <span class="kw">pub fn </span>in_memory(<span class="kw-2">mut </span><span class="self">self</span>, in_memory: ResettableKvStoreRef) -&gt; <span class="self">Self </span>{
+    <span class="kw">pub fn </span>in_memory(<span class="kw-2">mut </span><span class="self">self</span>, in_memory: ResettableKvBackendRef) -&gt; <span class="self">Self </span>{
         <span class="self">self</span>.in_memory = <span class="prelude-val">Some</span>(in_memory);
         <span class="self">self
     </span>}
@@ -481,18 +556,21 @@
         <span class="self">self
     </span>}
 
-    <span class="kw">pub fn </span>metadata_service(<span class="kw-2">mut </span><span class="self">self</span>, metadata_service: MetadataServiceRef) -&gt; <span class="self">Self </span>{
-        <span class="self">self</span>.metadata_service = <span class="prelude-val">Some</span>(metadata_service);
+    <span class="kw">pub fn </span>datanode_manager(<span class="kw-2">mut </span><span class="self">self</span>, datanode_manager: DatanodeManagerRef) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.datanode_manager = <span class="prelude-val">Some</span>(datanode_manager);
         <span class="self">self
     </span>}
 
-    <span class="kw">pub fn </span>datanode_clients(<span class="kw-2">mut </span><span class="self">self</span>, clients: Arc&lt;DatanodeClients&gt;) -&gt; <span class="self">Self </span>{
-        <span class="self">self</span>.datanode_clients = <span class="prelude-val">Some</span>(clients);
+    <span class="kw">pub fn </span>plugins(<span class="kw-2">mut </span><span class="self">self</span>, plugins: Plugins) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.plugins = <span class="prelude-val">Some</span>(plugins);
         <span class="self">self
     </span>}
 
-    <span class="kw">pub fn </span>pubsub(<span class="kw-2">mut </span><span class="self">self</span>, publish: PublishRef, subscribe_manager: SubscribeManagerRef) -&gt; <span class="self">Self </span>{
-        <span class="self">self</span>.pubsub = <span class="prelude-val">Some</span>((publish, subscribe_manager));
+    <span class="kw">pub fn </span>table_metadata_allocator(
+        <span class="kw-2">mut </span><span class="self">self</span>,
+        table_metadata_allocator: TableMetadataAllocatorRef,
+    ) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.table_metadata_allocator = <span class="prelude-val">Some</span>(table_metadata_allocator);
         <span class="self">self
     </span>}
 
@@ -503,74 +581,116 @@
             election,
             meta_peer_client,
             options,
-            kv_store,
+            kv_backend,
             in_memory,
             selector,
             handler_group,
             lock,
-            metadata_service,
-            datanode_clients,
-            pubsub,
+            datanode_manager,
+            plugins,
+            table_metadata_allocator,
         } = <span class="self">self</span>;
 
         <span class="kw">let </span>options = options.unwrap_or_default();
 
-        <span class="kw">let </span>kv_store = kv_store.unwrap_or_else(|| Arc::new(MemStore::default()));
-        <span class="kw">let </span>in_memory = in_memory.unwrap_or_else(|| Arc::new(MemStore::default()));
-        <span class="kw">let </span>leader_cached_kv_store = build_leader_cached_kv_store(<span class="kw-2">&amp;</span>election, <span class="kw-2">&amp;</span>kv_store);
+        <span class="kw">let </span>kv_backend = kv_backend.unwrap_or_else(|| Arc::new(MemoryKvBackend::new()));
+        <span class="kw">let </span>in_memory = in_memory.unwrap_or_else(|| Arc::new(MemoryKvBackend::new()));
+
+        <span class="kw">let </span>state = Arc::new(RwLock::new(<span class="kw">match </span>election {
+            <span class="prelude-val">None </span>=&gt; State::leader(options.server_addr.to_string(), <span class="bool-val">true</span>),
+            <span class="prelude-val">Some</span>(<span class="kw">_</span>) =&gt; State::follower(options.server_addr.to_string()),
+        }));
+
+        <span class="kw">let </span>leader_cached_kv_backend = Arc::new(LeaderCachedKvBackend::new(
+            state.clone(),
+            kv_backend.clone(),
+        ));
+
         <span class="kw">let </span>meta_peer_client = meta_peer_client
             .unwrap_or_else(|| build_default_meta_peer_client(<span class="kw-2">&amp;</span>election, <span class="kw-2">&amp;</span>in_memory));
         <span class="kw">let </span>selector = selector.unwrap_or_else(|| Arc::new(LeaseBasedSelector));
         <span class="kw">let </span>pushers = Pushers::default();
-        <span class="kw">let </span>mailbox = build_mailbox(<span class="kw-2">&amp;</span>kv_store, <span class="kw-2">&amp;</span>pushers);
-        <span class="kw">let </span>procedure_manager = build_procedure_manager(<span class="kw-2">&amp;</span>options, <span class="kw-2">&amp;</span>kv_store);
-        <span class="kw">let </span>table_id_sequence = Arc::new(Sequence::new(TABLE_ID_SEQ, <span class="number">1024</span>, <span class="number">10</span>, kv_store.clone()));
-        <span class="kw">let </span>table_metadata_manager = Arc::new(TableMetadataManager::new(KvBackendAdapter::wrap(
-            kv_store.clone(),
-        )));
-        <span class="kw">let </span>metadata_service = metadata_service
-            .unwrap_or_else(|| Arc::new(DefaultMetadataService::new(table_metadata_manager)));
+        <span class="kw">let </span>mailbox = build_mailbox(<span class="kw-2">&amp;</span>kv_backend, <span class="kw-2">&amp;</span>pushers);
+        <span class="kw">let </span>procedure_manager = build_procedure_manager(<span class="kw-2">&amp;</span>options, <span class="kw-2">&amp;</span>kv_backend);
+
+        <span class="kw">let </span>table_metadata_manager = Arc::new(TableMetadataManager::new(
+            leader_cached_kv_backend.clone() <span class="kw">as _</span>,
+        ));
         <span class="kw">let </span>lock = lock.unwrap_or_else(|| Arc::new(MemLock::default()));
-        <span class="kw">let </span>table_metadata_manager = build_table_metadata_manager(<span class="kw-2">&amp;</span>kv_store);
+        <span class="kw">let </span>selector_ctx = SelectorContext {
+            server_addr: options.server_addr.clone(),
+            datanode_lease_secs: distributed_time_constants::DATANODE_LEASE_SECS,
+            kv_backend: kv_backend.clone(),
+            meta_peer_client: meta_peer_client.clone(),
+            table_id: <span class="prelude-val">None</span>,
+        };
+
+        <span class="kw">let </span>wal_options_allocator = Arc::new(WalOptionsAllocator::new(
+            options.wal.clone(),
+            kv_backend.clone(),
+        ));
+        <span class="kw">let </span>table_metadata_allocator = table_metadata_allocator.unwrap_or_else(|| {
+            <span class="kw">let </span>sequence = Arc::new(
+                SequenceBuilder::new(TABLE_ID_SEQ, kv_backend.clone())
+                    .initial(MIN_USER_TABLE_ID <span class="kw">as </span>u64)
+                    .step(<span class="number">10</span>)
+                    .build(),
+            );
+            Arc::new(MetaSrvTableMetadataAllocator::new(
+                selector_ctx.clone(),
+                selector.clone(),
+                sequence.clone(),
+                wal_options_allocator.clone(),
+            ))
+        });
+
+        <span class="kw">let </span>opening_region_keeper = Arc::new(MemoryRegionKeeper::default());
+
         <span class="kw">let </span>ddl_manager = build_ddl_manager(
             <span class="kw-2">&amp;</span>options,
-            datanode_clients,
+            datanode_manager,
             <span class="kw-2">&amp;</span>procedure_manager,
-            <span class="kw-2">&amp;</span>kv_store,
             <span class="kw-2">&amp;</span>mailbox,
             <span class="kw-2">&amp;</span>table_metadata_manager,
-        );
-        <span class="kw">let _ </span>= ddl_manager.try_start();
+            table_metadata_allocator,
+            <span class="kw-2">&amp;</span>opening_region_keeper,
+        )<span class="question-mark">?</span>;
 
         <span class="kw">let </span>handler_group = <span class="kw">match </span>handler_group {
             <span class="prelude-val">Some</span>(handler_group) =&gt; handler_group,
             <span class="prelude-val">None </span>=&gt; {
-                <span class="kw">let </span>region_failover_handler = <span class="kw">if </span>options.disable_region_failover {
-                    <span class="prelude-val">None
-                </span>} <span class="kw">else </span>{
-                    <span class="kw">let </span>select_ctx = SelectorContext {
-                        server_addr: options.server_addr.clone(),
-                        datanode_lease_secs: options.datanode_lease_secs,
-                        kv_store: kv_store.clone(),
-                        meta_peer_client: meta_peer_client.clone(),
-                        catalog: <span class="prelude-val">None</span>,
-                        schema: <span class="prelude-val">None</span>,
-                        table: <span class="prelude-val">None</span>,
-                    };
+                <span class="kw">let </span>region_failover_handler = <span class="kw">if </span>options.enable_region_failover {
                     <span class="kw">let </span>region_failover_manager = Arc::new(RegionFailoverManager::new(
+                        distributed_time_constants::REGION_LEASE_SECS,
                         in_memory.clone(),
                         mailbox.clone(),
                         procedure_manager.clone(),
-                        selector.clone(),
-                        select_ctx,
+                        (selector.clone(), selector_ctx.clone()),
                         lock.clone(),
                         table_metadata_manager.clone(),
                     ));
                     <span class="prelude-val">Some</span>(
-                        RegionFailureHandler::try_new(election.clone(), region_failover_manager)
-                            .<span class="kw">await</span><span class="question-mark">?</span>,
+                        RegionFailureHandler::try_new(
+                            election.clone(),
+                            region_failover_manager,
+                            options.failure_detector.clone(),
+                        )
+                        .<span class="kw">await</span><span class="question-mark">?</span>,
                     )
-                };
+                } <span class="kw">else </span>{
+                    <span class="prelude-val">None
+                </span>};
+
+                <span class="kw">let </span>publish_heartbeat_handler = plugins
+                    .clone()
+                    .and_then(|plugins| plugins.get::&lt;PublishRef&gt;())
+                    .map(|publish| PublishHeartbeatHandler::new(publish.clone()));
+
+                <span class="kw">let </span>region_lease_handler = RegionLeaseHandler::new(
+                    distributed_time_constants::REGION_LEASE_SECS,
+                    table_metadata_manager.clone(),
+                    opening_region_keeper.clone(),
+                );
 
                 <span class="kw">let </span>group = HeartbeatHandlerGroup::new(pushers);
                 group.add_handler(ResponseHeaderHandler).<span class="kw">await</span>;
@@ -582,16 +702,15 @@
                 group.add_handler(OnLeaderStartHandler).<span class="kw">await</span>;
                 group.add_handler(CollectStatsHandler).<span class="kw">await</span>;
                 group.add_handler(MailboxHandler).<span class="kw">await</span>;
+                group.add_handler(region_lease_handler).<span class="kw">await</span>;
+                group.add_handler(FilterInactiveRegionStatsHandler).<span class="kw">await</span>;
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(region_failover_handler) = region_failover_handler {
                     group.add_handler(region_failover_handler).<span class="kw">await</span>;
                 }
-                group.add_handler(RegionLeaseHandler).<span class="kw">await</span>;
-                group.add_handler(PersistStatsHandler::default()).<span class="kw">await</span>;
-                <span class="kw">if let </span><span class="prelude-val">Some</span>((publish, <span class="kw">_</span>)) = pubsub.as_ref() {
-                    group
-                        .add_handler(PublishHeartbeatHandler::new(publish.clone()))
-                        .<span class="kw">await</span>;
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(publish_heartbeat_handler) = publish_heartbeat_handler {
+                    group.add_handler(publish_heartbeat_handler).<span class="kw">await</span>;
                 }
+                group.add_handler(PersistStatsHandler::default()).<span class="kw">await</span>;
                 group
             }
         };
@@ -600,21 +719,21 @@
         <span class="kw">let </span>metasrv_home = options.data_home.to_string();
 
         <span class="prelude-val">Ok</span>(MetaSrv {
+            state,
             started,
             options,
             in_memory,
-            kv_store,
-            leader_cached_kv_store,
+            kv_backend,
+            leader_cached_kv_backend,
             meta_peer_client: meta_peer_client.clone(),
-            table_id_sequence,
             selector,
             handler_group,
             election,
             lock,
             procedure_manager,
-            metadata_service,
             mailbox,
-            ddl_manager,
+            ddl_executor: ddl_manager,
+            wal_options_allocator,
             table_metadata_manager,
             greptimedb_telemetry_task: get_greptimedb_telemetry_task(
                 <span class="prelude-val">Some</span>(metasrv_home),
@@ -622,24 +741,15 @@
                 enable_telemetry,
             )
             .<span class="kw">await</span>,
-            pubsub,
+            plugins: plugins.unwrap_or_else(Plugins::default),
+            memory_region_keeper: opening_region_keeper,
         })
     }
 }
 
-<span class="kw">fn </span>build_leader_cached_kv_store(
-    election: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;ElectionRef&gt;,
-    kv_store: <span class="kw-2">&amp;</span>KvStoreRef,
-) -&gt; Arc&lt;LeaderCachedKvStore&gt; {
-    Arc::new(LeaderCachedKvStore::new(
-        Arc::new(CheckLeaderByElection(election.clone())),
-        kv_store.clone(),
-    ))
-}
-
 <span class="kw">fn </span>build_default_meta_peer_client(
     election: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;ElectionRef&gt;,
-    in_memory: <span class="kw-2">&amp;</span>ResettableKvStoreRef,
+    in_memory: <span class="kw-2">&amp;</span>ResettableKvBackendRef,
 ) -&gt; MetaPeerClientRef {
     MetaPeerClientBuilder::default()
         .election(election.clone())
@@ -650,35 +760,37 @@
         </span>.unwrap()
 }
 
-<span class="kw">fn </span>build_mailbox(kv_store: <span class="kw-2">&amp;</span>KvStoreRef, pushers: <span class="kw-2">&amp;</span>Pushers) -&gt; MailboxRef {
-    <span class="kw">let </span>mailbox_sequence = Sequence::new(<span class="string">&quot;heartbeat_mailbox&quot;</span>, <span class="number">1</span>, <span class="number">100</span>, kv_store.clone());
+<span class="kw">fn </span>build_mailbox(kv_backend: <span class="kw-2">&amp;</span>KvBackendRef, pushers: <span class="kw-2">&amp;</span>Pushers) -&gt; MailboxRef {
+    <span class="kw">let </span>mailbox_sequence = SequenceBuilder::new(<span class="string">"heartbeat_mailbox"</span>, kv_backend.clone())
+        .initial(<span class="number">1</span>)
+        .step(<span class="number">100</span>)
+        .build();
+
     HeartbeatMailbox::create(pushers.clone(), mailbox_sequence)
 }
 
-<span class="kw">fn </span>build_procedure_manager(options: <span class="kw-2">&amp;</span>MetaSrvOptions, kv_store: <span class="kw-2">&amp;</span>KvStoreRef) -&gt; ProcedureManagerRef {
+<span class="kw">fn </span>build_procedure_manager(
+    options: <span class="kw-2">&amp;</span>MetaSrvOptions,
+    kv_backend: <span class="kw-2">&amp;</span>KvBackendRef,
+) -&gt; ProcedureManagerRef {
     <span class="kw">let </span>manager_config = ManagerConfig {
         max_retry_times: options.procedure.max_retry_times,
         retry_delay: options.procedure.retry_delay,
         ..Default::default()
     };
-    <span class="kw">let </span>state_store = Arc::new(MetaStateStore::new(kv_store.clone()));
+    <span class="kw">let </span>state_store = Arc::new(KvStateStore::new(kv_backend.clone()));
     Arc::new(LocalManager::new(manager_config, state_store))
-}
-
-<span class="kw">fn </span>build_table_metadata_manager(kv_store: <span class="kw-2">&amp;</span>KvStoreRef) -&gt; TableMetadataManagerRef {
-    Arc::new(TableMetadataManager::new(KvBackendAdapter::wrap(
-        kv_store.clone(),
-    )))
 }
 
 <span class="kw">fn </span>build_ddl_manager(
     options: <span class="kw-2">&amp;</span>MetaSrvOptions,
-    datanode_clients: <span class="prelude-ty">Option</span>&lt;Arc&lt;DatanodeClients&gt;&gt;,
+    datanode_clients: <span class="prelude-ty">Option</span>&lt;DatanodeManagerRef&gt;,
     procedure_manager: <span class="kw-2">&amp;</span>ProcedureManagerRef,
-    kv_store: <span class="kw-2">&amp;</span>KvStoreRef,
     mailbox: <span class="kw-2">&amp;</span>MailboxRef,
     table_metadata_manager: <span class="kw-2">&amp;</span>TableMetadataManagerRef,
-) -&gt; DdlManagerRef {
+    table_metadata_allocator: TableMetadataAllocatorRef,
+    memory_region_keeper: <span class="kw-2">&amp;</span>MemoryRegionKeeperRef,
+) -&gt; <span class="prelude-ty">Result</span>&lt;DdlManagerRef&gt; {
     <span class="kw">let </span>datanode_clients = datanode_clients.unwrap_or_else(|| {
         <span class="kw">let </span>datanode_client_channel_config = ChannelConfig::new()
             .timeout(Duration::from_millis(
@@ -690,14 +802,23 @@
             .tcp_nodelay(options.datanode.client_options.tcp_nodelay);
         Arc::new(DatanodeClients::new(datanode_client_channel_config))
     });
-    <span class="comment">// TODO(weny): considers to modify the default config of procedure manager
-    </span>Arc::new(DdlManager::new(
-        procedure_manager.clone(),
-        kv_store.clone(),
-        datanode_clients,
+    <span class="kw">let </span>cache_invalidator = Arc::new(MetasrvCacheInvalidator::new(
         mailbox.clone(),
-        options.server_addr.clone(),
-        table_metadata_manager.clone(),
+        MetasrvInfo {
+            server_addr: options.server_addr.clone(),
+        },
+    ));
+
+    <span class="prelude-val">Ok</span>(Arc::new(
+        DdlManager::try_new(
+            procedure_manager.clone(),
+            datanode_clients,
+            cache_invalidator,
+            table_metadata_manager.clone(),
+            table_metadata_allocator,
+            memory_region_keeper.clone(),
+        )
+        .context(error::InitDdlManagerSnafu)<span class="question-mark">?</span>,
     ))
 }
 

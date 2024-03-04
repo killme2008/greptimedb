@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"struct":["Wal","WalHeaderDecoder","WalHeaderEncoder"],"type":["PayloadStream"]};

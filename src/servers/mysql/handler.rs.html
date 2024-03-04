@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/servers/src/mysql/handler.rs`."><title>handler.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="servers" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../servers/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/servers/src/mysql/handler.rs`."><title>handler.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="servers" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -471,19 +472,36 @@
 <a href="#471" id="471">471</a>
 <a href="#472" id="472">472</a>
 <a href="#473" id="473">473</a>
+<a href="#474" id="474">474</a>
+<a href="#475" id="475">475</a>
+<a href="#476" id="476">476</a>
+<a href="#477" id="477">477</a>
+<a href="#478" id="478">478</a>
+<a href="#479" id="479">479</a>
+<a href="#480" id="480">480</a>
+<a href="#481" id="481">481</a>
+<a href="#482" id="482">482</a>
+<a href="#483" id="483">483</a>
+<a href="#484" id="484">484</a>
+<a href="#485" id="485">485</a>
+<a href="#486" id="486">486</a>
+<a href="#487" id="487">487</a>
+<a href="#488" id="488">488</a>
+<a href="#489" id="489">489</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 </span><span class="kw">use </span>std::collections::HashMap;
 <span class="kw">use </span>std::net::SocketAddr;
 <span class="kw">use </span>std::sync::atomic::{AtomicU32, Ordering};
@@ -496,9 +514,9 @@
 <span class="kw">use </span>common_catalog::parse_catalog_and_schema_from_db_string;
 <span class="kw">use </span>common_error::ext::ErrorExt;
 <span class="kw">use </span>common_query::Output;
-<span class="kw">use </span>common_telemetry::{error, logging, timer, warn};
+<span class="kw">use </span>common_telemetry::{debug, error, logging, tracing, warn};
 <span class="kw">use </span>datatypes::prelude::ConcreteDataType;
-<span class="kw">use </span>metrics::increment_counter;
+<span class="kw">use </span>itertools::Itertools;
 <span class="kw">use </span>opensrv_mysql::{
     AsyncMysqlShim, Column, ErrorKind, InitWriter, ParamParser, ParamValue, QueryResultWriter,
     StatementMetaWriter, ValueInner,
@@ -516,6 +534,7 @@
 <span class="kw">use </span>tokio::io::AsyncWrite;
 
 <span class="kw">use </span><span class="kw">crate</span>::error::{<span class="self">self</span>, InvalidPrepareStatementSnafu, <span class="prelude-ty">Result</span>};
+<span class="kw">use </span><span class="kw">crate</span>::metrics::METRIC_AUTH_FAILURE;
 <span class="kw">use </span><span class="kw">crate</span>::mysql::helper::{
     <span class="self">self</span>, format_placeholder, replace_placeholders, transform_placeholders,
 };
@@ -548,7 +567,7 @@
         <span class="kw">let </span><span class="kw-2">mut </span>scramble: [u8; <span class="number">20</span>] = [<span class="number">0</span>; <span class="number">20</span>];
         <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="number">20 </span>{
             scramble[i] = bs[i] &amp; <span class="number">0x7fu8</span>;
-            <span class="kw">if </span>scramble[i] == <span class="string">b&#39;\0&#39; </span>|| scramble[i] == <span class="string">b&#39;$&#39; </span>{
+            <span class="kw">if </span>scramble[i] == <span class="string">b'\0' </span>|| scramble[i] == <span class="string">b'$' </span>{
                 scramble[i] += <span class="number">1</span>;
             }
         }
@@ -563,16 +582,14 @@
         }
     }
 
-    <span class="kw">async fn </span>do_query(<span class="kw-2">&amp;</span><span class="self">self</span>, query: <span class="kw-2">&amp;</span>str, query_ctx: QueryContextRef) -&gt; Vec&lt;<span class="prelude-ty">Result</span>&lt;Output&gt;&gt; {
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(output) = <span class="kw">crate</span>::mysql::federated::check(query, query_ctx.clone()) {
+    <span class="attr">#[tracing::instrument(skip_all)]
+    </span><span class="kw">async fn </span>do_query(<span class="kw-2">&amp;</span><span class="self">self</span>, query: <span class="kw-2">&amp;</span>str, query_ctx: QueryContextRef) -&gt; Vec&lt;<span class="prelude-ty">Result</span>&lt;Output&gt;&gt; {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(output) =
+            <span class="kw">crate</span>::mysql::federated::check(query, query_ctx.clone(), <span class="self">self</span>.session.clone())
+        {
             <span class="macro">vec!</span>[<span class="prelude-val">Ok</span>(output)]
         } <span class="kw">else </span>{
-            <span class="kw">let </span>trace_id = query_ctx.trace_id();
-            common_telemetry::TRACE_ID
-                .scope(trace_id, <span class="kw">async move </span>{
-                    <span class="self">self</span>.query_handler.do_query(query, query_ctx).<span class="kw">await
-                </span>})
-                .<span class="kw">await
+            <span class="self">self</span>.query_handler.do_query(query, query_ctx).<span class="kw">await
         </span>}
     }
 
@@ -583,7 +600,9 @@
         plan: LogicalPlan,
         query_ctx: QueryContextRef,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;Output&gt; {
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(output) = <span class="kw">crate</span>::mysql::federated::check(query, query_ctx.clone()) {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(output) =
+            <span class="kw">crate</span>::mysql::federated::check(query, query_ctx.clone(), <span class="self">self</span>.session.clone())
+        {
             <span class="prelude-val">Ok</span>(output)
         } <span class="kw">else </span>{
             <span class="self">self</span>.query_handler.do_exec_plan(plan, query_ctx).<span class="kw">await
@@ -642,9 +661,9 @@
             <span class="kw">let </span>user_id = Identity::UserId(<span class="kw-2">&amp;</span>username, addr.as_deref());
 
             <span class="kw">let </span>password = <span class="kw">match </span>auth_plugin {
-                <span class="string">&quot;mysql_native_password&quot; </span>=&gt; Password::MysqlNativePassword(auth_data, salt),
+                <span class="string">"mysql_native_password" </span>=&gt; Password::MysqlNativePassword(auth_data, salt),
                 other =&gt; {
-                    <span class="macro">error!</span>(<span class="string">&quot;Unsupported mysql auth plugin: {}&quot;</span>, other);
+                    <span class="macro">error!</span>(<span class="string">"Unsupported mysql auth plugin: {}"</span>, other);
                     <span class="kw">return </span><span class="bool-val">false</span>;
                 }
             };
@@ -653,8 +672,10 @@
                     user_info = <span class="prelude-val">Some</span>(userinfo);
                 }
                 <span class="prelude-val">Err</span>(e) =&gt; {
-                    <span class="macro">increment_counter!</span>(<span class="kw">crate</span>::metrics::METRIC_AUTH_FAILURE);
-                    <span class="macro">warn!</span>(<span class="string">&quot;Failed to auth, err: {:?}&quot;</span>, e);
+                    METRIC_AUTH_FAILURE
+                        .with_label_values(<span class="kw-2">&amp;</span>[e.status_code().as_ref()])
+                        .inc();
+                    <span class="macro">warn!</span>(<span class="string">"Failed to auth, err: {:?}"</span>, e);
                     <span class="kw">return </span><span class="bool-val">false</span>;
                 }
             };
@@ -667,10 +688,10 @@
         <span class="bool-val">true
     </span>}
 
-    <span class="kw">async fn </span>on_prepare&lt;<span class="lifetime">&#39;a</span>&gt;(
-        <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span><span class="self">self</span>,
-        raw_query: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str,
-        w: StatementMetaWriter&lt;<span class="lifetime">&#39;a</span>, W&gt;,
+    <span class="kw">async fn </span>on_prepare&lt;<span class="lifetime">'a</span>&gt;(
+        <span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="kw-2">mut </span><span class="self">self</span>,
+        raw_query: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str,
+        w: StatementMetaWriter&lt;<span class="lifetime">'a</span>, W&gt;,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="kw">let </span>query_ctx = <span class="self">self</span>.session.new_query_context();
         <span class="kw">let </span>(query, param_num) = replace_placeholders(raw_query);
@@ -678,7 +699,7 @@
         <span class="kw">let </span>statement = validate_query(raw_query).<span class="kw">await</span><span class="question-mark">?</span>;
 
         <span class="comment">// We have to transform the placeholder, because DataFusion only parses placeholders
-        // in the form of &quot;$i&quot;, it can&#39;t process &quot;?&quot; right now.
+        // in the form of "$i", it can't process "?" right now.
         </span><span class="kw">let </span>statement = transform_placeholders(statement);
 
         <span class="kw">let </span>describe_result = <span class="self">self
@@ -713,36 +734,30 @@
         });
 
         w.reply(stmt_id, <span class="kw-2">&amp;</span>params, <span class="kw-2">&amp;</span>[]).<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="macro">increment_counter!</span>(
-            <span class="kw">crate</span>::metrics::METRIC_MYSQL_PREPARED_COUNT,
-            <span class="kw-2">&amp;</span>[(<span class="kw">crate</span>::metrics::METRIC_DB_LABEL, query_ctx.get_db_string())]
-        );
+        <span class="kw">crate</span>::metrics::METRIC_MYSQL_PREPARED_COUNT
+            .with_label_values(<span class="kw-2">&amp;</span>[query_ctx.get_db_string().as_str()])
+            .inc();
         <span class="kw">return </span><span class="prelude-val">Ok</span>(());
     }
 
-    <span class="kw">async fn </span>on_execute&lt;<span class="lifetime">&#39;a</span>&gt;(
-        <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span><span class="self">self</span>,
+    <span class="kw">async fn </span>on_execute&lt;<span class="lifetime">'a</span>&gt;(
+        <span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="kw-2">mut </span><span class="self">self</span>,
         stmt_id: u32,
-        p: ParamParser&lt;<span class="lifetime">&#39;a</span>&gt;,
-        w: QueryResultWriter&lt;<span class="lifetime">&#39;a</span>, W&gt;,
+        p: ParamParser&lt;<span class="lifetime">'a</span>&gt;,
+        w: QueryResultWriter&lt;<span class="lifetime">'a</span>, W&gt;,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="kw">let </span>query_ctx = <span class="self">self</span>.session.new_query_context();
-        <span class="kw">let </span>_timer = <span class="macro">timer!</span>(
-            <span class="kw">crate</span>::metrics::METRIC_MYSQL_QUERY_TIMER,
-            <span class="kw-2">&amp;</span>[
-                (
-                    <span class="kw">crate</span>::metrics::METRIC_MYSQL_SUBPROTOCOL_LABEL,
-                    <span class="kw">crate</span>::metrics::METRIC_MYSQL_BINQUERY.to_string()
-                ),
-                (<span class="kw">crate</span>::metrics::METRIC_DB_LABEL, query_ctx.get_db_string())
-            ]
-        );
+        <span class="kw">let </span>db = query_ctx.get_db_string();
+        <span class="kw">let </span>_timer = <span class="kw">crate</span>::metrics::METRIC_MYSQL_QUERY_TIMER
+            .with_label_values(<span class="kw-2">&amp;</span>[<span class="kw">crate</span>::metrics::METRIC_MYSQL_BINQUERY, db.as_str()])
+            .start_timer();
+
         <span class="kw">let </span>params: Vec&lt;ParamValue&gt; = p.into_iter().collect();
         <span class="kw">let </span>sql_plan = <span class="kw">match </span><span class="self">self</span>.plan(stmt_id) {
             <span class="prelude-val">None </span>=&gt; {
                 w.error(
                     ErrorKind::ER_UNKNOWN_STMT_HANDLER,
-                    <span class="string">b&quot;prepare statement not exist&quot;</span>,
+                    <span class="string">b"prepare statement not exist"</span>,
                 )
                 .<span class="kw">await</span><span class="question-mark">?</span>;
                 <span class="kw">return </span><span class="prelude-val">Ok</span>(());
@@ -758,12 +773,31 @@
 
                 <span class="kw">if </span>params.len() != param_types.len() {
                     <span class="kw">return </span>error::InternalSnafu {
-                        err_msg: <span class="string">&quot;prepare statement params number mismatch&quot;</span>.to_string(),
+                        err_msg: <span class="string">"prepare statement params number mismatch"</span>.to_string(),
                     }
                     .fail();
                 }
-                <span class="kw">let </span>plan = replace_params_with_values(<span class="kw-2">&amp;</span>plan, param_types, params)<span class="question-mark">?</span>;
-                <span class="macro">logging::debug!</span>(<span class="string">&quot;Mysql execute prepared plan: {}&quot;</span>, plan.display_indent());
+
+                <span class="kw">let </span>plan = <span class="kw">match </span>replace_params_with_values(<span class="kw-2">&amp;</span>plan, param_types, <span class="kw-2">&amp;</span>params) {
+                    <span class="prelude-val">Ok</span>(plan) =&gt; plan,
+                    <span class="prelude-val">Err</span>(e) =&gt; {
+                        <span class="kw">if </span>e.status_code().should_log_error() {
+                            <span class="macro">error!</span>(e; <span class="string">"params: {}"</span>, params
+                                .iter()
+                                .map(|x| <span class="macro">format!</span>(<span class="string">"({:?}, {:?})"</span>, x.value, x.coltype))
+                                .join(<span class="string">", "</span>));
+                        }
+
+                        w.error(
+                            ErrorKind::ER_TRUNCATED_WRONG_VALUE,
+                            e.output_msg().as_bytes(),
+                        )
+                        .<span class="kw">await</span><span class="question-mark">?</span>;
+                        <span class="kw">return </span><span class="prelude-val">Ok</span>(());
+                    }
+                };
+
+                <span class="macro">logging::debug!</span>(<span class="string">"Mysql execute prepared plan: {}"</span>, plan.display_indent());
                 <span class="macro">vec!</span>[
                     <span class="self">self</span>.do_exec_plan(<span class="kw-2">&amp;</span>sql_plan.query, plan, query_ctx.clone())
                         .<span class="kw">await</span>,
@@ -771,7 +805,7 @@
             }
             <span class="prelude-val">None </span>=&gt; {
                 <span class="kw">let </span>query = replace_params(params, sql_plan.query);
-                <span class="macro">logging::debug!</span>(<span class="string">&quot;Mysql execute replaced query: {}&quot;</span>, query);
+                <span class="macro">logging::debug!</span>(<span class="string">"Mysql execute replaced query: {}"</span>, query);
                 <span class="self">self</span>.do_query(<span class="kw-2">&amp;</span>query, query_ctx.clone()).<span class="kw">await
             </span>}
         };
@@ -781,43 +815,37 @@
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">async fn </span>on_close&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span><span class="self">self</span>, stmt_id: u32)
+    <span class="kw">async fn </span>on_close&lt;<span class="lifetime">'a</span>&gt;(<span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="kw-2">mut </span><span class="self">self</span>, stmt_id: u32)
     <span class="kw">where
-        </span>W: <span class="lifetime">&#39;async_trait</span>,
+        </span>W: <span class="lifetime">'async_trait</span>,
     {
         <span class="kw">let </span><span class="kw-2">mut </span>guard = <span class="self">self</span>.prepared_stmts.write();
         <span class="kw">let _ </span>= guard.remove(<span class="kw-2">&amp;</span>stmt_id);
     }
 
-    <span class="kw">async fn </span>on_query&lt;<span class="lifetime">&#39;a</span>&gt;(
-        <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span><span class="self">self</span>,
-        query: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str,
-        writer: QueryResultWriter&lt;<span class="lifetime">&#39;a</span>, W&gt;,
+    <span class="kw">async fn </span>on_query&lt;<span class="lifetime">'a</span>&gt;(
+        <span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="kw-2">mut </span><span class="self">self</span>,
+        query: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str,
+        writer: QueryResultWriter&lt;<span class="lifetime">'a</span>, W&gt;,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="kw">let </span>query_ctx = <span class="self">self</span>.session.new_query_context();
-        <span class="kw">let </span>_timer = <span class="macro">timer!</span>(
-            <span class="kw">crate</span>::metrics::METRIC_MYSQL_QUERY_TIMER,
-            <span class="kw-2">&amp;</span>[
-                (
-                    <span class="kw">crate</span>::metrics::METRIC_MYSQL_SUBPROTOCOL_LABEL,
-                    <span class="kw">crate</span>::metrics::METRIC_MYSQL_TEXTQUERY.to_string()
-                ),
-                (<span class="kw">crate</span>::metrics::METRIC_DB_LABEL, query_ctx.get_db_string())
-            ]
-        );
+        <span class="kw">let </span>db = query_ctx.get_db_string();
+        <span class="kw">let </span>_timer = <span class="kw">crate</span>::metrics::METRIC_MYSQL_QUERY_TIMER
+            .with_label_values(<span class="kw-2">&amp;</span>[<span class="kw">crate</span>::metrics::METRIC_MYSQL_TEXTQUERY, db.as_str()])
+            .start_timer();
         <span class="kw">let </span>outputs = <span class="self">self</span>.do_query(query, query_ctx.clone()).<span class="kw">await</span>;
         writer::write_output(writer, query_ctx, outputs).<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">async fn </span>on_init&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span><span class="self">self</span>, database: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str, w: InitWriter&lt;<span class="lifetime">&#39;a</span>, W&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="kw">async fn </span>on_init&lt;<span class="lifetime">'a</span>&gt;(<span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="kw-2">mut </span><span class="self">self</span>, database: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str, w: InitWriter&lt;<span class="lifetime">'a</span>, W&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="kw">let </span>(catalog, schema) = parse_catalog_and_schema_from_db_string(database);
 
         <span class="kw">if </span>!<span class="self">self</span>.query_handler.is_valid_schema(catalog, schema).<span class="kw">await</span><span class="question-mark">? </span>{
             <span class="kw">return </span>w
                 .error(
                     ErrorKind::ER_WRONG_DB_NAME,
-                    <span class="macro">format!</span>(<span class="string">&quot;Unknown database &#39;{}&#39;&quot;</span>, database).as_bytes(),
+                    <span class="macro">format!</span>(<span class="string">"Unknown database '{}'"</span>, database).as_bytes(),
                 )
                 .<span class="kw">await
                 </span>.map_err(|e| e.into());
@@ -827,17 +855,13 @@
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(schema_validator) = <span class="kw-2">&amp;</span><span class="self">self</span>.user_provider {
             <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = schema_validator.authorize(catalog, schema, user_info).<span class="kw">await </span>{
-                <span class="macro">increment_counter!</span>(
-                    <span class="kw">crate</span>::metrics::METRIC_AUTH_FAILURE,
-                    <span class="kw-2">&amp;</span>[(
-                        <span class="kw">crate</span>::metrics::METRIC_CODE_LABEL,
-                        <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, e.status_code())
-                    )]
-                );
+                METRIC_AUTH_FAILURE
+                    .with_label_values(<span class="kw-2">&amp;</span>[e.status_code().as_ref()])
+                    .inc();
                 <span class="kw">return </span>w
                     .error(
                         ErrorKind::ER_DBACCESS_DENIED_ERROR,
-                        e.to_string().as_bytes(),
+                        e.output_msg().as_bytes(),
                     )
                     .<span class="kw">await
                     </span>.map_err(|e| e.into());
@@ -859,8 +883,8 @@
             ValueInner::Int(u) =&gt; u.to_string(),
             ValueInner::UInt(u) =&gt; u.to_string(),
             ValueInner::Double(u) =&gt; u.to_string(),
-            ValueInner::NULL =&gt; <span class="string">&quot;NULL&quot;</span>.to_string(),
-            ValueInner::Bytes(b) =&gt; <span class="macro">format!</span>(<span class="string">&quot;&#39;{}&#39;&quot;</span>, <span class="kw-2">&amp;</span>String::from_utf8_lossy(b)),
+            ValueInner::NULL =&gt; <span class="string">"NULL"</span>.to_string(),
+            ValueInner::Bytes(b) =&gt; <span class="macro">format!</span>(<span class="string">"'{}'"</span>, <span class="kw-2">&amp;</span>String::from_utf8_lossy(b)),
             ValueInner::Date(<span class="kw">_</span>) =&gt; NaiveDate::from(param.value).to_string(),
             ValueInner::Datetime(<span class="kw">_</span>) =&gt; NaiveDateTime::from(param.value).to_string(),
             ValueInner::Time(<span class="kw">_</span>) =&gt; format_duration(Duration::from(param.value)),
@@ -875,15 +899,24 @@
     <span class="kw">let </span>seconds = duration.as_secs() % <span class="number">60</span>;
     <span class="kw">let </span>minutes = (duration.as_secs() / <span class="number">60</span>) % <span class="number">60</span>;
     <span class="kw">let </span>hours = (duration.as_secs() / <span class="number">60</span>) / <span class="number">60</span>;
-    <span class="macro">format!</span>(<span class="string">&quot;{}:{}:{}&quot;</span>, hours, minutes, seconds)
+    <span class="macro">format!</span>(<span class="string">"{}:{}:{}"</span>, hours, minutes, seconds)
 }
 
 <span class="kw">fn </span>replace_params_with_values(
     plan: <span class="kw-2">&amp;</span>LogicalPlan,
     param_types: HashMap&lt;String, <span class="prelude-ty">Option</span>&lt;ConcreteDataType&gt;&gt;,
-    params: Vec&lt;ParamValue&gt;,
+    params: <span class="kw-2">&amp;</span>[ParamValue],
 ) -&gt; <span class="prelude-ty">Result</span>&lt;LogicalPlan&gt; {
     <span class="macro">debug_assert_eq!</span>(param_types.len(), params.len());
+
+    <span class="macro">debug!</span>(
+        <span class="string">"replace_params_with_values(param_types: {:#?}, params: {:#?})"</span>,
+        param_types,
+        params
+            .iter()
+            .map(|x| <span class="macro">format!</span>(<span class="string">"({:?}, {:?})"</span>, x.value, x.coltype))
+            .join(<span class="string">", "</span>)
+    );
 
     <span class="kw">let </span><span class="kw-2">mut </span>values = Vec::with_capacity(params.len());
 
@@ -903,7 +936,7 @@
     <span class="kw">let </span>statement = ParserContext::create_with_dialect(query, <span class="kw-2">&amp;</span>MySqlDialect {});
     <span class="kw">let </span><span class="kw-2">mut </span>statement = statement.map_err(|e| {
         InvalidPrepareStatementSnafu {
-            err_msg: e.to_string(),
+            err_msg: e.output_msg(),
         }
         .build()
     })<span class="question-mark">?</span>;
@@ -911,7 +944,7 @@
     <span class="macro">ensure!</span>(
         statement.len() == <span class="number">1</span>,
         InvalidPrepareStatementSnafu {
-            err_msg: <span class="string">&quot;prepare statement only support single statement&quot;</span>.to_string(),
+            err_msg: <span class="string">"prepare statement only support single statement"</span>.to_string(),
         }
     );
 
@@ -924,7 +957,7 @@
     <span class="kw">let </span><span class="kw-2">mut </span>params = Vec::with_capacity(index - <span class="number">1</span>);
 
     <span class="kw">for _ in </span><span class="number">1</span>..index {
-        params.push(create_mysql_column(<span class="kw-2">&amp;</span>ConcreteDataType::null_datatype(), <span class="string">&quot;&quot;</span>)<span class="question-mark">?</span>);
+        params.push(create_mysql_column(<span class="kw-2">&amp;</span>ConcreteDataType::null_datatype(), <span class="string">""</span>)<span class="question-mark">?</span>);
     }
 
     <span class="prelude-val">Ok</span>(params)
@@ -937,7 +970,7 @@
     <span class="comment">// Placeholder index starts from 1
     </span><span class="kw">for </span>index <span class="kw">in </span><span class="number">1</span>..=param_types.len() {
         <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="prelude-val">Some</span>(t)) = param_types.get(<span class="kw-2">&amp;</span>format_placeholder(index)) {
-            <span class="kw">let </span>column = create_mysql_column(t, <span class="string">&quot;&quot;</span>)<span class="question-mark">?</span>;
+            <span class="kw">let </span>column = create_mysql_column(t, <span class="string">""</span>)<span class="question-mark">?</span>;
             params.push(column);
         }
     }

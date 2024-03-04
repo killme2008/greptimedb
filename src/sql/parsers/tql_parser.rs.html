@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/sql/src/parsers/tql_parser.rs`."><title>tql_parser.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="sql" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../sql/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/sql/src/parsers/tql_parser.rs`."><title>tql_parser.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="sql" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -294,14 +295,14 @@
 <a href="#294" id="294">294</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -316,17 +317,17 @@
 <span class="kw">use </span><span class="kw">crate</span>::statements::statement::Statement;
 <span class="kw">use </span><span class="kw">crate</span>::statements::tql::{Tql, TqlAnalyze, TqlEval, TqlExplain};
 
-<span class="kw">pub const </span>TQL: <span class="kw-2">&amp;</span>str = <span class="string">&quot;TQL&quot;</span>;
-<span class="kw">const </span>EVAL: <span class="kw-2">&amp;</span>str = <span class="string">&quot;EVAL&quot;</span>;
-<span class="kw">const </span>EVALUATE: <span class="kw-2">&amp;</span>str = <span class="string">&quot;EVALUATE&quot;</span>;
-<span class="kw">const </span>EXPLAIN: <span class="kw-2">&amp;</span>str = <span class="string">&quot;EXPLAIN&quot;</span>;
+<span class="kw">pub const </span>TQL: <span class="kw-2">&amp;</span>str = <span class="string">"TQL"</span>;
+<span class="kw">const </span>EVAL: <span class="kw-2">&amp;</span>str = <span class="string">"EVAL"</span>;
+<span class="kw">const </span>EVALUATE: <span class="kw-2">&amp;</span>str = <span class="string">"EVALUATE"</span>;
+<span class="kw">const </span>EXPLAIN: <span class="kw-2">&amp;</span>str = <span class="string">"EXPLAIN"</span>;
 <span class="kw">use </span>sqlparser::parser::Parser;
 
 <span class="doccomment">/// TQL extension parser, including:
-/// - TQL EVAL &lt;query&gt;
-/// - TQL EXPLAIN &lt;query&gt;
-/// - TQL ANALYZE &lt;query&gt;
-</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; ParserContext&lt;<span class="lifetime">&#39;a</span>&gt; {
+/// - `TQL EVAL &lt;query&gt;`
+/// - `TQL EXPLAIN &lt;query&gt;`
+/// - `TQL ANALYZE &lt;query&gt;`
+</span><span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; ParserContext&lt;<span class="lifetime">'a</span>&gt; {
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>parse_tql(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Statement&gt; {
         <span class="kw">let _ </span>= <span class="self">self</span>.parser.next_token();
 
@@ -339,8 +340,7 @@
                             &amp;&amp; w.quote_style.is_none() =&gt;
                     {
                         <span class="kw">let _ </span>= <span class="self">self</span>.parser.next_token();
-                        <span class="self">self</span>.parse_tql_eval()
-                            .context(error::SyntaxSnafu { sql: <span class="self">self</span>.sql })
+                        <span class="self">self</span>.parse_tql_eval().context(error::SyntaxSnafu)
                     }
 
                     Keyword::EXPLAIN =&gt; {
@@ -350,8 +350,7 @@
 
                     Keyword::ANALYZE =&gt; {
                         <span class="kw">let _ </span>= <span class="self">self</span>.parser.next_token();
-                        <span class="self">self</span>.parse_tql_analyze()
-                            .context(error::SyntaxSnafu { sql: <span class="self">self</span>.sql })
+                        <span class="self">self</span>.parse_tql_analyze().context(error::SyntaxSnafu)
                     }
                     <span class="kw">_ </span>=&gt; <span class="self">self</span>.unsupported(<span class="self">self</span>.peek_token_as_string()),
                 }
@@ -366,7 +365,7 @@
         <span class="kw">let </span>start = <span class="self">Self</span>::parse_string_or_number(parser, Token::Comma)<span class="question-mark">?</span>;
         <span class="kw">let </span>end = <span class="self">Self</span>::parse_string_or_number(parser, Token::Comma)<span class="question-mark">?</span>;
         <span class="kw">let </span>step = <span class="self">Self</span>::parse_string_or_number(parser, Token::RParen)<span class="question-mark">?</span>;
-        <span class="kw">let </span>query = <span class="self">Self</span>::parse_tql_query(parser, <span class="self">self</span>.sql, <span class="string">&quot;)&quot;</span>)<span class="question-mark">?</span>;
+        <span class="kw">let </span>query = <span class="self">Self</span>::parse_tql_query(parser, <span class="self">self</span>.sql, <span class="string">")"</span>)<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(Statement::Tql(Tql::Eval(TqlEval {
             start,
@@ -385,7 +384,7 @@
             Token::DoubleQuotedString(s) | Token::SingleQuotedString(s) =&gt; s,
             unexpected =&gt; {
                 <span class="kw">return </span><span class="prelude-val">Err</span>(ParserError::ParserError(<span class="macro">format!</span>(
-                    <span class="string">&quot;Expect number or string, but is {unexpected:?}&quot;
+                    <span class="string">"Expect number or string, but is {unexpected:?}"
                 </span>)));
             }
         };
@@ -404,34 +403,34 @@
         <span class="kw">if let </span><span class="prelude-val">Some</span>(index) = index {
             <span class="kw">let </span>index = index + delimiter.len() + <span class="number">1</span>;
             <span class="kw">if </span>index &gt;= sql.len() {
-                <span class="kw">return </span><span class="prelude-val">Err</span>(ParserError::ParserError(<span class="string">&quot;empty TQL query&quot;</span>.to_string()));
+                <span class="kw">return </span><span class="prelude-val">Err</span>(ParserError::ParserError(<span class="string">"empty TQL query"</span>.to_string()));
             }
 
             <span class="kw">let </span>query = <span class="kw-2">&amp;</span>sql[index..];
 
             <span class="kw">while </span>parser.next_token() != Token::EOF {
                 <span class="comment">// consume all tokens
-                // TODO(dennis): supports multi TQL statements separated by &#39;;&#39;?
+                // TODO(dennis): supports multi TQL statements separated by ';'?
             </span>}
 
-            <span class="comment">// remove the last &#39;;&#39; or tailing space if exists
-            </span><span class="prelude-val">Ok</span>(query.trim().trim_end_matches(<span class="string">&#39;;&#39;</span>).to_string())
+            <span class="comment">// remove the last ';' or tailing space if exists
+            </span><span class="prelude-val">Ok</span>(query.trim().trim_end_matches(<span class="string">';'</span>).to_string())
         } <span class="kw">else </span>{
-            <span class="prelude-val">Err</span>(ParserError::ParserError(<span class="macro">format!</span>(<span class="string">&quot;{delimiter} not found&quot;</span>,)))
+            <span class="prelude-val">Err</span>(ParserError::ParserError(<span class="macro">format!</span>(<span class="string">"{delimiter} not found"</span>,)))
         }
     }
 
     <span class="kw">fn </span>parse_tql_explain(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Statement&gt; {
         <span class="kw">let </span>parser = <span class="kw-2">&amp;mut </span><span class="self">self</span>.parser;
         <span class="kw">let </span>delimiter = <span class="kw">match </span>parser.expect_token(<span class="kw-2">&amp;</span>Token::LParen) {
-            <span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; <span class="string">&quot;)&quot;</span>,
+            <span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; <span class="string">")"</span>,
             <span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; EXPLAIN,
         };
-        <span class="kw">let </span>start = <span class="self">Self</span>::parse_string_or_number(parser, Token::Comma).unwrap_or(<span class="string">&quot;0&quot;</span>.to_string());
-        <span class="kw">let </span>end = <span class="self">Self</span>::parse_string_or_number(parser, Token::Comma).unwrap_or(<span class="string">&quot;0&quot;</span>.to_string());
-        <span class="kw">let </span>step = <span class="self">Self</span>::parse_string_or_number(parser, Token::RParen).unwrap_or(<span class="string">&quot;5m&quot;</span>.to_string());
-        <span class="kw">let </span>query = <span class="self">Self</span>::parse_tql_query(parser, <span class="self">self</span>.sql, delimiter)
-            .context(error::SyntaxSnafu { sql: <span class="self">self</span>.sql })<span class="question-mark">?</span>;
+        <span class="kw">let </span>start = <span class="self">Self</span>::parse_string_or_number(parser, Token::Comma).unwrap_or(<span class="string">"0"</span>.to_string());
+        <span class="kw">let </span>end = <span class="self">Self</span>::parse_string_or_number(parser, Token::Comma).unwrap_or(<span class="string">"0"</span>.to_string());
+        <span class="kw">let </span>step = <span class="self">Self</span>::parse_string_or_number(parser, Token::RParen).unwrap_or(<span class="string">"5m"</span>.to_string());
+        <span class="kw">let </span>query =
+            <span class="self">Self</span>::parse_tql_query(parser, <span class="self">self</span>.sql, delimiter).context(error::SyntaxSnafu)<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(Statement::Tql(Tql::Explain(TqlExplain {
             query,
@@ -448,7 +447,7 @@
         <span class="kw">let </span>start = <span class="self">Self</span>::parse_string_or_number(parser, Token::Comma)<span class="question-mark">?</span>;
         <span class="kw">let </span>end = <span class="self">Self</span>::parse_string_or_number(parser, Token::Comma)<span class="question-mark">?</span>;
         <span class="kw">let </span>step = <span class="self">Self</span>::parse_string_or_number(parser, Token::RParen)<span class="question-mark">?</span>;
-        <span class="kw">let </span>query = <span class="self">Self</span>::parse_tql_query(parser, <span class="self">self</span>.sql, <span class="string">&quot;)&quot;</span>)<span class="question-mark">?</span>;
+        <span class="kw">let </span>query = <span class="self">Self</span>::parse_tql_query(parser, <span class="self">self</span>.sql, <span class="string">")"</span>)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(Statement::Tql(Tql::Analyze(TqlAnalyze {
             start,
             end,
@@ -460,11 +459,13 @@
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
+    <span class="kw">use </span>common_error::ext::ErrorExt;
+
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use </span><span class="kw">crate</span>::dialect::GreptimeDbDialect;
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_parse_tql_eval() {
-        <span class="kw">let </span>sql = <span class="string">&quot;TQL EVAL (1676887657, 1676887659, &#39;1m&#39;) http_requests_total{environment=~&#39;staging|testing|development&#39;,method!=&#39;GET&#39;} @ 1609746000 offset 5m&quot;</span>;
+        <span class="kw">let </span>sql = <span class="string">"TQL EVAL (1676887657, 1676887659, '1m') http_requests_total{environment=~'staging|testing|development',method!='GET'} @ 1609746000 offset 5m"</span>;
 
         <span class="kw">let </span><span class="kw-2">mut </span>result = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
         <span class="macro">assert_eq!</span>(<span class="number">1</span>, result.len());
@@ -472,15 +473,15 @@
         <span class="kw">let </span>statement = result.remove(<span class="number">0</span>);
         <span class="kw">match </span>statement {
             Statement::Tql(Tql::Eval(eval)) =&gt; {
-                <span class="macro">assert_eq!</span>(eval.start, <span class="string">&quot;1676887657&quot;</span>);
-                <span class="macro">assert_eq!</span>(eval.end, <span class="string">&quot;1676887659&quot;</span>);
-                <span class="macro">assert_eq!</span>(eval.step, <span class="string">&quot;1m&quot;</span>);
-                <span class="macro">assert_eq!</span>(eval.query, <span class="string">&quot;http_requests_total{environment=~&#39;staging|testing|development&#39;,method!=&#39;GET&#39;} @ 1609746000 offset 5m&quot;</span>);
+                <span class="macro">assert_eq!</span>(eval.start, <span class="string">"1676887657"</span>);
+                <span class="macro">assert_eq!</span>(eval.end, <span class="string">"1676887659"</span>);
+                <span class="macro">assert_eq!</span>(eval.step, <span class="string">"1m"</span>);
+                <span class="macro">assert_eq!</span>(eval.query, <span class="string">"http_requests_total{environment=~'staging|testing|development',method!='GET'} @ 1609746000 offset 5m"</span>);
             }
             <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
         }
 
-        <span class="kw">let </span>sql = <span class="string">&quot;TQL EVAL (1676887657.1, 1676887659.5, 30.3) http_requests_total{environment=~&#39;staging|testing|development&#39;,method!=&#39;GET&#39;} @ 1609746000 offset 5m&quot;</span>;
+        <span class="kw">let </span>sql = <span class="string">"TQL EVAL (1676887657.1, 1676887659.5, 30.3) http_requests_total{environment=~'staging|testing|development',method!='GET'} @ 1609746000 offset 5m"</span>;
 
         <span class="kw">let </span><span class="kw-2">mut </span>result = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
         <span class="macro">assert_eq!</span>(<span class="number">1</span>, result.len());
@@ -488,15 +489,15 @@
         <span class="kw">let </span>statement = result.remove(<span class="number">0</span>);
         <span class="kw">match </span>statement.clone() {
             Statement::Tql(Tql::Eval(eval)) =&gt; {
-                <span class="macro">assert_eq!</span>(eval.start, <span class="string">&quot;1676887657.1&quot;</span>);
-                <span class="macro">assert_eq!</span>(eval.end, <span class="string">&quot;1676887659.5&quot;</span>);
-                <span class="macro">assert_eq!</span>(eval.step, <span class="string">&quot;30.3&quot;</span>);
-                <span class="macro">assert_eq!</span>(eval.query, <span class="string">&quot;http_requests_total{environment=~&#39;staging|testing|development&#39;,method!=&#39;GET&#39;} @ 1609746000 offset 5m&quot;</span>);
+                <span class="macro">assert_eq!</span>(eval.start, <span class="string">"1676887657.1"</span>);
+                <span class="macro">assert_eq!</span>(eval.end, <span class="string">"1676887659.5"</span>);
+                <span class="macro">assert_eq!</span>(eval.step, <span class="string">"30.3"</span>);
+                <span class="macro">assert_eq!</span>(eval.query, <span class="string">"http_requests_total{environment=~'staging|testing|development',method!='GET'} @ 1609746000 offset 5m"</span>);
             }
             <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
         }
 
-        <span class="kw">let </span>sql = <span class="string">&quot;TQL EVALUATE (1676887657.1, 1676887659.5, 30.3) http_requests_total{environment=~&#39;staging|testing|development&#39;,method!=&#39;GET&#39;} @ 1609746000 offset 5m&quot;</span>;
+        <span class="kw">let </span>sql = <span class="string">"TQL EVALUATE (1676887657.1, 1676887659.5, 30.3) http_requests_total{environment=~'staging|testing|development',method!='GET'} @ 1609746000 offset 5m"</span>;
 
         <span class="kw">let </span><span class="kw-2">mut </span>result = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
         <span class="macro">assert_eq!</span>(<span class="number">1</span>, result.len());
@@ -504,7 +505,7 @@
         <span class="kw">let </span>statement2 = result.remove(<span class="number">0</span>);
         <span class="macro">assert_eq!</span>(statement, statement2);
 
-        <span class="kw">let </span>sql = <span class="string">&quot;tql eval (&#39;2015-07-01T20:10:30.781Z&#39;, &#39;2015-07-01T20:11:00.781Z&#39;, &#39;30s&#39;) http_requests_total{environment=~&#39;staging|testing|development&#39;,method!=&#39;GET&#39;} @ 1609746000 offset 5m&quot;</span>;
+        <span class="kw">let </span>sql = <span class="string">"tql eval ('2015-07-01T20:10:30.781Z', '2015-07-01T20:11:00.781Z', '30s') http_requests_total{environment=~'staging|testing|development',method!='GET'} @ 1609746000 offset 5m"</span>;
 
         <span class="kw">let </span><span class="kw-2">mut </span>result = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
         <span class="macro">assert_eq!</span>(<span class="number">1</span>, result.len());
@@ -512,10 +513,10 @@
         <span class="kw">let </span>statement = result.remove(<span class="number">0</span>);
         <span class="kw">match </span>statement {
             Statement::Tql(Tql::Eval(eval)) =&gt; {
-                <span class="macro">assert_eq!</span>(eval.start, <span class="string">&quot;2015-07-01T20:10:30.781Z&quot;</span>);
-                <span class="macro">assert_eq!</span>(eval.end, <span class="string">&quot;2015-07-01T20:11:00.781Z&quot;</span>);
-                <span class="macro">assert_eq!</span>(eval.step, <span class="string">&quot;30s&quot;</span>);
-                <span class="macro">assert_eq!</span>(eval.query, <span class="string">&quot;http_requests_total{environment=~&#39;staging|testing|development&#39;,method!=&#39;GET&#39;} @ 1609746000 offset 5m&quot;</span>);
+                <span class="macro">assert_eq!</span>(eval.start, <span class="string">"2015-07-01T20:10:30.781Z"</span>);
+                <span class="macro">assert_eq!</span>(eval.end, <span class="string">"2015-07-01T20:11:00.781Z"</span>);
+                <span class="macro">assert_eq!</span>(eval.step, <span class="string">"30s"</span>);
+                <span class="macro">assert_eq!</span>(eval.query, <span class="string">"http_requests_total{environment=~'staging|testing|development',method!='GET'} @ 1609746000 offset 5m"</span>);
             }
             <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
         }
@@ -523,7 +524,7 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_parse_tql_explain() {
-        <span class="kw">let </span>sql = <span class="string">&quot;TQL EXPLAIN http_requests_total{environment=~&#39;staging|testing|development&#39;,method!=&#39;GET&#39;} @ 1609746000 offset 5m&quot;</span>;
+        <span class="kw">let </span>sql = <span class="string">"TQL EXPLAIN http_requests_total{environment=~'staging|testing|development',method!='GET'} @ 1609746000 offset 5m"</span>;
 
         <span class="kw">let </span><span class="kw-2">mut </span>result = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
         <span class="macro">assert_eq!</span>(<span class="number">1</span>, result.len());
@@ -531,15 +532,15 @@
         <span class="kw">let </span>statement = result.remove(<span class="number">0</span>);
         <span class="kw">match </span>statement {
             Statement::Tql(Tql::Explain(explain)) =&gt; {
-                <span class="macro">assert_eq!</span>(explain.query, <span class="string">&quot;http_requests_total{environment=~&#39;staging|testing|development&#39;,method!=&#39;GET&#39;} @ 1609746000 offset 5m&quot;</span>);
-                <span class="macro">assert_eq!</span>(explain.start, <span class="string">&quot;0&quot;</span>);
-                <span class="macro">assert_eq!</span>(explain.end, <span class="string">&quot;0&quot;</span>);
-                <span class="macro">assert_eq!</span>(explain.step, <span class="string">&quot;5m&quot;</span>);
+                <span class="macro">assert_eq!</span>(explain.query, <span class="string">"http_requests_total{environment=~'staging|testing|development',method!='GET'} @ 1609746000 offset 5m"</span>);
+                <span class="macro">assert_eq!</span>(explain.start, <span class="string">"0"</span>);
+                <span class="macro">assert_eq!</span>(explain.end, <span class="string">"0"</span>);
+                <span class="macro">assert_eq!</span>(explain.step, <span class="string">"5m"</span>);
             }
             <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
         }
 
-        <span class="kw">let </span>sql = <span class="string">&quot;TQL EXPLAIN (20,100,10) http_requests_total{environment=~&#39;staging|testing|development&#39;,method!=&#39;GET&#39;} @ 1609746000 offset 5m&quot;</span>;
+        <span class="kw">let </span>sql = <span class="string">"TQL EXPLAIN (20,100,10) http_requests_total{environment=~'staging|testing|development',method!='GET'} @ 1609746000 offset 5m"</span>;
 
         <span class="kw">let </span><span class="kw-2">mut </span>result = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
         <span class="macro">assert_eq!</span>(<span class="number">1</span>, result.len());
@@ -547,10 +548,10 @@
         <span class="kw">let </span>statement = result.remove(<span class="number">0</span>);
         <span class="kw">match </span>statement {
             Statement::Tql(Tql::Explain(explain)) =&gt; {
-                <span class="macro">assert_eq!</span>(explain.query, <span class="string">&quot;http_requests_total{environment=~&#39;staging|testing|development&#39;,method!=&#39;GET&#39;} @ 1609746000 offset 5m&quot;</span>);
-                <span class="macro">assert_eq!</span>(explain.start, <span class="string">&quot;20&quot;</span>);
-                <span class="macro">assert_eq!</span>(explain.end, <span class="string">&quot;100&quot;</span>);
-                <span class="macro">assert_eq!</span>(explain.step, <span class="string">&quot;10&quot;</span>);
+                <span class="macro">assert_eq!</span>(explain.query, <span class="string">"http_requests_total{environment=~'staging|testing|development',method!='GET'} @ 1609746000 offset 5m"</span>);
+                <span class="macro">assert_eq!</span>(explain.start, <span class="string">"20"</span>);
+                <span class="macro">assert_eq!</span>(explain.end, <span class="string">"100"</span>);
+                <span class="macro">assert_eq!</span>(explain.step, <span class="string">"10"</span>);
             }
             <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
         }
@@ -558,16 +559,16 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_parse_tql_analyze() {
-        <span class="kw">let </span>sql = <span class="string">&quot;TQL ANALYZE (1676887657.1, 1676887659.5, 30.3) http_requests_total{environment=~&#39;staging|testing|development&#39;,method!=&#39;GET&#39;} @ 1609746000 offset 5m&quot;</span>;
+        <span class="kw">let </span>sql = <span class="string">"TQL ANALYZE (1676887657.1, 1676887659.5, 30.3) http_requests_total{environment=~'staging|testing|development',method!='GET'} @ 1609746000 offset 5m"</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>result = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
         <span class="macro">assert_eq!</span>(<span class="number">1</span>, result.len());
         <span class="kw">let </span>statement = result.remove(<span class="number">0</span>);
         <span class="kw">match </span>statement {
             Statement::Tql(Tql::Analyze(analyze)) =&gt; {
-                <span class="macro">assert_eq!</span>(analyze.start, <span class="string">&quot;1676887657.1&quot;</span>);
-                <span class="macro">assert_eq!</span>(analyze.end, <span class="string">&quot;1676887659.5&quot;</span>);
-                <span class="macro">assert_eq!</span>(analyze.step, <span class="string">&quot;30.3&quot;</span>);
-                <span class="macro">assert_eq!</span>(analyze.query, <span class="string">&quot;http_requests_total{environment=~&#39;staging|testing|development&#39;,method!=&#39;GET&#39;} @ 1609746000 offset 5m&quot;</span>);
+                <span class="macro">assert_eq!</span>(analyze.start, <span class="string">"1676887657.1"</span>);
+                <span class="macro">assert_eq!</span>(analyze.end, <span class="string">"1676887659.5"</span>);
+                <span class="macro">assert_eq!</span>(analyze.step, <span class="string">"30.3"</span>);
+                <span class="macro">assert_eq!</span>(analyze.query, <span class="string">"http_requests_total{environment=~'staging|testing|development',method!='GET'} @ 1609746000 offset 5m"</span>);
             }
             <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
         }
@@ -576,14 +577,14 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_parse_tql_error() {
         <span class="comment">// Invalid duration
-        </span><span class="kw">let </span>sql = <span class="string">&quot;TQL EVAL (1676887657, 1676887659, 1m) http_requests_total{environment=~&#39;staging|testing|development&#39;,method!=&#39;GET&#39;} @ 1609746000 offset 5m&quot;</span>;
+        </span><span class="kw">let </span>sql = <span class="string">"TQL EVAL (1676887657, 1676887659, 1m) http_requests_total{environment=~'staging|testing|development',method!='GET'} @ 1609746000 offset 5m"</span>;
         <span class="kw">let </span>result = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap_err();
-        <span class="macro">assert!</span>(result.to_string().contains(<span class="string">&quot;Expected ), found: m&quot;</span>));
+        <span class="macro">assert!</span>(result.output_msg().contains(<span class="string">"Expected ), found: m"</span>));
 
         <span class="comment">// missing end
-        </span><span class="kw">let </span>sql = <span class="string">&quot;TQL EVAL (1676887657, &#39;1m&#39;) http_requests_total{environment=~&#39;staging|testing|development&#39;,method!=&#39;GET&#39;} @ 1609746000 offset 5m&quot;</span>;
+        </span><span class="kw">let </span>sql = <span class="string">"TQL EVAL (1676887657, '1m') http_requests_total{environment=~'staging|testing|development',method!='GET'} @ 1609746000 offset 5m"</span>;
         <span class="kw">let </span>result = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap_err();
-        <span class="macro">assert!</span>(result.to_string().contains(<span class="string">&quot;Expected ,, found: )&quot;</span>));
+        <span class="macro">assert!</span>(result.output_msg().contains(<span class="string">"Expected ,, found: )"</span>));
     }
 }
 </code></pre></div></section></main></body></html>

@@ -1,3 +1,0 @@
-(function() {var implementors = {
-"servers":[["impl IntoResponse for <a class=\"struct\" href=\"servers/query_handler/struct.PromStoreResponse.html\" title=\"struct servers::query_handler::PromStoreResponse\">PromStoreResponse</a>"],["impl IntoResponse for <a class=\"struct\" href=\"servers/http/otlp/struct.OtlpResponse.html\" title=\"struct servers::http::otlp::OtlpResponse\">OtlpResponse</a>"],["impl IntoResponse for <a class=\"enum\" href=\"servers/error/enum.Error.html\" title=\"enum servers::error::Error\">Error</a>"]]
-};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

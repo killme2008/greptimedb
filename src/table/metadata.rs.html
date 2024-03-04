@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/table/src/metadata.rs`."><title>metadata.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="table" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../table/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/table/src/metadata.rs`."><title>metadata.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="table" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -954,16 +955,98 @@
 <a href="#954" id="954">954</a>
 <a href="#955" id="955">955</a>
 <a href="#956" id="956">956</a>
+<a href="#957" id="957">957</a>
+<a href="#958" id="958">958</a>
+<a href="#959" id="959">959</a>
+<a href="#960" id="960">960</a>
+<a href="#961" id="961">961</a>
+<a href="#962" id="962">962</a>
+<a href="#963" id="963">963</a>
+<a href="#964" id="964">964</a>
+<a href="#965" id="965">965</a>
+<a href="#966" id="966">966</a>
+<a href="#967" id="967">967</a>
+<a href="#968" id="968">968</a>
+<a href="#969" id="969">969</a>
+<a href="#970" id="970">970</a>
+<a href="#971" id="971">971</a>
+<a href="#972" id="972">972</a>
+<a href="#973" id="973">973</a>
+<a href="#974" id="974">974</a>
+<a href="#975" id="975">975</a>
+<a href="#976" id="976">976</a>
+<a href="#977" id="977">977</a>
+<a href="#978" id="978">978</a>
+<a href="#979" id="979">979</a>
+<a href="#980" id="980">980</a>
+<a href="#981" id="981">981</a>
+<a href="#982" id="982">982</a>
+<a href="#983" id="983">983</a>
+<a href="#984" id="984">984</a>
+<a href="#985" id="985">985</a>
+<a href="#986" id="986">986</a>
+<a href="#987" id="987">987</a>
+<a href="#988" id="988">988</a>
+<a href="#989" id="989">989</a>
+<a href="#990" id="990">990</a>
+<a href="#991" id="991">991</a>
+<a href="#992" id="992">992</a>
+<a href="#993" id="993">993</a>
+<a href="#994" id="994">994</a>
+<a href="#995" id="995">995</a>
+<a href="#996" id="996">996</a>
+<a href="#997" id="997">997</a>
+<a href="#998" id="998">998</a>
+<a href="#999" id="999">999</a>
+<a href="#1000" id="1000">1000</a>
+<a href="#1001" id="1001">1001</a>
+<a href="#1002" id="1002">1002</a>
+<a href="#1003" id="1003">1003</a>
+<a href="#1004" id="1004">1004</a>
+<a href="#1005" id="1005">1005</a>
+<a href="#1006" id="1006">1006</a>
+<a href="#1007" id="1007">1007</a>
+<a href="#1008" id="1008">1008</a>
+<a href="#1009" id="1009">1009</a>
+<a href="#1010" id="1010">1010</a>
+<a href="#1011" id="1011">1011</a>
+<a href="#1012" id="1012">1012</a>
+<a href="#1013" id="1013">1013</a>
+<a href="#1014" id="1014">1014</a>
+<a href="#1015" id="1015">1015</a>
+<a href="#1016" id="1016">1016</a>
+<a href="#1017" id="1017">1017</a>
+<a href="#1018" id="1018">1018</a>
+<a href="#1019" id="1019">1019</a>
+<a href="#1020" id="1020">1020</a>
+<a href="#1021" id="1021">1021</a>
+<a href="#1022" id="1022">1022</a>
+<a href="#1023" id="1023">1023</a>
+<a href="#1024" id="1024">1024</a>
+<a href="#1025" id="1025">1025</a>
+<a href="#1026" id="1026">1026</a>
+<a href="#1027" id="1027">1027</a>
+<a href="#1028" id="1028">1028</a>
+<a href="#1029" id="1029">1029</a>
+<a href="#1030" id="1030">1030</a>
+<a href="#1031" id="1031">1031</a>
+<a href="#1032" id="1032">1032</a>
+<a href="#1033" id="1033">1033</a>
+<a href="#1034" id="1034">1034</a>
+<a href="#1035" id="1035">1035</a>
+<a href="#1036" id="1036">1036</a>
+<a href="#1037" id="1037">1037</a>
+<a href="#1038" id="1038">1038</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -980,7 +1063,7 @@
 <span class="kw">use </span>derive_builder::Builder;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>snafu::{ensure, ResultExt};
-<span class="kw">use </span>store_api::storage::{ColumnDescriptor, ColumnDescriptorBuilder, ColumnId};
+<span class="kw">use </span>store_api::storage::{ColumnDescriptor, ColumnDescriptorBuilder, ColumnId, RegionId};
 
 <span class="kw">use </span><span class="kw">crate</span>::error::{<span class="self">self</span>, <span class="prelude-ty">Result</span>};
 <span class="kw">use </span><span class="kw">crate</span>::requests::{AddColumnRequest, AlterKind, TableOptions};
@@ -990,7 +1073,7 @@
 
 <span class="doccomment">/// Indicates whether and how a filter expression can be handled by a
 /// Table for table scans.
-</span><span class="attr">#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
+</span><span class="attr">#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq)]
 </span><span class="kw">pub enum </span>FilterPushDownType {
     <span class="doccomment">/// The expression cannot be used by the provider.
     </span>Unsupported,
@@ -1036,6 +1119,16 @@
     </span>Temporary,
 }
 
+<span class="kw">impl </span>std::fmt::Display <span class="kw">for </span>TableType {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; std::fmt::Result {
+        <span class="kw">match </span><span class="self">self </span>{
+            TableType::Base =&gt; f.write_str(<span class="string">"BASE TABLE"</span>),
+            TableType::Temporary =&gt; f.write_str(<span class="string">"TEMPORARY"</span>),
+            TableType::View =&gt; f.write_str(<span class="string">"VIEW"</span>),
+        }
+    }
+}
+
 <span class="doccomment">/// Identifier of the table.
 </span><span class="attr">#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq, Default)]
 </span><span class="kw">pub struct </span>TableIdent {
@@ -1047,31 +1140,28 @@
 }
 
 <span class="doccomment">/// The table metadata
-/// Note: if you add new fields to this struct, please ensure &#39;new_meta_builder&#39; function works.
-/// TODO(dennis): find a better way to ensure &#39;new_meta_builder&#39; works when adding new fields.
+/// Note: if you add new fields to this struct, please ensure 'new_meta_builder' function works.
+/// TODO(dennis): find a better way to ensure 'new_meta_builder' works when adding new fields.
 </span><span class="attr">#[derive(Clone, Debug, Builder, PartialEq, Eq)]
-#[builder(pattern = <span class="string">&quot;mutable&quot;</span>)]
+#[builder(pattern = <span class="string">"mutable"</span>)]
 </span><span class="kw">pub struct </span>TableMeta {
     <span class="kw">pub </span>schema: SchemaRef,
     <span class="doccomment">/// The indices of columns in primary key. Note that the index of timestamp column
     /// is not included in these indices.
     </span><span class="kw">pub </span>primary_key_indices: Vec&lt;usize&gt;,
-    <span class="attr">#[builder(default = <span class="string">&quot;self.default_value_indices()?&quot;</span>)]
+    <span class="attr">#[builder(default = <span class="string">"self.default_value_indices()?"</span>)]
     </span><span class="kw">pub </span>value_indices: Vec&lt;usize&gt;,
     <span class="attr">#[builder(default, setter(into))]
     </span><span class="kw">pub </span>engine: String,
     <span class="attr">#[builder(default, setter(into))]
     </span><span class="kw">pub </span>region_numbers: Vec&lt;u32&gt;,
     <span class="kw">pub </span>next_column_id: ColumnId,
-    <span class="doccomment">/// Options for table engine.
-    </span><span class="attr">#[builder(default)]
-    </span><span class="kw">pub </span>engine_options: HashMap&lt;String, String&gt;,
     <span class="doccomment">/// Table options.
     </span><span class="attr">#[builder(default)]
     </span><span class="kw">pub </span>options: TableOptions,
-    <span class="attr">#[builder(default = <span class="string">&quot;Utc::now()&quot;</span>)]
+    <span class="attr">#[builder(default = <span class="string">"Utc::now()"</span>)]
     </span><span class="kw">pub </span>created_on: DateTime&lt;Utc&gt;,
-    <span class="attr">#[builder(default = <span class="string">&quot;Vec::new()&quot;</span>)]
+    <span class="attr">#[builder(default = <span class="string">"Vec::new()"</span>)]
     </span><span class="kw">pub </span>partition_key_indices: Vec&lt;usize&gt;,
 }
 
@@ -1084,7 +1174,7 @@
                     .filter(|idx| !v.contains(idx))
                     .collect())
             }
-            <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(<span class="string">&quot;Missing primary_key_indices or schema to create value_indices&quot;</span>.to_string()),
+            <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(<span class="string">"Missing primary_key_indices or schema to create value_indices"</span>.to_string()),
         }
     }
 
@@ -1100,13 +1190,13 @@
 }
 
 <span class="doccomment">/// The result after splitting requests by column location info.
-</span><span class="kw">struct </span>SplitResult&lt;<span class="lifetime">&#39;a</span>&gt; {
+</span><span class="kw">struct </span>SplitResult&lt;<span class="lifetime">'a</span>&gt; {
     <span class="doccomment">/// column requests should be added at first place.
-    </span>columns_at_first: Vec&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AddColumnRequest&gt;,
+    </span>columns_at_first: Vec&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>AddColumnRequest&gt;,
     <span class="doccomment">/// column requests should be added after already exist columns.
-    </span>columns_at_after: HashMap&lt;String, Vec&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AddColumnRequest&gt;&gt;,
+    </span>columns_at_after: HashMap&lt;String, Vec&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>AddColumnRequest&gt;&gt;,
     <span class="doccomment">/// column requests should be added at last place.
-    </span>columns_at_last: Vec&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AddColumnRequest&gt;,
+    </span>columns_at_last: Vec&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>AddColumnRequest&gt;,
     <span class="doccomment">/// all column names should be added.
     </span>column_names: Vec&lt;String&gt;,
 }
@@ -1185,7 +1275,6 @@
         <span class="kw">let </span><span class="kw-2">mut </span>builder = TableMetaBuilder::default();
         <span class="kw">let _ </span>= builder
             .engine(<span class="kw-2">&amp;</span><span class="self">self</span>.engine)
-            .engine_options(<span class="self">self</span>.engine_options.clone())
             .options(<span class="self">self</span>.options.clone())
             .created_on(<span class="self">self</span>.created_on)
             .region_numbers(<span class="self">self</span>.region_numbers.clone())
@@ -1203,6 +1292,41 @@
         <span class="kw">let </span><span class="kw-2">mut </span>meta_builder = <span class="self">self</span>.new_meta_builder();
         <span class="kw">let </span>original_primary_key_indices: HashSet&lt;<span class="kw-2">&amp;</span>usize&gt; =
             <span class="self">self</span>.primary_key_indices.iter().collect();
+
+        <span class="kw">let </span><span class="kw-2">mut </span>names = HashSet::with_capacity(requests.len());
+
+        <span class="kw">for </span>col_to_add <span class="kw">in </span>requests {
+            <span class="macro">ensure!</span>(
+                names.insert(<span class="kw-2">&amp;</span>col_to_add.column_schema.name),
+                error::InvalidAlterRequestSnafu {
+                    table: table_name,
+                    err: <span class="macro">format!</span>(
+                        <span class="string">"add column {} more than once"</span>,
+                        col_to_add.column_schema.name
+                    ),
+                }
+            );
+
+            <span class="macro">ensure!</span>(
+                !table_schema.contains_column(<span class="kw-2">&amp;</span>col_to_add.column_schema.name),
+                error::ColumnExistsSnafu {
+                    table_name,
+                    column_name: col_to_add.column_schema.name.to_string()
+                },
+            );
+
+            <span class="macro">ensure!</span>(
+                col_to_add.column_schema.is_nullable()
+                    || col_to_add.column_schema.default_constraint().is_some(),
+                error::InvalidAlterRequestSnafu {
+                    table: table_name,
+                    err: <span class="macro">format!</span>(
+                        <span class="string">"no default value for column {}"</span>,
+                        col_to_add.column_schema.name
+                    ),
+                },
+            );
+        }
 
         <span class="kw">let </span>SplitResult {
             columns_at_first,
@@ -1247,7 +1371,7 @@
 
         <span class="kw">let </span><span class="kw-2">mut </span>builder = SchemaBuilder::try_from(columns)
             .with_context(|<span class="kw">_</span>| error::SchemaBuildSnafu {
-                msg: <span class="macro">format!</span>(<span class="string">&quot;Failed to convert column schemas into schema for table {table_name}&quot;</span>),
+                msg: <span class="macro">format!</span>(<span class="string">"Failed to convert column schemas into schema for table {table_name}"</span>),
             })<span class="question-mark">?
             </span><span class="comment">// Also bump the schema version.
             </span>.version(table_schema.version() + <span class="number">1</span>);
@@ -1255,7 +1379,7 @@
             builder = builder.add_metadata(k, v);
         }
         <span class="kw">let </span>new_schema = builder.build().with_context(|<span class="kw">_</span>| error::SchemaBuildSnafu {
-            msg: <span class="macro">format!</span>(<span class="string">&quot;Table {table_name} cannot add new columns {column_names:?}&quot;</span>),
+            msg: <span class="macro">format!</span>(<span class="string">"Table {table_name} cannot add new columns {column_names:?}"</span>),
         })<span class="question-mark">?</span>;
 
         <span class="comment">// value_indices would be generated automatically.
@@ -1279,7 +1403,7 @@
         <span class="comment">// Check whether columns are existing and not in primary key index.
         </span><span class="kw">for </span>column_name <span class="kw">in </span><span class="kw-2">&amp;</span>column_names {
             <span class="kw">if let </span><span class="prelude-val">Some</span>(index) = table_schema.column_index_by_name(column_name) {
-                <span class="comment">// This is a linear search, but since there won&#39;t be too much columns, the performance should
+                <span class="comment">// This is a linear search, but since there won't be too much columns, the performance should
                 // be acceptable.
                 </span><span class="macro">ensure!</span>(
                     !<span class="self">self</span>.primary_key_indices.contains(<span class="kw-2">&amp;</span>index),
@@ -1318,7 +1442,7 @@
 
         <span class="kw">let </span><span class="kw-2">mut </span>builder = SchemaBuilder::try_from_columns(columns)
             .with_context(|<span class="kw">_</span>| error::SchemaBuildSnafu {
-                msg: <span class="macro">format!</span>(<span class="string">&quot;Failed to convert column schemas into schema for table {table_name}&quot;</span>),
+                msg: <span class="macro">format!</span>(<span class="string">"Failed to convert column schemas into schema for table {table_name}"</span>),
             })<span class="question-mark">?
             </span><span class="comment">// Also bump the schema version.
             </span>.version(table_schema.version() + <span class="number">1</span>);
@@ -1326,7 +1450,7 @@
             builder = builder.add_metadata(k, v);
         }
         <span class="kw">let </span>new_schema = builder.build().with_context(|<span class="kw">_</span>| error::SchemaBuildSnafu {
-            msg: <span class="macro">format!</span>(<span class="string">&quot;Table {table_name} cannot add remove columns {column_names:?}&quot;</span>),
+            msg: <span class="macro">format!</span>(<span class="string">"Table {table_name} cannot add remove columns {column_names:?}"</span>),
         })<span class="question-mark">?</span>;
 
         <span class="comment">// Rebuild the indices of primary key columns.
@@ -1334,7 +1458,7 @@
             </span>.primary_key_indices
             .iter()
             .map(|idx| table_schema.column_name_by_index(<span class="kw-2">*</span>idx))
-            <span class="comment">// This unwrap is safe since we don&#39;t allow removing a primary key column.
+            <span class="comment">// This unwrap is safe since we don't allow removing a primary key column.
             </span>.map(|name| new_schema.column_index_by_name(name).unwrap())
             .collect();
 
@@ -1346,11 +1470,11 @@
     }
 
     <span class="doccomment">/// Split requests into different groups using column location info.
-    </span><span class="kw">fn </span>split_requests_by_column_location&lt;<span class="lifetime">&#39;a</span>&gt;(
+    </span><span class="kw">fn </span>split_requests_by_column_location&lt;<span class="lifetime">'a</span>&gt;(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         table_name: <span class="kw-2">&amp;</span>str,
-        requests: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[AddColumnRequest],
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;SplitResult&lt;<span class="lifetime">&#39;a</span>&gt;&gt; {
+        requests: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>[AddColumnRequest],
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;SplitResult&lt;<span class="lifetime">'a</span>&gt;&gt; {
         <span class="kw">let </span>table_schema = <span class="kw-2">&amp;</span><span class="self">self</span>.schema;
         <span class="kw">let </span><span class="kw-2">mut </span>columns_at_first = Vec::new();
         <span class="kw">let </span><span class="kw-2">mut </span>columns_at_after = HashMap::new();
@@ -1399,23 +1523,25 @@
 }
 
 <span class="attr">#[derive(Clone, Debug, PartialEq, Eq, Builder)]
-#[builder(pattern = <span class="string">&quot;owned&quot;</span>)]
+#[builder(pattern = <span class="string">"owned"</span>)]
 </span><span class="kw">pub struct </span>TableInfo {
     <span class="doccomment">/// Id and version of the table.
     </span><span class="attr">#[builder(default, setter(into))]
     </span><span class="kw">pub </span>ident: TableIdent,
-    <span class="doccomment">/// Name of the table.
+
+    <span class="comment">// TODO(LFC): Remove the catalog, schema and table names from TableInfo.
+    </span><span class="doccomment">/// Name of the table.
     </span><span class="attr">#[builder(setter(into))]
     </span><span class="kw">pub </span>name: String,
     <span class="doccomment">/// Comment of the table.
     </span><span class="attr">#[builder(default, setter(into))]
     </span><span class="kw">pub </span>desc: <span class="prelude-ty">Option</span>&lt;String&gt;,
-    <span class="attr">#[builder(default = <span class="string">&quot;DEFAULT_CATALOG_NAME.to_string()&quot;</span>, setter(into))]
+    <span class="attr">#[builder(default = <span class="string">"DEFAULT_CATALOG_NAME.to_string()"</span>, setter(into))]
     </span><span class="kw">pub </span>catalog_name: String,
-    <span class="attr">#[builder(default = <span class="string">&quot;DEFAULT_SCHEMA_NAME.to_string()&quot;</span>, setter(into))]
+    <span class="attr">#[builder(default = <span class="string">"DEFAULT_SCHEMA_NAME.to_string()"</span>, setter(into))]
     </span><span class="kw">pub </span>schema_name: String,
     <span class="kw">pub </span>meta: TableMeta,
-    <span class="attr">#[builder(default = <span class="string">&quot;TableType::Base&quot;</span>)]
+    <span class="attr">#[builder(default = <span class="string">"TableType::Base"</span>)]
     </span><span class="kw">pub </span>table_type: TableType,
 }
 
@@ -1424,6 +1550,18 @@
 <span class="kw">impl </span>TableInfo {
     <span class="kw">pub fn </span>table_id(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; TableId {
         <span class="self">self</span>.ident.table_id
+    }
+
+    <span class="kw">pub fn </span>region_ids(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;RegionId&gt; {
+        <span class="self">self</span>.meta
+            .region_numbers
+            .iter()
+            .map(|id| RegionId::new(<span class="self">self</span>.table_id(), <span class="kw-2">*</span>id))
+            .collect()
+    }
+    <span class="doccomment">/// Returns the full table name in the form of `{catalog}.{schema}.{table}`.
+    </span><span class="kw">pub fn </span>full_table_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
+        common_catalog::format_full_table_name(<span class="kw-2">&amp;</span><span class="self">self</span>.catalog_name, <span class="kw-2">&amp;</span><span class="self">self</span>.schema_name, <span class="kw-2">&amp;</span><span class="self">self</span>.name)
     }
 }
 
@@ -1473,7 +1611,6 @@
     <span class="kw">pub </span>engine: String,
     <span class="kw">pub </span>next_column_id: ColumnId,
     <span class="kw">pub </span>region_numbers: Vec&lt;u32&gt;,
-    <span class="kw">pub </span>engine_options: HashMap&lt;String, String&gt;,
     <span class="kw">pub </span>options: TableOptions,
     <span class="kw">pub </span>created_on: DateTime&lt;Utc&gt;,
     <span class="attr">#[serde(default)]
@@ -1489,7 +1626,6 @@
             engine: meta.engine,
             next_column_id: meta.next_column_id,
             region_numbers: meta.region_numbers,
-            engine_options: meta.engine_options,
             options: meta.options,
             created_on: meta.created_on,
             partition_key_indices: meta.partition_key_indices,
@@ -1508,7 +1644,6 @@
             engine: raw.engine,
             region_numbers: raw.region_numbers,
             next_column_id: raw.next_column_id,
-            engine_options: raw.engine_options,
             options: raw.options,
             created_on: raw.created_on,
             partition_key_indices: raw.partition_key_indices,
@@ -1570,14 +1705,14 @@
 
     <span class="kw">fn </span>new_test_schema() -&gt; Schema {
         <span class="kw">let </span>column_schemas = <span class="macro">vec!</span>[
-            ColumnSchema::new(<span class="string">&quot;col1&quot;</span>, ConcreteDataType::int32_datatype(), <span class="bool-val">true</span>),
+            ColumnSchema::new(<span class="string">"col1"</span>, ConcreteDataType::int32_datatype(), <span class="bool-val">true</span>),
             ColumnSchema::new(
-                <span class="string">&quot;ts&quot;</span>,
+                <span class="string">"ts"</span>,
                 ConcreteDataType::timestamp_millisecond_datatype(),
                 <span class="bool-val">false</span>,
             )
             .with_time_index(<span class="bool-val">true</span>),
-            ColumnSchema::new(<span class="string">&quot;col2&quot;</span>, ConcreteDataType::int32_datatype(), <span class="bool-val">true</span>),
+            ColumnSchema::new(<span class="string">"col2"</span>, ConcreteDataType::int32_datatype(), <span class="bool-val">true</span>),
         ];
         SchemaBuilder::try_from(column_schemas)
             .unwrap()
@@ -1592,14 +1727,14 @@
         <span class="kw">let </span>meta = TableMetaBuilder::default()
             .schema(schema)
             .primary_key_indices(<span class="macro">vec!</span>[<span class="number">0</span>])
-            .engine(<span class="string">&quot;engine&quot;</span>)
+            .engine(<span class="string">"engine"</span>)
             .next_column_id(<span class="number">3</span>)
             .build()
             .unwrap();
         <span class="kw">let </span>info = TableInfoBuilder::default()
             .table_id(<span class="number">10</span>)
             .table_version(<span class="number">5</span>)
-            .name(<span class="string">&quot;mytable&quot;</span>)
+            .name(<span class="string">"mytable"</span>)
             .meta(meta)
             .build()
             .unwrap();
@@ -1611,8 +1746,8 @@
     }
 
     <span class="kw">fn </span>add_columns_to_meta(meta: <span class="kw-2">&amp;</span>TableMeta) -&gt; TableMeta {
-        <span class="kw">let </span>new_tag = ColumnSchema::new(<span class="string">&quot;my_tag&quot;</span>, ConcreteDataType::string_datatype(), <span class="bool-val">true</span>);
-        <span class="kw">let </span>new_field = ColumnSchema::new(<span class="string">&quot;my_field&quot;</span>, ConcreteDataType::string_datatype(), <span class="bool-val">true</span>);
+        <span class="kw">let </span>new_tag = ColumnSchema::new(<span class="string">"my_tag"</span>, ConcreteDataType::string_datatype(), <span class="bool-val">true</span>);
+        <span class="kw">let </span>new_field = ColumnSchema::new(<span class="string">"my_field"</span>, ConcreteDataType::string_datatype(), <span class="bool-val">true</span>);
         <span class="kw">let </span>alter_kind = AlterKind::AddColumns {
             columns: <span class="macro">vec!</span>[
                 AddColumnRequest {
@@ -1629,15 +1764,15 @@
         };
 
         <span class="kw">let </span>builder = meta
-            .builder_with_alter_kind(<span class="string">&quot;my_table&quot;</span>, <span class="kw-2">&amp;</span>alter_kind)
+            .builder_with_alter_kind(<span class="string">"my_table"</span>, <span class="kw-2">&amp;</span>alter_kind)
             .unwrap();
         builder.build().unwrap()
     }
 
     <span class="kw">fn </span>add_columns_to_meta_with_location(meta: <span class="kw-2">&amp;</span>TableMeta) -&gt; TableMeta {
-        <span class="kw">let </span>new_tag = ColumnSchema::new(<span class="string">&quot;my_tag_first&quot;</span>, ConcreteDataType::string_datatype(), <span class="bool-val">true</span>);
+        <span class="kw">let </span>new_tag = ColumnSchema::new(<span class="string">"my_tag_first"</span>, ConcreteDataType::string_datatype(), <span class="bool-val">true</span>);
         <span class="kw">let </span>new_field = ColumnSchema::new(
-            <span class="string">&quot;my_field_after_ts&quot;</span>,
+            <span class="string">"my_field_after_ts"</span>,
             ConcreteDataType::string_datatype(),
             <span class="bool-val">true</span>,
         );
@@ -1652,14 +1787,14 @@
                     column_schema: new_field,
                     is_key: <span class="bool-val">false</span>,
                     location: <span class="prelude-val">Some</span>(AddColumnLocation::After {
-                        column_name: <span class="string">&quot;ts&quot;</span>.to_string(),
+                        column_name: <span class="string">"ts"</span>.to_string(),
                     }),
                 },
             ],
         };
 
         <span class="kw">let </span>builder = meta
-            .builder_with_alter_kind(<span class="string">&quot;my_table&quot;</span>, <span class="kw-2">&amp;</span>alter_kind)
+            .builder_with_alter_kind(<span class="string">"my_table"</span>, <span class="kw-2">&amp;</span>alter_kind)
             .unwrap();
         builder.build().unwrap()
     }
@@ -1670,7 +1805,7 @@
         <span class="kw">let </span>meta = TableMetaBuilder::default()
             .schema(schema)
             .primary_key_indices(<span class="macro">vec!</span>[<span class="number">0</span>])
-            .engine(<span class="string">&quot;engine&quot;</span>)
+            .engine(<span class="string">"engine"</span>)
             .next_column_id(<span class="number">3</span>)
             .build()
             .unwrap();
@@ -1684,7 +1819,7 @@
             .iter()
             .map(|column_schema| column_schema.name.clone())
             .collect();
-        <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>[<span class="string">&quot;col1&quot;</span>, <span class="string">&quot;ts&quot;</span>, <span class="string">&quot;col2&quot;</span>, <span class="string">&quot;my_tag&quot;</span>, <span class="string">&quot;my_field&quot;</span>], <span class="kw-2">&amp;</span>names[..]);
+        <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>[<span class="string">"col1"</span>, <span class="string">"ts"</span>, <span class="string">"col2"</span>, <span class="string">"my_tag"</span>, <span class="string">"my_field"</span>], <span class="kw-2">&amp;</span>names[..]);
         <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>[<span class="number">0</span>, <span class="number">3</span>], <span class="kw-2">&amp;</span>new_meta.primary_key_indices[..]);
         <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">4</span>], <span class="kw-2">&amp;</span>new_meta.value_indices[..]);
     }
@@ -1695,7 +1830,7 @@
         <span class="kw">let </span>meta = TableMetaBuilder::default()
             .schema(schema.clone())
             .primary_key_indices(<span class="macro">vec!</span>[<span class="number">0</span>])
-            .engine(<span class="string">&quot;engine&quot;</span>)
+            .engine(<span class="string">"engine"</span>)
             .next_column_id(<span class="number">3</span>)
             .build()
             .unwrap();
@@ -1703,10 +1838,10 @@
         </span><span class="kw">let </span>meta = add_columns_to_meta(<span class="kw-2">&amp;</span>meta);
 
         <span class="kw">let </span>alter_kind = AlterKind::DropColumns {
-            names: <span class="macro">vec!</span>[String::from(<span class="string">&quot;col2&quot;</span>), String::from(<span class="string">&quot;my_field&quot;</span>)],
+            names: <span class="macro">vec!</span>[String::from(<span class="string">"col2"</span>), String::from(<span class="string">"my_field"</span>)],
         };
         <span class="kw">let </span>new_meta = meta
-            .builder_with_alter_kind(<span class="string">&quot;my_table&quot;</span>, <span class="kw-2">&amp;</span>alter_kind)
+            .builder_with_alter_kind(<span class="string">"my_table"</span>, <span class="kw-2">&amp;</span>alter_kind)
             .unwrap()
             .build()
             .unwrap();
@@ -1719,7 +1854,7 @@
             .iter()
             .map(|column_schema| column_schema.name.clone())
             .collect();
-        <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>[<span class="string">&quot;col1&quot;</span>, <span class="string">&quot;ts&quot;</span>, <span class="string">&quot;my_tag&quot;</span>], <span class="kw-2">&amp;</span>names[..]);
+        <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>[<span class="string">"col1"</span>, <span class="string">"ts"</span>, <span class="string">"my_tag"</span>], <span class="kw-2">&amp;</span>names[..]);
         <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>[<span class="number">0</span>, <span class="number">2</span>], <span class="kw-2">&amp;</span>new_meta.primary_key_indices[..]);
         <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>], <span class="kw-2">&amp;</span>new_meta.value_indices[..]);
         <span class="macro">assert_eq!</span>(
@@ -1731,11 +1866,11 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_remove_multiple_columns_before_timestamp() {
         <span class="kw">let </span>column_schemas = <span class="macro">vec!</span>[
-            ColumnSchema::new(<span class="string">&quot;col1&quot;</span>, ConcreteDataType::int32_datatype(), <span class="bool-val">true</span>),
-            ColumnSchema::new(<span class="string">&quot;col2&quot;</span>, ConcreteDataType::int32_datatype(), <span class="bool-val">true</span>),
-            ColumnSchema::new(<span class="string">&quot;col3&quot;</span>, ConcreteDataType::int32_datatype(), <span class="bool-val">true</span>),
+            ColumnSchema::new(<span class="string">"col1"</span>, ConcreteDataType::int32_datatype(), <span class="bool-val">true</span>),
+            ColumnSchema::new(<span class="string">"col2"</span>, ConcreteDataType::int32_datatype(), <span class="bool-val">true</span>),
+            ColumnSchema::new(<span class="string">"col3"</span>, ConcreteDataType::int32_datatype(), <span class="bool-val">true</span>),
             ColumnSchema::new(
-                <span class="string">&quot;ts&quot;</span>,
+                <span class="string">"ts"</span>,
                 ConcreteDataType::timestamp_millisecond_datatype(),
                 <span class="bool-val">false</span>,
             )
@@ -1751,17 +1886,17 @@
         <span class="kw">let </span>meta = TableMetaBuilder::default()
             .schema(schema.clone())
             .primary_key_indices(<span class="macro">vec!</span>[<span class="number">1</span>])
-            .engine(<span class="string">&quot;engine&quot;</span>)
+            .engine(<span class="string">"engine"</span>)
             .next_column_id(<span class="number">4</span>)
             .build()
             .unwrap();
 
         <span class="comment">// Remove columns in reverse order to test whether timestamp index is valid.
         </span><span class="kw">let </span>alter_kind = AlterKind::DropColumns {
-            names: <span class="macro">vec!</span>[String::from(<span class="string">&quot;col3&quot;</span>), String::from(<span class="string">&quot;col1&quot;</span>)],
+            names: <span class="macro">vec!</span>[String::from(<span class="string">"col3"</span>), String::from(<span class="string">"col1"</span>)],
         };
         <span class="kw">let </span>new_meta = meta
-            .builder_with_alter_kind(<span class="string">&quot;my_table&quot;</span>, <span class="kw-2">&amp;</span>alter_kind)
+            .builder_with_alter_kind(<span class="string">"my_table"</span>, <span class="kw-2">&amp;</span>alter_kind)
             .unwrap()
             .build()
             .unwrap();
@@ -1772,7 +1907,7 @@
             .iter()
             .map(|column_schema| column_schema.name.clone())
             .collect();
-        <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>[<span class="string">&quot;col2&quot;</span>, <span class="string">&quot;ts&quot;</span>], <span class="kw-2">&amp;</span>names[..]);
+        <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>[<span class="string">"col2"</span>, <span class="string">"ts"</span>], <span class="kw-2">&amp;</span>names[..]);
         <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>[<span class="number">0</span>], <span class="kw-2">&amp;</span>new_meta.primary_key_indices[..]);
         <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>], <span class="kw-2">&amp;</span>new_meta.value_indices[..]);
         <span class="macro">assert_eq!</span>(
@@ -1787,24 +1922,54 @@
         <span class="kw">let </span>meta = TableMetaBuilder::default()
             .schema(schema)
             .primary_key_indices(<span class="macro">vec!</span>[<span class="number">0</span>])
-            .engine(<span class="string">&quot;engine&quot;</span>)
+            .engine(<span class="string">"engine"</span>)
             .next_column_id(<span class="number">3</span>)
             .build()
             .unwrap();
 
         <span class="kw">let </span>alter_kind = AlterKind::AddColumns {
             columns: <span class="macro">vec!</span>[AddColumnRequest {
-                column_schema: ColumnSchema::new(<span class="string">&quot;col1&quot;</span>, ConcreteDataType::string_datatype(), <span class="bool-val">true</span>),
+                column_schema: ColumnSchema::new(<span class="string">"col1"</span>, ConcreteDataType::string_datatype(), <span class="bool-val">true</span>),
                 is_key: <span class="bool-val">false</span>,
                 location: <span class="prelude-val">None</span>,
             }],
         };
 
         <span class="kw">let </span>err = meta
-            .builder_with_alter_kind(<span class="string">&quot;my_table&quot;</span>, <span class="kw-2">&amp;</span>alter_kind)
+            .builder_with_alter_kind(<span class="string">"my_table"</span>, <span class="kw-2">&amp;</span>alter_kind)
             .err()
             .unwrap();
         <span class="macro">assert_eq!</span>(StatusCode::TableColumnExists, err.status_code());
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_add_invalid_column() {
+        <span class="kw">let </span>schema = Arc::new(new_test_schema());
+        <span class="kw">let </span>meta = TableMetaBuilder::default()
+            .schema(schema)
+            .primary_key_indices(<span class="macro">vec!</span>[<span class="number">0</span>])
+            .engine(<span class="string">"engine"</span>)
+            .next_column_id(<span class="number">3</span>)
+            .build()
+            .unwrap();
+
+        <span class="kw">let </span>alter_kind = AlterKind::AddColumns {
+            columns: <span class="macro">vec!</span>[AddColumnRequest {
+                column_schema: ColumnSchema::new(
+                    <span class="string">"weny"</span>,
+                    ConcreteDataType::string_datatype(),
+                    <span class="bool-val">false</span>,
+                ),
+                is_key: <span class="bool-val">false</span>,
+                location: <span class="prelude-val">None</span>,
+            }],
+        };
+
+        <span class="kw">let </span>err = meta
+            .builder_with_alter_kind(<span class="string">"my_table"</span>, <span class="kw-2">&amp;</span>alter_kind)
+            .err()
+            .unwrap();
+        <span class="macro">assert_eq!</span>(StatusCode::InvalidArguments, err.status_code());
     }
 
     <span class="attr">#[test]
@@ -1813,17 +1978,17 @@
         <span class="kw">let </span>meta = TableMetaBuilder::default()
             .schema(schema)
             .primary_key_indices(<span class="macro">vec!</span>[<span class="number">0</span>])
-            .engine(<span class="string">&quot;engine&quot;</span>)
+            .engine(<span class="string">"engine"</span>)
             .next_column_id(<span class="number">3</span>)
             .build()
             .unwrap();
 
         <span class="kw">let </span>alter_kind = AlterKind::DropColumns {
-            names: <span class="macro">vec!</span>[String::from(<span class="string">&quot;unknown&quot;</span>)],
+            names: <span class="macro">vec!</span>[String::from(<span class="string">"unknown"</span>)],
         };
 
         <span class="kw">let </span>err = meta
-            .builder_with_alter_kind(<span class="string">&quot;my_table&quot;</span>, <span class="kw-2">&amp;</span>alter_kind)
+            .builder_with_alter_kind(<span class="string">"my_table"</span>, <span class="kw-2">&amp;</span>alter_kind)
             .err()
             .unwrap();
         <span class="macro">assert_eq!</span>(StatusCode::TableColumnNotFound, err.status_code());
@@ -1835,29 +2000,29 @@
         <span class="kw">let </span>meta = TableMetaBuilder::default()
             .schema(schema)
             .primary_key_indices(<span class="macro">vec!</span>[<span class="number">0</span>])
-            .engine(<span class="string">&quot;engine&quot;</span>)
+            .engine(<span class="string">"engine"</span>)
             .next_column_id(<span class="number">3</span>)
             .build()
             .unwrap();
 
         <span class="comment">// Remove column in primary key.
         </span><span class="kw">let </span>alter_kind = AlterKind::DropColumns {
-            names: <span class="macro">vec!</span>[String::from(<span class="string">&quot;col1&quot;</span>)],
+            names: <span class="macro">vec!</span>[String::from(<span class="string">"col1"</span>)],
         };
 
         <span class="kw">let </span>err = meta
-            .builder_with_alter_kind(<span class="string">&quot;my_table&quot;</span>, <span class="kw-2">&amp;</span>alter_kind)
+            .builder_with_alter_kind(<span class="string">"my_table"</span>, <span class="kw-2">&amp;</span>alter_kind)
             .err()
             .unwrap();
         <span class="macro">assert_eq!</span>(StatusCode::InvalidArguments, err.status_code());
 
         <span class="comment">// Remove timestamp column.
         </span><span class="kw">let </span>alter_kind = AlterKind::DropColumns {
-            names: <span class="macro">vec!</span>[String::from(<span class="string">&quot;ts&quot;</span>)],
+            names: <span class="macro">vec!</span>[String::from(<span class="string">"ts"</span>)],
         };
 
         <span class="kw">let </span>err = meta
-            .builder_with_alter_kind(<span class="string">&quot;my_table&quot;</span>, <span class="kw-2">&amp;</span>alter_kind)
+            .builder_with_alter_kind(<span class="string">"my_table"</span>, <span class="kw-2">&amp;</span>alter_kind)
             .err()
             .unwrap();
         <span class="macro">assert_eq!</span>(StatusCode::InvalidArguments, err.status_code());
@@ -1869,14 +2034,14 @@
         <span class="kw">let </span><span class="kw-2">mut </span>meta = TableMetaBuilder::default()
             .schema(schema)
             .primary_key_indices(<span class="macro">vec!</span>[<span class="number">0</span>])
-            .engine(<span class="string">&quot;engine&quot;</span>)
+            .engine(<span class="string">"engine"</span>)
             .next_column_id(<span class="number">3</span>)
             .build()
             .unwrap();
         <span class="macro">assert_eq!</span>(<span class="number">3</span>, meta.next_column_id);
 
-        <span class="kw">let </span>column_schema = ColumnSchema::new(<span class="string">&quot;col1&quot;</span>, ConcreteDataType::int32_datatype(), <span class="bool-val">true</span>);
-        <span class="kw">let </span>desc = meta.alloc_new_column(<span class="string">&quot;test_table&quot;</span>, <span class="kw-2">&amp;</span>column_schema).unwrap();
+        <span class="kw">let </span>column_schema = ColumnSchema::new(<span class="string">"col1"</span>, ConcreteDataType::int32_datatype(), <span class="bool-val">true</span>);
+        <span class="kw">let </span>desc = meta.alloc_new_column(<span class="string">"test_table"</span>, <span class="kw-2">&amp;</span>column_schema).unwrap();
 
         <span class="macro">assert_eq!</span>(<span class="number">4</span>, meta.next_column_id);
         <span class="macro">assert_eq!</span>(column_schema.name, desc.name);
@@ -1888,7 +2053,7 @@
         <span class="kw">let </span>meta = TableMetaBuilder::default()
             .schema(schema)
             .primary_key_indices(<span class="macro">vec!</span>[<span class="number">0</span>])
-            .engine(<span class="string">&quot;engine&quot;</span>)
+            .engine(<span class="string">"engine"</span>)
             .next_column_id(<span class="number">3</span>)
             .build()
             .unwrap();
@@ -1903,7 +2068,7 @@
             .map(|column_schema| column_schema.name.clone())
             .collect();
         <span class="macro">assert_eq!</span>(
-            <span class="kw-2">&amp;</span>[<span class="string">&quot;my_tag_first&quot;</span>, <span class="string">&quot;col1&quot;</span>, <span class="string">&quot;ts&quot;</span>, <span class="string">&quot;my_field_after_ts&quot;</span>, <span class="string">&quot;col2&quot;</span>],
+            <span class="kw-2">&amp;</span>[<span class="string">"my_tag_first"</span>, <span class="string">"col1"</span>, <span class="string">"ts"</span>, <span class="string">"my_field_after_ts"</span>, <span class="string">"col2"</span>],
             <span class="kw-2">&amp;</span>names[..]
         );
         <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>[<span class="number">0</span>, <span class="number">1</span>], <span class="kw-2">&amp;</span>new_meta.primary_key_indices[..]);

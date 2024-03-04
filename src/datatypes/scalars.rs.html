@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/datatypes/src/scalars.rs`."><title>scalars.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="datatypes" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../datatypes/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/datatypes/src/scalars.rs`."><title>scalars.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="datatypes" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -441,22 +442,55 @@
 <a href="#441" id="441">441</a>
 <a href="#442" id="442">442</a>
 <a href="#443" id="443">443</a>
+<a href="#444" id="444">444</a>
+<a href="#445" id="445">445</a>
+<a href="#446" id="446">446</a>
+<a href="#447" id="447">447</a>
+<a href="#448" id="448">448</a>
+<a href="#449" id="449">449</a>
+<a href="#450" id="450">450</a>
+<a href="#451" id="451">451</a>
+<a href="#452" id="452">452</a>
+<a href="#453" id="453">453</a>
+<a href="#454" id="454">454</a>
+<a href="#455" id="455">455</a>
+<a href="#456" id="456">456</a>
+<a href="#457" id="457">457</a>
+<a href="#458" id="458">458</a>
+<a href="#459" id="459">459</a>
+<a href="#460" id="460">460</a>
+<a href="#461" id="461">461</a>
+<a href="#462" id="462">462</a>
+<a href="#463" id="463">463</a>
+<a href="#464" id="464">464</a>
+<a href="#465" id="465">465</a>
+<a href="#466" id="466">466</a>
+<a href="#467" id="467">467</a>
+<a href="#468" id="468">468</a>
+<a href="#469" id="469">469</a>
+<a href="#470" id="470">470</a>
+<a href="#471" id="471">471</a>
+<a href="#472" id="472">472</a>
+<a href="#473" id="473">473</a>
+<a href="#474" id="474">474</a>
+<a href="#475" id="475">475</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
 </span><span class="kw">use </span>std::any::Any;
 
+<span class="kw">use </span>common_decimal::Decimal128;
 <span class="kw">use </span>common_time::{Date, DateTime};
 
 <span class="kw">use </span><span class="kw">crate</span>::types::{
@@ -465,8 +499,8 @@
 };
 <span class="kw">use </span><span class="kw">crate</span>::value::{ListValue, ListValueRef, Value};
 <span class="kw">use </span><span class="kw">crate</span>::vectors::{
-    BinaryVector, BooleanVector, DateTimeVector, DateVector, ListVector, MutableVector,
-    PrimitiveVector, StringVector, Vector,
+    BinaryVector, BooleanVector, DateTimeVector, DateVector, Decimal128Vector, ListVector,
+    MutableVector, PrimitiveVector, StringVector, Vector,
 };
 
 <span class="kw">fn </span>get_iter_capacity&lt;T, I: Iterator&lt;Item = T&gt;&gt;(iter: <span class="kw-2">&amp;</span>I) -&gt; usize {
@@ -478,47 +512,47 @@
 }
 
 <span class="doccomment">/// Owned scalar value
-/// primitive types, bool, Vec&lt;u8&gt; ...
-</span><span class="kw">pub trait </span>Scalar: <span class="lifetime">&#39;static </span>+ Sized + Default + Any
+/// e.g. primitive types, bool, `Vec&lt;u8&gt;` ...
+</span><span class="kw">pub trait </span>Scalar: <span class="lifetime">'static </span>+ Sized + Default + Any
 <span class="kw">where
-    for</span>&lt;<span class="lifetime">&#39;a</span>&gt; <span class="self">Self</span>::VectorType: ScalarVector&lt;RefItem&lt;<span class="lifetime">&#39;a</span>&gt; = <span class="self">Self</span>::RefType&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
+    for</span>&lt;<span class="lifetime">'a</span>&gt; <span class="self">Self</span>::VectorType: ScalarVector&lt;RefItem&lt;<span class="lifetime">'a</span>&gt; = <span class="self">Self</span>::RefType&lt;<span class="lifetime">'a</span>&gt;&gt;,
 {
     <span class="kw">type </span>VectorType: ScalarVector&lt;OwnedItem = <span class="self">Self</span>&gt;;
-    <span class="kw">type </span>RefType&lt;<span class="lifetime">&#39;a</span>&gt;: ScalarRef&lt;<span class="lifetime">&#39;a</span>, ScalarType = <span class="self">Self</span>&gt;
+    <span class="kw">type </span>RefType&lt;<span class="lifetime">'a</span>&gt;: ScalarRef&lt;<span class="lifetime">'a</span>, ScalarType = <span class="self">Self</span>&gt;
     <span class="kw">where
-        </span><span class="self">Self</span>: <span class="lifetime">&#39;a</span>;
+        </span><span class="self">Self</span>: <span class="lifetime">'a</span>;
     <span class="doccomment">/// Get a reference of the current value.
-    </span><span class="kw">fn </span>as_scalar_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::RefType&lt;<span class="lifetime">&#39;_</span>&gt;;
+    </span><span class="kw">fn </span>as_scalar_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::RefType&lt;<span class="lifetime">'_</span>&gt;;
 
-    <span class="doccomment">/// Upcast GAT type&#39;s lifetime.
-    </span><span class="kw">fn </span>upcast_gat&lt;<span class="lifetime">&#39;short</span>, <span class="lifetime">&#39;long</span>: <span class="lifetime">&#39;short</span>&gt;(long: <span class="self">Self</span>::RefType&lt;<span class="lifetime">&#39;long</span>&gt;) -&gt; <span class="self">Self</span>::RefType&lt;<span class="lifetime">&#39;short</span>&gt;;
+    <span class="doccomment">/// Upcast GAT type's lifetime.
+    </span><span class="kw">fn </span>upcast_gat&lt;<span class="lifetime">'short</span>, <span class="lifetime">'long</span>: <span class="lifetime">'short</span>&gt;(long: <span class="self">Self</span>::RefType&lt;<span class="lifetime">'long</span>&gt;) -&gt; <span class="self">Self</span>::RefType&lt;<span class="lifetime">'short</span>&gt;;
 }
 
-<span class="kw">pub trait </span>ScalarRef&lt;<span class="lifetime">&#39;a</span>&gt;: std::fmt::Debug + Clone + Copy + Send + <span class="lifetime">&#39;a </span>{
+<span class="kw">pub trait </span>ScalarRef&lt;<span class="lifetime">'a</span>&gt;: std::fmt::Debug + Clone + Copy + Send + <span class="lifetime">'a </span>{
     <span class="doccomment">/// The corresponding [`Scalar`] type.
-    </span><span class="kw">type </span>ScalarType: Scalar&lt;RefType&lt;<span class="lifetime">&#39;a</span>&gt; = <span class="self">Self</span>&gt;;
+    </span><span class="kw">type </span>ScalarType: Scalar&lt;RefType&lt;<span class="lifetime">'a</span>&gt; = <span class="self">Self</span>&gt;;
 
     <span class="doccomment">/// Convert the reference into an owned value.
     </span><span class="kw">fn </span>to_owned_scalar(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::ScalarType;
 }
 
 <span class="doccomment">/// A sub trait of Vector to add scalar operation support.
-</span><span class="comment">// This implementation refers to Datebend&#39;s [ScalarColumn](https://github.com/datafuselabs/databend/blob/main/common/datavalues/src/scalars/type_.rs)
-// and skyzh&#39;s [type-exercise-in-rust](https://github.com/skyzh/type-exercise-in-rust).
-</span><span class="kw">pub trait </span>ScalarVector: Vector + Send + Sync + Sized + <span class="lifetime">&#39;static
+</span><span class="comment">// This implementation refers to Datebend's [ScalarColumn](https://github.com/datafuselabs/databend/blob/main/common/datavalues/src/scalars/type_.rs)
+// and skyzh's [type-exercise-in-rust](https://github.com/skyzh/type-exercise-in-rust).
+</span><span class="kw">pub trait </span>ScalarVector: Vector + Send + Sync + Sized + <span class="lifetime">'static
 </span><span class="kw">where
-    for</span>&lt;<span class="lifetime">&#39;a</span>&gt; <span class="self">Self</span>::OwnedItem: Scalar&lt;RefType&lt;<span class="lifetime">&#39;a</span>&gt; = <span class="self">Self</span>::RefItem&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
+    for</span>&lt;<span class="lifetime">'a</span>&gt; <span class="self">Self</span>::OwnedItem: Scalar&lt;RefType&lt;<span class="lifetime">'a</span>&gt; = <span class="self">Self</span>::RefItem&lt;<span class="lifetime">'a</span>&gt;&gt;,
 {
     <span class="kw">type </span>OwnedItem: Scalar&lt;VectorType = <span class="self">Self</span>&gt;;
     <span class="doccomment">/// The reference item of this vector.
-    </span><span class="kw">type </span>RefItem&lt;<span class="lifetime">&#39;a</span>&gt;: ScalarRef&lt;<span class="lifetime">&#39;a</span>, ScalarType = <span class="self">Self</span>::OwnedItem&gt;
+    </span><span class="kw">type </span>RefItem&lt;<span class="lifetime">'a</span>&gt;: ScalarRef&lt;<span class="lifetime">'a</span>, ScalarType = <span class="self">Self</span>::OwnedItem&gt;
     <span class="kw">where
-        </span><span class="self">Self</span>: <span class="lifetime">&#39;a</span>;
+        </span><span class="self">Self</span>: <span class="lifetime">'a</span>;
 
     <span class="doccomment">/// Iterator type of this vector.
-    </span><span class="kw">type </span>Iter&lt;<span class="lifetime">&#39;a</span>&gt;: Iterator&lt;Item = <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::RefItem&lt;<span class="lifetime">&#39;a</span>&gt;&gt;&gt;
+    </span><span class="kw">type </span>Iter&lt;<span class="lifetime">'a</span>&gt;: Iterator&lt;Item = <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::RefItem&lt;<span class="lifetime">'a</span>&gt;&gt;&gt;
     <span class="kw">where
-        </span><span class="self">Self</span>: <span class="lifetime">&#39;a</span>;
+        </span><span class="self">Self</span>: <span class="lifetime">'a</span>;
 
     <span class="doccomment">/// Builder type to build this vector.
     </span><span class="kw">type </span>Builder: ScalarVectorBuilder&lt;VectorType = <span class="self">Self</span>&gt;;
@@ -529,12 +563,12 @@
     ///
     /// # Panics
     /// Panics if `idx &gt;= self.len()`.
-    </span><span class="kw">fn </span>get_data(<span class="kw-2">&amp;</span><span class="self">self</span>, idx: usize) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::RefItem&lt;<span class="lifetime">&#39;_</span>&gt;&gt;;
+    </span><span class="kw">fn </span>get_data(<span class="kw-2">&amp;</span><span class="self">self</span>, idx: usize) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::RefItem&lt;<span class="lifetime">'_</span>&gt;&gt;;
 
     <span class="doccomment">/// Returns iterator of current vector.
-    </span><span class="kw">fn </span>iter_data(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::Iter&lt;<span class="lifetime">&#39;_</span>&gt;;
+    </span><span class="kw">fn </span>iter_data(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::Iter&lt;<span class="lifetime">'_</span>&gt;;
 
-    <span class="kw">fn </span>from_slice(data: <span class="kw-2">&amp;</span>[<span class="self">Self</span>::RefItem&lt;<span class="lifetime">&#39;_</span>&gt;]) -&gt; <span class="self">Self </span>{
+    <span class="kw">fn </span>from_slice(data: <span class="kw-2">&amp;</span>[<span class="self">Self</span>::RefItem&lt;<span class="lifetime">'_</span>&gt;]) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span><span class="kw-2">mut </span>builder = <span class="self">Self</span>::Builder::with_capacity(data.len());
         <span class="kw">for </span>item <span class="kw">in </span>data {
             builder.push(<span class="prelude-val">Some</span>(<span class="kw-2">*</span>item));
@@ -542,7 +576,7 @@
         builder.finish()
     }
 
-    <span class="kw">fn </span>from_iterator&lt;<span class="lifetime">&#39;a</span>&gt;(it: <span class="kw">impl </span>Iterator&lt;Item = <span class="self">Self</span>::RefItem&lt;<span class="lifetime">&#39;a</span>&gt;&gt;) -&gt; <span class="self">Self </span>{
+    <span class="kw">fn </span>from_iterator&lt;<span class="lifetime">'a</span>&gt;(it: <span class="kw">impl </span>Iterator&lt;Item = <span class="self">Self</span>::RefItem&lt;<span class="lifetime">'a</span>&gt;&gt;) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span><span class="kw-2">mut </span>builder = <span class="self">Self</span>::Builder::with_capacity(get_iter_capacity(<span class="kw-2">&amp;</span>it));
         <span class="kw">for </span>item <span class="kw">in </span>it {
             builder.push(<span class="prelude-val">Some</span>(item));
@@ -579,17 +613,20 @@
     </span><span class="kw">fn </span>with_capacity(capacity: usize) -&gt; <span class="self">Self</span>;
 
     <span class="doccomment">/// Push a value into the builder.
-    </span><span class="kw">fn </span>push(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: <span class="prelude-ty">Option</span>&lt;&lt;<span class="self">Self</span>::VectorType <span class="kw">as </span>ScalarVector&gt;::RefItem&lt;<span class="lifetime">&#39;_</span>&gt;&gt;);
+    </span><span class="kw">fn </span>push(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: <span class="prelude-ty">Option</span>&lt;&lt;<span class="self">Self</span>::VectorType <span class="kw">as </span>ScalarVector&gt;::RefItem&lt;<span class="lifetime">'_</span>&gt;&gt;);
 
-    <span class="doccomment">/// Finish build and return a new vector.
+    <span class="doccomment">/// Build a new vector and reset `self`.
     </span><span class="kw">fn </span>finish(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="self">Self</span>::VectorType;
+
+    <span class="doccomment">/// Build a new vector without resetting `self`.
+    </span><span class="kw">fn </span>finish_cloned(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::VectorType;
 }
 
 <span class="macro">macro_rules! </span>impl_scalar_for_native {
     (<span class="macro-nonterminal">$Native</span>: ident, <span class="macro-nonterminal">$DataType</span>: ident) =&gt; {
         <span class="kw">impl </span>Scalar <span class="kw">for </span><span class="macro-nonterminal">$Native </span>{
             <span class="kw">type </span>VectorType = PrimitiveVector&lt;<span class="macro-nonterminal">$DataType</span>&gt;;
-            <span class="kw">type </span>RefType&lt;<span class="lifetime">&#39;a</span>&gt; = <span class="macro-nonterminal">$Native</span>;
+            <span class="kw">type </span>RefType&lt;<span class="lifetime">'a</span>&gt; = <span class="macro-nonterminal">$Native</span>;
 
             <span class="attr">#[inline]
             </span><span class="kw">fn </span>as_scalar_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="macro-nonterminal">$Native </span>{
@@ -598,13 +635,13 @@
 
             <span class="attr">#[allow(clippy::needless_lifetimes)]
             #[inline]
-            </span><span class="kw">fn </span>upcast_gat&lt;<span class="lifetime">&#39;short</span>, <span class="lifetime">&#39;long</span>: <span class="lifetime">&#39;short</span>&gt;(long: <span class="macro-nonterminal">$Native</span>) -&gt; <span class="macro-nonterminal">$Native </span>{
+            </span><span class="kw">fn </span>upcast_gat&lt;<span class="lifetime">'short</span>, <span class="lifetime">'long</span>: <span class="lifetime">'short</span>&gt;(long: <span class="macro-nonterminal">$Native</span>) -&gt; <span class="macro-nonterminal">$Native </span>{
                 long
             }
         }
 
         <span class="doccomment">/// Implement [`ScalarRef`] for primitive types. Note that primitive types are both [`Scalar`] and [`ScalarRef`].
-        </span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; ScalarRef&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span><span class="macro-nonterminal">$Native </span>{
+        </span><span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; ScalarRef&lt;<span class="lifetime">'a</span>&gt; <span class="kw">for </span><span class="macro-nonterminal">$Native </span>{
             <span class="kw">type </span>ScalarType = <span class="macro-nonterminal">$Native</span>;
 
             <span class="attr">#[inline]
@@ -628,7 +665,7 @@
 
 <span class="kw">impl </span>Scalar <span class="kw">for </span>bool {
     <span class="kw">type </span>VectorType = BooleanVector;
-    <span class="kw">type </span>RefType&lt;<span class="lifetime">&#39;a</span>&gt; = bool;
+    <span class="kw">type </span>RefType&lt;<span class="lifetime">'a</span>&gt; = bool;
 
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>as_scalar_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
@@ -637,12 +674,12 @@
 
     <span class="attr">#[allow(clippy::needless_lifetimes)]
     #[inline]
-    </span><span class="kw">fn </span>upcast_gat&lt;<span class="lifetime">&#39;short</span>, <span class="lifetime">&#39;long</span>: <span class="lifetime">&#39;short</span>&gt;(long: bool) -&gt; bool {
+    </span><span class="kw">fn </span>upcast_gat&lt;<span class="lifetime">'short</span>, <span class="lifetime">'long</span>: <span class="lifetime">'short</span>&gt;(long: bool) -&gt; bool {
         long
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; ScalarRef&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>bool {
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; ScalarRef&lt;<span class="lifetime">'a</span>&gt; <span class="kw">for </span>bool {
     <span class="kw">type </span>ScalarType = bool;
 
     <span class="attr">#[inline]
@@ -653,7 +690,7 @@
 
 <span class="kw">impl </span>Scalar <span class="kw">for </span>String {
     <span class="kw">type </span>VectorType = StringVector;
-    <span class="kw">type </span>RefType&lt;<span class="lifetime">&#39;a</span>&gt; = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str;
+    <span class="kw">type </span>RefType&lt;<span class="lifetime">'a</span>&gt; = <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str;
 
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>as_scalar_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
@@ -661,12 +698,12 @@
     </span>}
 
     <span class="attr">#[inline]
-    </span><span class="kw">fn </span>upcast_gat&lt;<span class="lifetime">&#39;short</span>, <span class="lifetime">&#39;long</span>: <span class="lifetime">&#39;short</span>&gt;(long: <span class="kw-2">&amp;</span><span class="lifetime">&#39;long </span>str) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;short </span>str {
+    </span><span class="kw">fn </span>upcast_gat&lt;<span class="lifetime">'short</span>, <span class="lifetime">'long</span>: <span class="lifetime">'short</span>&gt;(long: <span class="kw-2">&amp;</span><span class="lifetime">'long </span>str) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'short </span>str {
         long
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; ScalarRef&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str {
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; ScalarRef&lt;<span class="lifetime">'a</span>&gt; <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">'a </span>str {
     <span class="kw">type </span>ScalarType = String;
 
     <span class="attr">#[inline]
@@ -677,7 +714,7 @@
 
 <span class="kw">impl </span>Scalar <span class="kw">for </span>Vec&lt;u8&gt; {
     <span class="kw">type </span>VectorType = BinaryVector;
-    <span class="kw">type </span>RefType&lt;<span class="lifetime">&#39;a</span>&gt; = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[u8];
+    <span class="kw">type </span>RefType&lt;<span class="lifetime">'a</span>&gt; = <span class="kw-2">&amp;</span><span class="lifetime">'a </span>[u8];
 
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>as_scalar_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[u8] {
@@ -685,12 +722,12 @@
     </span>}
 
     <span class="attr">#[inline]
-    </span><span class="kw">fn </span>upcast_gat&lt;<span class="lifetime">&#39;short</span>, <span class="lifetime">&#39;long</span>: <span class="lifetime">&#39;short</span>&gt;(long: <span class="kw-2">&amp;</span><span class="lifetime">&#39;long </span>[u8]) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;short </span>[u8] {
+    </span><span class="kw">fn </span>upcast_gat&lt;<span class="lifetime">'short</span>, <span class="lifetime">'long</span>: <span class="lifetime">'short</span>&gt;(long: <span class="kw-2">&amp;</span><span class="lifetime">'long </span>[u8]) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'short </span>[u8] {
         long
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; ScalarRef&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[u8] {
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; ScalarRef&lt;<span class="lifetime">'a</span>&gt; <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">'a </span>[u8] {
     <span class="kw">type </span>ScalarType = Vec&lt;u8&gt;;
 
     <span class="attr">#[inline]
@@ -701,19 +738,40 @@
 
 <span class="kw">impl </span>Scalar <span class="kw">for </span>Date {
     <span class="kw">type </span>VectorType = DateVector;
-    <span class="kw">type </span>RefType&lt;<span class="lifetime">&#39;a</span>&gt; = Date;
+    <span class="kw">type </span>RefType&lt;<span class="lifetime">'a</span>&gt; = Date;
 
-    <span class="kw">fn </span>as_scalar_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::RefType&lt;<span class="lifetime">&#39;_</span>&gt; {
+    <span class="kw">fn </span>as_scalar_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::RefType&lt;<span class="lifetime">'_</span>&gt; {
         <span class="kw-2">*</span><span class="self">self
     </span>}
 
-    <span class="kw">fn </span>upcast_gat&lt;<span class="lifetime">&#39;short</span>, <span class="lifetime">&#39;long</span>: <span class="lifetime">&#39;short</span>&gt;(long: <span class="self">Self</span>::RefType&lt;<span class="lifetime">&#39;long</span>&gt;) -&gt; <span class="self">Self</span>::RefType&lt;<span class="lifetime">&#39;short</span>&gt; {
+    <span class="kw">fn </span>upcast_gat&lt;<span class="lifetime">'short</span>, <span class="lifetime">'long</span>: <span class="lifetime">'short</span>&gt;(long: <span class="self">Self</span>::RefType&lt;<span class="lifetime">'long</span>&gt;) -&gt; <span class="self">Self</span>::RefType&lt;<span class="lifetime">'short</span>&gt; {
         long
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; ScalarRef&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>Date {
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; ScalarRef&lt;<span class="lifetime">'a</span>&gt; <span class="kw">for </span>Date {
     <span class="kw">type </span>ScalarType = Date;
+
+    <span class="kw">fn </span>to_owned_scalar(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::ScalarType {
+        <span class="kw-2">*</span><span class="self">self
+    </span>}
+}
+
+<span class="kw">impl </span>Scalar <span class="kw">for </span>Decimal128 {
+    <span class="kw">type </span>VectorType = Decimal128Vector;
+    <span class="kw">type </span>RefType&lt;<span class="lifetime">'a</span>&gt; = Decimal128;
+
+    <span class="kw">fn </span>as_scalar_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::RefType&lt;<span class="lifetime">'_</span>&gt; {
+        <span class="kw-2">*</span><span class="self">self
+    </span>}
+
+    <span class="kw">fn </span>upcast_gat&lt;<span class="lifetime">'short</span>, <span class="lifetime">'long</span>: <span class="lifetime">'short</span>&gt;(long: <span class="self">Self</span>::RefType&lt;<span class="lifetime">'long</span>&gt;) -&gt; <span class="self">Self</span>::RefType&lt;<span class="lifetime">'short</span>&gt; {
+        long
+    }
+}
+
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; ScalarRef&lt;<span class="lifetime">'a</span>&gt; <span class="kw">for </span>Decimal128 {
+    <span class="kw">type </span>ScalarType = Decimal128;
 
     <span class="kw">fn </span>to_owned_scalar(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::ScalarType {
         <span class="kw-2">*</span><span class="self">self
@@ -722,18 +780,18 @@
 
 <span class="kw">impl </span>Scalar <span class="kw">for </span>DateTime {
     <span class="kw">type </span>VectorType = DateTimeVector;
-    <span class="kw">type </span>RefType&lt;<span class="lifetime">&#39;a</span>&gt; = DateTime;
+    <span class="kw">type </span>RefType&lt;<span class="lifetime">'a</span>&gt; = DateTime;
 
-    <span class="kw">fn </span>as_scalar_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::RefType&lt;<span class="lifetime">&#39;_</span>&gt; {
+    <span class="kw">fn </span>as_scalar_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::RefType&lt;<span class="lifetime">'_</span>&gt; {
         <span class="kw-2">*</span><span class="self">self
     </span>}
 
-    <span class="kw">fn </span>upcast_gat&lt;<span class="lifetime">&#39;short</span>, <span class="lifetime">&#39;long</span>: <span class="lifetime">&#39;short</span>&gt;(long: <span class="self">Self</span>::RefType&lt;<span class="lifetime">&#39;long</span>&gt;) -&gt; <span class="self">Self</span>::RefType&lt;<span class="lifetime">&#39;short</span>&gt; {
+    <span class="kw">fn </span>upcast_gat&lt;<span class="lifetime">'short</span>, <span class="lifetime">'long</span>: <span class="lifetime">'short</span>&gt;(long: <span class="self">Self</span>::RefType&lt;<span class="lifetime">'long</span>&gt;) -&gt; <span class="self">Self</span>::RefType&lt;<span class="lifetime">'short</span>&gt; {
         long
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; ScalarRef&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>DateTime {
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; ScalarRef&lt;<span class="lifetime">'a</span>&gt; <span class="kw">for </span>DateTime {
     <span class="kw">type </span>ScalarType = DateTime;
 
     <span class="kw">fn </span>to_owned_scalar(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::ScalarType {
@@ -745,18 +803,18 @@
 
 </span><span class="kw">impl </span>Scalar <span class="kw">for </span>ListValue {
     <span class="kw">type </span>VectorType = ListVector;
-    <span class="kw">type </span>RefType&lt;<span class="lifetime">&#39;a</span>&gt; = ListValueRef&lt;<span class="lifetime">&#39;a</span>&gt;;
+    <span class="kw">type </span>RefType&lt;<span class="lifetime">'a</span>&gt; = ListValueRef&lt;<span class="lifetime">'a</span>&gt;;
 
-    <span class="kw">fn </span>as_scalar_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::RefType&lt;<span class="lifetime">&#39;_</span>&gt; {
+    <span class="kw">fn </span>as_scalar_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::RefType&lt;<span class="lifetime">'_</span>&gt; {
         ListValueRef::Ref { val: <span class="self">self </span>}
     }
 
-    <span class="kw">fn </span>upcast_gat&lt;<span class="lifetime">&#39;short</span>, <span class="lifetime">&#39;long</span>: <span class="lifetime">&#39;short</span>&gt;(long: <span class="self">Self</span>::RefType&lt;<span class="lifetime">&#39;long</span>&gt;) -&gt; <span class="self">Self</span>::RefType&lt;<span class="lifetime">&#39;short</span>&gt; {
+    <span class="kw">fn </span>upcast_gat&lt;<span class="lifetime">'short</span>, <span class="lifetime">'long</span>: <span class="lifetime">'short</span>&gt;(long: <span class="self">Self</span>::RefType&lt;<span class="lifetime">'long</span>&gt;) -&gt; <span class="self">Self</span>::RefType&lt;<span class="lifetime">'short</span>&gt; {
         long
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; ScalarRef&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>ListValueRef&lt;<span class="lifetime">&#39;a</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; ScalarRef&lt;<span class="lifetime">'a</span>&gt; <span class="kw">for </span>ListValueRef&lt;<span class="lifetime">'a</span>&gt; {
     <span class="kw">type </span>ScalarType = ListValue;
 
     <span class="kw">fn </span>to_owned_scalar(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::ScalarType {
@@ -782,7 +840,7 @@
     <span class="kw">use </span><span class="kw">crate</span>::timestamp::TimestampSecond;
     <span class="kw">use </span><span class="kw">crate</span>::vectors::{BinaryVector, Int32Vector, ListVectorBuilder, TimestampSecondVector};
 
-    <span class="kw">fn </span>build_vector_from_slice&lt;T: ScalarVector&gt;(items: <span class="kw-2">&amp;</span>[<span class="prelude-ty">Option</span>&lt;T::RefItem&lt;<span class="lifetime">&#39;_</span>&gt;&gt;]) -&gt; T {
+    <span class="kw">fn </span>build_vector_from_slice&lt;T: ScalarVector&gt;(items: <span class="kw-2">&amp;</span>[<span class="prelude-ty">Option</span>&lt;T::RefItem&lt;<span class="lifetime">'_</span>&gt;&gt;]) -&gt; T {
         <span class="kw">let </span><span class="kw-2">mut </span>builder = T::Builder::with_capacity(items.len());
         <span class="kw">for </span>item <span class="kw">in </span>items {
             builder.push(<span class="kw-2">*</span>item);
@@ -790,9 +848,9 @@
         builder.finish()
     }
 
-    <span class="kw">fn </span>assert_vector_eq&lt;<span class="lifetime">&#39;a</span>, T: ScalarVector&gt;(expect: <span class="kw-2">&amp;</span>[<span class="prelude-ty">Option</span>&lt;T::RefItem&lt;<span class="lifetime">&#39;a</span>&gt;&gt;], vector: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>T)
+    <span class="kw">fn </span>assert_vector_eq&lt;<span class="lifetime">'a</span>, T: ScalarVector&gt;(expect: <span class="kw-2">&amp;</span>[<span class="prelude-ty">Option</span>&lt;T::RefItem&lt;<span class="lifetime">'a</span>&gt;&gt;], vector: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>T)
     <span class="kw">where
-        </span>T::RefItem&lt;<span class="lifetime">&#39;a</span>&gt;: PartialEq + std::fmt::Debug,
+        </span>T::RefItem&lt;<span class="lifetime">'a</span>&gt;: PartialEq + std::fmt::Debug,
     {
         <span class="kw">for </span>(a, b) <span class="kw">in </span>expect.iter().zip(vector.iter_data()) {
             <span class="macro">assert_eq!</span>(<span class="kw-2">*</span>a, b);
@@ -808,13 +866,13 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_build_binary_vector() {
-        <span class="kw">let </span>expect: Vec&lt;<span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>[u8]&gt;&gt; = <span class="macro">vec!</span>[
-            <span class="prelude-val">Some</span>(<span class="string">b&quot;a&quot;</span>),
-            <span class="prelude-val">Some</span>(<span class="string">b&quot;b&quot;</span>),
-            <span class="prelude-val">Some</span>(<span class="string">b&quot;c&quot;</span>),
+        <span class="kw">let </span>expect: Vec&lt;<span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'static </span>[u8]&gt;&gt; = <span class="macro">vec!</span>[
+            <span class="prelude-val">Some</span>(<span class="string">b"a"</span>),
+            <span class="prelude-val">Some</span>(<span class="string">b"b"</span>),
+            <span class="prelude-val">Some</span>(<span class="string">b"c"</span>),
             <span class="prelude-val">None</span>,
-            <span class="prelude-val">Some</span>(<span class="string">b&quot;e&quot;</span>),
-            <span class="prelude-val">Some</span>(<span class="string">b&quot;&quot;</span>),
+            <span class="prelude-val">Some</span>(<span class="string">b"e"</span>),
+            <span class="prelude-val">Some</span>(<span class="string">b""</span>),
         ];
         <span class="kw">let </span>vector: BinaryVector = build_vector_from_slice(<span class="kw-2">&amp;</span>expect);
         assert_vector_eq(<span class="kw-2">&amp;</span>expect, <span class="kw-2">&amp;</span>vector);
@@ -837,6 +895,13 @@
         <span class="kw">let </span>date = Date::new(<span class="number">1</span>);
         <span class="macro">assert_eq!</span>(date, date.as_scalar_ref());
         <span class="macro">assert_eq!</span>(date, date.to_owned_scalar());
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_decimal_scalar() {
+        <span class="kw">let </span>decimal = Decimal128::new(<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>);
+        <span class="macro">assert_eq!</span>(decimal, decimal.as_scalar_ref());
+        <span class="macro">assert_eq!</span>(decimal, decimal.to_owned_scalar());
     }
 
     <span class="attr">#[test]

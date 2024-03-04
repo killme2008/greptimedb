@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["AlwaysLeader","LeaderCachedKvStore"],"trait":["CheckLeader"],"type":["CheckLeaderRef"]};
+window.SIDEBAR_ITEMS = {"struct":["AlwaysLeader","LeaderCachedKvBackend"],"trait":["CheckLeader"],"type":["CheckLeaderRef"]};

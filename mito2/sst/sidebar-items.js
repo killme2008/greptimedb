@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["file","file_purger","parquet","stream_writer","version"]};
+window.SIDEBAR_ITEMS = {"mod":["file","file_purger","parquet","version"]};

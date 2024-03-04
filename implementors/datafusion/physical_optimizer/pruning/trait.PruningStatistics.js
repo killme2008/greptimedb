@@ -1,3 +1,0 @@
-(function() {var implementors = {
-"table":[["impl&lt;'a&gt; PruningStatistics for <a class=\"struct\" href=\"table/predicate/stats/struct.RowGroupPruningStatistics.html\" title=\"struct table::predicate::stats::RowGroupPruningStatistics\">RowGroupPruningStatistics</a>&lt;'a&gt;"]]
-};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

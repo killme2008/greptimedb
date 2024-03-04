@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/common/time/src/interval.rs`."><title>interval.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="common_time" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../common_time/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/common/time/src/interval.rs`."><title>interval.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="common_time" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -746,16 +747,63 @@
 <a href="#746" id="746">746</a>
 <a href="#747" id="747">747</a>
 <a href="#748" id="748">748</a>
+<a href="#749" id="749">749</a>
+<a href="#750" id="750">750</a>
+<a href="#751" id="751">751</a>
+<a href="#752" id="752">752</a>
+<a href="#753" id="753">753</a>
+<a href="#754" id="754">754</a>
+<a href="#755" id="755">755</a>
+<a href="#756" id="756">756</a>
+<a href="#757" id="757">757</a>
+<a href="#758" id="758">758</a>
+<a href="#759" id="759">759</a>
+<a href="#760" id="760">760</a>
+<a href="#761" id="761">761</a>
+<a href="#762" id="762">762</a>
+<a href="#763" id="763">763</a>
+<a href="#764" id="764">764</a>
+<a href="#765" id="765">765</a>
+<a href="#766" id="766">766</a>
+<a href="#767" id="767">767</a>
+<a href="#768" id="768">768</a>
+<a href="#769" id="769">769</a>
+<a href="#770" id="770">770</a>
+<a href="#771" id="771">771</a>
+<a href="#772" id="772">772</a>
+<a href="#773" id="773">773</a>
+<a href="#774" id="774">774</a>
+<a href="#775" id="775">775</a>
+<a href="#776" id="776">776</a>
+<a href="#777" id="777">777</a>
+<a href="#778" id="778">778</a>
+<a href="#779" id="779">779</a>
+<a href="#780" id="780">780</a>
+<a href="#781" id="781">781</a>
+<a href="#782" id="782">782</a>
+<a href="#783" id="783">783</a>
+<a href="#784" id="784">784</a>
+<a href="#785" id="785">785</a>
+<a href="#786" id="786">786</a>
+<a href="#787" id="787">787</a>
+<a href="#788" id="788">788</a>
+<a href="#789" id="789">789</a>
+<a href="#790" id="790">790</a>
+<a href="#791" id="791">791</a>
+<a href="#792" id="792">792</a>
+<a href="#793" id="793">793</a>
+<a href="#794" id="794">794</a>
+<a href="#795" id="795">795</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -768,6 +816,10 @@
 <span class="kw">use </span>arrow::datatypes::IntervalUnit <span class="kw">as </span>ArrowIntervalUnit;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>serde_json::Value;
+<span class="kw">use </span>snafu::ResultExt;
+
+<span class="kw">use </span><span class="kw">crate</span>::duration::Duration;
+<span class="kw">use </span><span class="kw">crate</span>::error::{<span class="prelude-ty">Result</span>, TimestampOverflowSnafu};
 
 <span class="attr">#[derive(
     Debug, Default, Copy, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize,
@@ -784,7 +836,7 @@
     /// 64 bit integer. All integers are signed. Each field is independent
     /// (e.g. there is no constraint that nanoseconds have the same sign
     /// as days or that the quantity of nanoseconds represents less
-    /// than a day&#39;s worth of time).
+    /// than a day's worth of time).
     </span><span class="attr">#[default]
     </span>MonthDayNano,
 }
@@ -811,7 +863,7 @@
 /// month-day-nano, which will be stored in the following format.
 /// Interval data format:
 /// | months | days   | nsecs      |
-/// | 4bytes | 4bytes | 8bytes     |  
+/// | 4bytes | 4bytes | 8bytes     |
 </span><span class="attr">#[derive(Debug, Clone, Default, Copy, Serialize, Deserialize)]
 </span><span class="kw">pub struct </span>Interval {
     months: i32,
@@ -860,6 +912,14 @@
             nsecs: (millis <span class="kw">as </span>i64) * NANOS_PER_MILLI,
             unit: IntervalUnit::DayTime,
         }
+    }
+
+    <span class="kw">pub fn </span>to_duration(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Duration&gt; {
+        <span class="prelude-val">Ok</span>(Duration::new_nanosecond(
+            <span class="self">self</span>.to_nanosecond()
+                .try_into()
+                .context(TimestampOverflowSnafu)<span class="question-mark">?</span>,
+        ))
     }
 
     <span class="doccomment">/// Return a tuple(months, days, nanoseconds) from the interval.
@@ -960,7 +1020,7 @@
         IntervalFormat::from(<span class="self">self</span>).to_sql_standard_string()
     }
 
-    <span class="doccomment">/// Interval Type and i128[MonthDayNano] Convert
+    <span class="doccomment">/// Interval Type and i128 [IntervalUnit::MonthDayNano] Convert
     /// v consists of months(i32) | days(i32) | nsecs(i64)
     </span><span class="kw">pub fn </span>from_i128(v: i128) -&gt; <span class="self">Self </span>{
         Interval {
@@ -971,7 +1031,7 @@
         }
     }
 
-    <span class="doccomment">/// `Interval` Type and i64[DayTime] Convert
+    <span class="doccomment">/// `Interval` Type and i64 [IntervalUnit::DayTime] Convert
     /// v consists of days(i32) | milliseconds(i32)
     </span><span class="kw">pub fn </span>from_i64(v: i64) -&gt; <span class="self">Self </span>{
         Interval {
@@ -982,7 +1042,7 @@
         }
     }
 
-    <span class="doccomment">/// `Interval` Type and i32[YearMonth] Convert
+    <span class="doccomment">/// `Interval` Type and i32 [IntervalUnit::YearMonth] Convert
     /// v consists of months(i32)
     </span><span class="kw">pub fn </span>from_i32(v: i32) -&gt; <span class="self">Self </span>{
         Interval {
@@ -994,21 +1054,24 @@
     }
 
     <span class="kw">pub fn </span>to_i128(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; i128 {
-        <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="number">0</span>;
-        result |= <span class="self">self</span>.months <span class="kw">as </span>i128;
-        result &lt;&lt;= <span class="number">32</span>;
-        result |= <span class="self">self</span>.days <span class="kw">as </span>i128;
-        result &lt;&lt;= <span class="number">64</span>;
-        result |= <span class="self">self</span>.nsecs <span class="kw">as </span>i128;
-        result
+        <span class="comment">// 128            96              64                               0
+        // +-------+-------+-------+-------+-------+-------+-------+-------+
+        // |     months    |      days     |          nanoseconds          |
+        // +-------+-------+-------+-------+-------+-------+-------+-------+
+        </span><span class="kw">let </span>months = (<span class="self">self</span>.months <span class="kw">as </span>u128 &amp; u32::MAX <span class="kw">as </span>u128) &lt;&lt; <span class="number">96</span>;
+        <span class="kw">let </span>days = (<span class="self">self</span>.days <span class="kw">as </span>u128 &amp; u32::MAX <span class="kw">as </span>u128) &lt;&lt; <span class="number">64</span>;
+        <span class="kw">let </span>nsecs = <span class="self">self</span>.nsecs <span class="kw">as </span>u128 &amp; u64::MAX <span class="kw">as </span>u128;
+        (months | days | nsecs) <span class="kw">as </span>i128
     }
 
     <span class="kw">pub fn </span>to_i64(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; i64 {
-        <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="number">0</span>;
-        result |= <span class="self">self</span>.days <span class="kw">as </span>i64;
-        result &lt;&lt;= <span class="number">32</span>;
-        result |= <span class="self">self</span>.nsecs / NANOS_PER_MILLI;
-        result
+        <span class="comment">// 64                              32                              0
+        // +-------+-------+-------+-------+-------+-------+-------+-------+
+        // |             days              |         milliseconds          |
+        // +-------+-------+-------+-------+-------+-------+-------+-------+
+        </span><span class="kw">let </span>days = (<span class="self">self</span>.days <span class="kw">as </span>u64 &amp; u32::MAX <span class="kw">as </span>u64) &lt;&lt; <span class="number">32</span>;
+        <span class="kw">let </span>milliseconds = (<span class="self">self</span>.nsecs / NANOS_PER_MILLI) <span class="kw">as </span>u64 &amp; u32::MAX <span class="kw">as </span>u64;
+        (days | milliseconds) <span class="kw">as </span>i64
     }
 
     <span class="kw">pub fn </span>to_i32(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; i32 {
@@ -1035,22 +1098,22 @@
 }
 
 <span class="kw">impl </span>Display <span class="kw">for </span>Interval {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; fmt::Result {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; fmt::Result {
         <span class="kw">let </span><span class="kw-2">mut </span>s = String::new();
         <span class="kw">if </span><span class="self">self</span>.months != <span class="number">0 </span>{
-            <span class="macro">write!</span>(s, <span class="string">&quot;{} months &quot;</span>, <span class="self">self</span>.months)<span class="question-mark">?</span>;
+            <span class="macro">write!</span>(s, <span class="string">"{} months "</span>, <span class="self">self</span>.months)<span class="question-mark">?</span>;
         }
         <span class="kw">if </span><span class="self">self</span>.days != <span class="number">0 </span>{
-            <span class="macro">write!</span>(s, <span class="string">&quot;{} days &quot;</span>, <span class="self">self</span>.days)<span class="question-mark">?</span>;
+            <span class="macro">write!</span>(s, <span class="string">"{} days "</span>, <span class="self">self</span>.days)<span class="question-mark">?</span>;
         }
         <span class="kw">if </span><span class="self">self</span>.nsecs != <span class="number">0 </span>{
-            <span class="macro">write!</span>(s, <span class="string">&quot;{} nsecs&quot;</span>, <span class="self">self</span>.nsecs)<span class="question-mark">?</span>;
+            <span class="macro">write!</span>(s, <span class="string">"{} nsecs"</span>, <span class="self">self</span>.nsecs)<span class="question-mark">?</span>;
         }
-        <span class="macro">write!</span>(f, <span class="string">&quot;{}&quot;</span>, s.trim())
+        <span class="macro">write!</span>(f, <span class="string">"{}"</span>, s.trim())
     }
 }
 
-<span class="doccomment">/// https://www.postgresql.org/docs/current/datatype-datetime.html#DATATYPE-INTERVAL-OUTPUT
+<span class="doccomment">/// &lt;https://www.postgresql.org/docs/current/datatype-datetime.html#DATATYPE-INTERVAL-OUTPUT&gt;
 /// support postgres format, iso8601 format and sql standard format
 </span><span class="attr">#[derive(Debug, Clone, Default, Copy, Serialize, Deserialize)]
 </span><span class="kw">pub struct </span>IntervalFormat {
@@ -1125,30 +1188,30 @@
     /// for example: P1Y2M3DT4H5M6.789S
     </span><span class="kw">pub fn </span>to_iso8601_string(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
         <span class="kw">if </span><span class="self">self</span>.is_zero() {
-            <span class="kw">return </span><span class="string">&quot;PT0S&quot;</span>.to_string();
+            <span class="kw">return </span><span class="string">"PT0S"</span>.to_string();
         }
         <span class="kw">let </span>fract_str = <span class="kw">match </span><span class="self">self</span>.microseconds {
-            <span class="number">0 </span>=&gt; <span class="string">&quot;&quot;</span>.to_string(),
-            <span class="kw">_ </span>=&gt; <span class="macro">format!</span>(<span class="string">&quot;.{:06}&quot;</span>, <span class="self">self</span>.microseconds)
-                .trim_end_matches(<span class="string">&#39;0&#39;</span>)
+            <span class="number">0 </span>=&gt; <span class="string">""</span>.to_string(),
+            <span class="kw">_ </span>=&gt; <span class="macro">format!</span>(<span class="string">".{:06}"</span>, <span class="self">self</span>.microseconds)
+                .trim_end_matches(<span class="string">'0'</span>)
                 .to_string(),
         };
         <span class="macro">format!</span>(
-            <span class="string">&quot;P{}Y{}M{}DT{}H{}M{}{}S&quot;</span>,
+            <span class="string">"P{}Y{}M{}DT{}H{}M{}{}S"</span>,
             <span class="self">self</span>.years, <span class="self">self</span>.months, <span class="self">self</span>.days, <span class="self">self</span>.hours, <span class="self">self</span>.minutes, <span class="self">self</span>.seconds, fract_str
         )
     }
 
     <span class="doccomment">/// Convert IntervalFormat to sql standard format string
-    /// SQL standard pattern - [years - months] [days] [hours:minutes:seconds[.fractional seconds]]
+    /// SQL standard pattern `- [years - months] [days] [hours:minutes:seconds[.fractional seconds]]`
     /// for example: 1-2 3:4:5.678
     </span><span class="kw">pub fn </span>to_sql_standard_string(<span class="self">self</span>) -&gt; String {
         <span class="kw">if </span><span class="self">self</span>.is_zero() {
-            <span class="string">&quot;0&quot;</span>.to_string()
+            <span class="string">"0"</span>.to_string()
         } <span class="kw">else if </span>!<span class="self">self</span>.has_time_part() &amp;&amp; !<span class="self">self</span>.has_day() {
             get_year_month(<span class="self">self</span>.months, <span class="self">self</span>.years, <span class="bool-val">true</span>)
         } <span class="kw">else if </span>!<span class="self">self</span>.has_time_part() &amp;&amp; !<span class="self">self</span>.has_year_month() {
-            <span class="macro">format!</span>(<span class="string">&quot;{} 0:00:00&quot;</span>, <span class="self">self</span>.days)
+            <span class="macro">format!</span>(<span class="string">"{} 0:00:00"</span>, <span class="self">self</span>.days)
         } <span class="kw">else if </span>!<span class="self">self</span>.has_year_month() &amp;&amp; !<span class="self">self</span>.has_day() {
             get_time_part(
                 <span class="self">self</span>.hours,
@@ -1168,28 +1231,28 @@
                 <span class="self">self</span>.has_time_part_positive(),
                 <span class="bool-val">false</span>,
             );
-            <span class="macro">format!</span>(<span class="string">&quot;{} {:+} {}&quot;</span>, year_month, <span class="self">self</span>.days, time_interval)
+            <span class="macro">format!</span>(<span class="string">"{} {:+} {}"</span>, year_month, <span class="self">self</span>.days, time_interval)
         }
     }
 
     <span class="doccomment">/// Convert IntervalFormat to postgres format string
-    /// postgres pattern - [years - months] [days] [hours[:minutes[:seconds[.fractional seconds]]]]
+    /// postgres pattern `- [years - months] [days] [hours[:minutes[:seconds[.fractional seconds]]]]`
     /// for example: -1 year -2 mons +3 days -04:05:06
     </span><span class="kw">pub fn </span>to_postgres_string(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
         <span class="kw">if </span><span class="self">self</span>.is_zero() {
-            <span class="kw">return </span><span class="string">&quot;00:00:00&quot;</span>.to_string();
+            <span class="kw">return </span><span class="string">"00:00:00"</span>.to_string();
         }
-        <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="string">&quot;&quot;</span>.to_string();
+        <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="string">""</span>.to_string();
         <span class="kw">if </span><span class="self">self</span>.has_year_month() {
             <span class="kw">if </span><span class="self">self</span>.years != <span class="number">0 </span>{
-                result.push_str(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;{} year &quot;</span>, <span class="self">self</span>.years));
+                result.push_str(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">"{} year "</span>, <span class="self">self</span>.years));
             }
             <span class="kw">if </span><span class="self">self</span>.months != <span class="number">0 </span>{
-                result.push_str(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;{} mons &quot;</span>, <span class="self">self</span>.months));
+                result.push_str(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">"{} mons "</span>, <span class="self">self</span>.months));
             }
         }
         <span class="kw">if </span><span class="self">self</span>.has_day() {
-            result.push_str(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;{} days &quot;</span>, <span class="self">self</span>.days));
+            result.push_str(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">"{} days "</span>, <span class="self">self</span>.days));
         }
         result.push_str(<span class="kw-2">&amp;</span><span class="self">self</span>.get_postgres_time_part());
         result.trim().to_string()
@@ -1197,23 +1260,23 @@
 
     <span class="doccomment">/// get postgres time part(include hours, minutes, seconds, microseconds)
     </span><span class="kw">fn </span>get_postgres_time_part(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
-        <span class="kw">let </span><span class="kw-2">mut </span>time_part = <span class="string">&quot;&quot;</span>.to_string();
+        <span class="kw">let </span><span class="kw-2">mut </span>time_part = <span class="string">""</span>.to_string();
         <span class="kw">if </span><span class="self">self</span>.has_time_part() {
             <span class="kw">let </span>sign = <span class="kw">if </span>!<span class="self">self</span>.has_time_part_positive() {
-                <span class="string">&quot;-&quot;
+                <span class="string">"-"
             </span>} <span class="kw">else </span>{
-                <span class="string">&quot;&quot;
+                <span class="string">""
             </span>};
             <span class="kw">let </span>hours = <span class="self">Self</span>::padding_i64(<span class="self">self</span>.hours);
             time_part.push_str(<span class="kw-2">&amp;</span><span class="macro">format!</span>(
-                <span class="string">&quot;{}{}:{}:{}&quot;</span>,
+                <span class="string">"{}{}:{}:{}"</span>,
                 sign,
                 hours,
                 <span class="self">Self</span>::padding_i64(<span class="self">self</span>.minutes),
                 <span class="self">Self</span>::padding_i64(<span class="self">self</span>.seconds),
             ));
             <span class="kw">if </span><span class="self">self</span>.microseconds != <span class="number">0 </span>{
-                time_part.push_str(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;.{:06}&quot;</span>, <span class="self">self</span>.microseconds.unsigned_abs()))
+                time_part.push_str(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">".{:06}"</span>, <span class="self">self</span>.microseconds.unsigned_abs()))
             }
         }
         time_part
@@ -1226,7 +1289,7 @@
         } <span class="kw">else </span>{
             val <span class="kw">as </span>u64
         };
-        <span class="macro">format!</span>(<span class="string">&quot;{:02}&quot;</span>, num)
+        <span class="macro">format!</span>(<span class="string">"{:02}"</span>, num)
     }
 }
 
@@ -1234,9 +1297,9 @@
 </span><span class="kw">fn </span>get_year_month(mons: i32, years: i32, is_only_year_month: bool) -&gt; String {
     <span class="kw">let </span>months = mons.unsigned_abs();
     <span class="kw">if </span>years == <span class="number">0 </span>|| is_only_year_month {
-        <span class="macro">format!</span>(<span class="string">&quot;{}-{}&quot;</span>, years, months)
+        <span class="macro">format!</span>(<span class="string">"{}-{}"</span>, years, months)
     } <span class="kw">else </span>{
-        <span class="macro">format!</span>(<span class="string">&quot;{:+}-{}&quot;</span>, years, months)
+        <span class="macro">format!</span>(<span class="string">"{:+}-{}"</span>, years, months)
     }
 }
 
@@ -1249,16 +1312,16 @@
     is_time_part_positive: bool,
     is_only_time: bool,
 ) -&gt; String {
-    <span class="kw">let </span><span class="kw-2">mut </span>interval = <span class="string">&quot;&quot;</span>.to_string();
+    <span class="kw">let </span><span class="kw-2">mut </span>interval = <span class="string">""</span>.to_string();
     <span class="kw">if </span>is_time_part_positive &amp;&amp; is_only_time {
-        interval.push_str(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;{}:{:02}:{:02}&quot;</span>, hours, mins, secs));
+        interval.push_str(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">"{}:{:02}:{:02}"</span>, hours, mins, secs));
     } <span class="kw">else </span>{
         <span class="kw">let </span>minutes = mins.unsigned_abs();
         <span class="kw">let </span>seconds = secs.unsigned_abs();
-        interval.push_str(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;{:+}:{:02}:{:02}&quot;</span>, hours, minutes, seconds));
+        interval.push_str(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">"{:+}:{:02}:{:02}"</span>, hours, minutes, seconds));
     }
     <span class="kw">if </span>micros != <span class="number">0 </span>{
-        <span class="kw">let </span>microseconds = <span class="macro">format!</span>(<span class="string">&quot;.{:06}&quot;</span>, micros.unsigned_abs());
+        <span class="kw">let </span>microseconds = <span class="macro">format!</span>(<span class="string">".{:06}"</span>, micros.unsigned_abs());
         interval.push_str(<span class="kw-2">&amp;</span>microseconds);
     }
     interval
@@ -1306,6 +1369,7 @@
     <span class="kw">use </span>std::collections::HashMap;
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use </span><span class="kw">crate</span>::timestamp::TimeUnit;
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_from_year_month() {
@@ -1318,6 +1382,21 @@
         <span class="kw">let </span>interval = Interval::from_day_time(<span class="number">1</span>, <span class="number">2</span>);
         <span class="macro">assert_eq!</span>(interval.days, <span class="number">1</span>);
         <span class="macro">assert_eq!</span>(interval.nsecs, <span class="number">2_000_000</span>);
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_to_duration() {
+        <span class="kw">let </span>interval = Interval::from_day_time(<span class="number">1</span>, <span class="number">2</span>);
+
+        <span class="kw">let </span>duration = interval.to_duration().unwrap();
+        <span class="macro">assert_eq!</span>(<span class="number">86400002000000</span>, duration.value());
+        <span class="macro">assert_eq!</span>(TimeUnit::Nanosecond, duration.unit());
+
+        <span class="kw">let </span>interval = Interval::from_year_month(<span class="number">12</span>);
+
+        <span class="kw">let </span>duration = interval.to_duration().unwrap();
+        <span class="macro">assert_eq!</span>(<span class="number">31104000000000000</span>, duration.value());
+        <span class="macro">assert_eq!</span>(TimeUnit::Nanosecond, duration.unit());
     }
 
     <span class="attr">#[test]
@@ -1355,9 +1434,25 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_interval_i128_convert() {
-        <span class="kw">let </span>interval = Interval::from_month_day_nano(<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>);
-        <span class="kw">let </span>interval_i128 = interval.to_i128();
-        <span class="macro">assert_eq!</span>(interval_i128, <span class="number">79228162532711081667253501953</span>);
+        <span class="kw">let </span>test_interval_eq = |month, day, nano| {
+            <span class="kw">let </span>interval = Interval::from_month_day_nano(month, day, nano);
+            <span class="kw">let </span>interval_i128 = interval.to_i128();
+            <span class="kw">let </span>interval2 = Interval::from_i128(interval_i128);
+            <span class="macro">assert_eq!</span>(interval, interval2);
+        };
+
+        test_interval_eq(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>);
+        test_interval_eq(<span class="number">1</span>, -<span class="number">2</span>, <span class="number">3</span>);
+        test_interval_eq(<span class="number">1</span>, -<span class="number">2</span>, -<span class="number">3</span>);
+        test_interval_eq(-<span class="number">1</span>, -<span class="number">2</span>, -<span class="number">3</span>);
+        test_interval_eq(i32::MAX, i32::MAX, i64::MAX);
+        test_interval_eq(i32::MIN, i32::MAX, i64::MAX);
+        test_interval_eq(i32::MAX, i32::MIN, i64::MAX);
+        test_interval_eq(i32::MAX, i32::MAX, i64::MIN);
+        test_interval_eq(i32::MIN, i32::MIN, i64::MAX);
+        test_interval_eq(i32::MAX, i32::MIN, i64::MIN);
+        test_interval_eq(i32::MIN, i32::MAX, i64::MIN);
+        test_interval_eq(i32::MIN, i32::MIN, i64::MIN);
     }
 
     <span class="attr">#[test]
@@ -1406,10 +1501,10 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_display() {
         <span class="kw">let </span>interval = Interval::from_month_day_nano(<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>);
-        <span class="macro">assert_eq!</span>(interval.to_string(), <span class="string">&quot;1 months 1 days 1 nsecs&quot;</span>);
+        <span class="macro">assert_eq!</span>(interval.to_string(), <span class="string">"1 months 1 days 1 nsecs"</span>);
 
         <span class="kw">let </span>interval = Interval::from_month_day_nano(<span class="number">14</span>, <span class="number">31</span>, <span class="number">10000000000</span>);
-        <span class="macro">assert_eq!</span>(interval.to_string(), <span class="string">&quot;14 months 31 days 10000000000 nsecs&quot;</span>);
+        <span class="macro">assert_eq!</span>(interval.to_string(), <span class="string">"14 months 31 days 10000000000 nsecs"</span>);
     }
 
     <span class="attr">#[test]
@@ -1430,7 +1525,7 @@
         <span class="kw">let </span>json = serde_json::to_string(<span class="kw-2">&amp;</span>interval).unwrap();
         <span class="macro">assert_eq!</span>(
             json,
-            <span class="string">&quot;{\&quot;months\&quot;:1,\&quot;days\&quot;:1,\&quot;nsecs\&quot;:1,\&quot;unit\&quot;:\&quot;MonthDayNano\&quot;}&quot;
+            <span class="string">"{\"months\":1,\"days\":1,\"nsecs\":1,\"unit\":\"MonthDayNano\"}"
         </span>);
         <span class="kw">let </span>interval2: Interval = serde_json::from_str(<span class="kw-2">&amp;</span>json).unwrap();
         <span class="macro">assert_eq!</span>(interval, interval2);
@@ -1440,28 +1535,28 @@
     </span><span class="kw">fn </span>test_to_iso8601_string() {
         <span class="comment">// Test interval zero
         </span><span class="kw">let </span>interval = Interval::from_month_day_nano(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);
-        <span class="macro">assert_eq!</span>(interval.to_iso8601_string(), <span class="string">&quot;PT0S&quot;</span>);
+        <span class="macro">assert_eq!</span>(interval.to_iso8601_string(), <span class="string">"PT0S"</span>);
 
         <span class="kw">let </span>interval = Interval::from_month_day_nano(<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>);
-        <span class="macro">assert_eq!</span>(interval.to_iso8601_string(), <span class="string">&quot;P0Y1M1DT0H0M0S&quot;</span>);
+        <span class="macro">assert_eq!</span>(interval.to_iso8601_string(), <span class="string">"P0Y1M1DT0H0M0S"</span>);
 
         <span class="kw">let </span>interval = Interval::from_month_day_nano(<span class="number">14</span>, <span class="number">31</span>, <span class="number">10000000000</span>);
-        <span class="macro">assert_eq!</span>(interval.to_iso8601_string(), <span class="string">&quot;P1Y2M31DT0H0M10S&quot;</span>);
+        <span class="macro">assert_eq!</span>(interval.to_iso8601_string(), <span class="string">"P1Y2M31DT0H0M10S"</span>);
 
         <span class="kw">let </span>interval = Interval::from_month_day_nano(<span class="number">14</span>, <span class="number">31</span>, <span class="number">23210200000000</span>);
-        <span class="macro">assert_eq!</span>(interval.to_iso8601_string(), <span class="string">&quot;P1Y2M31DT6H26M50.2S&quot;</span>);
+        <span class="macro">assert_eq!</span>(interval.to_iso8601_string(), <span class="string">"P1Y2M31DT6H26M50.2S"</span>);
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_to_postgres_string() {
         <span class="comment">// Test interval zero
         </span><span class="kw">let </span>interval = Interval::from_month_day_nano(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);
-        <span class="macro">assert_eq!</span>(interval.to_postgres_string(), <span class="string">&quot;00:00:00&quot;</span>);
+        <span class="macro">assert_eq!</span>(interval.to_postgres_string(), <span class="string">"00:00:00"</span>);
 
         <span class="kw">let </span>interval = Interval::from_month_day_nano(<span class="number">23</span>, <span class="number">100</span>, <span class="number">23210200000000</span>);
         <span class="macro">assert_eq!</span>(
             interval.to_postgres_string(),
-            <span class="string">&quot;1 year 11 mons 100 days 06:26:50.200000&quot;
+            <span class="string">"1 year 11 mons 100 days 06:26:50.200000"
         </span>);
     }
 
@@ -1469,17 +1564,17 @@
     </span><span class="kw">fn </span>test_to_sql_standard_string() {
         <span class="comment">// Test zero interval
         </span><span class="kw">let </span>interval = Interval::from_month_day_nano(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);
-        <span class="macro">assert_eq!</span>(interval.to_sql_standard_string(), <span class="string">&quot;0&quot;</span>);
+        <span class="macro">assert_eq!</span>(interval.to_sql_standard_string(), <span class="string">"0"</span>);
 
         <span class="kw">let </span>interval = Interval::from_month_day_nano(<span class="number">23</span>, <span class="number">100</span>, <span class="number">23210200000000</span>);
         <span class="macro">assert_eq!</span>(
             interval.to_sql_standard_string(),
-            <span class="string">&quot;+1-11 +100 +6:26:50.200000&quot;
+            <span class="string">"+1-11 +100 +6:26:50.200000"
         </span>);
 
         <span class="comment">// Test interval without year, month, day
         </span><span class="kw">let </span>interval = Interval::from_month_day_nano(<span class="number">0</span>, <span class="number">0</span>, <span class="number">23210200000000</span>);
-        <span class="macro">assert_eq!</span>(interval.to_sql_standard_string(), <span class="string">&quot;6:26:50.200000&quot;</span>);
+        <span class="macro">assert_eq!</span>(interval.to_sql_standard_string(), <span class="string">"6:26:50.200000"</span>);
     }
 
     <span class="attr">#[test]

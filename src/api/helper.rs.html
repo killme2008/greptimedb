@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/api/src/helper.rs`."><title>helper.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="api" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../api/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/api/src/helper.rs`."><title>helper.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="api" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1521,16 +1522,537 @@
 <a href="#1521" id="1521">1521</a>
 <a href="#1522" id="1522">1522</a>
 <a href="#1523" id="1523">1523</a>
+<a href="#1524" id="1524">1524</a>
+<a href="#1525" id="1525">1525</a>
+<a href="#1526" id="1526">1526</a>
+<a href="#1527" id="1527">1527</a>
+<a href="#1528" id="1528">1528</a>
+<a href="#1529" id="1529">1529</a>
+<a href="#1530" id="1530">1530</a>
+<a href="#1531" id="1531">1531</a>
+<a href="#1532" id="1532">1532</a>
+<a href="#1533" id="1533">1533</a>
+<a href="#1534" id="1534">1534</a>
+<a href="#1535" id="1535">1535</a>
+<a href="#1536" id="1536">1536</a>
+<a href="#1537" id="1537">1537</a>
+<a href="#1538" id="1538">1538</a>
+<a href="#1539" id="1539">1539</a>
+<a href="#1540" id="1540">1540</a>
+<a href="#1541" id="1541">1541</a>
+<a href="#1542" id="1542">1542</a>
+<a href="#1543" id="1543">1543</a>
+<a href="#1544" id="1544">1544</a>
+<a href="#1545" id="1545">1545</a>
+<a href="#1546" id="1546">1546</a>
+<a href="#1547" id="1547">1547</a>
+<a href="#1548" id="1548">1548</a>
+<a href="#1549" id="1549">1549</a>
+<a href="#1550" id="1550">1550</a>
+<a href="#1551" id="1551">1551</a>
+<a href="#1552" id="1552">1552</a>
+<a href="#1553" id="1553">1553</a>
+<a href="#1554" id="1554">1554</a>
+<a href="#1555" id="1555">1555</a>
+<a href="#1556" id="1556">1556</a>
+<a href="#1557" id="1557">1557</a>
+<a href="#1558" id="1558">1558</a>
+<a href="#1559" id="1559">1559</a>
+<a href="#1560" id="1560">1560</a>
+<a href="#1561" id="1561">1561</a>
+<a href="#1562" id="1562">1562</a>
+<a href="#1563" id="1563">1563</a>
+<a href="#1564" id="1564">1564</a>
+<a href="#1565" id="1565">1565</a>
+<a href="#1566" id="1566">1566</a>
+<a href="#1567" id="1567">1567</a>
+<a href="#1568" id="1568">1568</a>
+<a href="#1569" id="1569">1569</a>
+<a href="#1570" id="1570">1570</a>
+<a href="#1571" id="1571">1571</a>
+<a href="#1572" id="1572">1572</a>
+<a href="#1573" id="1573">1573</a>
+<a href="#1574" id="1574">1574</a>
+<a href="#1575" id="1575">1575</a>
+<a href="#1576" id="1576">1576</a>
+<a href="#1577" id="1577">1577</a>
+<a href="#1578" id="1578">1578</a>
+<a href="#1579" id="1579">1579</a>
+<a href="#1580" id="1580">1580</a>
+<a href="#1581" id="1581">1581</a>
+<a href="#1582" id="1582">1582</a>
+<a href="#1583" id="1583">1583</a>
+<a href="#1584" id="1584">1584</a>
+<a href="#1585" id="1585">1585</a>
+<a href="#1586" id="1586">1586</a>
+<a href="#1587" id="1587">1587</a>
+<a href="#1588" id="1588">1588</a>
+<a href="#1589" id="1589">1589</a>
+<a href="#1590" id="1590">1590</a>
+<a href="#1591" id="1591">1591</a>
+<a href="#1592" id="1592">1592</a>
+<a href="#1593" id="1593">1593</a>
+<a href="#1594" id="1594">1594</a>
+<a href="#1595" id="1595">1595</a>
+<a href="#1596" id="1596">1596</a>
+<a href="#1597" id="1597">1597</a>
+<a href="#1598" id="1598">1598</a>
+<a href="#1599" id="1599">1599</a>
+<a href="#1600" id="1600">1600</a>
+<a href="#1601" id="1601">1601</a>
+<a href="#1602" id="1602">1602</a>
+<a href="#1603" id="1603">1603</a>
+<a href="#1604" id="1604">1604</a>
+<a href="#1605" id="1605">1605</a>
+<a href="#1606" id="1606">1606</a>
+<a href="#1607" id="1607">1607</a>
+<a href="#1608" id="1608">1608</a>
+<a href="#1609" id="1609">1609</a>
+<a href="#1610" id="1610">1610</a>
+<a href="#1611" id="1611">1611</a>
+<a href="#1612" id="1612">1612</a>
+<a href="#1613" id="1613">1613</a>
+<a href="#1614" id="1614">1614</a>
+<a href="#1615" id="1615">1615</a>
+<a href="#1616" id="1616">1616</a>
+<a href="#1617" id="1617">1617</a>
+<a href="#1618" id="1618">1618</a>
+<a href="#1619" id="1619">1619</a>
+<a href="#1620" id="1620">1620</a>
+<a href="#1621" id="1621">1621</a>
+<a href="#1622" id="1622">1622</a>
+<a href="#1623" id="1623">1623</a>
+<a href="#1624" id="1624">1624</a>
+<a href="#1625" id="1625">1625</a>
+<a href="#1626" id="1626">1626</a>
+<a href="#1627" id="1627">1627</a>
+<a href="#1628" id="1628">1628</a>
+<a href="#1629" id="1629">1629</a>
+<a href="#1630" id="1630">1630</a>
+<a href="#1631" id="1631">1631</a>
+<a href="#1632" id="1632">1632</a>
+<a href="#1633" id="1633">1633</a>
+<a href="#1634" id="1634">1634</a>
+<a href="#1635" id="1635">1635</a>
+<a href="#1636" id="1636">1636</a>
+<a href="#1637" id="1637">1637</a>
+<a href="#1638" id="1638">1638</a>
+<a href="#1639" id="1639">1639</a>
+<a href="#1640" id="1640">1640</a>
+<a href="#1641" id="1641">1641</a>
+<a href="#1642" id="1642">1642</a>
+<a href="#1643" id="1643">1643</a>
+<a href="#1644" id="1644">1644</a>
+<a href="#1645" id="1645">1645</a>
+<a href="#1646" id="1646">1646</a>
+<a href="#1647" id="1647">1647</a>
+<a href="#1648" id="1648">1648</a>
+<a href="#1649" id="1649">1649</a>
+<a href="#1650" id="1650">1650</a>
+<a href="#1651" id="1651">1651</a>
+<a href="#1652" id="1652">1652</a>
+<a href="#1653" id="1653">1653</a>
+<a href="#1654" id="1654">1654</a>
+<a href="#1655" id="1655">1655</a>
+<a href="#1656" id="1656">1656</a>
+<a href="#1657" id="1657">1657</a>
+<a href="#1658" id="1658">1658</a>
+<a href="#1659" id="1659">1659</a>
+<a href="#1660" id="1660">1660</a>
+<a href="#1661" id="1661">1661</a>
+<a href="#1662" id="1662">1662</a>
+<a href="#1663" id="1663">1663</a>
+<a href="#1664" id="1664">1664</a>
+<a href="#1665" id="1665">1665</a>
+<a href="#1666" id="1666">1666</a>
+<a href="#1667" id="1667">1667</a>
+<a href="#1668" id="1668">1668</a>
+<a href="#1669" id="1669">1669</a>
+<a href="#1670" id="1670">1670</a>
+<a href="#1671" id="1671">1671</a>
+<a href="#1672" id="1672">1672</a>
+<a href="#1673" id="1673">1673</a>
+<a href="#1674" id="1674">1674</a>
+<a href="#1675" id="1675">1675</a>
+<a href="#1676" id="1676">1676</a>
+<a href="#1677" id="1677">1677</a>
+<a href="#1678" id="1678">1678</a>
+<a href="#1679" id="1679">1679</a>
+<a href="#1680" id="1680">1680</a>
+<a href="#1681" id="1681">1681</a>
+<a href="#1682" id="1682">1682</a>
+<a href="#1683" id="1683">1683</a>
+<a href="#1684" id="1684">1684</a>
+<a href="#1685" id="1685">1685</a>
+<a href="#1686" id="1686">1686</a>
+<a href="#1687" id="1687">1687</a>
+<a href="#1688" id="1688">1688</a>
+<a href="#1689" id="1689">1689</a>
+<a href="#1690" id="1690">1690</a>
+<a href="#1691" id="1691">1691</a>
+<a href="#1692" id="1692">1692</a>
+<a href="#1693" id="1693">1693</a>
+<a href="#1694" id="1694">1694</a>
+<a href="#1695" id="1695">1695</a>
+<a href="#1696" id="1696">1696</a>
+<a href="#1697" id="1697">1697</a>
+<a href="#1698" id="1698">1698</a>
+<a href="#1699" id="1699">1699</a>
+<a href="#1700" id="1700">1700</a>
+<a href="#1701" id="1701">1701</a>
+<a href="#1702" id="1702">1702</a>
+<a href="#1703" id="1703">1703</a>
+<a href="#1704" id="1704">1704</a>
+<a href="#1705" id="1705">1705</a>
+<a href="#1706" id="1706">1706</a>
+<a href="#1707" id="1707">1707</a>
+<a href="#1708" id="1708">1708</a>
+<a href="#1709" id="1709">1709</a>
+<a href="#1710" id="1710">1710</a>
+<a href="#1711" id="1711">1711</a>
+<a href="#1712" id="1712">1712</a>
+<a href="#1713" id="1713">1713</a>
+<a href="#1714" id="1714">1714</a>
+<a href="#1715" id="1715">1715</a>
+<a href="#1716" id="1716">1716</a>
+<a href="#1717" id="1717">1717</a>
+<a href="#1718" id="1718">1718</a>
+<a href="#1719" id="1719">1719</a>
+<a href="#1720" id="1720">1720</a>
+<a href="#1721" id="1721">1721</a>
+<a href="#1722" id="1722">1722</a>
+<a href="#1723" id="1723">1723</a>
+<a href="#1724" id="1724">1724</a>
+<a href="#1725" id="1725">1725</a>
+<a href="#1726" id="1726">1726</a>
+<a href="#1727" id="1727">1727</a>
+<a href="#1728" id="1728">1728</a>
+<a href="#1729" id="1729">1729</a>
+<a href="#1730" id="1730">1730</a>
+<a href="#1731" id="1731">1731</a>
+<a href="#1732" id="1732">1732</a>
+<a href="#1733" id="1733">1733</a>
+<a href="#1734" id="1734">1734</a>
+<a href="#1735" id="1735">1735</a>
+<a href="#1736" id="1736">1736</a>
+<a href="#1737" id="1737">1737</a>
+<a href="#1738" id="1738">1738</a>
+<a href="#1739" id="1739">1739</a>
+<a href="#1740" id="1740">1740</a>
+<a href="#1741" id="1741">1741</a>
+<a href="#1742" id="1742">1742</a>
+<a href="#1743" id="1743">1743</a>
+<a href="#1744" id="1744">1744</a>
+<a href="#1745" id="1745">1745</a>
+<a href="#1746" id="1746">1746</a>
+<a href="#1747" id="1747">1747</a>
+<a href="#1748" id="1748">1748</a>
+<a href="#1749" id="1749">1749</a>
+<a href="#1750" id="1750">1750</a>
+<a href="#1751" id="1751">1751</a>
+<a href="#1752" id="1752">1752</a>
+<a href="#1753" id="1753">1753</a>
+<a href="#1754" id="1754">1754</a>
+<a href="#1755" id="1755">1755</a>
+<a href="#1756" id="1756">1756</a>
+<a href="#1757" id="1757">1757</a>
+<a href="#1758" id="1758">1758</a>
+<a href="#1759" id="1759">1759</a>
+<a href="#1760" id="1760">1760</a>
+<a href="#1761" id="1761">1761</a>
+<a href="#1762" id="1762">1762</a>
+<a href="#1763" id="1763">1763</a>
+<a href="#1764" id="1764">1764</a>
+<a href="#1765" id="1765">1765</a>
+<a href="#1766" id="1766">1766</a>
+<a href="#1767" id="1767">1767</a>
+<a href="#1768" id="1768">1768</a>
+<a href="#1769" id="1769">1769</a>
+<a href="#1770" id="1770">1770</a>
+<a href="#1771" id="1771">1771</a>
+<a href="#1772" id="1772">1772</a>
+<a href="#1773" id="1773">1773</a>
+<a href="#1774" id="1774">1774</a>
+<a href="#1775" id="1775">1775</a>
+<a href="#1776" id="1776">1776</a>
+<a href="#1777" id="1777">1777</a>
+<a href="#1778" id="1778">1778</a>
+<a href="#1779" id="1779">1779</a>
+<a href="#1780" id="1780">1780</a>
+<a href="#1781" id="1781">1781</a>
+<a href="#1782" id="1782">1782</a>
+<a href="#1783" id="1783">1783</a>
+<a href="#1784" id="1784">1784</a>
+<a href="#1785" id="1785">1785</a>
+<a href="#1786" id="1786">1786</a>
+<a href="#1787" id="1787">1787</a>
+<a href="#1788" id="1788">1788</a>
+<a href="#1789" id="1789">1789</a>
+<a href="#1790" id="1790">1790</a>
+<a href="#1791" id="1791">1791</a>
+<a href="#1792" id="1792">1792</a>
+<a href="#1793" id="1793">1793</a>
+<a href="#1794" id="1794">1794</a>
+<a href="#1795" id="1795">1795</a>
+<a href="#1796" id="1796">1796</a>
+<a href="#1797" id="1797">1797</a>
+<a href="#1798" id="1798">1798</a>
+<a href="#1799" id="1799">1799</a>
+<a href="#1800" id="1800">1800</a>
+<a href="#1801" id="1801">1801</a>
+<a href="#1802" id="1802">1802</a>
+<a href="#1803" id="1803">1803</a>
+<a href="#1804" id="1804">1804</a>
+<a href="#1805" id="1805">1805</a>
+<a href="#1806" id="1806">1806</a>
+<a href="#1807" id="1807">1807</a>
+<a href="#1808" id="1808">1808</a>
+<a href="#1809" id="1809">1809</a>
+<a href="#1810" id="1810">1810</a>
+<a href="#1811" id="1811">1811</a>
+<a href="#1812" id="1812">1812</a>
+<a href="#1813" id="1813">1813</a>
+<a href="#1814" id="1814">1814</a>
+<a href="#1815" id="1815">1815</a>
+<a href="#1816" id="1816">1816</a>
+<a href="#1817" id="1817">1817</a>
+<a href="#1818" id="1818">1818</a>
+<a href="#1819" id="1819">1819</a>
+<a href="#1820" id="1820">1820</a>
+<a href="#1821" id="1821">1821</a>
+<a href="#1822" id="1822">1822</a>
+<a href="#1823" id="1823">1823</a>
+<a href="#1824" id="1824">1824</a>
+<a href="#1825" id="1825">1825</a>
+<a href="#1826" id="1826">1826</a>
+<a href="#1827" id="1827">1827</a>
+<a href="#1828" id="1828">1828</a>
+<a href="#1829" id="1829">1829</a>
+<a href="#1830" id="1830">1830</a>
+<a href="#1831" id="1831">1831</a>
+<a href="#1832" id="1832">1832</a>
+<a href="#1833" id="1833">1833</a>
+<a href="#1834" id="1834">1834</a>
+<a href="#1835" id="1835">1835</a>
+<a href="#1836" id="1836">1836</a>
+<a href="#1837" id="1837">1837</a>
+<a href="#1838" id="1838">1838</a>
+<a href="#1839" id="1839">1839</a>
+<a href="#1840" id="1840">1840</a>
+<a href="#1841" id="1841">1841</a>
+<a href="#1842" id="1842">1842</a>
+<a href="#1843" id="1843">1843</a>
+<a href="#1844" id="1844">1844</a>
+<a href="#1845" id="1845">1845</a>
+<a href="#1846" id="1846">1846</a>
+<a href="#1847" id="1847">1847</a>
+<a href="#1848" id="1848">1848</a>
+<a href="#1849" id="1849">1849</a>
+<a href="#1850" id="1850">1850</a>
+<a href="#1851" id="1851">1851</a>
+<a href="#1852" id="1852">1852</a>
+<a href="#1853" id="1853">1853</a>
+<a href="#1854" id="1854">1854</a>
+<a href="#1855" id="1855">1855</a>
+<a href="#1856" id="1856">1856</a>
+<a href="#1857" id="1857">1857</a>
+<a href="#1858" id="1858">1858</a>
+<a href="#1859" id="1859">1859</a>
+<a href="#1860" id="1860">1860</a>
+<a href="#1861" id="1861">1861</a>
+<a href="#1862" id="1862">1862</a>
+<a href="#1863" id="1863">1863</a>
+<a href="#1864" id="1864">1864</a>
+<a href="#1865" id="1865">1865</a>
+<a href="#1866" id="1866">1866</a>
+<a href="#1867" id="1867">1867</a>
+<a href="#1868" id="1868">1868</a>
+<a href="#1869" id="1869">1869</a>
+<a href="#1870" id="1870">1870</a>
+<a href="#1871" id="1871">1871</a>
+<a href="#1872" id="1872">1872</a>
+<a href="#1873" id="1873">1873</a>
+<a href="#1874" id="1874">1874</a>
+<a href="#1875" id="1875">1875</a>
+<a href="#1876" id="1876">1876</a>
+<a href="#1877" id="1877">1877</a>
+<a href="#1878" id="1878">1878</a>
+<a href="#1879" id="1879">1879</a>
+<a href="#1880" id="1880">1880</a>
+<a href="#1881" id="1881">1881</a>
+<a href="#1882" id="1882">1882</a>
+<a href="#1883" id="1883">1883</a>
+<a href="#1884" id="1884">1884</a>
+<a href="#1885" id="1885">1885</a>
+<a href="#1886" id="1886">1886</a>
+<a href="#1887" id="1887">1887</a>
+<a href="#1888" id="1888">1888</a>
+<a href="#1889" id="1889">1889</a>
+<a href="#1890" id="1890">1890</a>
+<a href="#1891" id="1891">1891</a>
+<a href="#1892" id="1892">1892</a>
+<a href="#1893" id="1893">1893</a>
+<a href="#1894" id="1894">1894</a>
+<a href="#1895" id="1895">1895</a>
+<a href="#1896" id="1896">1896</a>
+<a href="#1897" id="1897">1897</a>
+<a href="#1898" id="1898">1898</a>
+<a href="#1899" id="1899">1899</a>
+<a href="#1900" id="1900">1900</a>
+<a href="#1901" id="1901">1901</a>
+<a href="#1902" id="1902">1902</a>
+<a href="#1903" id="1903">1903</a>
+<a href="#1904" id="1904">1904</a>
+<a href="#1905" id="1905">1905</a>
+<a href="#1906" id="1906">1906</a>
+<a href="#1907" id="1907">1907</a>
+<a href="#1908" id="1908">1908</a>
+<a href="#1909" id="1909">1909</a>
+<a href="#1910" id="1910">1910</a>
+<a href="#1911" id="1911">1911</a>
+<a href="#1912" id="1912">1912</a>
+<a href="#1913" id="1913">1913</a>
+<a href="#1914" id="1914">1914</a>
+<a href="#1915" id="1915">1915</a>
+<a href="#1916" id="1916">1916</a>
+<a href="#1917" id="1917">1917</a>
+<a href="#1918" id="1918">1918</a>
+<a href="#1919" id="1919">1919</a>
+<a href="#1920" id="1920">1920</a>
+<a href="#1921" id="1921">1921</a>
+<a href="#1922" id="1922">1922</a>
+<a href="#1923" id="1923">1923</a>
+<a href="#1924" id="1924">1924</a>
+<a href="#1925" id="1925">1925</a>
+<a href="#1926" id="1926">1926</a>
+<a href="#1927" id="1927">1927</a>
+<a href="#1928" id="1928">1928</a>
+<a href="#1929" id="1929">1929</a>
+<a href="#1930" id="1930">1930</a>
+<a href="#1931" id="1931">1931</a>
+<a href="#1932" id="1932">1932</a>
+<a href="#1933" id="1933">1933</a>
+<a href="#1934" id="1934">1934</a>
+<a href="#1935" id="1935">1935</a>
+<a href="#1936" id="1936">1936</a>
+<a href="#1937" id="1937">1937</a>
+<a href="#1938" id="1938">1938</a>
+<a href="#1939" id="1939">1939</a>
+<a href="#1940" id="1940">1940</a>
+<a href="#1941" id="1941">1941</a>
+<a href="#1942" id="1942">1942</a>
+<a href="#1943" id="1943">1943</a>
+<a href="#1944" id="1944">1944</a>
+<a href="#1945" id="1945">1945</a>
+<a href="#1946" id="1946">1946</a>
+<a href="#1947" id="1947">1947</a>
+<a href="#1948" id="1948">1948</a>
+<a href="#1949" id="1949">1949</a>
+<a href="#1950" id="1950">1950</a>
+<a href="#1951" id="1951">1951</a>
+<a href="#1952" id="1952">1952</a>
+<a href="#1953" id="1953">1953</a>
+<a href="#1954" id="1954">1954</a>
+<a href="#1955" id="1955">1955</a>
+<a href="#1956" id="1956">1956</a>
+<a href="#1957" id="1957">1957</a>
+<a href="#1958" id="1958">1958</a>
+<a href="#1959" id="1959">1959</a>
+<a href="#1960" id="1960">1960</a>
+<a href="#1961" id="1961">1961</a>
+<a href="#1962" id="1962">1962</a>
+<a href="#1963" id="1963">1963</a>
+<a href="#1964" id="1964">1964</a>
+<a href="#1965" id="1965">1965</a>
+<a href="#1966" id="1966">1966</a>
+<a href="#1967" id="1967">1967</a>
+<a href="#1968" id="1968">1968</a>
+<a href="#1969" id="1969">1969</a>
+<a href="#1970" id="1970">1970</a>
+<a href="#1971" id="1971">1971</a>
+<a href="#1972" id="1972">1972</a>
+<a href="#1973" id="1973">1973</a>
+<a href="#1974" id="1974">1974</a>
+<a href="#1975" id="1975">1975</a>
+<a href="#1976" id="1976">1976</a>
+<a href="#1977" id="1977">1977</a>
+<a href="#1978" id="1978">1978</a>
+<a href="#1979" id="1979">1979</a>
+<a href="#1980" id="1980">1980</a>
+<a href="#1981" id="1981">1981</a>
+<a href="#1982" id="1982">1982</a>
+<a href="#1983" id="1983">1983</a>
+<a href="#1984" id="1984">1984</a>
+<a href="#1985" id="1985">1985</a>
+<a href="#1986" id="1986">1986</a>
+<a href="#1987" id="1987">1987</a>
+<a href="#1988" id="1988">1988</a>
+<a href="#1989" id="1989">1989</a>
+<a href="#1990" id="1990">1990</a>
+<a href="#1991" id="1991">1991</a>
+<a href="#1992" id="1992">1992</a>
+<a href="#1993" id="1993">1993</a>
+<a href="#1994" id="1994">1994</a>
+<a href="#1995" id="1995">1995</a>
+<a href="#1996" id="1996">1996</a>
+<a href="#1997" id="1997">1997</a>
+<a href="#1998" id="1998">1998</a>
+<a href="#1999" id="1999">1999</a>
+<a href="#2000" id="2000">2000</a>
+<a href="#2001" id="2001">2001</a>
+<a href="#2002" id="2002">2002</a>
+<a href="#2003" id="2003">2003</a>
+<a href="#2004" id="2004">2004</a>
+<a href="#2005" id="2005">2005</a>
+<a href="#2006" id="2006">2006</a>
+<a href="#2007" id="2007">2007</a>
+<a href="#2008" id="2008">2008</a>
+<a href="#2009" id="2009">2009</a>
+<a href="#2010" id="2010">2010</a>
+<a href="#2011" id="2011">2011</a>
+<a href="#2012" id="2012">2012</a>
+<a href="#2013" id="2013">2013</a>
+<a href="#2014" id="2014">2014</a>
+<a href="#2015" id="2015">2015</a>
+<a href="#2016" id="2016">2016</a>
+<a href="#2017" id="2017">2017</a>
+<a href="#2018" id="2018">2018</a>
+<a href="#2019" id="2019">2019</a>
+<a href="#2020" id="2020">2020</a>
+<a href="#2021" id="2021">2021</a>
+<a href="#2022" id="2022">2022</a>
+<a href="#2023" id="2023">2023</a>
+<a href="#2024" id="2024">2024</a>
+<a href="#2025" id="2025">2025</a>
+<a href="#2026" id="2026">2026</a>
+<a href="#2027" id="2027">2027</a>
+<a href="#2028" id="2028">2028</a>
+<a href="#2029" id="2029">2029</a>
+<a href="#2030" id="2030">2030</a>
+<a href="#2031" id="2031">2031</a>
+<a href="#2032" id="2032">2032</a>
+<a href="#2033" id="2033">2033</a>
+<a href="#2034" id="2034">2034</a>
+<a href="#2035" id="2035">2035</a>
+<a href="#2036" id="2036">2036</a>
+<a href="#2037" id="2037">2037</a>
+<a href="#2038" id="2038">2038</a>
+<a href="#2039" id="2039">2039</a>
+<a href="#2040" id="2040">2040</a>
+<a href="#2041" id="2041">2041</a>
+<a href="#2042" id="2042">2042</a>
+<a href="#2043" id="2043">2043</a>
+<a href="#2044" id="2044">2044</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -1538,54 +2060,84 @@
 </span><span class="kw">use </span>std::sync::Arc;
 
 <span class="kw">use </span>common_base::BitVec;
+<span class="kw">use </span>common_decimal::decimal128::{DECIMAL128_DEFAULT_SCALE, DECIMAL128_MAX_PRECISION};
+<span class="kw">use </span>common_decimal::Decimal128;
 <span class="kw">use </span>common_time::interval::IntervalUnit;
 <span class="kw">use </span>common_time::time::Time;
 <span class="kw">use </span>common_time::timestamp::TimeUnit;
-<span class="kw">use </span>common_time::{Date, DateTime, Interval, Timestamp};
+<span class="kw">use </span>common_time::{Date, DateTime, Duration, Interval, Timestamp};
 <span class="kw">use </span>datatypes::prelude::{ConcreteDataType, ValueRef};
 <span class="kw">use </span>datatypes::scalars::ScalarVector;
 <span class="kw">use </span>datatypes::types::{
-    Int16Type, Int8Type, IntervalType, TimeType, TimestampType, UInt16Type, UInt8Type,
+    DurationType, Int16Type, Int8Type, IntervalType, TimeType, TimestampType, UInt16Type, UInt8Type,
 };
 <span class="kw">use </span>datatypes::value::{OrderedF32, OrderedF64, Value};
 <span class="kw">use </span>datatypes::vectors::{
-    BinaryVector, BooleanVector, DateTimeVector, DateVector, Float32Vector, Float64Vector,
-    Int32Vector, Int64Vector, IntervalDayTimeVector, IntervalMonthDayNanoVector,
-    IntervalYearMonthVector, PrimitiveVector, StringVector, TimeMicrosecondVector,
-    TimeMillisecondVector, TimeNanosecondVector, TimeSecondVector, TimestampMicrosecondVector,
-    TimestampMillisecondVector, TimestampNanosecondVector, TimestampSecondVector, UInt32Vector,
-    UInt64Vector, VectorRef,
+    BinaryVector, BooleanVector, DateTimeVector, DateVector, Decimal128Vector,
+    DurationMicrosecondVector, DurationMillisecondVector, DurationNanosecondVector,
+    DurationSecondVector, Float32Vector, Float64Vector, Int32Vector, Int64Vector,
+    IntervalDayTimeVector, IntervalMonthDayNanoVector, IntervalYearMonthVector, PrimitiveVector,
+    StringVector, TimeMicrosecondVector, TimeMillisecondVector, TimeNanosecondVector,
+    TimeSecondVector, TimestampMicrosecondVector, TimestampMillisecondVector,
+    TimestampNanosecondVector, TimestampSecondVector, UInt32Vector, UInt64Vector, VectorRef,
 };
 <span class="kw">use </span>greptime_proto::v1;
+<span class="kw">use </span>greptime_proto::v1::column_data_type_extension::TypeExt;
 <span class="kw">use </span>greptime_proto::v1::ddl_request::Expr;
 <span class="kw">use </span>greptime_proto::v1::greptime_request::Request;
 <span class="kw">use </span>greptime_proto::v1::query_request::Query;
 <span class="kw">use </span>greptime_proto::v1::value::ValueData;
-<span class="kw">use </span>greptime_proto::v1::{DdlRequest, IntervalMonthDayNano, QueryRequest, SemanticType};
+<span class="kw">use </span>greptime_proto::v1::{
+    ColumnDataTypeExtension, DdlRequest, DecimalTypeExtension, QueryRequest, Row, SemanticType,
+};
+<span class="kw">use </span>paste::paste;
 <span class="kw">use </span>snafu::prelude::<span class="kw-2">*</span>;
 
 <span class="kw">use </span><span class="kw">crate</span>::error::{<span class="self">self</span>, <span class="prelude-ty">Result</span>};
 <span class="kw">use </span><span class="kw">crate</span>::v1::column::Values;
-<span class="kw">use </span><span class="kw">crate</span>::v1::{Column, ColumnDataType};
+<span class="kw">use </span><span class="kw">crate</span>::v1::{Column, ColumnDataType, Value <span class="kw">as </span>GrpcValue};
 
-<span class="attr">#[derive(Debug, PartialEq, Eq)]
-</span><span class="kw">pub struct </span>ColumnDataTypeWrapper(ColumnDataType);
+<span class="doccomment">/// ColumnDataTypeWrapper is a wrapper of ColumnDataType and ColumnDataTypeExtension.
+/// It could be used to convert with ConcreteDataType.
+</span><span class="attr">#[derive(Debug, PartialEq)]
+</span><span class="kw">pub struct </span>ColumnDataTypeWrapper {
+    datatype: ColumnDataType,
+    datatype_ext: <span class="prelude-ty">Option</span>&lt;ColumnDataTypeExtension&gt;,
+}
 
 <span class="kw">impl </span>ColumnDataTypeWrapper {
-    <span class="kw">pub fn </span>try_new(datatype: i32) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
-        <span class="kw">let </span>datatype = ColumnDataType::from_i32(datatype)
+    <span class="doccomment">/// Try to create a ColumnDataTypeWrapper from i32(ColumnDataType) and ColumnDataTypeExtension.
+    </span><span class="kw">pub fn </span>try_new(datatype: i32, datatype_ext: <span class="prelude-ty">Option</span>&lt;ColumnDataTypeExtension&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
+        <span class="kw">let </span>datatype = ColumnDataType::try_from(datatype)
             .context(error::UnknownColumnDataTypeSnafu { datatype })<span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(<span class="self">Self</span>(datatype))
+        <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
+            datatype,
+            datatype_ext,
+        })
     }
 
-    <span class="kw">pub fn </span>datatype(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; ColumnDataType {
-        <span class="self">self</span>.<span class="number">0
-    </span>}
+    <span class="doccomment">/// Create a ColumnDataTypeWrapper from ColumnDataType and ColumnDataTypeExtension.
+    </span><span class="kw">pub fn </span>new(datatype: ColumnDataType, datatype_ext: <span class="prelude-ty">Option</span>&lt;ColumnDataTypeExtension&gt;) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            datatype,
+            datatype_ext,
+        }
+    }
+
+    <span class="doccomment">/// Get the ColumnDataType.
+    </span><span class="kw">pub fn </span>datatype(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; ColumnDataType {
+        <span class="self">self</span>.datatype
+    }
+
+    <span class="doccomment">/// Get a tuple of ColumnDataType and ColumnDataTypeExtension.
+    </span><span class="kw">pub fn </span>to_parts(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (ColumnDataType, <span class="prelude-ty">Option</span>&lt;ColumnDataTypeExtension&gt;) {
+        (<span class="self">self</span>.datatype, <span class="self">self</span>.datatype_ext.clone())
+    }
 }
 
 <span class="kw">impl </span>From&lt;ColumnDataTypeWrapper&gt; <span class="kw">for </span>ConcreteDataType {
-    <span class="kw">fn </span>from(datatype: ColumnDataTypeWrapper) -&gt; <span class="self">Self </span>{
-        <span class="kw">match </span>datatype.<span class="number">0 </span>{
+    <span class="kw">fn </span>from(datatype_wrapper: ColumnDataTypeWrapper) -&gt; <span class="self">Self </span>{
+        <span class="kw">match </span>datatype_wrapper.datatype {
             ColumnDataType::Boolean =&gt; ConcreteDataType::boolean_datatype(),
             ColumnDataType::Int8 =&gt; ConcreteDataType::int8_datatype(),
             ColumnDataType::Int16 =&gt; ConcreteDataType::int16_datatype(),
@@ -1620,6 +2172,108 @@
             ColumnDataType::IntervalMonthDayNano =&gt; {
                 ConcreteDataType::interval_month_day_nano_datatype()
             }
+            ColumnDataType::DurationSecond =&gt; ConcreteDataType::duration_second_datatype(),
+            ColumnDataType::DurationMillisecond =&gt; {
+                ConcreteDataType::duration_millisecond_datatype()
+            }
+            ColumnDataType::DurationMicrosecond =&gt; {
+                ConcreteDataType::duration_microsecond_datatype()
+            }
+            ColumnDataType::DurationNanosecond =&gt; ConcreteDataType::duration_nanosecond_datatype(),
+            ColumnDataType::Decimal128 =&gt; {
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(TypeExt::DecimalType(d)) = datatype_wrapper
+                    .datatype_ext
+                    .as_ref()
+                    .and_then(|datatype_ext| datatype_ext.type_ext.as_ref())
+                {
+                    ConcreteDataType::decimal128_datatype(d.precision <span class="kw">as </span>u8, d.scale <span class="kw">as </span>i8)
+                } <span class="kw">else </span>{
+                    ConcreteDataType::decimal128_default_datatype()
+                }
+            }
+        }
+    }
+}
+
+<span class="doccomment">/// This macro is used to generate datatype functions
+/// with lower style for ColumnDataTypeWrapper.
+///
+///
+/// For example: we can use `ColumnDataTypeWrapper::int8_datatype()`,
+/// to get a ColumnDataTypeWrapper with datatype `ColumnDataType::Int8`.
+</span><span class="macro">macro_rules! </span>impl_column_type_functions {
+    ($(<span class="macro-nonterminal">$Type</span>: ident), +) =&gt; {
+        <span class="macro">paste! </span>{
+            <span class="kw">impl </span>ColumnDataTypeWrapper {
+                $(
+                    <span class="kw">pub fn </span>[&lt;<span class="macro-nonterminal">$Type</span>:lower _datatype&gt;]() -&gt; ColumnDataTypeWrapper {
+                        ColumnDataTypeWrapper {
+                            datatype: ColumnDataType::<span class="macro-nonterminal">$Type</span>,
+                            datatype_ext: <span class="prelude-val">None</span>,
+                        }
+                    }
+                )+
+            }
+        }
+    }
+}
+
+<span class="doccomment">/// This macro is used to generate datatype functions
+/// with snake style for ColumnDataTypeWrapper.
+///
+///
+/// For example: we can use `ColumnDataTypeWrapper::duration_second_datatype()`,
+/// to get a ColumnDataTypeWrapper with datatype `ColumnDataType::DurationSecond`.
+</span><span class="macro">macro_rules! </span>impl_column_type_functions_with_snake {
+    ($(<span class="macro-nonterminal">$TypeName</span>: ident), +) =&gt; {
+        <span class="macro">paste!</span>{
+            <span class="kw">impl </span>ColumnDataTypeWrapper {
+                $(
+                    <span class="kw">pub fn </span>[&lt;<span class="macro-nonterminal">$TypeName</span>:snake _datatype&gt;]() -&gt; ColumnDataTypeWrapper {
+                        ColumnDataTypeWrapper {
+                            datatype: ColumnDataType::<span class="macro-nonterminal">$TypeName</span>,
+                            datatype_ext: <span class="prelude-val">None</span>,
+                        }
+                    }
+                )+
+            }
+        }
+    };
+}
+
+<span class="macro">impl_column_type_functions!</span>(
+    Boolean, Uint8, Uint16, Uint32, Uint64, Int8, Int16, Int32, Int64, Float32, Float64, Binary,
+    Date, Datetime, String
+);
+
+<span class="macro">impl_column_type_functions_with_snake!</span>(
+    TimestampSecond,
+    TimestampMillisecond,
+    TimestampMicrosecond,
+    TimestampNanosecond,
+    TimeSecond,
+    TimeMillisecond,
+    TimeMicrosecond,
+    TimeNanosecond,
+    IntervalYearMonth,
+    IntervalDayTime,
+    IntervalMonthDayNano,
+    DurationSecond,
+    DurationMillisecond,
+    DurationMicrosecond,
+    DurationNanosecond
+);
+
+<span class="kw">impl </span>ColumnDataTypeWrapper {
+    <span class="kw">pub fn </span>decimal128_datatype(precision: i32, scale: i32) -&gt; <span class="self">Self </span>{
+        ColumnDataTypeWrapper {
+            datatype: ColumnDataType::Decimal128,
+            datatype_ext: <span class="prelude-val">Some</span>(ColumnDataTypeExtension {
+                type_ext: <span class="prelude-val">Some</span>(TypeExt::DecimalType(DecimalTypeExtension {
+                    precision,
+                    scale,
+                })),
+            }),
         }
     }
 }
@@ -1628,7 +2282,7 @@
     <span class="kw">type </span>Error = error::Error;
 
     <span class="kw">fn </span>try_from(datatype: ConcreteDataType) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
-        <span class="kw">let </span>datatype = ColumnDataTypeWrapper(<span class="kw">match </span>datatype {
+        <span class="kw">let </span>column_datatype = <span class="kw">match </span>datatype {
             ConcreteDataType::Boolean(<span class="kw">_</span>) =&gt; ColumnDataType::Boolean,
             ConcreteDataType::Int8(<span class="kw">_</span>) =&gt; ColumnDataType::Int8,
             ConcreteDataType::Int16(<span class="kw">_</span>) =&gt; ColumnDataType::Int16,
@@ -1661,13 +2315,36 @@
                 IntervalType::DayTime(<span class="kw">_</span>) =&gt; ColumnDataType::IntervalDayTime,
                 IntervalType::MonthDayNano(<span class="kw">_</span>) =&gt; ColumnDataType::IntervalMonthDayNano,
             },
+            ConcreteDataType::Duration(d) =&gt; <span class="kw">match </span>d {
+                DurationType::Second(<span class="kw">_</span>) =&gt; ColumnDataType::DurationSecond,
+                DurationType::Millisecond(<span class="kw">_</span>) =&gt; ColumnDataType::DurationMillisecond,
+                DurationType::Microsecond(<span class="kw">_</span>) =&gt; ColumnDataType::DurationMicrosecond,
+                DurationType::Nanosecond(<span class="kw">_</span>) =&gt; ColumnDataType::DurationNanosecond,
+            },
+            ConcreteDataType::Decimal128(<span class="kw">_</span>) =&gt; ColumnDataType::Decimal128,
             ConcreteDataType::Null(<span class="kw">_</span>)
             | ConcreteDataType::List(<span class="kw">_</span>)
             | ConcreteDataType::Dictionary(<span class="kw">_</span>) =&gt; {
                 <span class="kw">return </span>error::IntoColumnDataTypeSnafu { from: datatype }.fail()
             }
-        });
-        <span class="prelude-val">Ok</span>(datatype)
+        };
+        <span class="kw">let </span>datatype_extension = <span class="kw">match </span>column_datatype {
+            ColumnDataType::Decimal128 =&gt; {
+                datatype
+                    .as_decimal128()
+                    .map(|decimal_type| ColumnDataTypeExtension {
+                        type_ext: <span class="prelude-val">Some</span>(TypeExt::DecimalType(DecimalTypeExtension {
+                            precision: decimal_type.precision() <span class="kw">as </span>i32,
+                            scale: decimal_type.scale() <span class="kw">as </span>i32,
+                        })),
+                    })
+            }
+            <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
+        };
+        <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
+            datatype: column_datatype,
+            datatype_ext: datatype_extension,
+        })
     }
 }
 
@@ -1734,19 +2411,19 @@
             ..Default::default()
         },
         ColumnDataType::TimestampSecond =&gt; Values {
-            ts_second_values: Vec::with_capacity(capacity),
+            timestamp_second_values: Vec::with_capacity(capacity),
             ..Default::default()
         },
         ColumnDataType::TimestampMillisecond =&gt; Values {
-            ts_millisecond_values: Vec::with_capacity(capacity),
+            timestamp_millisecond_values: Vec::with_capacity(capacity),
             ..Default::default()
         },
         ColumnDataType::TimestampMicrosecond =&gt; Values {
-            ts_microsecond_values: Vec::with_capacity(capacity),
+            timestamp_microsecond_values: Vec::with_capacity(capacity),
             ..Default::default()
         },
         ColumnDataType::TimestampNanosecond =&gt; Values {
-            ts_nanosecond_values: Vec::with_capacity(capacity),
+            timestamp_nanosecond_values: Vec::with_capacity(capacity),
             ..Default::default()
         },
         ColumnDataType::TimeSecond =&gt; Values {
@@ -1775,6 +2452,26 @@
         },
         ColumnDataType::IntervalMonthDayNano =&gt; Values {
             interval_month_day_nano_values: Vec::with_capacity(capacity),
+            ..Default::default()
+        },
+        ColumnDataType::DurationSecond =&gt; Values {
+            duration_second_values: Vec::with_capacity(capacity),
+            ..Default::default()
+        },
+        ColumnDataType::DurationMillisecond =&gt; Values {
+            duration_millisecond_values: Vec::with_capacity(capacity),
+            ..Default::default()
+        },
+        ColumnDataType::DurationMicrosecond =&gt; Values {
+            duration_microsecond_values: Vec::with_capacity(capacity),
+            ..Default::default()
+        },
+        ColumnDataType::DurationNanosecond =&gt; Values {
+            duration_nanosecond_values: Vec::with_capacity(capacity),
+            ..Default::default()
+        },
+        ColumnDataType::Decimal128 =&gt; Values {
+            decimal128_values: Vec::with_capacity(capacity),
             ..Default::default()
         },
     }
@@ -1806,10 +2503,10 @@
         Value::Date(val) =&gt; values.date_values.push(val.val()),
         Value::DateTime(val) =&gt; values.datetime_values.push(val.val()),
         Value::Timestamp(val) =&gt; <span class="kw">match </span>val.unit() {
-            TimeUnit::Second =&gt; values.ts_second_values.push(val.value()),
-            TimeUnit::Millisecond =&gt; values.ts_millisecond_values.push(val.value()),
-            TimeUnit::Microsecond =&gt; values.ts_microsecond_values.push(val.value()),
-            TimeUnit::Nanosecond =&gt; values.ts_nanosecond_values.push(val.value()),
+            TimeUnit::Second =&gt; values.timestamp_second_values.push(val.value()),
+            TimeUnit::Millisecond =&gt; values.timestamp_millisecond_values.push(val.value()),
+            TimeUnit::Microsecond =&gt; values.timestamp_microsecond_values.push(val.value()),
+            TimeUnit::Nanosecond =&gt; values.timestamp_nanosecond_values.push(val.value()),
         },
         Value::Time(val) =&gt; <span class="kw">match </span>val.unit() {
             TimeUnit::Second =&gt; values.time_second_values.push(val.value()),
@@ -1824,59 +2521,73 @@
                 .interval_month_day_nano_values
                 .push(convert_i128_to_interval(val.to_i128())),
         },
+        Value::Duration(val) =&gt; <span class="kw">match </span>val.unit() {
+            TimeUnit::Second =&gt; values.duration_second_values.push(val.value()),
+            TimeUnit::Millisecond =&gt; values.duration_millisecond_values.push(val.value()),
+            TimeUnit::Microsecond =&gt; values.duration_microsecond_values.push(val.value()),
+            TimeUnit::Nanosecond =&gt; values.duration_nanosecond_values.push(val.value()),
+        },
+        Value::Decimal128(val) =&gt; values.decimal128_values.push(convert_to_pb_decimal128(val)),
         Value::List(<span class="kw">_</span>) =&gt; <span class="macro">unreachable!</span>(),
     });
     column.null_mask = null_mask.into_vec();
 }
 
 <span class="doccomment">/// Returns the type name of the [Request].
-</span><span class="kw">pub fn </span>request_type(request: <span class="kw-2">&amp;</span>Request) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str {
+</span><span class="kw">pub fn </span>request_type(request: <span class="kw-2">&amp;</span>Request) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str {
     <span class="kw">match </span>request {
-        Request::Inserts(<span class="kw">_</span>) =&gt; <span class="string">&quot;inserts&quot;</span>,
+        Request::Inserts(<span class="kw">_</span>) =&gt; <span class="string">"inserts"</span>,
         Request::Query(query_req) =&gt; query_request_type(query_req),
         Request::Ddl(ddl_req) =&gt; ddl_request_type(ddl_req),
-        Request::Deletes(<span class="kw">_</span>) =&gt; <span class="string">&quot;deletes&quot;</span>,
-        Request::RowInserts(<span class="kw">_</span>) =&gt; <span class="string">&quot;row_inserts&quot;</span>,
-        Request::RowDeletes(<span class="kw">_</span>) =&gt; <span class="string">&quot;row_deletes&quot;</span>,
+        Request::Deletes(<span class="kw">_</span>) =&gt; <span class="string">"deletes"</span>,
+        Request::RowInserts(<span class="kw">_</span>) =&gt; <span class="string">"row_inserts"</span>,
+        Request::RowDeletes(<span class="kw">_</span>) =&gt; <span class="string">"row_deletes"</span>,
     }
 }
 
 <span class="doccomment">/// Returns the type name of the [QueryRequest].
-</span><span class="kw">fn </span>query_request_type(request: <span class="kw-2">&amp;</span>QueryRequest) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str {
+</span><span class="kw">fn </span>query_request_type(request: <span class="kw-2">&amp;</span>QueryRequest) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str {
     <span class="kw">match </span>request.query {
-        <span class="prelude-val">Some</span>(Query::Sql(<span class="kw">_</span>)) =&gt; <span class="string">&quot;query.sql&quot;</span>,
-        <span class="prelude-val">Some</span>(Query::LogicalPlan(<span class="kw">_</span>)) =&gt; <span class="string">&quot;query.logical_plan&quot;</span>,
-        <span class="prelude-val">Some</span>(Query::PromRangeQuery(<span class="kw">_</span>)) =&gt; <span class="string">&quot;query.prom_range&quot;</span>,
-        <span class="prelude-val">None </span>=&gt; <span class="string">&quot;query.empty&quot;</span>,
+        <span class="prelude-val">Some</span>(Query::Sql(<span class="kw">_</span>)) =&gt; <span class="string">"query.sql"</span>,
+        <span class="prelude-val">Some</span>(Query::LogicalPlan(<span class="kw">_</span>)) =&gt; <span class="string">"query.logical_plan"</span>,
+        <span class="prelude-val">Some</span>(Query::PromRangeQuery(<span class="kw">_</span>)) =&gt; <span class="string">"query.prom_range"</span>,
+        <span class="prelude-val">None </span>=&gt; <span class="string">"query.empty"</span>,
     }
 }
 
 <span class="doccomment">/// Returns the type name of the [DdlRequest].
-</span><span class="kw">fn </span>ddl_request_type(request: <span class="kw-2">&amp;</span>DdlRequest) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str {
+</span><span class="kw">fn </span>ddl_request_type(request: <span class="kw-2">&amp;</span>DdlRequest) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str {
     <span class="kw">match </span>request.expr {
-        <span class="prelude-val">Some</span>(Expr::CreateDatabase(<span class="kw">_</span>)) =&gt; <span class="string">&quot;ddl.create_database&quot;</span>,
-        <span class="prelude-val">Some</span>(Expr::CreateTable(<span class="kw">_</span>)) =&gt; <span class="string">&quot;ddl.create_table&quot;</span>,
-        <span class="prelude-val">Some</span>(Expr::Alter(<span class="kw">_</span>)) =&gt; <span class="string">&quot;ddl.alter&quot;</span>,
-        <span class="prelude-val">Some</span>(Expr::DropTable(<span class="kw">_</span>)) =&gt; <span class="string">&quot;ddl.drop_table&quot;</span>,
-        <span class="prelude-val">Some</span>(Expr::FlushTable(<span class="kw">_</span>)) =&gt; <span class="string">&quot;ddl.flush_table&quot;</span>,
-        <span class="prelude-val">Some</span>(Expr::CompactTable(<span class="kw">_</span>)) =&gt; <span class="string">&quot;ddl.compact_table&quot;</span>,
-        <span class="prelude-val">Some</span>(Expr::TruncateTable(<span class="kw">_</span>)) =&gt; <span class="string">&quot;ddl.truncate_table&quot;</span>,
-        <span class="prelude-val">None </span>=&gt; <span class="string">&quot;ddl.empty&quot;</span>,
+        <span class="prelude-val">Some</span>(Expr::CreateDatabase(<span class="kw">_</span>)) =&gt; <span class="string">"ddl.create_database"</span>,
+        <span class="prelude-val">Some</span>(Expr::CreateTable(<span class="kw">_</span>)) =&gt; <span class="string">"ddl.create_table"</span>,
+        <span class="prelude-val">Some</span>(Expr::Alter(<span class="kw">_</span>)) =&gt; <span class="string">"ddl.alter"</span>,
+        <span class="prelude-val">Some</span>(Expr::DropTable(<span class="kw">_</span>)) =&gt; <span class="string">"ddl.drop_table"</span>,
+        <span class="prelude-val">Some</span>(Expr::TruncateTable(<span class="kw">_</span>)) =&gt; <span class="string">"ddl.truncate_table"</span>,
+        <span class="prelude-val">None </span>=&gt; <span class="string">"ddl.empty"</span>,
     }
 }
 
 <span class="doccomment">/// Converts an i128 value to google protobuf type [IntervalMonthDayNano].
-</span><span class="kw">pub fn </span>convert_i128_to_interval(v: i128) -&gt; IntervalMonthDayNano {
+</span><span class="kw">pub fn </span>convert_i128_to_interval(v: i128) -&gt; v1::IntervalMonthDayNano {
     <span class="kw">let </span>interval = Interval::from_i128(v);
     <span class="kw">let </span>(months, days, nanoseconds) = interval.to_month_day_nano();
-    IntervalMonthDayNano {
+    v1::IntervalMonthDayNano {
         months,
         days,
         nanoseconds,
     }
 }
 
-<span class="kw">pub fn </span>pb_value_to_value_ref(value: <span class="kw-2">&amp;</span>v1::Value) -&gt; ValueRef {
+<span class="doccomment">/// Convert common decimal128 to grpc decimal128 without precision and scale.
+</span><span class="kw">pub fn </span>convert_to_pb_decimal128(v: Decimal128) -&gt; v1::Decimal128 {
+    <span class="kw">let </span>(hi, lo) = v.split_value();
+    v1::Decimal128 { hi, lo }
+}
+
+<span class="kw">pub fn </span>pb_value_to_value_ref&lt;<span class="lifetime">'a</span>&gt;(
+    value: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>v1::Value,
+    datatype_ext: <span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="prelude-ty">Option</span>&lt;ColumnDataTypeExtension&gt;,
+) -&gt; ValueRef&lt;<span class="lifetime">'a</span>&gt; {
     <span class="kw">let </span><span class="prelude-val">Some</span>(value) = <span class="kw-2">&amp;</span>value.value_data <span class="kw">else </span>{
         <span class="kw">return </span>ValueRef::Null;
     };
@@ -1897,19 +2608,51 @@
         ValueData::StringValue(string) =&gt; ValueRef::String(string.as_str()),
         ValueData::DateValue(d) =&gt; ValueRef::Date(Date::from(<span class="kw-2">*</span>d)),
         ValueData::DatetimeValue(d) =&gt; ValueRef::DateTime(DateTime::new(<span class="kw-2">*</span>d)),
-        ValueData::TsSecondValue(t) =&gt; ValueRef::Timestamp(Timestamp::new_second(<span class="kw-2">*</span>t)),
-        ValueData::TsMillisecondValue(t) =&gt; ValueRef::Timestamp(Timestamp::new_millisecond(<span class="kw-2">*</span>t)),
-        ValueData::TsMicrosecondValue(t) =&gt; ValueRef::Timestamp(Timestamp::new_microsecond(<span class="kw-2">*</span>t)),
-        ValueData::TsNanosecondValue(t) =&gt; ValueRef::Timestamp(Timestamp::new_nanosecond(<span class="kw-2">*</span>t)),
+        ValueData::TimestampSecondValue(t) =&gt; ValueRef::Timestamp(Timestamp::new_second(<span class="kw-2">*</span>t)),
+        ValueData::TimestampMillisecondValue(t) =&gt; {
+            ValueRef::Timestamp(Timestamp::new_millisecond(<span class="kw-2">*</span>t))
+        }
+        ValueData::TimestampMicrosecondValue(t) =&gt; {
+            ValueRef::Timestamp(Timestamp::new_microsecond(<span class="kw-2">*</span>t))
+        }
+        ValueData::TimestampNanosecondValue(t) =&gt; {
+            ValueRef::Timestamp(Timestamp::new_nanosecond(<span class="kw-2">*</span>t))
+        }
         ValueData::TimeSecondValue(t) =&gt; ValueRef::Time(Time::new_second(<span class="kw-2">*</span>t)),
         ValueData::TimeMillisecondValue(t) =&gt; ValueRef::Time(Time::new_millisecond(<span class="kw-2">*</span>t)),
         ValueData::TimeMicrosecondValue(t) =&gt; ValueRef::Time(Time::new_microsecond(<span class="kw-2">*</span>t)),
         ValueData::TimeNanosecondValue(t) =&gt; ValueRef::Time(Time::new_nanosecond(<span class="kw-2">*</span>t)),
-        ValueData::IntervalYearMonthValues(v) =&gt; ValueRef::Interval(Interval::from_i32(<span class="kw-2">*</span>v)),
-        ValueData::IntervalDayTimeValues(v) =&gt; ValueRef::Interval(Interval::from_i64(<span class="kw-2">*</span>v)),
-        ValueData::IntervalMonthDayNanoValues(v) =&gt; {
+        ValueData::IntervalYearMonthValue(v) =&gt; ValueRef::Interval(Interval::from_i32(<span class="kw-2">*</span>v)),
+        ValueData::IntervalDayTimeValue(v) =&gt; ValueRef::Interval(Interval::from_i64(<span class="kw-2">*</span>v)),
+        ValueData::IntervalMonthDayNanoValue(v) =&gt; {
             <span class="kw">let </span>interval = Interval::from_month_day_nano(v.months, v.days, v.nanoseconds);
             ValueRef::Interval(interval)
+        }
+        ValueData::DurationSecondValue(v) =&gt; ValueRef::Duration(Duration::new_second(<span class="kw-2">*</span>v)),
+        ValueData::DurationMillisecondValue(v) =&gt; ValueRef::Duration(Duration::new_millisecond(<span class="kw-2">*</span>v)),
+        ValueData::DurationMicrosecondValue(v) =&gt; ValueRef::Duration(Duration::new_microsecond(<span class="kw-2">*</span>v)),
+        ValueData::DurationNanosecondValue(v) =&gt; ValueRef::Duration(Duration::new_nanosecond(<span class="kw-2">*</span>v)),
+        ValueData::Decimal128Value(v) =&gt; {
+            <span class="comment">// get precision and scale from datatype_extension
+            </span><span class="kw">if let </span><span class="prelude-val">Some</span>(TypeExt::DecimalType(d)) = datatype_ext
+                .as_ref()
+                .and_then(|column_ext| column_ext.type_ext.as_ref())
+            {
+                ValueRef::Decimal128(Decimal128::from_value_precision_scale(
+                    v.hi,
+                    v.lo,
+                    d.precision <span class="kw">as </span>u8,
+                    d.scale <span class="kw">as </span>i8,
+                ))
+            } <span class="kw">else </span>{
+                <span class="comment">// If the precision and scale are not set, use the default value.
+                </span>ValueRef::Decimal128(Decimal128::from_value_precision_scale(
+                    v.hi,
+                    v.lo,
+                    DECIMAL128_MAX_PRECISION,
+                    DECIMAL128_DEFAULT_SCALE,
+                ))
+            }
         }
     }
 }
@@ -1940,17 +2683,17 @@
         ConcreteDataType::Date(<span class="kw">_</span>) =&gt; Arc::new(DateVector::from_vec(values.date_values)),
         ConcreteDataType::DateTime(<span class="kw">_</span>) =&gt; Arc::new(DateTimeVector::from_vec(values.datetime_values)),
         ConcreteDataType::Timestamp(unit) =&gt; <span class="kw">match </span>unit {
-            TimestampType::Second(<span class="kw">_</span>) =&gt; {
-                Arc::new(TimestampSecondVector::from_vec(values.ts_second_values))
-            }
+            TimestampType::Second(<span class="kw">_</span>) =&gt; Arc::new(TimestampSecondVector::from_vec(
+                values.timestamp_second_values,
+            )),
             TimestampType::Millisecond(<span class="kw">_</span>) =&gt; Arc::new(TimestampMillisecondVector::from_vec(
-                values.ts_millisecond_values,
+                values.timestamp_millisecond_values,
             )),
             TimestampType::Microsecond(<span class="kw">_</span>) =&gt; Arc::new(TimestampMicrosecondVector::from_vec(
-                values.ts_microsecond_values,
+                values.timestamp_microsecond_values,
             )),
             TimestampType::Nanosecond(<span class="kw">_</span>) =&gt; Arc::new(TimestampNanosecondVector::from_vec(
-                values.ts_nanosecond_values,
+                values.timestamp_nanosecond_values,
             )),
         },
         ConcreteDataType::Time(unit) =&gt; <span class="kw">match </span>unit {
@@ -1983,6 +2726,25 @@
                 ))
             }
         },
+        ConcreteDataType::Duration(unit) =&gt; <span class="kw">match </span>unit {
+            DurationType::Second(<span class="kw">_</span>) =&gt; Arc::new(DurationSecondVector::from_vec(
+                values.duration_second_values,
+            )),
+            DurationType::Millisecond(<span class="kw">_</span>) =&gt; Arc::new(DurationMillisecondVector::from_vec(
+                values.duration_millisecond_values,
+            )),
+            DurationType::Microsecond(<span class="kw">_</span>) =&gt; Arc::new(DurationMicrosecondVector::from_vec(
+                values.duration_microsecond_values,
+            )),
+            DurationType::Nanosecond(<span class="kw">_</span>) =&gt; Arc::new(DurationNanosecondVector::from_vec(
+                values.duration_nanosecond_values,
+            )),
+        },
+        ConcreteDataType::Decimal128(d) =&gt; Arc::new(Decimal128Vector::from_values(
+            values.decimal128_values.iter().map(|x| {
+                Decimal128::from_value_precision_scale(x.hi, x.lo, d.precision(), d.scale()).into()
+            }),
+        )),
         ConcreteDataType::Null(<span class="kw">_</span>) | ConcreteDataType::List(<span class="kw">_</span>) | ConcreteDataType::Dictionary(<span class="kw">_</span>) =&gt; {
             <span class="macro">unreachable!</span>()
         }
@@ -2072,22 +2834,22 @@
             .map(|v| Value::Date(v.into()))
             .collect(),
         ConcreteDataType::Timestamp(TimestampType::Second(<span class="kw">_</span>)) =&gt; values
-            .ts_second_values
+            .timestamp_second_values
             .into_iter()
             .map(|v| Value::Timestamp(Timestamp::new_second(v)))
             .collect(),
         ConcreteDataType::Timestamp(TimestampType::Millisecond(<span class="kw">_</span>)) =&gt; values
-            .ts_millisecond_values
+            .timestamp_millisecond_values
             .into_iter()
             .map(|v| Value::Timestamp(Timestamp::new_millisecond(v)))
             .collect(),
         ConcreteDataType::Timestamp(TimestampType::Microsecond(<span class="kw">_</span>)) =&gt; values
-            .ts_microsecond_values
+            .timestamp_microsecond_values
             .into_iter()
             .map(|v| Value::Timestamp(Timestamp::new_microsecond(v)))
             .collect(),
         ConcreteDataType::Timestamp(TimestampType::Nanosecond(<span class="kw">_</span>)) =&gt; values
-            .ts_nanosecond_values
+            .timestamp_nanosecond_values
             .into_iter()
             .map(|v| Value::Timestamp(Timestamp::new_nanosecond(v)))
             .collect(),
@@ -2133,6 +2895,38 @@
                 ))
             })
             .collect(),
+        ConcreteDataType::Duration(DurationType::Second(<span class="kw">_</span>)) =&gt; values
+            .duration_second_values
+            .into_iter()
+            .map(|v| Value::Duration(Duration::new_second(v)))
+            .collect(),
+        ConcreteDataType::Duration(DurationType::Millisecond(<span class="kw">_</span>)) =&gt; values
+            .duration_millisecond_values
+            .into_iter()
+            .map(|v| Value::Duration(Duration::new_millisecond(v)))
+            .collect(),
+        ConcreteDataType::Duration(DurationType::Microsecond(<span class="kw">_</span>)) =&gt; values
+            .duration_microsecond_values
+            .into_iter()
+            .map(|v| Value::Duration(Duration::new_microsecond(v)))
+            .collect(),
+        ConcreteDataType::Duration(DurationType::Nanosecond(<span class="kw">_</span>)) =&gt; values
+            .duration_nanosecond_values
+            .into_iter()
+            .map(|v| Value::Duration(Duration::new_nanosecond(v)))
+            .collect(),
+        ConcreteDataType::Decimal128(d) =&gt; values
+            .decimal128_values
+            .into_iter()
+            .map(|v| {
+                Value::Decimal128(Decimal128::from_value_precision_scale(
+                    v.hi,
+                    v.lo,
+                    d.precision(),
+                    d.scale(),
+                ))
+            })
+            .collect(),
         ConcreteDataType::Null(<span class="kw">_</span>) | ConcreteDataType::List(<span class="kw">_</span>) | ConcreteDataType::Dictionary(<span class="kw">_</span>) =&gt; {
             <span class="macro">unreachable!</span>()
         }
@@ -2145,15 +2939,17 @@
 }
 
 <span class="doccomment">/// Returns true if the pb type value is valid.
-</span><span class="kw">pub fn </span>is_column_type_value_eq(type_value: i32, expect_type: <span class="kw-2">&amp;</span>ConcreteDataType) -&gt; bool {
-    <span class="kw">let </span><span class="prelude-val">Some</span>(column_type) = ColumnDataType::from_i32(type_value) <span class="kw">else </span>{
-        <span class="kw">return </span><span class="bool-val">false</span>;
-    };
-
-    is_column_type_eq(column_type, expect_type)
+</span><span class="kw">pub fn </span>is_column_type_value_eq(
+    type_value: i32,
+    type_extension: <span class="prelude-ty">Option</span>&lt;ColumnDataTypeExtension&gt;,
+    expect_type: <span class="kw-2">&amp;</span>ConcreteDataType,
+) -&gt; bool {
+    ColumnDataTypeWrapper::try_new(type_value, type_extension)
+        .map(|wrapper| ConcreteDataType::from(wrapper) == <span class="kw-2">*</span>expect_type)
+        .unwrap_or(<span class="bool-val">false</span>)
 }
 
-<span class="doccomment">/// Convert value into proto&#39;s value.
+<span class="doccomment">/// Convert value into proto's value.
 </span><span class="kw">pub fn </span>to_proto_value(value: Value) -&gt; <span class="prelude-ty">Option</span>&lt;v1::Value&gt; {
     <span class="kw">let </span>proto_value = <span class="kw">match </span>value {
         Value::Null =&gt; v1::Value { value_data: <span class="prelude-val">None </span>},
@@ -2204,16 +3000,16 @@
         },
         Value::Timestamp(v) =&gt; <span class="kw">match </span>v.unit() {
             TimeUnit::Second =&gt; v1::Value {
-                value_data: <span class="prelude-val">Some</span>(ValueData::TsSecondValue(v.value())),
+                value_data: <span class="prelude-val">Some</span>(ValueData::TimestampSecondValue(v.value())),
             },
             TimeUnit::Millisecond =&gt; v1::Value {
-                value_data: <span class="prelude-val">Some</span>(ValueData::TsMillisecondValue(v.value())),
+                value_data: <span class="prelude-val">Some</span>(ValueData::TimestampMillisecondValue(v.value())),
             },
             TimeUnit::Microsecond =&gt; v1::Value {
-                value_data: <span class="prelude-val">Some</span>(ValueData::TsMicrosecondValue(v.value())),
+                value_data: <span class="prelude-val">Some</span>(ValueData::TimestampMicrosecondValue(v.value())),
             },
             TimeUnit::Nanosecond =&gt; v1::Value {
-                value_data: <span class="prelude-val">Some</span>(ValueData::TsNanosecondValue(v.value())),
+                value_data: <span class="prelude-val">Some</span>(ValueData::TimestampNanosecondValue(v.value())),
             },
         },
         Value::Time(v) =&gt; <span class="kw">match </span>v.unit() {
@@ -2232,16 +3028,33 @@
         },
         Value::Interval(v) =&gt; <span class="kw">match </span>v.unit() {
             IntervalUnit::YearMonth =&gt; v1::Value {
-                value_data: <span class="prelude-val">Some</span>(ValueData::IntervalYearMonthValues(v.to_i32())),
+                value_data: <span class="prelude-val">Some</span>(ValueData::IntervalYearMonthValue(v.to_i32())),
             },
             IntervalUnit::DayTime =&gt; v1::Value {
-                value_data: <span class="prelude-val">Some</span>(ValueData::IntervalDayTimeValues(v.to_i64())),
+                value_data: <span class="prelude-val">Some</span>(ValueData::IntervalDayTimeValue(v.to_i64())),
             },
             IntervalUnit::MonthDayNano =&gt; v1::Value {
-                value_data: <span class="prelude-val">Some</span>(ValueData::IntervalMonthDayNanoValues(
+                value_data: <span class="prelude-val">Some</span>(ValueData::IntervalMonthDayNanoValue(
                     convert_i128_to_interval(v.to_i128()),
                 )),
             },
+        },
+        Value::Duration(v) =&gt; <span class="kw">match </span>v.unit() {
+            TimeUnit::Second =&gt; v1::Value {
+                value_data: <span class="prelude-val">Some</span>(ValueData::DurationSecondValue(v.value())),
+            },
+            TimeUnit::Millisecond =&gt; v1::Value {
+                value_data: <span class="prelude-val">Some</span>(ValueData::DurationMillisecondValue(v.value())),
+            },
+            TimeUnit::Microsecond =&gt; v1::Value {
+                value_data: <span class="prelude-val">Some</span>(ValueData::DurationMicrosecondValue(v.value())),
+            },
+            TimeUnit::Nanosecond =&gt; v1::Value {
+                value_data: <span class="prelude-val">Some</span>(ValueData::DurationNanosecondValue(v.value())),
+            },
+        },
+        Value::Decimal128(v) =&gt; v1::Value {
+            value_data: <span class="prelude-val">Some</span>(ValueData::Decimal128Value(convert_to_pb_decimal128(v))),
         },
         Value::List(<span class="kw">_</span>) =&gt; <span class="kw">return </span><span class="prelude-val">None</span>,
     };
@@ -2249,7 +3062,7 @@
     <span class="prelude-val">Some</span>(proto_value)
 }
 
-<span class="doccomment">/// Returns the [ColumnDataType] of the value.
+<span class="doccomment">/// Returns the [ColumnDataTypeWrapper] of the value.
 ///
 /// If value is null, returns `None`.
 </span><span class="kw">pub fn </span>proto_value_type(value: <span class="kw-2">&amp;</span>v1::Value) -&gt; <span class="prelude-ty">Option</span>&lt;ColumnDataType&gt; {
@@ -2269,69 +3082,88 @@
         ValueData::StringValue(<span class="kw">_</span>) =&gt; ColumnDataType::String,
         ValueData::DateValue(<span class="kw">_</span>) =&gt; ColumnDataType::Date,
         ValueData::DatetimeValue(<span class="kw">_</span>) =&gt; ColumnDataType::Datetime,
-        ValueData::TsSecondValue(<span class="kw">_</span>) =&gt; ColumnDataType::TimestampSecond,
-        ValueData::TsMillisecondValue(<span class="kw">_</span>) =&gt; ColumnDataType::TimestampMillisecond,
-        ValueData::TsMicrosecondValue(<span class="kw">_</span>) =&gt; ColumnDataType::TimestampMicrosecond,
-        ValueData::TsNanosecondValue(<span class="kw">_</span>) =&gt; ColumnDataType::TimestampNanosecond,
+        ValueData::TimestampSecondValue(<span class="kw">_</span>) =&gt; ColumnDataType::TimestampSecond,
+        ValueData::TimestampMillisecondValue(<span class="kw">_</span>) =&gt; ColumnDataType::TimestampMillisecond,
+        ValueData::TimestampMicrosecondValue(<span class="kw">_</span>) =&gt; ColumnDataType::TimestampMicrosecond,
+        ValueData::TimestampNanosecondValue(<span class="kw">_</span>) =&gt; ColumnDataType::TimestampNanosecond,
         ValueData::TimeSecondValue(<span class="kw">_</span>) =&gt; ColumnDataType::TimeSecond,
         ValueData::TimeMillisecondValue(<span class="kw">_</span>) =&gt; ColumnDataType::TimeMillisecond,
         ValueData::TimeMicrosecondValue(<span class="kw">_</span>) =&gt; ColumnDataType::TimeMicrosecond,
         ValueData::TimeNanosecondValue(<span class="kw">_</span>) =&gt; ColumnDataType::TimeNanosecond,
-        ValueData::IntervalYearMonthValues(<span class="kw">_</span>) =&gt; ColumnDataType::IntervalYearMonth,
-        ValueData::IntervalDayTimeValues(<span class="kw">_</span>) =&gt; ColumnDataType::IntervalDayTime,
-        ValueData::IntervalMonthDayNanoValues(<span class="kw">_</span>) =&gt; ColumnDataType::IntervalMonthDayNano,
+        ValueData::IntervalYearMonthValue(<span class="kw">_</span>) =&gt; ColumnDataType::IntervalYearMonth,
+        ValueData::IntervalDayTimeValue(<span class="kw">_</span>) =&gt; ColumnDataType::IntervalDayTime,
+        ValueData::IntervalMonthDayNanoValue(<span class="kw">_</span>) =&gt; ColumnDataType::IntervalMonthDayNano,
+        ValueData::DurationSecondValue(<span class="kw">_</span>) =&gt; ColumnDataType::DurationSecond,
+        ValueData::DurationMillisecondValue(<span class="kw">_</span>) =&gt; ColumnDataType::DurationMillisecond,
+        ValueData::DurationMicrosecondValue(<span class="kw">_</span>) =&gt; ColumnDataType::DurationMicrosecond,
+        ValueData::DurationNanosecondValue(<span class="kw">_</span>) =&gt; ColumnDataType::DurationNanosecond,
+        ValueData::Decimal128Value(<span class="kw">_</span>) =&gt; ColumnDataType::Decimal128,
     };
     <span class="prelude-val">Some</span>(value_type)
 }
 
-<span class="doccomment">/// Convert [ConcreteDataType] to [ColumnDataType].
-</span><span class="kw">pub fn </span>to_column_data_type(data_type: <span class="kw-2">&amp;</span>ConcreteDataType) -&gt; <span class="prelude-ty">Option</span>&lt;ColumnDataType&gt; {
-    <span class="kw">let </span>column_data_type = <span class="kw">match </span>data_type {
-        ConcreteDataType::Boolean(<span class="kw">_</span>) =&gt; ColumnDataType::Boolean,
-        ConcreteDataType::Int8(<span class="kw">_</span>) =&gt; ColumnDataType::Int8,
-        ConcreteDataType::Int16(<span class="kw">_</span>) =&gt; ColumnDataType::Int16,
-        ConcreteDataType::Int32(<span class="kw">_</span>) =&gt; ColumnDataType::Int32,
-        ConcreteDataType::Int64(<span class="kw">_</span>) =&gt; ColumnDataType::Int64,
-        ConcreteDataType::UInt8(<span class="kw">_</span>) =&gt; ColumnDataType::Uint8,
-        ConcreteDataType::UInt16(<span class="kw">_</span>) =&gt; ColumnDataType::Uint16,
-        ConcreteDataType::UInt32(<span class="kw">_</span>) =&gt; ColumnDataType::Uint32,
-        ConcreteDataType::UInt64(<span class="kw">_</span>) =&gt; ColumnDataType::Uint64,
-        ConcreteDataType::Float32(<span class="kw">_</span>) =&gt; ColumnDataType::Float32,
-        ConcreteDataType::Float64(<span class="kw">_</span>) =&gt; ColumnDataType::Float64,
-        ConcreteDataType::Binary(<span class="kw">_</span>) =&gt; ColumnDataType::Binary,
-        ConcreteDataType::String(<span class="kw">_</span>) =&gt; ColumnDataType::String,
-        ConcreteDataType::Date(<span class="kw">_</span>) =&gt; ColumnDataType::Date,
-        ConcreteDataType::DateTime(<span class="kw">_</span>) =&gt; ColumnDataType::Datetime,
-        ConcreteDataType::Timestamp(TimestampType::Second(<span class="kw">_</span>)) =&gt; ColumnDataType::TimestampSecond,
-        ConcreteDataType::Timestamp(TimestampType::Millisecond(<span class="kw">_</span>)) =&gt; {
-            ColumnDataType::TimestampMillisecond
+<span class="kw">pub fn </span>vectors_to_rows&lt;<span class="lifetime">'a</span>&gt;(
+    columns: <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">'a </span>VectorRef&gt;,
+    row_count: usize,
+) -&gt; Vec&lt;Row&gt; {
+    <span class="kw">let </span><span class="kw-2">mut </span>rows = <span class="macro">vec!</span>[Row { values: <span class="macro">vec!</span>[] }; row_count];
+    <span class="kw">for </span>column <span class="kw">in </span>columns {
+        <span class="kw">for </span>(row_index, row) <span class="kw">in </span>rows.iter_mut().enumerate() {
+            row.values.push(value_to_grpc_value(column.get(row_index)))
         }
-        ConcreteDataType::Timestamp(TimestampType::Microsecond(<span class="kw">_</span>)) =&gt; {
-            ColumnDataType::TimestampMicrosecond
-        }
-        ConcreteDataType::Timestamp(TimestampType::Nanosecond(<span class="kw">_</span>)) =&gt; {
-            ColumnDataType::TimestampNanosecond
-        }
-        ConcreteDataType::Time(TimeType::Second(<span class="kw">_</span>)) =&gt; ColumnDataType::TimeSecond,
-        ConcreteDataType::Time(TimeType::Millisecond(<span class="kw">_</span>)) =&gt; ColumnDataType::TimeMillisecond,
-        ConcreteDataType::Time(TimeType::Microsecond(<span class="kw">_</span>)) =&gt; ColumnDataType::TimeMicrosecond,
-        ConcreteDataType::Time(TimeType::Nanosecond(<span class="kw">_</span>)) =&gt; ColumnDataType::TimeNanosecond,
-        ConcreteDataType::Null(<span class="kw">_</span>)
-        | ConcreteDataType::Interval(<span class="kw">_</span>)
-        | ConcreteDataType::List(<span class="kw">_</span>)
-        | ConcreteDataType::Dictionary(<span class="kw">_</span>) =&gt; <span class="kw">return </span><span class="prelude-val">None</span>,
-    };
+    }
 
-    <span class="prelude-val">Some</span>(column_data_type)
+    rows
 }
 
-<span class="doccomment">/// Returns true if the column type is equal to expected type.
-</span><span class="kw">fn </span>is_column_type_eq(column_type: ColumnDataType, expect_type: <span class="kw-2">&amp;</span>ConcreteDataType) -&gt; bool {
-    <span class="kw">if let </span><span class="prelude-val">Some</span>(expect) = to_column_data_type(expect_type) {
-        column_type == expect
-    } <span class="kw">else </span>{
-        <span class="bool-val">false
-    </span>}
+<span class="kw">pub fn </span>value_to_grpc_value(value: Value) -&gt; GrpcValue {
+    GrpcValue {
+        value_data: <span class="kw">match </span>value {
+            Value::Null =&gt; <span class="prelude-val">None</span>,
+            Value::Boolean(v) =&gt; <span class="prelude-val">Some</span>(ValueData::BoolValue(v)),
+            Value::UInt8(v) =&gt; <span class="prelude-val">Some</span>(ValueData::U8Value(v <span class="kw">as _</span>)),
+            Value::UInt16(v) =&gt; <span class="prelude-val">Some</span>(ValueData::U16Value(v <span class="kw">as _</span>)),
+            Value::UInt32(v) =&gt; <span class="prelude-val">Some</span>(ValueData::U32Value(v)),
+            Value::UInt64(v) =&gt; <span class="prelude-val">Some</span>(ValueData::U64Value(v)),
+            Value::Int8(v) =&gt; <span class="prelude-val">Some</span>(ValueData::I8Value(v <span class="kw">as _</span>)),
+            Value::Int16(v) =&gt; <span class="prelude-val">Some</span>(ValueData::I16Value(v <span class="kw">as _</span>)),
+            Value::Int32(v) =&gt; <span class="prelude-val">Some</span>(ValueData::I32Value(v)),
+            Value::Int64(v) =&gt; <span class="prelude-val">Some</span>(ValueData::I64Value(v)),
+            Value::Float32(v) =&gt; <span class="prelude-val">Some</span>(ValueData::F32Value(<span class="kw-2">*</span>v)),
+            Value::Float64(v) =&gt; <span class="prelude-val">Some</span>(ValueData::F64Value(<span class="kw-2">*</span>v)),
+            Value::String(v) =&gt; <span class="prelude-val">Some</span>(ValueData::StringValue(v.as_utf8().to_string())),
+            Value::Binary(v) =&gt; <span class="prelude-val">Some</span>(ValueData::BinaryValue(v.to_vec())),
+            Value::Date(v) =&gt; <span class="prelude-val">Some</span>(ValueData::DateValue(v.val())),
+            Value::DateTime(v) =&gt; <span class="prelude-val">Some</span>(ValueData::DatetimeValue(v.val())),
+            Value::Timestamp(v) =&gt; <span class="prelude-val">Some</span>(<span class="kw">match </span>v.unit() {
+                TimeUnit::Second =&gt; ValueData::TimestampSecondValue(v.value()),
+                TimeUnit::Millisecond =&gt; ValueData::TimestampMillisecondValue(v.value()),
+                TimeUnit::Microsecond =&gt; ValueData::TimestampMicrosecondValue(v.value()),
+                TimeUnit::Nanosecond =&gt; ValueData::TimestampNanosecondValue(v.value()),
+            }),
+            Value::Time(v) =&gt; <span class="prelude-val">Some</span>(<span class="kw">match </span>v.unit() {
+                TimeUnit::Second =&gt; ValueData::TimeSecondValue(v.value()),
+                TimeUnit::Millisecond =&gt; ValueData::TimeMillisecondValue(v.value()),
+                TimeUnit::Microsecond =&gt; ValueData::TimeMicrosecondValue(v.value()),
+                TimeUnit::Nanosecond =&gt; ValueData::TimeNanosecondValue(v.value()),
+            }),
+            Value::Interval(v) =&gt; <span class="prelude-val">Some</span>(<span class="kw">match </span>v.unit() {
+                IntervalUnit::YearMonth =&gt; ValueData::IntervalYearMonthValue(v.to_i32()),
+                IntervalUnit::DayTime =&gt; ValueData::IntervalDayTimeValue(v.to_i64()),
+                IntervalUnit::MonthDayNano =&gt; {
+                    ValueData::IntervalMonthDayNanoValue(convert_i128_to_interval(v.to_i128()))
+                }
+            }),
+            Value::Duration(v) =&gt; <span class="prelude-val">Some</span>(<span class="kw">match </span>v.unit() {
+                TimeUnit::Second =&gt; ValueData::DurationSecondValue(v.value()),
+                TimeUnit::Millisecond =&gt; ValueData::DurationMillisecondValue(v.value()),
+                TimeUnit::Microsecond =&gt; ValueData::DurationMicrosecondValue(v.value()),
+                TimeUnit::Nanosecond =&gt; ValueData::DurationNanosecondValue(v.value()),
+            }),
+            Value::Decimal128(v) =&gt; <span class="prelude-val">Some</span>(ValueData::Decimal128Value(convert_to_pb_decimal128(v))),
+            Value::List(<span class="kw">_</span>) =&gt; <span class="macro">unreachable!</span>(),
+        },
+    }
 }
 
 <span class="attr">#[cfg(test)]
@@ -2339,14 +3171,16 @@
     <span class="kw">use </span>std::sync::Arc;
 
     <span class="kw">use </span>datatypes::types::{
-        IntervalDayTimeType, IntervalMonthDayNanoType, IntervalYearMonthType, TimeMillisecondType,
-        TimeSecondType, TimestampMillisecondType, TimestampSecondType,
+        DurationMillisecondType, DurationSecondType, Int32Type, IntervalDayTimeType,
+        IntervalMonthDayNanoType, IntervalYearMonthType, TimeMillisecondType, TimeSecondType,
+        TimestampMillisecondType, TimestampSecondType, UInt32Type,
     };
     <span class="kw">use </span>datatypes::vectors::{
-        BooleanVector, IntervalDayTimeVector, IntervalMonthDayNanoVector, IntervalYearMonthVector,
-        TimeMicrosecondVector, TimeMillisecondVector, TimeNanosecondVector, TimeSecondVector,
-        TimestampMicrosecondVector, TimestampMillisecondVector, TimestampNanosecondVector,
-        TimestampSecondVector, Vector,
+        BooleanVector, DurationMicrosecondVector, DurationMillisecondVector,
+        DurationNanosecondVector, DurationSecondVector, IntervalDayTimeVector,
+        IntervalMonthDayNanoVector, IntervalYearMonthVector, TimeMicrosecondVector,
+        TimeMillisecondVector, TimeNanosecondVector, TimeSecondVector, TimestampMicrosecondVector,
+        TimestampMillisecondVector, TimestampNanosecondVector, TimestampSecondVector, Vector,
     };
     <span class="kw">use </span>paste::paste;
 
@@ -2407,7 +3241,7 @@
         <span class="macro">assert_eq!</span>(<span class="number">2</span>, values.capacity());
 
         <span class="kw">let </span>values = values_with_capacity(ColumnDataType::TimestampMillisecond, <span class="number">2</span>);
-        <span class="kw">let </span>values = values.ts_millisecond_values;
+        <span class="kw">let </span>values = values.timestamp_millisecond_values;
         <span class="macro">assert_eq!</span>(<span class="number">2</span>, values.capacity());
 
         <span class="kw">let </span>values = values_with_capacity(ColumnDataType::TimeMillisecond, <span class="number">2</span>);
@@ -2421,175 +3255,204 @@
         <span class="kw">let </span>values = values_with_capacity(ColumnDataType::IntervalMonthDayNano, <span class="number">2</span>);
         <span class="kw">let </span>values = values.interval_month_day_nano_values;
         <span class="macro">assert_eq!</span>(<span class="number">2</span>, values.capacity());
+
+        <span class="kw">let </span>values = values_with_capacity(ColumnDataType::DurationMillisecond, <span class="number">2</span>);
+        <span class="kw">let </span>values = values.duration_millisecond_values;
+        <span class="macro">assert_eq!</span>(<span class="number">2</span>, values.capacity());
+
+        <span class="kw">let </span>values = values_with_capacity(ColumnDataType::Decimal128, <span class="number">2</span>);
+        <span class="kw">let </span>values = values.decimal128_values;
+        <span class="macro">assert_eq!</span>(<span class="number">2</span>, values.capacity());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_concrete_datatype_from_column_datatype() {
         <span class="macro">assert_eq!</span>(
             ConcreteDataType::boolean_datatype(),
-            ColumnDataTypeWrapper(ColumnDataType::Boolean).into()
+            ColumnDataTypeWrapper::boolean_datatype().into()
         );
         <span class="macro">assert_eq!</span>(
             ConcreteDataType::int8_datatype(),
-            ColumnDataTypeWrapper(ColumnDataType::Int8).into()
+            ColumnDataTypeWrapper::int8_datatype().into()
         );
         <span class="macro">assert_eq!</span>(
             ConcreteDataType::int16_datatype(),
-            ColumnDataTypeWrapper(ColumnDataType::Int16).into()
+            ColumnDataTypeWrapper::int16_datatype().into()
         );
         <span class="macro">assert_eq!</span>(
             ConcreteDataType::int32_datatype(),
-            ColumnDataTypeWrapper(ColumnDataType::Int32).into()
+            ColumnDataTypeWrapper::int32_datatype().into()
         );
         <span class="macro">assert_eq!</span>(
             ConcreteDataType::int64_datatype(),
-            ColumnDataTypeWrapper(ColumnDataType::Int64).into()
+            ColumnDataTypeWrapper::int64_datatype().into()
         );
         <span class="macro">assert_eq!</span>(
             ConcreteDataType::uint8_datatype(),
-            ColumnDataTypeWrapper(ColumnDataType::Uint8).into()
+            ColumnDataTypeWrapper::uint8_datatype().into()
         );
         <span class="macro">assert_eq!</span>(
             ConcreteDataType::uint16_datatype(),
-            ColumnDataTypeWrapper(ColumnDataType::Uint16).into()
+            ColumnDataTypeWrapper::uint16_datatype().into()
         );
         <span class="macro">assert_eq!</span>(
             ConcreteDataType::uint32_datatype(),
-            ColumnDataTypeWrapper(ColumnDataType::Uint32).into()
+            ColumnDataTypeWrapper::uint32_datatype().into()
         );
         <span class="macro">assert_eq!</span>(
             ConcreteDataType::uint64_datatype(),
-            ColumnDataTypeWrapper(ColumnDataType::Uint64).into()
+            ColumnDataTypeWrapper::uint64_datatype().into()
         );
         <span class="macro">assert_eq!</span>(
             ConcreteDataType::float32_datatype(),
-            ColumnDataTypeWrapper(ColumnDataType::Float32).into()
+            ColumnDataTypeWrapper::float32_datatype().into()
         );
         <span class="macro">assert_eq!</span>(
             ConcreteDataType::float64_datatype(),
-            ColumnDataTypeWrapper(ColumnDataType::Float64).into()
+            ColumnDataTypeWrapper::float64_datatype().into()
         );
         <span class="macro">assert_eq!</span>(
             ConcreteDataType::binary_datatype(),
-            ColumnDataTypeWrapper(ColumnDataType::Binary).into()
+            ColumnDataTypeWrapper::binary_datatype().into()
         );
         <span class="macro">assert_eq!</span>(
             ConcreteDataType::string_datatype(),
-            ColumnDataTypeWrapper(ColumnDataType::String).into()
+            ColumnDataTypeWrapper::string_datatype().into()
         );
         <span class="macro">assert_eq!</span>(
             ConcreteDataType::date_datatype(),
-            ColumnDataTypeWrapper(ColumnDataType::Date).into()
+            ColumnDataTypeWrapper::date_datatype().into()
         );
         <span class="macro">assert_eq!</span>(
             ConcreteDataType::datetime_datatype(),
-            ColumnDataTypeWrapper(ColumnDataType::Datetime).into()
+            ColumnDataTypeWrapper::datetime_datatype().into()
         );
         <span class="macro">assert_eq!</span>(
             ConcreteDataType::timestamp_millisecond_datatype(),
-            ColumnDataTypeWrapper(ColumnDataType::TimestampMillisecond).into()
+            ColumnDataTypeWrapper::timestamp_millisecond_datatype().into()
         );
         <span class="macro">assert_eq!</span>(
             ConcreteDataType::time_datatype(TimeUnit::Millisecond),
-            ColumnDataTypeWrapper(ColumnDataType::TimeMillisecond).into()
+            ColumnDataTypeWrapper::time_millisecond_datatype().into()
         );
         <span class="macro">assert_eq!</span>(
             ConcreteDataType::interval_datatype(IntervalUnit::DayTime),
-            ColumnDataTypeWrapper(ColumnDataType::IntervalDayTime).into()
+            ColumnDataTypeWrapper::interval_day_time_datatype().into()
         );
         <span class="macro">assert_eq!</span>(
             ConcreteDataType::interval_datatype(IntervalUnit::YearMonth),
-            ColumnDataTypeWrapper(ColumnDataType::IntervalYearMonth).into()
+            ColumnDataTypeWrapper::interval_year_month_datatype().into()
         );
         <span class="macro">assert_eq!</span>(
             ConcreteDataType::interval_datatype(IntervalUnit::MonthDayNano),
-            ColumnDataTypeWrapper(ColumnDataType::IntervalMonthDayNano).into()
+            ColumnDataTypeWrapper::interval_month_day_nano_datatype().into()
         );
+        <span class="macro">assert_eq!</span>(
+            ConcreteDataType::duration_millisecond_datatype(),
+            ColumnDataTypeWrapper::duration_millisecond_datatype().into()
+        );
+        <span class="macro">assert_eq!</span>(
+            ConcreteDataType::decimal128_datatype(<span class="number">10</span>, <span class="number">2</span>),
+            ColumnDataTypeWrapper::decimal128_datatype(<span class="number">10</span>, <span class="number">2</span>).into()
+        )
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_column_datatype_from_concrete_datatype() {
         <span class="macro">assert_eq!</span>(
-            ColumnDataTypeWrapper(ColumnDataType::Boolean),
+            ColumnDataTypeWrapper::boolean_datatype(),
             ConcreteDataType::boolean_datatype().try_into().unwrap()
         );
         <span class="macro">assert_eq!</span>(
-            ColumnDataTypeWrapper(ColumnDataType::Int8),
+            ColumnDataTypeWrapper::int8_datatype(),
             ConcreteDataType::int8_datatype().try_into().unwrap()
         );
         <span class="macro">assert_eq!</span>(
-            ColumnDataTypeWrapper(ColumnDataType::Int16),
+            ColumnDataTypeWrapper::int16_datatype(),
             ConcreteDataType::int16_datatype().try_into().unwrap()
         );
         <span class="macro">assert_eq!</span>(
-            ColumnDataTypeWrapper(ColumnDataType::Int32),
+            ColumnDataTypeWrapper::int32_datatype(),
             ConcreteDataType::int32_datatype().try_into().unwrap()
         );
         <span class="macro">assert_eq!</span>(
-            ColumnDataTypeWrapper(ColumnDataType::Int64),
+            ColumnDataTypeWrapper::int64_datatype(),
             ConcreteDataType::int64_datatype().try_into().unwrap()
         );
         <span class="macro">assert_eq!</span>(
-            ColumnDataTypeWrapper(ColumnDataType::Uint8),
+            ColumnDataTypeWrapper::uint8_datatype(),
             ConcreteDataType::uint8_datatype().try_into().unwrap()
         );
         <span class="macro">assert_eq!</span>(
-            ColumnDataTypeWrapper(ColumnDataType::Uint16),
+            ColumnDataTypeWrapper::uint16_datatype(),
             ConcreteDataType::uint16_datatype().try_into().unwrap()
         );
         <span class="macro">assert_eq!</span>(
-            ColumnDataTypeWrapper(ColumnDataType::Uint32),
+            ColumnDataTypeWrapper::uint32_datatype(),
             ConcreteDataType::uint32_datatype().try_into().unwrap()
         );
         <span class="macro">assert_eq!</span>(
-            ColumnDataTypeWrapper(ColumnDataType::Uint64),
+            ColumnDataTypeWrapper::uint64_datatype(),
             ConcreteDataType::uint64_datatype().try_into().unwrap()
         );
         <span class="macro">assert_eq!</span>(
-            ColumnDataTypeWrapper(ColumnDataType::Float32),
+            ColumnDataTypeWrapper::float32_datatype(),
             ConcreteDataType::float32_datatype().try_into().unwrap()
         );
         <span class="macro">assert_eq!</span>(
-            ColumnDataTypeWrapper(ColumnDataType::Float64),
+            ColumnDataTypeWrapper::float64_datatype(),
             ConcreteDataType::float64_datatype().try_into().unwrap()
         );
         <span class="macro">assert_eq!</span>(
-            ColumnDataTypeWrapper(ColumnDataType::Binary),
+            ColumnDataTypeWrapper::binary_datatype(),
             ConcreteDataType::binary_datatype().try_into().unwrap()
         );
         <span class="macro">assert_eq!</span>(
-            ColumnDataTypeWrapper(ColumnDataType::String),
+            ColumnDataTypeWrapper::string_datatype(),
             ConcreteDataType::string_datatype().try_into().unwrap()
         );
         <span class="macro">assert_eq!</span>(
-            ColumnDataTypeWrapper(ColumnDataType::Date),
+            ColumnDataTypeWrapper::date_datatype(),
             ConcreteDataType::date_datatype().try_into().unwrap()
         );
         <span class="macro">assert_eq!</span>(
-            ColumnDataTypeWrapper(ColumnDataType::Datetime),
+            ColumnDataTypeWrapper::datetime_datatype(),
             ConcreteDataType::datetime_datatype().try_into().unwrap()
         );
         <span class="macro">assert_eq!</span>(
-            ColumnDataTypeWrapper(ColumnDataType::TimestampMillisecond),
+            ColumnDataTypeWrapper::timestamp_millisecond_datatype(),
             ConcreteDataType::timestamp_millisecond_datatype()
                 .try_into()
                 .unwrap()
         );
         <span class="macro">assert_eq!</span>(
-            ColumnDataTypeWrapper(ColumnDataType::IntervalYearMonth),
+            ColumnDataTypeWrapper::interval_year_month_datatype(),
             ConcreteDataType::interval_datatype(IntervalUnit::YearMonth)
                 .try_into()
                 .unwrap()
         );
         <span class="macro">assert_eq!</span>(
-            ColumnDataTypeWrapper(ColumnDataType::IntervalDayTime),
+            ColumnDataTypeWrapper::interval_day_time_datatype(),
             ConcreteDataType::interval_datatype(IntervalUnit::DayTime)
                 .try_into()
                 .unwrap()
         );
         <span class="macro">assert_eq!</span>(
-            ColumnDataTypeWrapper(ColumnDataType::IntervalMonthDayNano),
+            ColumnDataTypeWrapper::interval_month_day_nano_datatype(),
             ConcreteDataType::interval_datatype(IntervalUnit::MonthDayNano)
+                .try_into()
+                .unwrap()
+        );
+        <span class="macro">assert_eq!</span>(
+            ColumnDataTypeWrapper::duration_millisecond_datatype(),
+            ConcreteDataType::duration_millisecond_datatype()
+                .try_into()
+                .unwrap()
+        );
+
+        <span class="macro">assert_eq!</span>(
+            ColumnDataTypeWrapper::decimal128_datatype(<span class="number">10</span>, <span class="number">2</span>),
+            ConcreteDataType::decimal128_datatype(<span class="number">10</span>, <span class="number">2</span>)
                 .try_into()
                 .unwrap()
         );
@@ -2598,7 +3461,7 @@
         <span class="macro">assert!</span>(result.is_err());
         <span class="macro">assert_eq!</span>(
             result.unwrap_err().to_string(),
-            <span class="string">&quot;Failed to create column datatype from Null(NullType)&quot;
+            <span class="string">"Failed to create column datatype from Null(NullType)"
         </span>);
 
         <span class="kw">let </span>result: <span class="prelude-ty">Result</span>&lt;ColumnDataTypeWrapper&gt; =
@@ -2606,61 +3469,63 @@
         <span class="macro">assert!</span>(result.is_err());
         <span class="macro">assert_eq!</span>(
             result.unwrap_err().to_string(),
-            <span class="string">&quot;Failed to create column datatype from List(ListType { item_type: Boolean(BooleanType) })&quot;
+            <span class="string">"Failed to create column datatype from List(ListType { item_type: Boolean(BooleanType) })"
         </span>);
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_column_put_timestamp_values() {
         <span class="kw">let </span><span class="kw-2">mut </span>column = Column {
-            column_name: <span class="string">&quot;test&quot;</span>.to_string(),
+            column_name: <span class="string">"test"</span>.to_string(),
             semantic_type: <span class="number">0</span>,
             values: <span class="prelude-val">Some</span>(Values {
                 ..Default::default()
             }),
             null_mask: <span class="macro">vec!</span>[],
             datatype: <span class="number">0</span>,
+            ..Default::default()
         };
 
         <span class="kw">let </span>vector = Arc::new(TimestampNanosecondVector::from_vec(<span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]));
         push_vals(<span class="kw-2">&amp;mut </span>column, <span class="number">3</span>, vector);
         <span class="macro">assert_eq!</span>(
             <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>],
-            column.values.as_ref().unwrap().ts_nanosecond_values
+            column.values.as_ref().unwrap().timestamp_nanosecond_values
         );
 
         <span class="kw">let </span>vector = Arc::new(TimestampMillisecondVector::from_vec(<span class="macro">vec!</span>[<span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]));
         push_vals(<span class="kw-2">&amp;mut </span>column, <span class="number">3</span>, vector);
         <span class="macro">assert_eq!</span>(
             <span class="macro">vec!</span>[<span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>],
-            column.values.as_ref().unwrap().ts_millisecond_values
+            column.values.as_ref().unwrap().timestamp_millisecond_values
         );
 
         <span class="kw">let </span>vector = Arc::new(TimestampMicrosecondVector::from_vec(<span class="macro">vec!</span>[<span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>]));
         push_vals(<span class="kw-2">&amp;mut </span>column, <span class="number">3</span>, vector);
         <span class="macro">assert_eq!</span>(
             <span class="macro">vec!</span>[<span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>],
-            column.values.as_ref().unwrap().ts_microsecond_values
+            column.values.as_ref().unwrap().timestamp_microsecond_values
         );
 
         <span class="kw">let </span>vector = Arc::new(TimestampSecondVector::from_vec(<span class="macro">vec!</span>[<span class="number">10</span>, <span class="number">11</span>, <span class="number">12</span>]));
         push_vals(<span class="kw-2">&amp;mut </span>column, <span class="number">3</span>, vector);
         <span class="macro">assert_eq!</span>(
             <span class="macro">vec!</span>[<span class="number">10</span>, <span class="number">11</span>, <span class="number">12</span>],
-            column.values.as_ref().unwrap().ts_second_values
+            column.values.as_ref().unwrap().timestamp_second_values
         );
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_column_put_time_values() {
         <span class="kw">let </span><span class="kw-2">mut </span>column = Column {
-            column_name: <span class="string">&quot;test&quot;</span>.to_string(),
+            column_name: <span class="string">"test"</span>.to_string(),
             semantic_type: <span class="number">0</span>,
             values: <span class="prelude-val">Some</span>(Values {
                 ..Default::default()
             }),
             null_mask: <span class="macro">vec!</span>[],
             datatype: <span class="number">0</span>,
+            ..Default::default()
         };
 
         <span class="kw">let </span>vector = Arc::new(TimeNanosecondVector::from_vec(<span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]));
@@ -2695,13 +3560,14 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_column_put_interval_values() {
         <span class="kw">let </span><span class="kw-2">mut </span>column = Column {
-            column_name: <span class="string">&quot;test&quot;</span>.to_string(),
+            column_name: <span class="string">"test"</span>.to_string(),
             semantic_type: <span class="number">0</span>,
             values: <span class="prelude-val">Some</span>(Values {
                 ..Default::default()
             }),
             null_mask: <span class="macro">vec!</span>[],
             datatype: <span class="number">0</span>,
+            ..Default::default()
         };
 
         <span class="kw">let </span>vector = Arc::new(IntervalYearMonthVector::from_vec(<span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]));
@@ -2737,11 +3603,53 @@
     }
 
     <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_column_put_duration_values() {
+        <span class="kw">let </span><span class="kw-2">mut </span>column = Column {
+            column_name: <span class="string">"test"</span>.to_string(),
+            semantic_type: <span class="number">0</span>,
+            values: <span class="prelude-val">Some</span>(Values {
+                ..Default::default()
+            }),
+            null_mask: <span class="macro">vec!</span>[],
+            datatype: <span class="number">0</span>,
+            ..Default::default()
+        };
+
+        <span class="kw">let </span>vector = Arc::new(DurationNanosecondVector::from_vec(<span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]));
+        push_vals(<span class="kw-2">&amp;mut </span>column, <span class="number">3</span>, vector);
+        <span class="macro">assert_eq!</span>(
+            <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>],
+            column.values.as_ref().unwrap().duration_nanosecond_values
+        );
+
+        <span class="kw">let </span>vector = Arc::new(DurationMicrosecondVector::from_vec(<span class="macro">vec!</span>[<span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>]));
+        push_vals(<span class="kw-2">&amp;mut </span>column, <span class="number">3</span>, vector);
+        <span class="macro">assert_eq!</span>(
+            <span class="macro">vec!</span>[<span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>],
+            column.values.as_ref().unwrap().duration_microsecond_values
+        );
+
+        <span class="kw">let </span>vector = Arc::new(DurationMillisecondVector::from_vec(<span class="macro">vec!</span>[<span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]));
+        push_vals(<span class="kw-2">&amp;mut </span>column, <span class="number">3</span>, vector);
+        <span class="macro">assert_eq!</span>(
+            <span class="macro">vec!</span>[<span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>],
+            column.values.as_ref().unwrap().duration_millisecond_values
+        );
+
+        <span class="kw">let </span>vector = Arc::new(DurationSecondVector::from_vec(<span class="macro">vec!</span>[<span class="number">10</span>, <span class="number">11</span>, <span class="number">12</span>]));
+        push_vals(<span class="kw-2">&amp;mut </span>column, <span class="number">3</span>, vector);
+        <span class="macro">assert_eq!</span>(
+            <span class="macro">vec!</span>[<span class="number">10</span>, <span class="number">11</span>, <span class="number">12</span>],
+            column.values.as_ref().unwrap().duration_second_values
+        );
+    }
+
+    <span class="attr">#[test]
     </span><span class="kw">fn </span>test_column_put_vector() {
         <span class="kw">use </span><span class="kw">crate</span>::v1::SemanticType;
         <span class="comment">// Some(false), None, Some(true), Some(true)
         </span><span class="kw">let </span><span class="kw-2">mut </span>column = Column {
-            column_name: <span class="string">&quot;test&quot;</span>.to_string(),
+            column_name: <span class="string">"test"</span>.to_string(),
             semantic_type: SemanticType::Field <span class="kw">as </span>i32,
             values: <span class="prelude-val">Some</span>(Values {
                 bool_values: <span class="macro">vec!</span>[<span class="bool-val">false</span>, <span class="bool-val">true</span>, <span class="bool-val">true</span>],
@@ -2749,6 +3657,7 @@
             }),
             null_mask: <span class="macro">vec!</span>[<span class="number">2</span>],
             datatype: ColumnDataType::Boolean <span class="kw">as </span>i32,
+            ..Default::default()
         };
         <span class="kw">let </span>row_count = <span class="number">4</span>;
 
@@ -2776,7 +3685,7 @@
         </span><span class="kw">let </span>actual = pb_values_to_values(
             <span class="kw-2">&amp;</span>ConcreteDataType::Timestamp(TimestampType::Second(TimestampSecondType)),
             Values {
-                ts_second_values: <span class="macro">vec!</span>[<span class="number">1_i64</span>, <span class="number">2_i64</span>, <span class="number">3_i64</span>],
+                timestamp_second_values: <span class="macro">vec!</span>[<span class="number">1_i64</span>, <span class="number">2_i64</span>, <span class="number">3_i64</span>],
                 ..Default::default()
             },
         );
@@ -2791,7 +3700,7 @@
         </span><span class="kw">let </span>actual = pb_values_to_values(
             <span class="kw-2">&amp;</span>ConcreteDataType::Timestamp(TimestampType::Millisecond(TimestampMillisecondType)),
             Values {
-                ts_millisecond_values: <span class="macro">vec!</span>[<span class="number">1_i64</span>, <span class="number">2_i64</span>, <span class="number">3_i64</span>],
+                timestamp_millisecond_values: <span class="macro">vec!</span>[<span class="number">1_i64</span>, <span class="number">2_i64</span>, <span class="number">3_i64</span>],
                 ..Default::default()
             },
         );
@@ -2837,6 +3746,39 @@
     }
 
     <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_convert_duration_values() {
+        <span class="comment">// second
+        </span><span class="kw">let </span>actual = pb_values_to_values(
+            <span class="kw-2">&amp;</span>ConcreteDataType::Duration(DurationType::Second(DurationSecondType)),
+            Values {
+                duration_second_values: <span class="macro">vec!</span>[<span class="number">1_i64</span>, <span class="number">2_i64</span>, <span class="number">3_i64</span>],
+                ..Default::default()
+            },
+        );
+        <span class="kw">let </span>expect = <span class="macro">vec!</span>[
+            Value::Duration(Duration::new_second(<span class="number">1_i64</span>)),
+            Value::Duration(Duration::new_second(<span class="number">2_i64</span>)),
+            Value::Duration(Duration::new_second(<span class="number">3_i64</span>)),
+        ];
+        <span class="macro">assert_eq!</span>(expect, actual);
+
+        <span class="comment">// millisecond
+        </span><span class="kw">let </span>actual = pb_values_to_values(
+            <span class="kw-2">&amp;</span>ConcreteDataType::Duration(DurationType::Millisecond(DurationMillisecondType)),
+            Values {
+                duration_millisecond_values: <span class="macro">vec!</span>[<span class="number">1_i64</span>, <span class="number">2_i64</span>, <span class="number">3_i64</span>],
+                ..Default::default()
+            },
+        );
+        <span class="kw">let </span>expect = <span class="macro">vec!</span>[
+            Value::Duration(Duration::new_millisecond(<span class="number">1_i64</span>)),
+            Value::Duration(Duration::new_millisecond(<span class="number">2_i64</span>)),
+            Value::Duration(Duration::new_millisecond(<span class="number">3_i64</span>)),
+        ];
+        <span class="macro">assert_eq!</span>(expect, actual);
+    }
+
+    <span class="attr">#[test]
     </span><span class="kw">fn </span>test_convert_interval_values() {
         <span class="comment">// year_month
         </span><span class="kw">let </span>actual = pb_values_to_values(
@@ -2873,17 +3815,17 @@
             <span class="kw-2">&amp;</span>ConcreteDataType::Interval(IntervalType::MonthDayNano(IntervalMonthDayNanoType)),
             Values {
                 interval_month_day_nano_values: <span class="macro">vec!</span>[
-                    IntervalMonthDayNano {
+                    v1::IntervalMonthDayNano {
                         months: <span class="number">1</span>,
                         days: <span class="number">2</span>,
                         nanoseconds: <span class="number">3</span>,
                     },
-                    IntervalMonthDayNano {
+                    v1::IntervalMonthDayNano {
                         months: <span class="number">5</span>,
                         days: <span class="number">6</span>,
                         nanoseconds: <span class="number">7</span>,
                     },
-                    IntervalMonthDayNano {
+                    v1::IntervalMonthDayNano {
                         months: <span class="number">9</span>,
                         days: <span class="number">10</span>,
                         nanoseconds: <span class="number">11</span>,
@@ -3002,23 +3944,23 @@
 
     <span class="macro">test_convert_values!</span>(
         string,
-        <span class="macro">vec!</span>[<span class="string">&quot;1&quot;</span>.to_string(), <span class="string">&quot;2&quot;</span>.to_string(), <span class="string">&quot;3&quot;</span>.to_string()],
+        <span class="macro">vec!</span>[<span class="string">"1"</span>.to_string(), <span class="string">"2"</span>.to_string(), <span class="string">"3"</span>.to_string()],
         string,
         <span class="macro">vec!</span>[
-            Value::String(<span class="string">&quot;1&quot;</span>.into()),
-            Value::String(<span class="string">&quot;2&quot;</span>.into()),
-            Value::String(<span class="string">&quot;3&quot;</span>.into())
+            Value::String(<span class="string">"1"</span>.into()),
+            Value::String(<span class="string">"2"</span>.into()),
+            Value::String(<span class="string">"3"</span>.into())
         ]
     );
 
     <span class="macro">test_convert_values!</span>(
         binary,
-        <span class="macro">vec!</span>[<span class="string">&quot;1&quot;</span>.into(), <span class="string">&quot;2&quot;</span>.into(), <span class="string">&quot;3&quot;</span>.into()],
+        <span class="macro">vec!</span>[<span class="string">"1"</span>.into(), <span class="string">"2"</span>.into(), <span class="string">"3"</span>.into()],
         binary,
         <span class="macro">vec!</span>[
-            Value::Binary(<span class="string">b&quot;1&quot;</span>.to_vec().into()),
-            Value::Binary(<span class="string">b&quot;2&quot;</span>.to_vec().into()),
-            Value::Binary(<span class="string">b&quot;3&quot;</span>.to_vec().into())
+            Value::Binary(<span class="string">b"1"</span>.to_vec().into()),
+            Value::Binary(<span class="string">b"2"</span>.to_vec().into()),
+            Value::Binary(<span class="string">b"3"</span>.to_vec().into())
         ]
     );
 
@@ -3043,5 +3985,106 @@
             Value::DateTime(<span class="number">3</span>.into())
         ]
     );
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_vectors_to_rows_for_different_types() {
+        <span class="kw">let </span>boolean_vec = BooleanVector::from_vec(<span class="macro">vec!</span>[<span class="bool-val">true</span>, <span class="bool-val">false</span>, <span class="bool-val">true</span>]);
+        <span class="kw">let </span>int8_vec = PrimitiveVector::&lt;Int8Type&gt;::from_iter_values(<span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]);
+        <span class="kw">let </span>int32_vec = PrimitiveVector::&lt;Int32Type&gt;::from_iter_values(<span class="macro">vec!</span>[<span class="number">100</span>, <span class="number">200</span>, <span class="number">300</span>]);
+        <span class="kw">let </span>uint8_vec = PrimitiveVector::&lt;UInt8Type&gt;::from_iter_values(<span class="macro">vec!</span>[<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>]);
+        <span class="kw">let </span>uint32_vec = PrimitiveVector::&lt;UInt32Type&gt;::from_iter_values(<span class="macro">vec!</span>[<span class="number">1000</span>, <span class="number">2000</span>, <span class="number">3000</span>]);
+        <span class="kw">let </span>float32_vec = Float32Vector::from_vec(<span class="macro">vec!</span>[<span class="number">1.1</span>, <span class="number">2.2</span>, <span class="number">3.3</span>]);
+        <span class="kw">let </span>date_vec = DateVector::from_vec(<span class="macro">vec!</span>[<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>]);
+        <span class="kw">let </span>string_vec = StringVector::from_vec(<span class="macro">vec!</span>[<span class="string">"a"</span>, <span class="string">"b"</span>, <span class="string">"c"</span>]);
+
+        <span class="kw">let </span>vector_refs: Vec&lt;VectorRef&gt; = <span class="macro">vec!</span>[
+            Arc::new(boolean_vec),
+            Arc::new(int8_vec),
+            Arc::new(int32_vec),
+            Arc::new(uint8_vec),
+            Arc::new(uint32_vec),
+            Arc::new(float32_vec),
+            Arc::new(date_vec),
+            Arc::new(string_vec),
+        ];
+
+        <span class="kw">let </span>result = vectors_to_rows(vector_refs.iter(), <span class="number">3</span>);
+
+        <span class="macro">assert_eq!</span>(result.len(), <span class="number">3</span>);
+
+        <span class="macro">assert_eq!</span>(result[<span class="number">0</span>].values.len(), <span class="number">8</span>);
+        <span class="kw">let </span>values = result[<span class="number">0</span>]
+            .values
+            .iter()
+            .map(|v| v.value_data.clone().unwrap())
+            .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
+        <span class="macro">assert_eq!</span>(values[<span class="number">0</span>], ValueData::BoolValue(<span class="bool-val">true</span>));
+        <span class="macro">assert_eq!</span>(values[<span class="number">1</span>], ValueData::I8Value(<span class="number">1</span>));
+        <span class="macro">assert_eq!</span>(values[<span class="number">2</span>], ValueData::I32Value(<span class="number">100</span>));
+        <span class="macro">assert_eq!</span>(values[<span class="number">3</span>], ValueData::U8Value(<span class="number">10</span>));
+        <span class="macro">assert_eq!</span>(values[<span class="number">4</span>], ValueData::U32Value(<span class="number">1000</span>));
+        <span class="macro">assert_eq!</span>(values[<span class="number">5</span>], ValueData::F32Value(<span class="number">1.1</span>));
+        <span class="macro">assert_eq!</span>(values[<span class="number">6</span>], ValueData::DateValue(<span class="number">10</span>));
+        <span class="macro">assert_eq!</span>(values[<span class="number">7</span>], ValueData::StringValue(<span class="string">"a"</span>.to_string()));
+
+        <span class="macro">assert_eq!</span>(result[<span class="number">1</span>].values.len(), <span class="number">8</span>);
+        <span class="kw">let </span>values = result[<span class="number">1</span>]
+            .values
+            .iter()
+            .map(|v| v.value_data.clone().unwrap())
+            .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
+        <span class="macro">assert_eq!</span>(values[<span class="number">0</span>], ValueData::BoolValue(<span class="bool-val">false</span>));
+        <span class="macro">assert_eq!</span>(values[<span class="number">1</span>], ValueData::I8Value(<span class="number">2</span>));
+        <span class="macro">assert_eq!</span>(values[<span class="number">2</span>], ValueData::I32Value(<span class="number">200</span>));
+        <span class="macro">assert_eq!</span>(values[<span class="number">3</span>], ValueData::U8Value(<span class="number">20</span>));
+        <span class="macro">assert_eq!</span>(values[<span class="number">4</span>], ValueData::U32Value(<span class="number">2000</span>));
+        <span class="macro">assert_eq!</span>(values[<span class="number">5</span>], ValueData::F32Value(<span class="number">2.2</span>));
+        <span class="macro">assert_eq!</span>(values[<span class="number">6</span>], ValueData::DateValue(<span class="number">20</span>));
+        <span class="macro">assert_eq!</span>(values[<span class="number">7</span>], ValueData::StringValue(<span class="string">"b"</span>.to_string()));
+
+        <span class="macro">assert_eq!</span>(result[<span class="number">2</span>].values.len(), <span class="number">8</span>);
+        <span class="kw">let </span>values = result[<span class="number">2</span>]
+            .values
+            .iter()
+            .map(|v| v.value_data.clone().unwrap())
+            .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
+        <span class="macro">assert_eq!</span>(values[<span class="number">0</span>], ValueData::BoolValue(<span class="bool-val">true</span>));
+        <span class="macro">assert_eq!</span>(values[<span class="number">1</span>], ValueData::I8Value(<span class="number">3</span>));
+        <span class="macro">assert_eq!</span>(values[<span class="number">2</span>], ValueData::I32Value(<span class="number">300</span>));
+        <span class="macro">assert_eq!</span>(values[<span class="number">3</span>], ValueData::U8Value(<span class="number">30</span>));
+        <span class="macro">assert_eq!</span>(values[<span class="number">4</span>], ValueData::U32Value(<span class="number">3000</span>));
+        <span class="macro">assert_eq!</span>(values[<span class="number">5</span>], ValueData::F32Value(<span class="number">3.3</span>));
+        <span class="macro">assert_eq!</span>(values[<span class="number">6</span>], ValueData::DateValue(<span class="number">30</span>));
+        <span class="macro">assert_eq!</span>(values[<span class="number">7</span>], ValueData::StringValue(<span class="string">"c"</span>.to_string()));
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_is_column_type_value_eq() {
+        <span class="comment">// test column type eq
+        </span><span class="kw">let </span>column1 = Column {
+            column_name: <span class="string">"test"</span>.to_string(),
+            semantic_type: <span class="number">0</span>,
+            values: <span class="prelude-val">Some</span>(Values {
+                bool_values: <span class="macro">vec!</span>[<span class="bool-val">false</span>, <span class="bool-val">true</span>, <span class="bool-val">true</span>],
+                ..Default::default()
+            }),
+            null_mask: <span class="macro">vec!</span>[<span class="number">2</span>],
+            datatype: ColumnDataType::Boolean <span class="kw">as </span>i32,
+            datatype_extension: <span class="prelude-val">None</span>,
+        };
+        <span class="macro">assert!</span>(is_column_type_value_eq(
+            column1.datatype,
+            column1.datatype_extension,
+            <span class="kw-2">&amp;</span>ConcreteDataType::boolean_datatype(),
+        ));
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_convert_to_pb_decimal128() {
+        <span class="kw">let </span>decimal = Decimal128::new(<span class="number">123</span>, <span class="number">3</span>, <span class="number">1</span>);
+        <span class="kw">let </span>pb_decimal = convert_to_pb_decimal128(decimal);
+        <span class="macro">assert_eq!</span>(pb_decimal.lo, <span class="number">123</span>);
+        <span class="macro">assert_eq!</span>(pb_decimal.hi, <span class="number">0</span>);
+    }
 }
 </code></pre></div></section></main></body></html>

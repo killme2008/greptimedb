@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/script/src/python/ffi_types/copr/parse.rs`."><title>parse.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../../../" data-static-root-path="../../../../../static.files/" data-current-crate="script" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../../../src-files.js"></script><script defer src="../../../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../../script/index.html"><img class="rust-logo" src="../../../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/script/src/python/ffi_types/copr/parse.rs`."><title>parse.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../../../../" data-static-root-path="../../../../../static.files/" data-current-crate="script" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../../../src-files.js"></script><script defer src="../../../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -552,14 +553,14 @@
 <a href="#552" id="552">552</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -614,7 +615,7 @@
     } <span class="kw">else </span>{
         <span class="macro">fail_parse_error!</span>(
             <span class="macro">format!</span>(
-                <span class="string">&quot;Expect a list of String, found one element to be: \n{:#?}&quot;</span>,
+                <span class="string">"Expect a list of String, found one element to be: \n{:#?}"</span>,
                 <span class="kw-2">&amp;</span>s.node
             ),
             <span class="prelude-val">Some</span>(s.location)
@@ -629,7 +630,7 @@
         <span class="prelude-val">Ok</span>(ret)
     } <span class="kw">else </span>{
         <span class="macro">fail_parse_error!</span>(
-            <span class="macro">format!</span>(<span class="string">&quot;Expect a list, found \n{:#?}&quot;</span>, <span class="kw-2">&amp;</span>lst.node),
+            <span class="macro">format!</span>(<span class="string">"Expect a list, found \n{:#?}"</span>, <span class="kw-2">&amp;</span>lst.node),
             <span class="prelude-val">Some</span>(lst.location)
         )
     }
@@ -637,22 +638,22 @@
 
 <span class="kw">fn </span>try_into_datatype(ty: <span class="kw-2">&amp;</span>str, loc: <span class="kw-2">&amp;</span>Location) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;ConcreteDataType&gt;&gt; {
     <span class="kw">match </span>ty {
-        <span class="string">&quot;bool&quot; </span>=&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(ConcreteDataType::boolean_datatype())),
-        <span class="string">&quot;u8&quot; </span>=&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(ConcreteDataType::uint8_datatype())),
-        <span class="string">&quot;u16&quot; </span>=&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(ConcreteDataType::uint16_datatype())),
-        <span class="string">&quot;u32&quot; </span>=&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(ConcreteDataType::uint32_datatype())),
-        <span class="string">&quot;u64&quot; </span>=&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(ConcreteDataType::uint64_datatype())),
-        <span class="string">&quot;i8&quot; </span>=&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(ConcreteDataType::int8_datatype())),
-        <span class="string">&quot;i16&quot; </span>=&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(ConcreteDataType::int16_datatype())),
-        <span class="string">&quot;i32&quot; </span>=&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(ConcreteDataType::int32_datatype())),
-        <span class="string">&quot;i64&quot; </span>=&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(ConcreteDataType::int64_datatype())),
-        <span class="string">&quot;f32&quot; </span>=&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(ConcreteDataType::float32_datatype())),
-        <span class="string">&quot;f64&quot; </span>=&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(ConcreteDataType::float64_datatype())),
-        <span class="string">&quot;str&quot; </span>=&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(ConcreteDataType::string_datatype())),
+        <span class="string">"bool" </span>=&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(ConcreteDataType::boolean_datatype())),
+        <span class="string">"u8" </span>=&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(ConcreteDataType::uint8_datatype())),
+        <span class="string">"u16" </span>=&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(ConcreteDataType::uint16_datatype())),
+        <span class="string">"u32" </span>=&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(ConcreteDataType::uint32_datatype())),
+        <span class="string">"u64" </span>=&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(ConcreteDataType::uint64_datatype())),
+        <span class="string">"i8" </span>=&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(ConcreteDataType::int8_datatype())),
+        <span class="string">"i16" </span>=&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(ConcreteDataType::int16_datatype())),
+        <span class="string">"i32" </span>=&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(ConcreteDataType::int32_datatype())),
+        <span class="string">"i64" </span>=&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(ConcreteDataType::int64_datatype())),
+        <span class="string">"f32" </span>=&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(ConcreteDataType::float32_datatype())),
+        <span class="string">"f64" </span>=&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(ConcreteDataType::float64_datatype())),
+        <span class="string">"str" </span>=&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(ConcreteDataType::string_datatype())),
         <span class="comment">// for any datatype
-        </span><span class="string">&quot;_&quot; </span>=&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>),
-        <span class="comment">// note the different between &quot;_&quot; and _
-        </span><span class="kw">_ </span>=&gt; <span class="macro">fail_parse_error!</span>(<span class="macro">format!</span>(<span class="string">&quot;Unknown datatype: {ty} at {loc:?}&quot;</span>), <span class="prelude-val">Some</span>(<span class="kw-2">*</span>loc)),
+        </span><span class="string">"_" </span>=&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>),
+        <span class="comment">// note the different between "_" and _
+        </span><span class="kw">_ </span>=&gt; <span class="macro">fail_parse_error!</span>(<span class="macro">format!</span>(<span class="string">"Unknown datatype: {ty} at {loc:?}"</span>), <span class="prelude-val">Some</span>(<span class="kw-2">*</span>loc)),
     }
 }
 
@@ -665,7 +666,7 @@
             is_nullable: <span class="bool-val">false</span>,
         }),
         <span class="kw">_ </span>=&gt; <span class="macro">fail_parse_error!</span>(
-            <span class="macro">format!</span>(<span class="string">&quot;Expect types&#39; name, found \n{:#?}&quot;</span>, <span class="kw-2">&amp;</span>sub.node),
+            <span class="macro">format!</span>(<span class="string">"Expect types' name, found \n{:#?}"</span>, <span class="kw-2">&amp;</span>sub.node),
             <span class="prelude-val">Some</span>(sub.location)
         ),
     }
@@ -697,13 +698,13 @@
         <span class="kw">let </span>right_is_none = is_none(right);
         <span class="kw">if </span>left_is_ty &amp;&amp; right_is_ty || left_is_none &amp;&amp; right_is_none {
             <span class="macro">fail_parse_error!</span>(
-                <span class="string">&quot;Expect one typenames and one `None`&quot;</span>.to_string(),
+                <span class="string">"Expect one typenames and one `None`"</span>.to_string(),
                 <span class="prelude-val">Some</span>(bin_op.location)
             )<span class="question-mark">?</span>;
         } <span class="kw">else if </span>!(left_is_none &amp;&amp; right_is_ty || left_is_ty &amp;&amp; right_is_none) {
             <span class="macro">fail_parse_error!</span>(
                 <span class="macro">format!</span>(
-                    <span class="string">&quot;Expect a type name and a `None`, found left: \n{:#?} \nand right: \n{:#?}&quot;</span>,
+                    <span class="string">"Expect a type name and a `None`, found left: \n{:#?} \nand right: \n{:#?}"</span>,
                     <span class="kw-2">&amp;</span>left.node, <span class="kw-2">&amp;</span>right.node
                 ),
                 <span class="prelude-val">Some</span>(bin_op.location)
@@ -713,7 +714,7 @@
     } <span class="kw">else </span>{
         <span class="macro">fail_parse_error!</span>(
             <span class="macro">format!</span>(
-                <span class="string">&quot;Expect binary ops like `DataType | None`, found \n{:#?}&quot;</span>,
+                <span class="string">"Expect binary ops like `DataType | None`, found \n{:#?}"</span>,
                 bin_op.node
             ),
             <span class="prelude-val">Some</span>(bin_op.location)
@@ -736,7 +737,7 @@
         } <span class="kw">else </span>{
             <span class="comment">// deal with errors anyway in case code above changed but forget to modify
             </span><span class="kw">return </span><span class="macro">fail_parse_error!</span>(
-                <span class="string">&quot;Expect a type name, not two `None`&quot;</span>.into(),
+                <span class="string">"Expect a type name, not two `None`"</span>.into(),
                 <span class="prelude-val">Some</span>(bin_op.location),
             );
         };
@@ -758,22 +759,22 @@
     {
         <span class="kw">if let </span>ast::ExprKind::Name { id, ctx: <span class="kw">_ </span>} = <span class="kw-2">&amp;</span>value.node {
             <span class="macro">ensure!</span>(
-                id == <span class="string">&quot;vector&quot;</span>,
+                id == <span class="string">"vector"</span>,
                 ret_parse_error(
-                    <span class="macro">format!</span>(<span class="string">&quot;Wrong type annotation, expect `vector[...]`, found `{id}`&quot;</span>),
+                    <span class="macro">format!</span>(<span class="string">"Wrong type annotation, expect `vector[...]`, found `{id}`"</span>),
                     <span class="prelude-val">Some</span>(value.location)
                 )
             );
         } <span class="kw">else </span>{
             <span class="kw">return </span><span class="macro">fail_parse_error!</span>(
-                <span class="macro">format!</span>(<span class="string">&quot;Expect \&quot;vector\&quot;, found \n{:#?}&quot;</span>, <span class="kw-2">&amp;</span>value.node),
+                <span class="macro">format!</span>(<span class="string">"Expect \"vector\", found \n{:#?}"</span>, <span class="kw-2">&amp;</span>value.node),
                 <span class="prelude-val">Some</span>(value.location)
             );
         }
         <span class="prelude-val">Ok</span>(slice)
     } <span class="kw">else </span>{
         <span class="macro">fail_parse_error!</span>(
-            <span class="macro">format!</span>(<span class="string">&quot;Expect type annotation, found \n{:#?}&quot;</span>, <span class="kw-2">&amp;</span>sub),
+            <span class="macro">format!</span>(<span class="string">"Expect type annotation, found \n{:#?}"</span>, <span class="kw-2">&amp;</span>sub),
             <span class="prelude-val">Some</span>(sub.location)
         )
     }
@@ -800,7 +801,7 @@
             } =&gt; parse_bin_op(slice),
             <span class="kw">_ </span>=&gt; {
                 <span class="macro">fail_parse_error!</span>(
-                    <span class="macro">format!</span>(<span class="string">&quot;Expect type in `vector[...]`, found \n{:#?}&quot;</span>, <span class="kw-2">&amp;</span>slice.node),
+                    <span class="macro">format!</span>(<span class="string">"Expect type in `vector[...]`, found \n{:#?}"</span>, <span class="kw-2">&amp;</span>slice.node),
                     <span class="prelude-val">Some</span>(slice.location),
                 )
             }
@@ -811,20 +812,20 @@
 <span class="doccomment">/// parse a list of keyword and return args and returns list from keywords
 </span><span class="kw">fn </span>parse_keywords(keywords: <span class="kw-2">&amp;</span>Vec&lt;ast::Keyword&lt;()&gt;&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;DecoratorArgs&gt; {
     <span class="comment">// more keys maybe add to this list of `avail_key`(like `sql` for querying and maybe config for connecting to database?), for better extension using a `HashSet` in here
-    </span><span class="kw">let </span>avail_key = HashSet::from([<span class="string">&quot;args&quot;</span>, <span class="string">&quot;returns&quot;</span>, <span class="string">&quot;sql&quot;</span>, <span class="string">&quot;backend&quot;</span>]);
-    <span class="kw">let </span>opt_keys = HashSet::from([<span class="string">&quot;sql&quot;</span>, <span class="string">&quot;args&quot;</span>, <span class="string">&quot;backend&quot;</span>]);
+    </span><span class="kw">let </span>avail_key = HashSet::from([<span class="string">"args"</span>, <span class="string">"returns"</span>, <span class="string">"sql"</span>, <span class="string">"backend"</span>]);
+    <span class="kw">let </span>opt_keys = HashSet::from([<span class="string">"sql"</span>, <span class="string">"args"</span>, <span class="string">"backend"</span>]);
     <span class="kw">let </span><span class="kw-2">mut </span>visited_key = HashSet::new();
     <span class="kw">let </span>len_min = avail_key.len() - opt_keys.len();
     <span class="kw">let </span>len_max = avail_key.len();
     <span class="macro">ensure!</span>(
-        <span class="comment">// &quot;sql&quot; is optional(for now)
+        <span class="comment">// "sql" is optional(for now)
         </span>keywords.len() &gt;= len_min &amp;&amp; keywords.len() &lt;= len_max,
         CoprParseSnafu {
             reason: <span class="macro">format!</span>(
-                <span class="string">&quot;Expect between {len_min} and {len_max} keyword argument, found {}.&quot;</span>,
+                <span class="string">"Expect between {len_min} and {len_max} keyword argument, found {}."</span>,
                 keywords.len()
             ),
-            loc: keywords.get(<span class="number">0</span>).map(|s| s.location)
+            loc: keywords.first().map(|s| s.location)
         }
     );
     <span class="kw">let </span><span class="kw-2">mut </span>ret_args = DecoratorArgs::default();
@@ -834,33 +835,33 @@
                 <span class="kw">let </span>s = s.as_str();
                 <span class="kw">if </span>visited_key.contains(s) {
                     <span class="kw">return </span><span class="macro">fail_parse_error!</span>(
-                        <span class="macro">format!</span>(<span class="string">&quot;`{s}` occur multiple times in decorator&#39;s arguments&#39; list.&quot;</span>),
+                        <span class="macro">format!</span>(<span class="string">"`{s}` occur multiple times in decorator's arguments' list."</span>),
                         <span class="prelude-val">Some</span>(kw.location),
                     );
                 }
                 <span class="kw">if </span>!avail_key.contains(s) {
                     <span class="kw">return </span><span class="macro">fail_parse_error!</span>(
-                        <span class="macro">format!</span>(<span class="string">&quot;Expect one of {:?}, found `{}`&quot;</span>, <span class="kw-2">&amp;</span>avail_key, s),
+                        <span class="macro">format!</span>(<span class="string">"Expect one of {:?}, found `{}`"</span>, <span class="kw-2">&amp;</span>avail_key, s),
                         <span class="prelude-val">Some</span>(kw.location),
                     );
                 } <span class="kw">else </span>{
                     <span class="kw">let _ </span>= visited_key.insert(s);
                 }
                 <span class="kw">match </span>s {
-                    <span class="string">&quot;args&quot; </span>=&gt; ret_args.arg_names = <span class="prelude-val">Some</span>(pylist_to_vec(<span class="kw-2">&amp;</span>kw.node.value)<span class="question-mark">?</span>),
-                    <span class="string">&quot;returns&quot; </span>=&gt; ret_args.ret_names = pylist_to_vec(<span class="kw-2">&amp;</span>kw.node.value)<span class="question-mark">?</span>,
-                    <span class="string">&quot;sql&quot; </span>=&gt; ret_args.sql = <span class="prelude-val">Some</span>(py_str_to_string(<span class="kw-2">&amp;</span>kw.node.value)<span class="question-mark">?</span>),
-                    <span class="string">&quot;backend&quot; </span>=&gt; {
+                    <span class="string">"args" </span>=&gt; ret_args.arg_names = <span class="prelude-val">Some</span>(pylist_to_vec(<span class="kw-2">&amp;</span>kw.node.value)<span class="question-mark">?</span>),
+                    <span class="string">"returns" </span>=&gt; ret_args.ret_names = pylist_to_vec(<span class="kw-2">&amp;</span>kw.node.value)<span class="question-mark">?</span>,
+                    <span class="string">"sql" </span>=&gt; ret_args.sql = <span class="prelude-val">Some</span>(py_str_to_string(<span class="kw-2">&amp;</span>kw.node.value)<span class="question-mark">?</span>),
+                    <span class="string">"backend" </span>=&gt; {
                         <span class="kw">let </span>value = py_str_to_string(<span class="kw-2">&amp;</span>kw.node.value)<span class="question-mark">?</span>;
                         <span class="kw">match </span>value.as_str() {
                             <span class="comment">// although this is default option to use RustPython for interpreter
                             // but that could change in the future
-                            </span><span class="string">&quot;rspy&quot; </span>=&gt; ret_args.backend = BackendType::RustPython,
-                            <span class="string">&quot;pyo3&quot; </span>=&gt; ret_args.backend = BackendType::CPython,
+                            </span><span class="string">"rspy" </span>=&gt; ret_args.backend = BackendType::RustPython,
+                            <span class="string">"pyo3" </span>=&gt; ret_args.backend = BackendType::CPython,
                             <span class="kw">_ </span>=&gt; {
                                 <span class="kw">return </span><span class="macro">fail_parse_error!</span>(
                                     <span class="macro">format!</span>(
-                                    <span class="string">&quot;backend type can only be of `rspy` and `pyo3`, found {value}&quot;
+                                    <span class="string">"backend type can only be of `rspy` and `pyo3`, found {value}"
                                 </span>),
                                     <span class="prelude-val">Some</span>(kw.location),
                                 )
@@ -873,7 +874,7 @@
             <span class="prelude-val">None </span>=&gt; {
                 <span class="kw">return </span><span class="macro">fail_parse_error!</span>(
                     <span class="macro">format!</span>(
-                        <span class="string">&quot;Expect explicitly set both `args` and `returns`, found \n{:#?}&quot;</span>,
+                        <span class="string">"Expect explicitly set both `args` and `returns`, found \n{:#?}"</span>,
                         <span class="kw-2">&amp;</span>kw.node
                     ),
                     <span class="prelude-val">Some</span>(kw.location),
@@ -884,7 +885,7 @@
     <span class="kw">let </span>loc = keywords[<span class="number">0</span>].location;
     <span class="kw">for </span>key <span class="kw">in </span>avail_key {
         <span class="kw">if </span>!visited_key.contains(key) &amp;&amp; !opt_keys.contains(key) {
-            <span class="kw">return </span><span class="macro">fail_parse_error!</span>(<span class="macro">format!</span>(<span class="string">&quot;Expect `{key}` keyword&quot;</span>), <span class="prelude-val">Some</span>(loc));
+            <span class="kw">return </span><span class="macro">fail_parse_error!</span>(<span class="macro">format!</span>(<span class="string">"Expect `{key}` keyword"</span>), <span class="prelude-val">Some</span>(loc));
         }
     }
     <span class="prelude-val">Ok</span>(ret_args)
@@ -902,17 +903,17 @@
         <span class="macro">ensure!</span>(
             func.node
                 == ast::ExprKind::Name {
-                    id: <span class="string">&quot;copr&quot;</span>.to_string(),
+                    id: <span class="string">"copr"</span>.to_string(),
                     ctx: ast::ExprContext::Load
                 }
                 || func.node
                     == ast::ExprKind::Name {
-                        id: <span class="string">&quot;coprocessor&quot;</span>.to_string(),
+                        id: <span class="string">"coprocessor"</span>.to_string(),
                         ctx: ast::ExprContext::Load
                     },
             CoprParseSnafu {
                 reason: <span class="macro">format!</span>(
-                    <span class="string">&quot;Expect decorator with name `copr` or `coprocessor`, found \n{:#?}&quot;</span>,
+                    <span class="string">"Expect decorator with name `copr` or `coprocessor`, found \n{:#?}"</span>,
                     <span class="kw-2">&amp;</span>func.node
                 ),
                 loc: <span class="prelude-val">Some</span>(func.location)
@@ -922,7 +923,7 @@
     } <span class="kw">else </span>{
         <span class="macro">fail_parse_error!</span>(
             <span class="macro">format!</span>(
-                <span class="string">&quot;Expect decorator to be a function call(like `@copr(...)`), found \n{:#?}&quot;</span>,
+                <span class="string">"Expect decorator to be a function call(like `@copr(...)`), found \n{:#?}"</span>,
                 decorator.node
             ),
             <span class="prelude-val">Some</span>(decorator.location),
@@ -957,7 +958,7 @@
         <span class="kw">_ </span>=&gt; {
             <span class="kw">return </span><span class="macro">fail_parse_error!</span>(
                 <span class="macro">format!</span>(
-                    <span class="string">&quot;Expect `(vector[...], vector[...], ...)` or `vector[...]`, found \n{:#?}&quot;</span>,
+                    <span class="string">"Expect `(vector[...], vector[...], ...)` or `vector[...]`, found \n{:#?}"</span>,
                     <span class="kw-2">&amp;</span>rets.node
                 ),
                 <span class="prelude-val">Some</span>(rets.location),
@@ -980,7 +981,7 @@
         <span class="kw">_ </span>=&gt; {
             <span class="kw">return </span><span class="macro">fail_parse_error!</span>(
                 <span class="macro">format!</span>(
-                    <span class="string">&quot;Expect one or many type annotation for the return type, found \n{:#?}&quot;</span>,
+                    <span class="string">"Expect one or many type annotation for the return type, found \n{:#?}"</span>,
                     <span class="kw-2">&amp;</span>rets.node
                 ),
                 <span class="prelude-val">Some</span>(rets.location),
@@ -995,7 +996,7 @@
     script: <span class="kw-2">&amp;</span>str,
     query_engine: <span class="prelude-ty">Option</span>&lt;QueryEngineRef&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;Coprocessor&gt; {
-    <span class="kw">let </span>python_ast = parse_program(script, <span class="string">&quot;&lt;embedded&gt;&quot;</span>).context(PyParseSnafu)<span class="question-mark">?</span>;
+    <span class="kw">let </span>python_ast = parse_program(script, <span class="string">"&lt;embedded&gt;"</span>).context(PyParseSnafu)<span class="question-mark">?</span>;
 
     <span class="kw">let </span><span class="kw-2">mut </span>coprocessor = <span class="prelude-val">None</span>;
 
@@ -1012,14 +1013,14 @@
             <span class="kw">if </span>!decorator_list.is_empty() {
                 <span class="macro">ensure!</span>(coprocessor.is_none(),
                         CoprParseSnafu {
-                            reason: <span class="string">&quot;Expect one and only one python function with `@coprocessor` or `@cpor` decorator&quot;</span>,
+                            reason: <span class="string">"Expect one and only one python function with `@coprocessor` or `@cpor` decorator"</span>,
                             loc: stmt.location,
                         }
                 );
                 <span class="macro">ensure!</span>(
                     decorator_list.len() == <span class="number">1</span>,
                     CoprParseSnafu {
-                        reason: <span class="string">&quot;Expect one decorator&quot;</span>,
+                        reason: <span class="string">"Expect one decorator"</span>,
                         loc: decorator_list.first().map(|s| s.location)
                     }
                 );
@@ -1047,7 +1048,7 @@
                         arg_names.len() == arg_types.len(),
                         CoprParseSnafu {
                             reason: <span class="macro">format!</span>(
-                                <span class="string">&quot;args number in decorator({}) and function({}) doesn&#39;t match&quot;</span>,
+                                <span class="string">"args number in decorator({}) and function({}) doesn't match"</span>,
                                 arg_names.len(),
                                 arg_types.len()
                             ),
@@ -1059,7 +1060,7 @@
                     deco_args.ret_names.len() == return_types.len(),
                     CoprParseSnafu {
                         reason: <span class="macro">format!</span>(
-                            <span class="string">&quot;returns number in decorator( {} ) and function annotation( {} ) doesn&#39;t match&quot;</span>,
+                            <span class="string">"returns number in decorator( {} ) and function annotation( {} ) doesn't match"</span>,
                             deco_args.ret_names.len(),
                             return_types.len()
                         ),
@@ -1089,7 +1090,7 @@
         </span>} <span class="kw">else </span>{
             <span class="kw">return </span><span class="macro">fail_parse_error!</span>(
                 <span class="macro">format!</span>(
-                    <span class="string">&quot;Expect a function definition, but found a \n{:#?}&quot;</span>,
+                    <span class="string">"Expect a function definition, but found a \n{:#?}"</span>,
                     <span class="kw-2">&amp;</span>stmt.node
                 ),
                 <span class="prelude-val">Some</span>(stmt.location),
@@ -1098,7 +1099,7 @@
     }
 
     coprocessor.context(CoprParseSnafu {
-        reason: <span class="string">&quot;Coprocessor not found in script&quot;</span>,
+        reason: <span class="string">"Coprocessor not found in script"</span>,
         loc: <span class="prelude-val">None</span>,
     })
 }

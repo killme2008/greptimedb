@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"trait":["RegionEngine"],"type":["RegionEngineRef"]};
+window.SIDEBAR_ITEMS = {"enum":["RegionRole","SetReadonlyResponse"],"struct":["GrantedRegion"],"trait":["RegionEngine"],"type":["RegionEngineRef"]};

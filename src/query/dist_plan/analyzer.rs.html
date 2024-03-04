@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/query/src/dist_plan/analyzer.rs`."><title>analyzer.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="query" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../query/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/query/src/dist_plan/analyzer.rs`."><title>analyzer.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="query" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -378,27 +379,100 @@
 <a href="#378" id="378">378</a>
 <a href="#379" id="379">379</a>
 <a href="#380" id="380">380</a>
+<a href="#381" id="381">381</a>
+<a href="#382" id="382">382</a>
+<a href="#383" id="383">383</a>
+<a href="#384" id="384">384</a>
+<a href="#385" id="385">385</a>
+<a href="#386" id="386">386</a>
+<a href="#387" id="387">387</a>
+<a href="#388" id="388">388</a>
+<a href="#389" id="389">389</a>
+<a href="#390" id="390">390</a>
+<a href="#391" id="391">391</a>
+<a href="#392" id="392">392</a>
+<a href="#393" id="393">393</a>
+<a href="#394" id="394">394</a>
+<a href="#395" id="395">395</a>
+<a href="#396" id="396">396</a>
+<a href="#397" id="397">397</a>
+<a href="#398" id="398">398</a>
+<a href="#399" id="399">399</a>
+<a href="#400" id="400">400</a>
+<a href="#401" id="401">401</a>
+<a href="#402" id="402">402</a>
+<a href="#403" id="403">403</a>
+<a href="#404" id="404">404</a>
+<a href="#405" id="405">405</a>
+<a href="#406" id="406">406</a>
+<a href="#407" id="407">407</a>
+<a href="#408" id="408">408</a>
+<a href="#409" id="409">409</a>
+<a href="#410" id="410">410</a>
+<a href="#411" id="411">411</a>
+<a href="#412" id="412">412</a>
+<a href="#413" id="413">413</a>
+<a href="#414" id="414">414</a>
+<a href="#415" id="415">415</a>
+<a href="#416" id="416">416</a>
+<a href="#417" id="417">417</a>
+<a href="#418" id="418">418</a>
+<a href="#419" id="419">419</a>
+<a href="#420" id="420">420</a>
+<a href="#421" id="421">421</a>
+<a href="#422" id="422">422</a>
+<a href="#423" id="423">423</a>
+<a href="#424" id="424">424</a>
+<a href="#425" id="425">425</a>
+<a href="#426" id="426">426</a>
+<a href="#427" id="427">427</a>
+<a href="#428" id="428">428</a>
+<a href="#429" id="429">429</a>
+<a href="#430" id="430">430</a>
+<a href="#431" id="431">431</a>
+<a href="#432" id="432">432</a>
+<a href="#433" id="433">433</a>
+<a href="#434" id="434">434</a>
+<a href="#435" id="435">435</a>
+<a href="#436" id="436">436</a>
+<a href="#437" id="437">437</a>
+<a href="#438" id="438">438</a>
+<a href="#439" id="439">439</a>
+<a href="#440" id="440">440</a>
+<a href="#441" id="441">441</a>
+<a href="#442" id="442">442</a>
+<a href="#443" id="443">443</a>
+<a href="#444" id="444">444</a>
+<a href="#445" id="445">445</a>
+<a href="#446" id="446">446</a>
+<a href="#447" id="447">447</a>
+<a href="#448" id="448">448</a>
+<a href="#449" id="449">449</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-</span><span class="kw">use </span>std::sync::{Arc, Mutex};
+</span><span class="kw">use </span>std::sync::Arc;
 
 <span class="kw">use </span>datafusion::datasource::DefaultTableSource;
+<span class="kw">use </span>datafusion::error::Result <span class="kw">as </span>DfResult;
 <span class="kw">use </span>datafusion_common::config::ConfigOptions;
-<span class="kw">use </span>datafusion_common::tree_node::{Transformed, TreeNode, TreeNodeVisitor, VisitRecursion};
-<span class="kw">use </span>datafusion_expr::{Extension, LogicalPlan};
+<span class="kw">use </span>datafusion_common::tree_node::{RewriteRecursion, Transformed, TreeNode, TreeNodeRewriter};
+<span class="kw">use </span>datafusion_expr::expr::{Exists, InSubquery};
+<span class="kw">use </span>datafusion_expr::{col, Expr, LogicalPlan, LogicalPlanBuilder, Subquery};
 <span class="kw">use </span>datafusion_optimizer::analyzer::AnalyzerRule;
+<span class="kw">use </span>datafusion_optimizer::simplify_expressions::SimplifyExpressions;
+<span class="kw">use </span>datafusion_optimizer::{OptimizerContext, OptimizerRule};
 <span class="kw">use </span>substrait::{DFLogicalSubstraitConvertor, SubstraitPlan};
 <span class="kw">use </span>table::metadata::TableType;
 <span class="kw">use </span>table::table::adapter::DfTableProviderAdapter;
@@ -407,13 +481,12 @@
     partial_commutative_transformer, Categorizer, Commutativity,
 };
 <span class="kw">use </span><span class="kw">crate</span>::dist_plan::merge_scan::MergeScanLogicalPlan;
-<span class="kw">use </span><span class="kw">crate</span>::dist_plan::utils;
 
 <span class="kw">pub struct </span>DistPlannerAnalyzer;
 
 <span class="kw">impl </span>AnalyzerRule <span class="kw">for </span>DistPlannerAnalyzer {
     <span class="kw">fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
-        <span class="string">&quot;DistPlannerAnalyzer&quot;
+        <span class="string">"DistPlannerAnalyzer"
     </span>}
 
     <span class="kw">fn </span>analyze(
@@ -421,252 +494,285 @@
         plan: LogicalPlan,
         _config: <span class="kw-2">&amp;</span>ConfigOptions,
     ) -&gt; datafusion_common::Result&lt;LogicalPlan&gt; {
-        <span class="comment">// (1) transform up merge scan
-        </span><span class="kw">let </span><span class="kw-2">mut </span>visitor = CommutativeVisitor::new();
-        <span class="kw">let _ </span>= plan.visit(<span class="kw-2">&amp;mut </span>visitor)<span class="question-mark">?</span>;
-        <span class="kw">let </span>state = ExpandState::new();
-        <span class="kw">let </span>plan = plan.transform_down(<span class="kw-2">&amp;</span>|plan| <span class="self">Self</span>::expand(plan, <span class="kw-2">&amp;</span>visitor, <span class="kw-2">&amp;</span>state))<span class="question-mark">?</span>;
+        <span class="comment">// preprocess the input plan
+        </span><span class="kw">let </span>optimizer_context = OptimizerContext::new();
+        <span class="kw">let </span>plan = SimplifyExpressions::new()
+            .try_optimize(<span class="kw-2">&amp;</span>plan, <span class="kw-2">&amp;</span>optimizer_context)<span class="question-mark">?
+            </span>.unwrap_or(plan);
 
-        <span class="comment">// (2) remove placeholder merge scan
-        </span><span class="kw">let </span>plan = plan.transform(<span class="kw-2">&amp;</span><span class="self">Self</span>::remove_placeholder_merge_scan)<span class="question-mark">?</span>;
+        <span class="kw">let </span>plan = plan.transform(<span class="kw-2">&amp;</span><span class="self">Self</span>::inspect_plan_with_subquery)<span class="question-mark">?</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>rewriter = PlanRewriter::default();
+        <span class="kw">let </span>result = plan.rewrite(<span class="kw-2">&amp;mut </span>rewriter)<span class="question-mark">?</span>;
 
-        <span class="prelude-val">Ok</span>(plan)
+        <span class="prelude-val">Ok</span>(result)
     }
 }
 
 <span class="kw">impl </span>DistPlannerAnalyzer {
-    <span class="doccomment">/// Add [MergeScanLogicalPlan] before the table scan
-    </span><span class="attr">#[allow(dead_code)]
-    </span><span class="kw">fn </span>add_merge_scan(plan: LogicalPlan) -&gt; datafusion_common::Result&lt;Transformed&lt;LogicalPlan&gt;&gt; {
-        <span class="prelude-val">Ok</span>(<span class="kw">match </span>plan {
-            LogicalPlan::TableScan(table_scan) =&gt; {
-                <span class="kw">let </span>ext_plan = LogicalPlan::Extension(Extension {
-                    node: Arc::new(MergeScanLogicalPlan::new(
-                        LogicalPlan::TableScan(table_scan),
-                        <span class="bool-val">true</span>,
-                    )),
-                });
-                Transformed::Yes(ext_plan)
-            }
-            <span class="kw">_ </span>=&gt; Transformed::No(plan),
+    <span class="kw">fn </span>inspect_plan_with_subquery(plan: LogicalPlan) -&gt; DfResult&lt;Transformed&lt;LogicalPlan&gt;&gt; {
+        <span class="kw">let </span>exprs = plan
+            .expressions()
+            .into_iter()
+            .map(|e| e.transform(<span class="kw-2">&amp;</span><span class="self">Self</span>::transform_subquery))
+            .collect::&lt;DfResult&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;&gt;()<span class="question-mark">?</span>;
+
+        <span class="kw">let </span>inputs = plan.inputs().into_iter().cloned().collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
+        <span class="prelude-val">Ok</span>(Transformed::Yes(plan.with_new_exprs(exprs, <span class="kw-2">&amp;</span>inputs)<span class="question-mark">?</span>))
+    }
+
+    <span class="kw">fn </span>transform_subquery(expr: Expr) -&gt; DfResult&lt;Transformed&lt;Expr&gt;&gt; {
+        <span class="kw">match </span>expr {
+            Expr::Exists(exists) =&gt; <span class="prelude-val">Ok</span>(Transformed::Yes(Expr::Exists(Exists {
+                subquery: <span class="self">Self</span>::handle_subquery(exists.subquery)<span class="question-mark">?</span>,
+                negated: exists.negated,
+            }))),
+            Expr::InSubquery(in_subquery) =&gt; <span class="prelude-val">Ok</span>(Transformed::Yes(Expr::InSubquery(InSubquery {
+                expr: in_subquery.expr,
+                subquery: <span class="self">Self</span>::handle_subquery(in_subquery.subquery)<span class="question-mark">?</span>,
+                negated: in_subquery.negated,
+            }))),
+            Expr::ScalarSubquery(scalar_subquery) =&gt; <span class="prelude-val">Ok</span>(Transformed::Yes(Expr::ScalarSubquery(
+                <span class="self">Self</span>::handle_subquery(scalar_subquery)<span class="question-mark">?</span>,
+            ))),
+
+            <span class="kw">_ </span>=&gt; <span class="prelude-val">Ok</span>(Transformed::No(expr)),
+        }
+    }
+
+    <span class="kw">fn </span>handle_subquery(subquery: Subquery) -&gt; DfResult&lt;Subquery&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>rewriter = PlanRewriter::default();
+        <span class="kw">let </span><span class="kw-2">mut </span>rewrote_subquery = subquery.subquery.as_ref().clone().rewrite(<span class="kw-2">&amp;mut </span>rewriter)<span class="question-mark">?</span>;
+        <span class="comment">// Workaround. DF doesn't support the first plan in subquery to be an Extension
+        </span><span class="kw">if </span><span class="macro">matches!</span>(rewrote_subquery, LogicalPlan::Extension(<span class="kw">_</span>)) {
+            <span class="kw">let </span>output_schema = rewrote_subquery.schema().clone();
+            <span class="kw">let </span>project_exprs = output_schema
+                .fields()
+                .iter()
+                .map(|f| col(f.name()))
+                .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
+            rewrote_subquery = LogicalPlanBuilder::from(rewrote_subquery)
+                .project(project_exprs)<span class="question-mark">?
+                </span>.build()<span class="question-mark">?</span>;
+        }
+
+        <span class="prelude-val">Ok</span>(Subquery {
+            subquery: Arc::new(rewrote_subquery),
+            outer_ref_columns: subquery.outer_ref_columns,
         })
     }
-
-    <span class="doccomment">/// Remove placeholder [MergeScanLogicalPlan]
-    </span><span class="kw">fn </span>remove_placeholder_merge_scan(
-        plan: LogicalPlan,
-    ) -&gt; datafusion_common::Result&lt;Transformed&lt;LogicalPlan&gt;&gt; {
-        <span class="prelude-val">Ok</span>(<span class="kw">match </span><span class="kw-2">&amp;</span>plan {
-            LogicalPlan::Extension(extension)
-                <span class="kw">if </span>extension.node.name() == MergeScanLogicalPlan::name() =&gt;
-            {
-                <span class="kw">let </span>merge_scan = extension
-                    .node
-                    .as_any()
-                    .downcast_ref::&lt;MergeScanLogicalPlan&gt;()
-                    .unwrap();
-                <span class="kw">if </span>merge_scan.is_placeholder() {
-                    Transformed::Yes(merge_scan.input().clone())
-                } <span class="kw">else </span>{
-                    Transformed::No(plan)
-                }
-            }
-            <span class="kw">_ </span>=&gt; Transformed::No(plan),
-        })
-    }
-
-    <span class="doccomment">/// Expand stages on the stop node
-    </span><span class="kw">fn </span>expand(
-        <span class="kw-2">mut </span>plan: LogicalPlan,
-        visitor: <span class="kw-2">&amp;</span>CommutativeVisitor,
-        state: <span class="kw-2">&amp;</span>ExpandState,
-    ) -&gt; datafusion_common::Result&lt;Transformed&lt;LogicalPlan&gt;&gt; {
-        <span class="kw">if </span>state.is_transformed() {
-            <span class="comment">// only transform once
-            </span><span class="kw">return </span><span class="prelude-val">Ok</span>(Transformed::No(plan));
-        }
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(stop_node) = visitor.stop_node &amp;&amp; utils::hash_plan(<span class="kw-2">&amp;</span>plan) != stop_node {
-            <span class="comment">// only act with the stop node or the root (the first node seen by this closure) if no stop node
-            </span><span class="kw">return </span><span class="prelude-val">Ok</span>(Transformed::No(plan));
-        }
-
-        <span class="kw">if </span>visitor.stop_node.is_some() {
-            <span class="comment">// insert merge scan between the stop node and its child
-            </span><span class="kw">let </span>children = plan.inputs();
-            <span class="kw">let </span><span class="kw-2">mut </span>new_children = Vec::with_capacity(children.len());
-            <span class="kw">for </span>child <span class="kw">in </span>children {
-                <span class="kw">let </span><span class="kw-2">mut </span>new_child =
-                    MergeScanLogicalPlan::new(child.clone(), <span class="bool-val">false</span>).into_logical_plan();
-                <span class="comment">// expand stages
-                </span><span class="kw">for </span>new_stage <span class="kw">in </span><span class="kw-2">&amp;</span>visitor.next_stage {
-                    new_child = new_stage.with_new_inputs(<span class="kw-2">&amp;</span>[new_child])<span class="question-mark">?
-                </span>}
-                new_children.push(new_child);
-            }
-            plan = plan.with_new_inputs(<span class="kw-2">&amp;</span>new_children)<span class="question-mark">?</span>;
-        } <span class="kw">else </span>{
-            <span class="comment">// otherwise add merge scan as the new root
-            </span>plan = MergeScanLogicalPlan::new(plan, <span class="bool-val">false</span>).into_logical_plan();
-            <span class="comment">// expand stages
-            </span><span class="kw">for </span>new_stage <span class="kw">in </span><span class="kw-2">&amp;</span>visitor.next_stage {
-                plan = new_stage.with_new_inputs(<span class="kw-2">&amp;</span>[plan])<span class="question-mark">?
-            </span>}
-        }
-
-        state.set_transformed();
-        <span class="prelude-val">Ok</span>(Transformed::Yes(plan))
-    }
 }
 
-<span class="kw">struct </span>ExpandState {
-    transformed: Mutex&lt;bool&gt;,
+<span class="doccomment">/// Status of the rewriter to mark if the current pass is expanded
+</span><span class="attr">#[derive(Debug, Default, PartialEq, Eq, PartialOrd, Ord)]
+</span><span class="kw">enum </span>RewriterStatus {
+    <span class="attr">#[default]
+    </span>Unexpanded,
+    Expanded,
 }
 
-<span class="kw">impl </span>ExpandState {
-    <span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
-            transformed: Mutex::new(<span class="bool-val">false</span>),
-        }
-    }
-
-    <span class="kw">pub fn </span>is_transformed(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        <span class="kw-2">*</span><span class="self">self</span>.transformed.lock().unwrap()
-    }
-
-    <span class="doccomment">/// Set the state to transformed
-    </span><span class="kw">pub fn </span>set_transformed(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-        <span class="kw-2">*</span><span class="self">self</span>.transformed.lock().unwrap() = <span class="bool-val">true</span>;
-    }
+<span class="attr">#[derive(Debug, Default)]
+</span><span class="kw">struct </span>PlanRewriter {
+    <span class="doccomment">/// Current level in the tree
+    </span>level: usize,
+    <span class="doccomment">/// Simulated stack for the `rewrite` recursion
+    </span>stack: Vec&lt;(LogicalPlan, usize)&gt;,
+    <span class="doccomment">/// Stages to be expanded
+    </span>stage: Vec&lt;LogicalPlan&gt;,
+    status: RewriterStatus,
+    <span class="doccomment">/// Partition columns of the table in current pass
+    </span>partition_cols: <span class="prelude-ty">Option</span>&lt;Vec&lt;String&gt;&gt;,
 }
 
-<span class="kw">struct </span>CommutativeVisitor {
-    next_stage: Vec&lt;LogicalPlan&gt;,
-    <span class="comment">// hash of the stop node
-    </span>stop_node: <span class="prelude-ty">Option</span>&lt;u64&gt;,
-    <span class="doccomment">/// Partition columns of current visiting table
-    </span>current_partition_cols: <span class="prelude-ty">Option</span>&lt;Vec&lt;String&gt;&gt;,
-}
-
-<span class="kw">impl </span>TreeNodeVisitor <span class="kw">for </span>CommutativeVisitor {
-    <span class="kw">type </span>N = LogicalPlan;
-
-    <span class="kw">fn </span>pre_visit(<span class="kw-2">&amp;mut </span><span class="self">self</span>, plan: <span class="kw-2">&amp;</span>LogicalPlan) -&gt; datafusion_common::Result&lt;VisitRecursion&gt; {
-        <span class="comment">// find the first merge scan and stop traversing down
-        // todo: check if it works for join
-        </span><span class="prelude-val">Ok</span>(<span class="kw">match </span>plan {
-            LogicalPlan::TableScan(table_scan) =&gt; {
-                <span class="comment">// TODO(ruihang): spawn a sub visitor to retrieve partition columns
-                </span><span class="kw">if let </span><span class="prelude-val">Some</span>(source) = table_scan
-                    .source
-                    .as_any()
-                    .downcast_ref::&lt;DefaultTableSource&gt;()
-                {
-                    <span class="kw">if let </span><span class="prelude-val">Some</span>(provider) = source
-                        .table_provider
-                        .as_any()
-                        .downcast_ref::&lt;DfTableProviderAdapter&gt;()
-                    {
-                        <span class="kw">if </span>provider.table().table_type() == TableType::Base {
-                            <span class="kw">let </span>info = provider.table().table_info();
-                            <span class="kw">let </span>partition_key_indices = info.meta.partition_key_indices.clone();
-                            <span class="kw">let </span>schema = info.meta.schema.clone();
-                            <span class="kw">let </span>partition_cols = partition_key_indices
-                                .into_iter()
-                                .map(|index| schema.column_name_by_index(index).to_string())
-                                .collect::&lt;Vec&lt;String&gt;&gt;();
-                            <span class="self">self</span>.current_partition_cols = <span class="prelude-val">Some</span>(partition_cols);
-                        }
-                    }
-                }
-                VisitRecursion::Continue
-            }
-            <span class="kw">_ </span>=&gt; VisitRecursion::Continue,
-        })
+<span class="kw">impl </span>PlanRewriter {
+    <span class="kw">fn </span>get_parent(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>LogicalPlan&gt; {
+        <span class="comment">// level starts from 1, it's safe to minus by 1
+        </span><span class="self">self</span>.stack
+            .iter()
+            .rev()
+            .find(|(<span class="kw">_</span>, level)| <span class="kw-2">*</span>level == <span class="self">self</span>.level - <span class="number">1</span>)
+            .map(|(node, <span class="kw">_</span>)| node)
     }
 
-    <span class="kw">fn </span>post_visit(<span class="kw-2">&amp;mut </span><span class="self">self</span>, plan: <span class="kw-2">&amp;</span>LogicalPlan) -&gt; datafusion_common::Result&lt;VisitRecursion&gt; {
+    <span class="doccomment">/// Return true if should stop and expand. The input plan is the parent node of current node
+    </span><span class="kw">fn </span>should_expand(<span class="kw-2">&amp;mut </span><span class="self">self</span>, plan: <span class="kw-2">&amp;</span>LogicalPlan) -&gt; bool {
         <span class="kw">if </span>DFLogicalSubstraitConvertor.encode(plan).is_err() {
-            <span class="macro">common_telemetry::info!</span>(
-                <span class="string">&quot;substrait error: {:?}&quot;</span>,
-                DFLogicalSubstraitConvertor.encode(plan)
-            );
-            <span class="self">self</span>.stop_node = <span class="prelude-val">Some</span>(utils::hash_plan(plan));
-            <span class="kw">return </span><span class="prelude-val">Ok</span>(VisitRecursion::Stop);
+            <span class="kw">return </span><span class="bool-val">true</span>;
         }
 
-        <span class="kw">match </span>Categorizer::check_plan(plan) {
+        <span class="kw">match </span>Categorizer::check_plan(plan, <span class="self">self</span>.partition_cols.clone()) {
             Commutativity::Commutative =&gt; {}
             Commutativity::PartialCommutative =&gt; {
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(plan) = partial_commutative_transformer(plan) {
-                    <span class="self">self</span>.next_stage.push(plan)
+                    <span class="self">self</span>.stage.push(plan)
                 }
             }
             Commutativity::ConditionalCommutative(transformer) =&gt; {
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(transformer) = transformer
-                    &amp;&amp; <span class="kw">let </span><span class="prelude-val">Some</span>(plan) = transformer(plan) {
-                    <span class="self">self</span>.next_stage.push(plan)
+                    &amp;&amp; <span class="kw">let </span><span class="prelude-val">Some</span>(plan) = transformer(plan)
+                {
+                    <span class="self">self</span>.stage.push(plan)
                 }
-            },
+            }
             Commutativity::TransformedCommutative(transformer) =&gt; {
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(transformer) = transformer
-                    &amp;&amp; <span class="kw">let </span><span class="prelude-val">Some</span>(plan) = transformer(plan) {
-                    <span class="self">self</span>.next_stage.push(plan)
+                    &amp;&amp; <span class="kw">let </span><span class="prelude-val">Some</span>(plan) = transformer(plan)
+                {
+                    <span class="self">self</span>.stage.push(plan)
                 }
-            },
-            Commutativity::CheckPartition =&gt; {
-                <span class="kw">if let </span><span class="prelude-val">Some</span>(partition_cols) = <span class="kw-2">&amp;</span><span class="self">self</span>.current_partition_cols
-                    &amp;&amp; partition_cols.is_empty() {
-                    <span class="comment">// no partition columns, and can be encoded skip
-                    </span><span class="kw">return </span><span class="prelude-val">Ok</span>(VisitRecursion::Continue);
-                } <span class="kw">else </span>{
-                    <span class="self">self</span>.stop_node = <span class="prelude-val">Some</span>(utils::hash_plan(plan));
-                    <span class="kw">return </span><span class="prelude-val">Ok</span>(VisitRecursion::Stop);
-                }
-            },
+            }
             Commutativity::NonCommutative
             | Commutativity::Unimplemented
             | Commutativity::Unsupported =&gt; {
-                <span class="self">self</span>.stop_node = <span class="prelude-val">Some</span>(utils::hash_plan(plan));
-                <span class="kw">return </span><span class="prelude-val">Ok</span>(VisitRecursion::Stop);
+                <span class="kw">return </span><span class="bool-val">true</span>;
             }
         }
 
-        <span class="prelude-val">Ok</span>(VisitRecursion::Continue)
+        <span class="bool-val">false
+    </span>}
+
+    <span class="kw">fn </span>is_expanded(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="self">self</span>.status == RewriterStatus::Expanded
+    }
+
+    <span class="kw">fn </span>set_expanded(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="self">self</span>.status = RewriterStatus::Expanded;
+    }
+
+    <span class="kw">fn </span>set_unexpanded(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="self">self</span>.status = RewriterStatus::Unexpanded;
+    }
+
+    <span class="kw">fn </span>maybe_set_partitions(<span class="kw-2">&amp;mut </span><span class="self">self</span>, plan: <span class="kw-2">&amp;</span>LogicalPlan) {
+        <span class="kw">if </span><span class="self">self</span>.partition_cols.is_some() {
+            <span class="comment">// only need to set once
+            </span><span class="kw">return</span>;
+        }
+
+        <span class="kw">if let </span>LogicalPlan::TableScan(table_scan) = plan {
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(source) = table_scan
+                .source
+                .as_any()
+                .downcast_ref::&lt;DefaultTableSource&gt;()
+            {
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(provider) = source
+                    .table_provider
+                    .as_any()
+                    .downcast_ref::&lt;DfTableProviderAdapter&gt;()
+                {
+                    <span class="kw">if </span>provider.table().table_type() == TableType::Base {
+                        <span class="kw">let </span>info = provider.table().table_info();
+                        <span class="kw">let </span>partition_key_indices = info.meta.partition_key_indices.clone();
+                        <span class="kw">let </span>schema = info.meta.schema.clone();
+                        <span class="kw">let </span>partition_cols = partition_key_indices
+                            .into_iter()
+                            .map(|index| schema.column_name_by_index(index).to_string())
+                            .collect::&lt;Vec&lt;String&gt;&gt;();
+                        <span class="self">self</span>.partition_cols = <span class="prelude-val">Some</span>(partition_cols);
+                    }
+                }
+            }
+        }
+    }
+
+    <span class="doccomment">/// pop one stack item and reduce the level by 1
+    </span><span class="kw">fn </span>pop_stack(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="self">self</span>.level -= <span class="number">1</span>;
+        <span class="self">self</span>.stack.pop();
     }
 }
 
-<span class="kw">impl </span>CommutativeVisitor {
-    <span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
-            next_stage: <span class="macro">vec!</span>[],
-            stop_node: <span class="prelude-val">None</span>,
-            current_partition_cols: <span class="prelude-val">None</span>,
+<span class="kw">impl </span>TreeNodeRewriter <span class="kw">for </span>PlanRewriter {
+    <span class="kw">type </span>N = LogicalPlan;
+
+    <span class="doccomment">/// descend
+    </span><span class="kw">fn </span>pre_visit&lt;<span class="lifetime">'a</span>&gt;(<span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="kw-2">mut </span><span class="self">self</span>, node: <span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="self">Self</span>::N) -&gt; DfResult&lt;RewriteRecursion&gt; {
+        <span class="self">self</span>.level += <span class="number">1</span>;
+        <span class="self">self</span>.stack.push((node.clone(), <span class="self">self</span>.level));
+        <span class="comment">// decendening will clear the stage
+        </span><span class="self">self</span>.stage.clear();
+        <span class="self">self</span>.set_unexpanded();
+        <span class="self">self</span>.partition_cols = <span class="prelude-val">None</span>;
+
+        <span class="prelude-val">Ok</span>(RewriteRecursion::Continue)
+    }
+
+    <span class="doccomment">/// ascend
+    ///
+    /// Besure to call `pop_stack` before returning
+    </span><span class="kw">fn </span>mutate(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: <span class="self">Self</span>::N) -&gt; DfResult&lt;<span class="self">Self</span>::N&gt; {
+        <span class="comment">// only expand once on each ascending
+        </span><span class="kw">if </span><span class="self">self</span>.is_expanded() {
+            <span class="self">self</span>.pop_stack();
+            <span class="kw">return </span><span class="prelude-val">Ok</span>(node);
         }
+
+        <span class="comment">// only expand when the leaf is table scan
+        </span><span class="kw">if </span>node.inputs().is_empty() &amp;&amp; !<span class="macro">matches!</span>(node, LogicalPlan::TableScan(<span class="kw">_</span>)) {
+            <span class="self">self</span>.set_expanded();
+            <span class="self">self</span>.pop_stack();
+            <span class="kw">return </span><span class="prelude-val">Ok</span>(node);
+        }
+
+        <span class="self">self</span>.maybe_set_partitions(<span class="kw-2">&amp;</span>node);
+
+        <span class="kw">let </span><span class="prelude-val">Some</span>(parent) = <span class="self">self</span>.get_parent() <span class="kw">else </span>{
+            <span class="comment">// add merge scan as the new root
+            </span><span class="kw">let </span><span class="kw-2">mut </span>node = MergeScanLogicalPlan::new(node, <span class="bool-val">false</span>).into_logical_plan();
+            <span class="comment">// expand stages
+            </span><span class="kw">for </span>new_stage <span class="kw">in </span><span class="self">self</span>.stage.drain(..) {
+                node = new_stage.with_new_inputs(<span class="kw-2">&amp;</span>[node])<span class="question-mark">?
+            </span>}
+            <span class="self">self</span>.set_expanded();
+
+            <span class="self">self</span>.pop_stack();
+            <span class="kw">return </span><span class="prelude-val">Ok</span>(node);
+        };
+
+        <span class="comment">// TODO(ruihang): avoid this clone
+        </span><span class="kw">if </span><span class="self">self</span>.should_expand(<span class="kw-2">&amp;</span>parent.clone()) {
+            <span class="comment">// TODO(ruihang): does this work for nodes with multiple children?;
+            // replace the current node with expanded one
+            </span><span class="kw">let </span><span class="kw-2">mut </span>node = MergeScanLogicalPlan::new(node, <span class="bool-val">false</span>).into_logical_plan();
+            <span class="comment">// expand stages
+            </span><span class="kw">for </span>new_stage <span class="kw">in </span><span class="self">self</span>.stage.drain(..) {
+                node = new_stage.with_new_inputs(<span class="kw-2">&amp;</span>[node])<span class="question-mark">?
+            </span>}
+            <span class="self">self</span>.set_expanded();
+
+            <span class="self">self</span>.pop_stack();
+            <span class="kw">return </span><span class="prelude-val">Ok</span>(node);
+        }
+
+        <span class="self">self</span>.pop_stack();
+        <span class="prelude-val">Ok</span>(node)
     }
 }
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>test {
+    <span class="kw">use </span>std::sync::Arc;
+
     <span class="kw">use </span>datafusion::datasource::DefaultTableSource;
+    <span class="kw">use </span>datafusion_common::JoinType;
     <span class="kw">use </span>datafusion_expr::{avg, col, lit, Expr, LogicalPlanBuilder};
     <span class="kw">use </span>table::table::adapter::DfTableProviderAdapter;
     <span class="kw">use </span>table::table::numbers::NumbersTable;
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
-    <span class="attr">#[ignore = <span class="string">&quot;Projection is disabled for https://github.com/apache/arrow-datafusion/issues/6489&quot;</span>]
+    <span class="attr">#[ignore = <span class="string">"Projection is disabled for https://github.com/apache/arrow-datafusion/issues/6489"</span>]
     #[test]
     </span><span class="kw">fn </span>transform_simple_projection_filter() {
-        <span class="kw">let </span>numbers_table = Arc::new(NumbersTable::new(<span class="number">0</span>)) <span class="kw">as _</span>;
+        <span class="kw">let </span>numbers_table = NumbersTable::table(<span class="number">0</span>);
         <span class="kw">let </span>table_source = Arc::new(DefaultTableSource::new(Arc::new(
             DfTableProviderAdapter::new(numbers_table),
         )));
 
-        <span class="kw">let </span>plan = LogicalPlanBuilder::scan_with_filters(<span class="string">&quot;t&quot;</span>, table_source, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
+        <span class="kw">let </span>plan = LogicalPlanBuilder::scan_with_filters(<span class="string">"t"</span>, table_source, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
             .unwrap()
-            .filter(col(<span class="string">&quot;number&quot;</span>).lt(lit(<span class="number">10</span>)))
+            .filter(col(<span class="string">"number"</span>).lt(lit(<span class="number">10</span>)))
             .unwrap()
-            .project(<span class="macro">vec!</span>[col(<span class="string">&quot;number&quot;</span>)])
+            .project(<span class="macro">vec!</span>[col(<span class="string">"number"</span>)])
             .unwrap()
             .distinct()
             .unwrap()
@@ -676,53 +782,49 @@
         <span class="kw">let </span>config = ConfigOptions::default();
         <span class="kw">let </span>result = DistPlannerAnalyzer {}.analyze(plan, <span class="kw-2">&amp;</span>config).unwrap();
         <span class="kw">let </span>expected = [
-            <span class="string">&quot;Distinct:&quot;</span>,
-            <span class="string">&quot;  MergeScan [is_placeholder=false]&quot;</span>,
-            <span class="string">&quot;    Distinct:&quot;</span>,
-            <span class="string">&quot;      Projection: t.number&quot;</span>,
-            <span class="string">&quot;        Filter: t.number &lt; Int32(10)&quot;</span>,
-            <span class="string">&quot;          TableScan: t&quot;</span>,
+            <span class="string">"Distinct:"</span>,
+            <span class="string">"  MergeScan [is_placeholder=false]"</span>,
+            <span class="string">"    Distinct:"</span>,
+            <span class="string">"      Projection: t.number"</span>,
+            <span class="string">"        Filter: t.number &lt; Int32(10)"</span>,
+            <span class="string">"          TableScan: t"</span>,
         ]
-        .join(<span class="string">&quot;\n&quot;</span>);
-        <span class="macro">assert_eq!</span>(expected, <span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, result));
+        .join(<span class="string">"\n"</span>);
+        <span class="macro">assert_eq!</span>(expected, <span class="macro">format!</span>(<span class="string">"{:?}"</span>, result));
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>transform_aggregator() {
-        <span class="kw">let </span>numbers_table = Arc::new(NumbersTable::new(<span class="number">0</span>)) <span class="kw">as _</span>;
+        <span class="kw">let </span>numbers_table = NumbersTable::table(<span class="number">0</span>);
         <span class="kw">let </span>table_source = Arc::new(DefaultTableSource::new(Arc::new(
             DfTableProviderAdapter::new(numbers_table),
         )));
 
-        <span class="kw">let </span>plan = LogicalPlanBuilder::scan_with_filters(<span class="string">&quot;t&quot;</span>, table_source, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
+        <span class="kw">let </span>plan = LogicalPlanBuilder::scan_with_filters(<span class="string">"t"</span>, table_source, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
             .unwrap()
-            .aggregate(Vec::&lt;Expr&gt;::new(), <span class="macro">vec!</span>[avg(col(<span class="string">&quot;number&quot;</span>))])
+            .aggregate(Vec::&lt;Expr&gt;::new(), <span class="macro">vec!</span>[avg(col(<span class="string">"number"</span>))])
             .unwrap()
             .build()
             .unwrap();
 
         <span class="kw">let </span>config = ConfigOptions::default();
         <span class="kw">let </span>result = DistPlannerAnalyzer {}.analyze(plan, <span class="kw-2">&amp;</span>config).unwrap();
-        <span class="kw">let </span>expected = [
-            <span class="string">&quot;Aggregate: groupBy=[[]], aggr=[[AVG(t.number)]]&quot;</span>,
-            <span class="string">&quot;  TableScan: t&quot;</span>,
-        ]
-        .join(<span class="string">&quot;\n&quot;</span>);
-        <span class="macro">assert_eq!</span>(expected, <span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, result));
+        <span class="kw">let </span>expected = <span class="string">"MergeScan [is_placeholder=false]"</span>;
+        <span class="macro">assert_eq!</span>(expected, <span class="macro">format!</span>(<span class="string">"{:?}"</span>, result));
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>transform_distinct_order() {
-        <span class="kw">let </span>numbers_table = Arc::new(NumbersTable::new(<span class="number">0</span>)) <span class="kw">as _</span>;
+        <span class="kw">let </span>numbers_table = NumbersTable::table(<span class="number">0</span>);
         <span class="kw">let </span>table_source = Arc::new(DefaultTableSource::new(Arc::new(
             DfTableProviderAdapter::new(numbers_table),
         )));
 
-        <span class="kw">let </span>plan = LogicalPlanBuilder::scan_with_filters(<span class="string">&quot;t&quot;</span>, table_source, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
+        <span class="kw">let </span>plan = LogicalPlanBuilder::scan_with_filters(<span class="string">"t"</span>, table_source, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
             .unwrap()
             .distinct()
             .unwrap()
-            .sort(<span class="macro">vec!</span>[col(<span class="string">&quot;number&quot;</span>).sort(<span class="bool-val">true</span>, <span class="bool-val">false</span>)])
+            .sort(<span class="macro">vec!</span>[col(<span class="string">"number"</span>).sort(<span class="bool-val">true</span>, <span class="bool-val">false</span>)])
             .unwrap()
             .build()
             .unwrap();
@@ -730,22 +832,22 @@
         <span class="kw">let </span>config = ConfigOptions::default();
         <span class="kw">let </span>result = DistPlannerAnalyzer {}.analyze(plan, <span class="kw-2">&amp;</span>config).unwrap();
         <span class="kw">let </span>expected = [
-            <span class="string">&quot;Sort: t.number ASC NULLS LAST&quot;</span>,
-            <span class="string">&quot;  Distinct:&quot;</span>,
-            <span class="string">&quot;    TableScan: t&quot;</span>,
+            <span class="string">"Sort: t.number ASC NULLS LAST"</span>,
+            <span class="string">"  Distinct:"</span>,
+            <span class="string">"    MergeScan [is_placeholder=false]"</span>,
         ]
-        .join(<span class="string">&quot;\n&quot;</span>);
-        <span class="macro">assert_eq!</span>(expected, <span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, result));
+        .join(<span class="string">"\n"</span>);
+        <span class="macro">assert_eq!</span>(expected, <span class="macro">format!</span>(<span class="string">"{:?}"</span>, result));
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>transform_single_limit() {
-        <span class="kw">let </span>numbers_table = Arc::new(NumbersTable::new(<span class="number">0</span>)) <span class="kw">as _</span>;
+        <span class="kw">let </span>numbers_table = NumbersTable::table(<span class="number">0</span>);
         <span class="kw">let </span>table_source = Arc::new(DefaultTableSource::new(Arc::new(
             DfTableProviderAdapter::new(numbers_table),
         )));
 
-        <span class="kw">let </span>plan = LogicalPlanBuilder::scan_with_filters(<span class="string">&quot;t&quot;</span>, table_source, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
+        <span class="kw">let </span>plan = LogicalPlanBuilder::scan_with_filters(<span class="string">"t"</span>, table_source, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
             .unwrap()
             .limit(<span class="number">0</span>, <span class="prelude-val">Some</span>(<span class="number">1</span>))
             .unwrap()
@@ -754,8 +856,45 @@
 
         <span class="kw">let </span>config = ConfigOptions::default();
         <span class="kw">let </span>result = DistPlannerAnalyzer {}.analyze(plan, <span class="kw-2">&amp;</span>config).unwrap();
-        <span class="kw">let </span>expected = [<span class="string">&quot;Limit: skip=0, fetch=1&quot;</span>, <span class="string">&quot;  TableScan: t&quot;</span>].join(<span class="string">&quot;\n&quot;</span>);
-        <span class="macro">assert_eq!</span>(expected, <span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, result));
+        <span class="kw">let </span>expected = <span class="string">"MergeScan [is_placeholder=false]"</span>;
+        <span class="macro">assert_eq!</span>(expected, <span class="macro">format!</span>(<span class="string">"{:?}"</span>, result));
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>transform_unalighed_join_with_alias() {
+        <span class="kw">let </span>left = NumbersTable::table(<span class="number">0</span>);
+        <span class="kw">let </span>right = NumbersTable::table(<span class="number">1</span>);
+        <span class="kw">let </span>left_source = Arc::new(DefaultTableSource::new(Arc::new(
+            DfTableProviderAdapter::new(left),
+        )));
+        <span class="kw">let </span>right_source = Arc::new(DefaultTableSource::new(Arc::new(
+            DfTableProviderAdapter::new(right),
+        )));
+
+        <span class="kw">let </span>right_plan = LogicalPlanBuilder::scan_with_filters(<span class="string">"t"</span>, right_source, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
+            .unwrap()
+            .alias(<span class="string">"right"</span>)
+            .unwrap()
+            .build()
+            .unwrap();
+
+        <span class="kw">let </span>plan = LogicalPlanBuilder::scan_with_filters(<span class="string">"t"</span>, left_source, <span class="prelude-val">None</span>, <span class="macro">vec!</span>[])
+            .unwrap()
+            .join_using(right_plan, JoinType::LeftSemi, <span class="macro">vec!</span>[<span class="string">"number"</span>])
+            .unwrap()
+            .limit(<span class="number">0</span>, <span class="prelude-val">Some</span>(<span class="number">1</span>))
+            .unwrap()
+            .build()
+            .unwrap();
+
+        <span class="kw">let </span>config = ConfigOptions::default();
+        <span class="kw">let </span>result = DistPlannerAnalyzer {}.analyze(plan, <span class="kw-2">&amp;</span>config).unwrap();
+        <span class="kw">let </span>expected = <span class="string">"Limit: skip=0, fetch=1\
+            \n  LeftSemi Join: Using t.number = right.number\
+            \n    MergeScan [is_placeholder=false]\
+            \n    SubqueryAlias: right\
+            \n      MergeScan [is_placeholder=false]"</span>;
+        <span class="macro">assert_eq!</span>(expected, <span class="macro">format!</span>(<span class="string">"{:?}"</span>, result));
     }
 }
 </code></pre></div></section></main></body></html>

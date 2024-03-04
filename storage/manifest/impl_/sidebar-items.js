@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"constant":["CHECKPOINT_ACTIONS_MARGIN","GC_DURATION_SECS"],"struct":["ManifestGcTask","ManifestImpl","ManifestImplInner","MetaActionIteratorImpl"]};

@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/query/src/optimizer/string_normalization.rs`."><title>string_normalization.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="query" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../query/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/query/src/optimizer/string_normalization.rs`."><title>string_normalization.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="query" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -167,14 +168,14 @@
 <a href="#167" id="167">167</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -201,12 +202,12 @@
                 .into_iter()
                 .map(|e| e.rewrite(<span class="kw-2">&amp;mut </span>converter))
                 .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;&gt;()<span class="question-mark">?</span>;
-            datafusion_expr::utils::from_plan(<span class="kw-2">&amp;</span>plan, <span class="kw-2">&amp;</span>expr, <span class="kw-2">&amp;</span>inputs).map(Transformed::Yes)
+            plan.with_new_exprs(expr, <span class="kw-2">&amp;</span>inputs).map(Transformed::Yes)
         })
     }
 
     <span class="kw">fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
-        <span class="string">&quot;StringNormalizationRule&quot;
+        <span class="string">"StringNormalizationRule"
     </span>}
 }
 
@@ -244,7 +245,7 @@
 
 <span class="kw">fn </span>trim_utf_expr(s: String) -&gt; Expr {
     <span class="kw">let </span>parts: Vec&lt;<span class="kw">_</span>&gt; = s.split_whitespace().collect();
-    <span class="kw">let </span>trimmed = parts.join(<span class="string">&quot; &quot;</span>);
+    <span class="kw">let </span>trimmed = parts.join(<span class="string">" "</span>);
     Expr::Literal(ScalarValue::Utf8(<span class="prelude-val">Some</span>(trimmed)))
 }
 
@@ -264,7 +265,7 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_normalization_for_string_with_extra_whitespaces_to_timestamp_cast() {
-        <span class="kw">let </span>timestamp_str_with_whitespaces = <span class="string">&quot;    2017-07-23    13:10:11   &quot;</span>;
+        <span class="kw">let </span>timestamp_str_with_whitespaces = <span class="string">"    2017-07-23    13:10:11   "</span>;
         <span class="kw">let </span>config = <span class="kw-2">&amp;</span>ConfigOptions::default();
         <span class="kw">let </span>projects = <span class="macro">vec!</span>[
             create_timestamp_cast_project(Nanosecond, timestamp_str_with_whitespaces),
@@ -275,10 +276,10 @@
         <span class="kw">for </span>(time_unit, proj) <span class="kw">in </span>projects {
             <span class="kw">let </span>plan = create_test_plan_with_project(proj);
             <span class="kw">let </span>result = StringNormalizationRule.analyze(plan, config).unwrap();
-            <span class="kw">let </span>expected = <span class="macro">format!</span>(<span class="string">&quot;Projection: CAST(Utf8(\&quot;2017-07-23 13:10:11\&quot;) AS Timestamp({:#?}, None))\n  TableScan: t&quot;</span>,
+            <span class="kw">let </span>expected = <span class="macro">format!</span>(<span class="string">"Projection: CAST(Utf8(\"2017-07-23 13:10:11\") AS Timestamp({:#?}, None))\n  TableScan: t"</span>,
                                    time_unit
             );
-            <span class="macro">assert_eq!</span>(expected, <span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, result));
+            <span class="macro">assert_eq!</span>(expected, <span class="macro">format!</span>(<span class="string">"{:?}"</span>, result));
         }
     }
 
@@ -294,20 +295,20 @@
             .analyze(int_to_timestamp_plan, config)
             .unwrap();
         <span class="kw">let </span>expected = String::from(
-            <span class="string">&quot;Projection: CAST(Int64(158412331400600000) AS Timestamp(Nanosecond, None))\n  TableScan: t&quot;
+            <span class="string">"Projection: CAST(Int64(158412331400600000) AS Timestamp(Nanosecond, None))\n  TableScan: t"
         </span>);
-        <span class="macro">assert_eq!</span>(expected, <span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, result));
+        <span class="macro">assert_eq!</span>(expected, <span class="macro">format!</span>(<span class="string">"{:?}"</span>, result));
 
         <span class="kw">let </span>proj_string_to_int = <span class="macro">vec!</span>[Expr::Cast(Cast::new(
-            Box::new(lit(<span class="string">&quot;  5   &quot;</span>)),
+            Box::new(lit(<span class="string">"  5   "</span>)),
             DataType::Int32,
         ))];
         <span class="kw">let </span>string_to_int_plan = create_test_plan_with_project(proj_string_to_int);
         <span class="kw">let </span>result = StringNormalizationRule
             .analyze(string_to_int_plan, <span class="kw-2">&amp;</span>ConfigOptions::default())
             .unwrap();
-        <span class="kw">let </span>expected = String::from(<span class="string">&quot;Projection: CAST(Utf8(\&quot;  5   \&quot;) AS Int32)\n  TableScan: t&quot;</span>);
-        <span class="macro">assert_eq!</span>(expected, <span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, result));
+        <span class="kw">let </span>expected = String::from(<span class="string">"Projection: CAST(Utf8(\"  5   \") AS Int32)\n  TableScan: t"</span>);
+        <span class="macro">assert_eq!</span>(expected, <span class="macro">format!</span>(<span class="string">"{:?}"</span>, result));
     }
 
     <span class="kw">fn </span>create_test_plan_with_project(proj: Vec&lt;Expr&gt;) -&gt; LogicalPlan {
@@ -327,9 +328,9 @@
     }
 
     <span class="kw">fn </span>prepare_test_plan_builder() -&gt; LogicalPlanBuilder {
-        <span class="kw">let </span>schema = Schema::new(<span class="macro">vec!</span>[Field::new(<span class="string">&quot;f&quot;</span>, DataType::Float64, <span class="bool-val">false</span>)]);
+        <span class="kw">let </span>schema = Schema::new(<span class="macro">vec!</span>[Field::new(<span class="string">"f"</span>, DataType::Float64, <span class="bool-val">false</span>)]);
         <span class="kw">let </span>table = MemTable::try_new(SchemaRef::from(schema), <span class="macro">vec!</span>[]).unwrap();
-        LogicalPlanBuilder::scan(<span class="string">&quot;t&quot;</span>, provider_as_source(Arc::new(table)), <span class="prelude-val">None</span>).unwrap()
+        LogicalPlanBuilder::scan(<span class="string">"t"</span>, provider_as_source(Arc::new(table)), <span class="prelude-val">None</span>).unwrap()
     }
 }
 </code></pre></div></section></main></body></html>

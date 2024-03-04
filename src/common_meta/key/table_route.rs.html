@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/common/meta/src/key/table_route.rs`."><title>table_route.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="common_meta" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../common_meta/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/common/meta/src/key/table_route.rs`."><title>table_route.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="common_meta" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -375,104 +376,178 @@
 <a href="#375" id="375">375</a>
 <a href="#376" id="376">376</a>
 <a href="#377" id="377">377</a>
-<a href="#378" id="378">378</a>
-<a href="#379" id="379">379</a>
-<a href="#380" id="380">380</a>
-<a href="#381" id="381">381</a>
-<a href="#382" id="382">382</a>
-<a href="#383" id="383">383</a>
-<a href="#384" id="384">384</a>
-<a href="#385" id="385">385</a>
-<a href="#386" id="386">386</a>
-<a href="#387" id="387">387</a>
-<a href="#388" id="388">388</a>
-<a href="#389" id="389">389</a>
-<a href="#390" id="390">390</a>
-<a href="#391" id="391">391</a>
-<a href="#392" id="392">392</a>
-<a href="#393" id="393">393</a>
-<a href="#394" id="394">394</a>
-<a href="#395" id="395">395</a>
-<a href="#396" id="396">396</a>
-<a href="#397" id="397">397</a>
-<a href="#398" id="398">398</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-// http://www.apache.org/licenses/LICENSE-2.0
+//     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-</span><span class="kw">use </span>std::fmt::Display;
+</span><span class="kw">use </span>std::collections::HashMap;
+<span class="kw">use </span>std::fmt::Display;
 
-<span class="kw">use </span>api::v1::meta::TableName;
-<span class="kw">use </span>futures::future::try_join_all;
-<span class="kw">use </span>serde::__private::de;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
-<span class="kw">use </span>snafu::ensure;
+<span class="kw">use </span>snafu::ResultExt;
+<span class="kw">use </span>store_api::storage::{RegionId, RegionNumber};
 <span class="kw">use </span>table::metadata::TableId;
 
-<span class="kw">use </span><span class="kw">crate</span>::error::{<span class="prelude-ty">Result</span>, UnexpectedSnafu};
-<span class="kw">use </span><span class="kw">crate</span>::key::{to_removed_key, TableMetaKey};
-<span class="kw">use </span><span class="kw">crate</span>::kv_backend::txn::{Compare, CompareOp, Txn, TxnOp, TxnOpResponse, TxnRequest};
+<span class="kw">use super</span>::{DeserializedValueWithBytes, TableMetaValue};
+<span class="kw">use </span><span class="kw">crate</span>::error::{<span class="prelude-ty">Result</span>, SerdeJsonSnafu};
+<span class="kw">use </span><span class="kw">crate</span>::key::{to_removed_key, RegionDistribution, TableMetaKey, TABLE_ROUTE_PREFIX};
+<span class="kw">use </span><span class="kw">crate</span>::kv_backend::txn::{Compare, CompareOp, Txn, TxnOp, TxnOpResponse};
 <span class="kw">use </span><span class="kw">crate</span>::kv_backend::KvBackendRef;
-<span class="kw">use </span><span class="kw">crate</span>::rpc::router::{region_distribution, RegionRoute, Table, TableRoute};
-<span class="kw">use </span><span class="kw">crate</span>::rpc::store::{BatchGetRequest, CompareAndPutRequest, MoveValueRequest};
-<span class="kw">use </span><span class="kw">crate</span>::rpc::KeyValue;
+<span class="kw">use </span><span class="kw">crate</span>::rpc::router::{region_distribution, RegionRoute};
+<span class="kw">use </span><span class="kw">crate</span>::rpc::store::BatchGetRequest;
 
-<span class="kw">pub const </span>TABLE_ROUTE_PREFIX: <span class="kw-2">&amp;</span>str = <span class="string">&quot;__meta_table_route&quot;</span>;
-
-<span class="kw">pub const </span>NEXT_TABLE_ROUTE_PREFIX: <span class="kw-2">&amp;</span>str = <span class="string">&quot;__table_route&quot;</span>;
-
-<span class="comment">// TODO(weny): Renames it to TableRouteKey.
-</span><span class="kw">pub struct </span>NextTableRouteKey {
+<span class="kw">pub struct </span>TableRouteKey {
     <span class="kw">pub </span>table_id: TableId,
 }
 
-<span class="kw">impl </span>NextTableRouteKey {
+<span class="kw">impl </span>TableRouteKey {
     <span class="kw">pub fn </span>new(table_id: TableId) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{ table_id }
     }
 }
 
 <span class="attr">#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
-</span><span class="kw">pub struct </span>TableRouteValue {
+#[serde(tag = <span class="string">"type"</span>, rename_all = <span class="string">"snake_case"</span>)]
+</span><span class="kw">pub enum </span>TableRouteValue {
+    Physical(PhysicalTableRouteValue),
+    Logical(LogicalTableRouteValue),
+}
+
+<span class="attr">#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
+</span><span class="kw">pub struct </span>PhysicalTableRouteValue {
     <span class="kw">pub </span>region_routes: Vec&lt;RegionRoute&gt;,
     version: u64,
 }
 
+<span class="attr">#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
+</span><span class="kw">pub struct </span>LogicalTableRouteValue {
+    <span class="comment">// TODO(LFC): Add table route for MetricsEngine table.
+</span>}
+
 <span class="kw">impl </span>TableRouteValue {
+    <span class="kw">pub fn </span>physical(region_routes: Vec&lt;RegionRoute&gt;) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::Physical(PhysicalTableRouteValue::new(region_routes))
+    }
+
+    <span class="doccomment">/// Returns a new version [TableRouteValue] with `region_routes`.
+    </span><span class="kw">pub fn </span>update(<span class="kw-2">&amp;</span><span class="self">self</span>, region_routes: Vec&lt;RegionRoute&gt;) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>version = <span class="self">self</span>.physical_table_route().version;
+        <span class="self">Self</span>::Physical(PhysicalTableRouteValue {
+            region_routes,
+            version: version + <span class="number">1</span>,
+        })
+    }
+
+    <span class="doccomment">/// Returns the version.
+    ///
+    /// For test purpose.
+    </span><span class="attr">#[cfg(any(test, feature = <span class="string">"testing"</span>))]
+    </span><span class="kw">pub fn </span>version(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u64 {
+        <span class="self">self</span>.physical_table_route().version
+    }
+
+    <span class="doccomment">/// Returns the corresponding [RegionRoute].
+    </span><span class="kw">pub fn </span>region_route(<span class="kw-2">&amp;</span><span class="self">self</span>, region_id: RegionId) -&gt; <span class="prelude-ty">Option</span>&lt;RegionRoute&gt; {
+        <span class="self">self</span>.physical_table_route()
+            .region_routes
+            .iter()
+            .find(|route| route.region.id == region_id)
+            .cloned()
+    }
+
+    <span class="doccomment">/// Returns true if it's [TableRouteValue::Physical].
+    </span><span class="kw">pub fn </span>is_physical(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="macro">matches!</span>(<span class="self">self</span>, TableRouteValue::Physical(<span class="kw">_</span>))
+    }
+
+    <span class="doccomment">/// Gets the [RegionRoute]s of this [TableRouteValue::Physical].
+    ///
+    /// # Panics
+    /// The route type is not the [TableRouteValue::Physical].
+    </span><span class="kw">pub fn </span>region_routes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>Vec&lt;RegionRoute&gt; {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.physical_table_route().region_routes
+    }
+
+    <span class="kw">fn </span>physical_table_route(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>PhysicalTableRouteValue {
+        <span class="kw">match </span><span class="self">self </span>{
+            TableRouteValue::Physical(x) =&gt; x,
+            <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(<span class="string">"Mistakenly been treated as a Physical TableRoute: {self:?}"</span>),
+        }
+    }
+
+    <span class="kw">pub fn </span>region_numbers(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;RegionNumber&gt; {
+        <span class="kw">match </span><span class="self">self </span>{
+            TableRouteValue::Physical(x) =&gt; x
+                .region_routes
+                .iter()
+                .map(|region_route| region_route.region.id.region_number())
+                .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;(),
+            TableRouteValue::Logical(x) =&gt; x
+                .region_ids()
+                .iter()
+                .map(|region_id| region_id.region_number())
+                .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;(),
+        }
+    }
+}
+
+<span class="kw">impl </span>TableMetaValue <span class="kw">for </span>TableRouteValue {
+    <span class="kw">fn </span>try_from_raw_value(raw_value: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
+        <span class="kw">let </span>r = serde_json::from_slice::&lt;TableRouteValue&gt;(raw_value);
+        <span class="kw">match </span>r {
+            <span class="comment">// Compatible with old TableRouteValue.
+            </span><span class="prelude-val">Err</span>(e) <span class="kw">if </span>e.is_data() =&gt; <span class="prelude-val">Ok</span>(<span class="self">Self</span>::Physical(
+                serde_json::from_slice::&lt;PhysicalTableRouteValue&gt;(raw_value)
+                    .context(SerdeJsonSnafu)<span class="question-mark">?</span>,
+            )),
+            <span class="prelude-val">Ok</span>(x) =&gt; <span class="prelude-val">Ok</span>(x),
+            <span class="prelude-val">Err</span>(e) =&gt; <span class="prelude-val">Err</span>(e).context(SerdeJsonSnafu),
+        }
+    }
+
+    <span class="kw">fn </span>try_as_raw_value(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;u8&gt;&gt; {
+        serde_json::to_vec(<span class="self">self</span>).context(SerdeJsonSnafu)
+    }
+}
+
+<span class="kw">impl </span>PhysicalTableRouteValue {
     <span class="kw">pub fn </span>new(region_routes: Vec&lt;RegionRoute&gt;) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             region_routes,
             version: <span class="number">0</span>,
         }
     }
+}
 
-    <span class="kw">pub fn </span>update(<span class="kw-2">&amp;</span><span class="self">self</span>, region_routes: Vec&lt;RegionRoute&gt;) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
-            region_routes,
-            version: <span class="self">self</span>.version + <span class="number">1</span>,
-        }
+<span class="kw">impl </span>LogicalTableRouteValue {
+    <span class="kw">pub fn </span>physical_table_id(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; TableId {
+        <span class="macro">todo!</span>()
+    }
+
+    <span class="kw">pub fn </span>region_ids(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;RegionId&gt; {
+        <span class="macro">todo!</span>()
     }
 }
 
-<span class="kw">impl </span>TableMetaKey <span class="kw">for </span>NextTableRouteKey {
+<span class="kw">impl </span>TableMetaKey <span class="kw">for </span>TableRouteKey {
     <span class="kw">fn </span>as_raw_key(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;u8&gt; {
         <span class="self">self</span>.to_string().into_bytes()
     }
 }
 
-<span class="kw">impl </span>Display <span class="kw">for </span>NextTableRouteKey {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
-        <span class="macro">write!</span>(f, <span class="string">&quot;{}/{}&quot;</span>, NEXT_TABLE_ROUTE_PREFIX, <span class="self">self</span>.table_id)
+<span class="kw">impl </span>Display <span class="kw">for </span>TableRouteKey {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; std::fmt::Result {
+        <span class="macro">write!</span>(f, <span class="string">"{}/{}"</span>, TABLE_ROUTE_PREFIX, <span class="self">self</span>.table_id)
     }
 }
 
@@ -485,19 +560,33 @@
         <span class="self">Self </span>{ kv_backend }
     }
 
-    <span class="doccomment">/// Builds a create table route transaction. it expected the `__table_route/{table_id}` wasn&#39;t occupied.
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>build_get_txn(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        table_id: TableId,
+    ) -&gt; (
+        Txn,
+        <span class="kw">impl </span>FnOnce(<span class="kw-2">&amp;</span>Vec&lt;TxnOpResponse&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;DeserializedValueWithBytes&lt;TableRouteValue&gt;&gt;&gt;,
+    ) {
+        <span class="kw">let </span>key = TableRouteKey::new(table_id);
+        <span class="kw">let </span>raw_key = key.as_raw_key();
+        <span class="kw">let </span>txn = Txn::new().and_then(<span class="macro">vec!</span>[TxnOp::Get(raw_key.clone())]);
+
+        (txn, <span class="self">Self</span>::build_decode_fn(raw_key))
+    }
+
+    <span class="doccomment">/// Builds a create table route transaction. it expected the `__table_route/{table_id}` wasn't occupied.
     </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>build_create_txn(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         table_id: TableId,
         table_route_value: <span class="kw-2">&amp;</span>TableRouteValue,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;(
         Txn,
-        <span class="kw">impl </span>FnOnce(<span class="kw-2">&amp;</span>Vec&lt;TxnOpResponse&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;TableRouteValue&gt;&gt;,
+        <span class="kw">impl </span>FnOnce(<span class="kw-2">&amp;</span>Vec&lt;TxnOpResponse&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;DeserializedValueWithBytes&lt;TableRouteValue&gt;&gt;&gt;,
     )&gt; {
-        <span class="kw">let </span>key = NextTableRouteKey::new(table_id);
+        <span class="kw">let </span>key = TableRouteKey::new(table_id);
         <span class="kw">let </span>raw_key = key.as_raw_key();
 
-        <span class="kw">let </span>txn = Txn::default()
+        <span class="kw">let </span>txn = Txn::new()
             .when(<span class="macro">vec!</span>[Compare::with_not_exist_value(
                 raw_key.clone(),
                 CompareOp::Equal,
@@ -516,22 +605,22 @@
     </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>build_update_txn(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         table_id: TableId,
-        current_table_route_value: <span class="kw-2">&amp;</span>TableRouteValue,
+        current_table_route_value: <span class="kw-2">&amp;</span>DeserializedValueWithBytes&lt;TableRouteValue&gt;,
         new_table_route_value: <span class="kw-2">&amp;</span>TableRouteValue,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;(
         Txn,
-        <span class="kw">impl </span>FnOnce(<span class="kw-2">&amp;</span>Vec&lt;TxnOpResponse&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;TableRouteValue&gt;&gt;,
+        <span class="kw">impl </span>FnOnce(<span class="kw-2">&amp;</span>Vec&lt;TxnOpResponse&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;DeserializedValueWithBytes&lt;TableRouteValue&gt;&gt;&gt;,
     )&gt; {
-        <span class="kw">let </span>key = NextTableRouteKey::new(table_id);
+        <span class="kw">let </span>key = TableRouteKey::new(table_id);
         <span class="kw">let </span>raw_key = key.as_raw_key();
-        <span class="kw">let </span>raw_value = current_table_route_value.try_as_raw_value()<span class="question-mark">?</span>;
+        <span class="kw">let </span>raw_value = current_table_route_value.into_bytes();
         <span class="kw">let </span>new_raw_value: Vec&lt;u8&gt; = new_table_route_value.try_as_raw_value()<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>txn = Txn::default()
+        <span class="kw">let </span>txn = Txn::new()
             .when(<span class="macro">vec!</span>[Compare::with_value(
                 raw_key.clone(),
                 CompareOp::Equal,
-                raw_value.clone(),
+                raw_value,
             )])
             .and_then(<span class="macro">vec!</span>[TxnOp::Put(raw_key.clone(), new_raw_value)])
             .or_else(<span class="macro">vec!</span>[TxnOp::Get(raw_key.clone())]);
@@ -543,14 +632,14 @@
     </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>build_delete_txn(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         table_id: TableId,
-        table_route_value: <span class="kw-2">&amp;</span>TableRouteValue,
+        table_route_value: <span class="kw-2">&amp;</span>DeserializedValueWithBytes&lt;TableRouteValue&gt;,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;Txn&gt; {
-        <span class="kw">let </span>key = NextTableRouteKey::new(table_id);
+        <span class="kw">let </span>key = TableRouteKey::new(table_id);
         <span class="kw">let </span>raw_key = key.as_raw_key();
-        <span class="kw">let </span>raw_value = table_route_value.try_as_raw_value()<span class="question-mark">?</span>;
+        <span class="kw">let </span>raw_value = table_route_value.into_bytes();
         <span class="kw">let </span>removed_key = to_removed_key(<span class="kw-2">&amp;</span>String::from_utf8_lossy(<span class="kw-2">&amp;</span>raw_key));
 
-        <span class="kw">let </span>txn = Txn::default().and_then(<span class="macro">vec!</span>[
+        <span class="kw">let </span>txn = Txn::new().and_then(<span class="macro">vec!</span>[
             TxnOp::Delete(raw_key),
             TxnOp::Put(removed_key.into_bytes(), raw_value),
         ]);
@@ -560,7 +649,8 @@
 
     <span class="kw">fn </span>build_decode_fn(
         raw_key: Vec&lt;u8&gt;,
-    ) -&gt; <span class="kw">impl </span>FnOnce(<span class="kw-2">&amp;</span>Vec&lt;TxnOpResponse&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;TableRouteValue&gt;&gt; {
+    ) -&gt; <span class="kw">impl </span>FnOnce(<span class="kw-2">&amp;</span>Vec&lt;TxnOpResponse&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;DeserializedValueWithBytes&lt;TableRouteValue&gt;&gt;&gt;
+    {
         <span class="kw">move </span>|response: <span class="kw-2">&amp;</span>Vec&lt;TxnOpResponse&gt;| {
             response
                 .iter()
@@ -573,225 +663,94 @@
                 })
                 .flat_map(|r| <span class="kw-2">&amp;</span>r.kvs)
                 .find(|kv| kv.key == raw_key)
-                .map(|kv| TableRouteValue::try_from(<span class="kw-2">&amp;</span>kv.value))
+                .map(|kv| DeserializedValueWithBytes::from_inner_slice(<span class="kw-2">&amp;</span>kv.value))
                 .transpose()
         }
     }
 
-    <span class="kw">pub async fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, table_id: TableId) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;TableRouteValue&gt;&gt; {
-        <span class="kw">let </span>key = NextTableRouteKey::new(table_id);
+    <span class="kw">pub async fn </span>get(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        table_id: TableId,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;DeserializedValueWithBytes&lt;TableRouteValue&gt;&gt;&gt; {
+        <span class="kw">let </span>key = TableRouteKey::new(table_id);
         <span class="self">self</span>.kv_backend
             .get(<span class="kw-2">&amp;</span>key.as_raw_key())
             .<span class="kw">await</span><span class="question-mark">?
-            </span>.map(|kv| TableRouteValue::try_from_raw_value(kv.value))
+            </span>.map(|kv| DeserializedValueWithBytes::from_inner_slice(<span class="kw-2">&amp;</span>kv.value))
             .transpose()
     }
 
-    <span class="comment">// Creates TableRoute key and value. If the key already exists, check whether the value is the same.
-    </span><span class="kw">pub async fn </span>create(<span class="kw-2">&amp;</span><span class="self">self</span>, table_id: TableId, region_routes: Vec&lt;RegionRoute&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="kw">let </span>key = NextTableRouteKey::new(table_id);
-        <span class="kw">let </span>val = TableRouteValue::new(region_routes);
-        <span class="kw">let </span>req = CompareAndPutRequest::new()
-            .with_key(key.as_raw_key())
-            .with_value(val.try_as_raw_value()<span class="question-mark">?</span>);
+    <span class="doccomment">/// It may return a subset of the `table_ids`.
+    </span><span class="kw">pub async fn </span>batch_get(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        table_ids: <span class="kw-2">&amp;</span>[TableId],
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;HashMap&lt;TableId, TableRouteValue&gt;&gt; {
+        <span class="kw">let </span>lookup_table = table_ids
+            .iter()
+            .map(|id| (TableRouteKey::new(<span class="kw-2">*</span>id).as_raw_key(), id))
+            .collect::&lt;HashMap&lt;<span class="kw">_</span>, <span class="kw">_</span>&gt;&gt;();
 
-        <span class="self">self</span>.kv_backend.compare_and_put(req).<span class="kw">await</span><span class="question-mark">?</span>.handle(|resp| {
-            <span class="kw">if </span>!resp.success {
-                <span class="kw">let </span><span class="prelude-val">Some</span>(cur) = resp
-                    .prev_kv
-                    .map(|kv|TableRouteValue::try_from_raw_value(kv.value))
-                    .transpose()<span class="question-mark">?
-                </span><span class="kw">else </span>{
-                    <span class="kw">return </span>UnexpectedSnafu {
-                        err_msg: <span class="macro">format!</span>(<span class="string">&quot;compare_and_put expect None but failed with current value None, key: {key}, val: {val:?}&quot;</span>),
-                    }.fail();
-                };
+        <span class="kw">let </span>resp = <span class="self">self
+            </span>.kv_backend
+            .batch_get(BatchGetRequest {
+                keys: lookup_table.keys().cloned().collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;(),
+            })
+            .<span class="kw">await</span><span class="question-mark">?</span>;
 
-                <span class="macro">ensure!</span>(
-                    cur==val,
-                    UnexpectedSnafu {
-                        err_msg: <span class="macro">format!</span>(<span class="string">&quot;current value &#39;{cur:?}&#39; already existed for key &#39;{key}&#39;, {val:?} is not set&quot;</span>),
-                    }
-                );
-            }
-            <span class="prelude-val">Ok</span>(())
-        })
+        <span class="kw">let </span>values = resp
+            .kvs
+            .iter()
+            .map(|kv| {
+                <span class="prelude-val">Ok</span>((
+                    <span class="comment">// Safety: must exist.
+                    </span><span class="kw-2">**</span>lookup_table.get(kv.key()).unwrap(),
+                    TableRouteValue::try_from_raw_value(<span class="kw-2">&amp;</span>kv.value)<span class="question-mark">?</span>,
+                ))
+            })
+            .collect::&lt;<span class="prelude-ty">Result</span>&lt;HashMap&lt;<span class="kw">_</span>, <span class="kw">_</span>&gt;&gt;&gt;()<span class="question-mark">?</span>;
+
+        <span class="prelude-val">Ok</span>(values)
     }
 
-    <span class="doccomment">/// Compares and puts value of key. `expect` is the expected value, if backend&#39;s current value associated
-    /// with key is the same as `expect`, the value will be updated to `val`.
-    ///
-    /// - If the compare-and-set operation successfully updated value, this method will return an `Ok(Ok())`
-    /// - If associated value is not the same as `expect`, no value will be updated and an
-    ///   `Ok(Err(Option&lt;TableRoute&gt;))` will be returned. The `Option&lt;TableRoute&gt;` indicates
-    ///   the current associated value of key.
-    /// - If any error happens during operation, an `Err(Error)` will be returned.
-    </span><span class="kw">pub async fn </span>compare_and_put(
+    <span class="attr">#[cfg(test)]
+    </span><span class="kw">pub async fn </span>get_removed(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         table_id: TableId,
-        expect: <span class="prelude-ty">Option</span>&lt;TableRouteValue&gt;,
-        region_routes: Vec&lt;RegionRoute&gt;,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;std::result::Result&lt;(), <span class="prelude-ty">Option</span>&lt;TableRouteValue&gt;&gt;&gt; {
-        <span class="kw">let </span>key = NextTableRouteKey::new(table_id);
-        <span class="kw">let </span>raw_key = key.as_raw_key();
-
-        <span class="kw">let </span>(expect, version) = <span class="kw">if let </span><span class="prelude-val">Some</span>(x) = expect {
-            (x.try_as_raw_value()<span class="question-mark">?</span>, x.version + <span class="number">1</span>)
-        } <span class="kw">else </span>{
-            (<span class="macro">vec!</span>[], <span class="number">0</span>)
-        };
-        <span class="kw">let </span>value = TableRouteValue {
-            region_routes,
-            version,
-        };
-        <span class="kw">let </span>raw_value = value.try_as_raw_value()<span class="question-mark">?</span>;
-
-        <span class="kw">let </span>req = CompareAndPutRequest::new()
-            .with_key(raw_key)
-            .with_expect(expect)
-            .with_value(raw_value);
-
-        <span class="self">self</span>.kv_backend.compare_and_put(req).<span class="kw">await</span><span class="question-mark">?</span>.handle(|resp| {
-            <span class="prelude-val">Ok</span>(<span class="kw">if </span>resp.success {
-                <span class="prelude-val">Ok</span>(())
-            } <span class="kw">else </span>{
-                <span class="prelude-val">Err</span>(resp
-                    .prev_kv
-                    .map(|x| TableRouteValue::try_from_raw_value(x.value))
-                    .transpose()<span class="question-mark">?</span>)
-            })
-        })
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;DeserializedValueWithBytes&lt;TableRouteValue&gt;&gt;&gt; {
+        <span class="kw">let </span>key = TableRouteKey::new(table_id).to_string();
+        <span class="kw">let </span>removed_key = to_removed_key(<span class="kw-2">&amp;</span>key).into_bytes();
+        <span class="self">self</span>.kv_backend
+            .get(<span class="kw-2">&amp;</span>removed_key)
+            .<span class="kw">await</span><span class="question-mark">?
+            </span>.map(|x| DeserializedValueWithBytes::from_inner_slice(<span class="kw-2">&amp;</span>x.value))
+            .transpose()
     }
 
-    <span class="kw">pub async fn </span>remove(<span class="kw-2">&amp;</span><span class="self">self</span>, table_id: TableId) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="kw">let </span>key = NextTableRouteKey::new(table_id).as_raw_key();
-        <span class="kw">let </span>removed_key = to_removed_key(<span class="kw-2">&amp;</span>String::from_utf8_lossy(<span class="kw-2">&amp;</span>key));
-        <span class="kw">let </span>req = MoveValueRequest::new(key, removed_key.as_bytes());
-        <span class="self">self</span>.kv_backend.move_value(req).<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(())
-    }
-}
-
-<span class="attr">#[derive(Copy, Clone)]
-</span><span class="kw">pub struct </span>TableRouteKey&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">pub </span>table_id: TableId,
-    <span class="kw">pub </span>catalog_name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str,
-    <span class="kw">pub </span>schema_name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str,
-    <span class="kw">pub </span>table_name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str,
-}
-
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; TableRouteKey&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">pub fn </span>with_table_name(table_id: TableId, t: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>TableName) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
-            table_id,
-            catalog_name: <span class="kw-2">&amp;</span>t.catalog_name,
-            schema_name: <span class="kw-2">&amp;</span>t.schema_name,
-            table_name: <span class="kw-2">&amp;</span>t.table_name,
-        }
-    }
-
-    <span class="kw">pub fn </span>prefix(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
-        <span class="macro">format!</span>(
-            <span class="string">&quot;{}-{}-{}-{}&quot;</span>,
-            TABLE_ROUTE_PREFIX, <span class="self">self</span>.catalog_name, <span class="self">self</span>.schema_name, <span class="self">self</span>.table_name
-        )
-    }
-
-    <span class="kw">pub fn </span>removed_key(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
-        to_removed_key(<span class="kw-2">&amp;</span><span class="self">self</span>.to_string())
-    }
-}
-
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Display <span class="kw">for </span>TableRouteKey&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
-        <span class="macro">write!</span>(f, <span class="string">&quot;{}-{}&quot;</span>, <span class="self">self</span>.prefix(), <span class="self">self</span>.table_id)
+    <span class="kw">pub async fn </span>get_region_distribution(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        table_id: TableId,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;RegionDistribution&gt;&gt; {
+        <span class="self">self</span>.get(table_id)
+            .<span class="kw">await</span><span class="question-mark">?
+            </span>.map(|table_route| region_distribution(table_route.region_routes()))
+            .transpose()
     }
 }
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
-    <span class="kw">use </span>std::sync::Arc;
-
-    <span class="kw">use </span>api::v1::meta::TableName <span class="kw">as </span>PbTableName;
-
-    <span class="kw">use </span><span class="kw">super</span>::TableRouteKey;
-    <span class="kw">use </span><span class="kw">crate</span>::key::table_route::{TableRouteManager, TableRouteValue};
-    <span class="kw">use </span><span class="kw">crate</span>::kv_backend::memory::MemoryKvBackend;
-    <span class="kw">use </span><span class="kw">crate</span>::rpc::router::{RegionRoute, Table, TableRoute};
-    <span class="kw">use </span><span class="kw">crate</span>::table_name::TableName;
-
-    <span class="attr">#[tokio::test]
-    </span><span class="kw">async fn </span>test_table_route_manager() {
-        <span class="kw">let </span>mgr = TableRouteManager::new(Arc::new(MemoryKvBackend::default()));
-
-        <span class="kw">let </span>table_id = <span class="number">1024u32</span>;
-        <span class="kw">let </span>table = Table {
-            id: table_id <span class="kw">as </span>u64,
-            table_name: TableName::new(<span class="string">&quot;foo&quot;</span>, <span class="string">&quot;bar&quot;</span>, <span class="string">&quot;baz&quot;</span>),
-            table_schema: <span class="string">b&quot;mock schema&quot;</span>.to_vec(),
-        };
-        <span class="kw">let </span>region_route = RegionRoute::default();
-        <span class="kw">let </span>region_routes = <span class="macro">vec!</span>[region_route];
-
-        mgr.create(table_id, region_routes.clone()).<span class="kw">await</span>.unwrap();
-
-        <span class="kw">let </span>got = mgr.get(<span class="number">1024</span>).<span class="kw">await</span>.unwrap().unwrap();
-
-        <span class="macro">assert_eq!</span>(got.region_routes, region_routes);
-
-        <span class="kw">let </span>empty = mgr.get(<span class="number">1023</span>).<span class="kw">await</span>.unwrap();
-        <span class="macro">assert!</span>(empty.is_none());
-
-        <span class="kw">let </span>expect = TableRouteValue::new(region_routes);
-
-        <span class="kw">let </span><span class="kw-2">mut </span>updated = expect.clone();
-        updated.region_routes.push(RegionRoute::default());
-
-        mgr.compare_and_put(<span class="number">1024</span>, <span class="prelude-val">Some</span>(expect.clone()), updated.region_routes.clone())
-            .<span class="kw">await
-            </span>.unwrap();
-
-        mgr.compare_and_put(<span class="number">1024</span>, <span class="prelude-val">Some</span>(expect.clone()), updated.region_routes)
-            .<span class="kw">await
-            </span>.unwrap();
-    }
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
     <span class="attr">#[test]
-    </span><span class="kw">fn </span>test_table_route_key() {
-        <span class="kw">let </span>key = TableRouteKey {
-            table_id: <span class="number">123</span>,
-            catalog_name: <span class="string">&quot;greptime&quot;</span>,
-            schema_name: <span class="string">&quot;public&quot;</span>,
-            table_name: <span class="string">&quot;demo&quot;</span>,
-        };
+    </span><span class="kw">fn </span>test_table_route_compatibility() {
+        <span class="kw">let </span>old_raw_v = <span class="string">r#"{"region_routes":[{"region":{"id":1,"name":"r1","partition":null,"attrs":{}},"leader_peer":{"id":2,"addr":"a2"},"follower_peers":[]},{"region":{"id":1,"name":"r1","partition":null,"attrs":{}},"leader_peer":{"id":2,"addr":"a2"},"follower_peers":[]}],"version":0}"#</span>;
+        <span class="kw">let </span>v = TableRouteValue::try_from_raw_value(old_raw_v.as_bytes()).unwrap();
 
-        <span class="kw">let </span>prefix = key.prefix();
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;__meta_table_route-greptime-public-demo&quot;</span>, prefix);
-
-        <span class="kw">let </span>key_string = key.to_string();
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;__meta_table_route-greptime-public-demo-123&quot;</span>, key_string);
-
-        <span class="kw">let </span>removed = key.removed_key();
+        <span class="kw">let </span>new_raw_v = <span class="macro">format!</span>(<span class="string">"{:?}"</span>, v);
         <span class="macro">assert_eq!</span>(
-            <span class="string">&quot;__removed-__meta_table_route-greptime-public-demo-123&quot;</span>,
-            removed
-        );
-    }
-
-    <span class="attr">#[test]
-    </span><span class="kw">fn </span>test_with_table_name() {
-        <span class="kw">let </span>table_name = PbTableName {
-            catalog_name: <span class="string">&quot;greptime&quot;</span>.to_string(),
-            schema_name: <span class="string">&quot;public&quot;</span>.to_string(),
-            table_name: <span class="string">&quot;demo&quot;</span>.to_string(),
-        };
-
-        <span class="kw">let </span>key = TableRouteKey::with_table_name(<span class="number">123</span>, <span class="kw-2">&amp;</span>table_name);
-
-        <span class="macro">assert_eq!</span>(<span class="number">123</span>, key.table_id);
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;greptime&quot;</span>, key.catalog_name);
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;public&quot;</span>, key.schema_name);
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;demo&quot;</span>, key.table_name);
+            new_raw_v,
+            <span class="string">r#"Physical(PhysicalTableRouteValue { region_routes: [RegionRoute { region: Region { id: 1(0, 1), name: "r1", partition: None, attrs: {} }, leader_peer: Some(Peer { id: 2, addr: "a2" }), follower_peers: [], leader_status: None }, RegionRoute { region: Region { id: 1(0, 1), name: "r1", partition: None, attrs: {} }, leader_peer: Some(Peer { id: 2, addr: "a2" }), follower_peers: [], leader_status: None }], version: 0 })"#
+        </span>);
     }
 }
 </code></pre></div></section></main></body></html>

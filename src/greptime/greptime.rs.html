@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/cmd/src/bin/greptime.rs`."><title>greptime.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="greptime" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../greptime/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/cmd/src/bin/greptime.rs`."><title>greptime.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="greptime" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -135,293 +136,94 @@
 <a href="#135" id="135">135</a>
 <a href="#136" id="136">136</a>
 <a href="#137" id="137">137</a>
-<a href="#138" id="138">138</a>
-<a href="#139" id="139">139</a>
-<a href="#140" id="140">140</a>
-<a href="#141" id="141">141</a>
-<a href="#142" id="142">142</a>
-<a href="#143" id="143">143</a>
-<a href="#144" id="144">144</a>
-<a href="#145" id="145">145</a>
-<a href="#146" id="146">146</a>
-<a href="#147" id="147">147</a>
-<a href="#148" id="148">148</a>
-<a href="#149" id="149">149</a>
-<a href="#150" id="150">150</a>
-<a href="#151" id="151">151</a>
-<a href="#152" id="152">152</a>
-<a href="#153" id="153">153</a>
-<a href="#154" id="154">154</a>
-<a href="#155" id="155">155</a>
-<a href="#156" id="156">156</a>
-<a href="#157" id="157">157</a>
-<a href="#158" id="158">158</a>
-<a href="#159" id="159">159</a>
-<a href="#160" id="160">160</a>
-<a href="#161" id="161">161</a>
-<a href="#162" id="162">162</a>
-<a href="#163" id="163">163</a>
-<a href="#164" id="164">164</a>
-<a href="#165" id="165">165</a>
-<a href="#166" id="166">166</a>
-<a href="#167" id="167">167</a>
-<a href="#168" id="168">168</a>
-<a href="#169" id="169">169</a>
-<a href="#170" id="170">170</a>
-<a href="#171" id="171">171</a>
-<a href="#172" id="172">172</a>
-<a href="#173" id="173">173</a>
-<a href="#174" id="174">174</a>
-<a href="#175" id="175">175</a>
-<a href="#176" id="176">176</a>
-<a href="#177" id="177">177</a>
-<a href="#178" id="178">178</a>
-<a href="#179" id="179">179</a>
-<a href="#180" id="180">180</a>
-<a href="#181" id="181">181</a>
-<a href="#182" id="182">182</a>
-<a href="#183" id="183">183</a>
-<a href="#184" id="184">184</a>
-<a href="#185" id="185">185</a>
-<a href="#186" id="186">186</a>
-<a href="#187" id="187">187</a>
-<a href="#188" id="188">188</a>
-<a href="#189" id="189">189</a>
-<a href="#190" id="190">190</a>
-<a href="#191" id="191">191</a>
-<a href="#192" id="192">192</a>
-<a href="#193" id="193">193</a>
-<a href="#194" id="194">194</a>
-<a href="#195" id="195">195</a>
-<a href="#196" id="196">196</a>
-<a href="#197" id="197">197</a>
-<a href="#198" id="198">198</a>
-<a href="#199" id="199">199</a>
-<a href="#200" id="200">200</a>
-<a href="#201" id="201">201</a>
-<a href="#202" id="202">202</a>
-<a href="#203" id="203">203</a>
-<a href="#204" id="204">204</a>
-<a href="#205" id="205">205</a>
-<a href="#206" id="206">206</a>
-<a href="#207" id="207">207</a>
-<a href="#208" id="208">208</a>
-<a href="#209" id="209">209</a>
-<a href="#210" id="210">210</a>
-<a href="#211" id="211">211</a>
-<a href="#212" id="212">212</a>
-<a href="#213" id="213">213</a>
-<a href="#214" id="214">214</a>
-<a href="#215" id="215">215</a>
-<a href="#216" id="216">216</a>
-<a href="#217" id="217">217</a>
-<a href="#218" id="218">218</a>
-<a href="#219" id="219">219</a>
-<a href="#220" id="220">220</a>
-<a href="#221" id="221">221</a>
-<a href="#222" id="222">222</a>
-<a href="#223" id="223">223</a>
-<a href="#224" id="224">224</a>
-<a href="#225" id="225">225</a>
-<a href="#226" id="226">226</a>
-<a href="#227" id="227">227</a>
-<a href="#228" id="228">228</a>
-<a href="#229" id="229">229</a>
-<a href="#230" id="230">230</a>
-<a href="#231" id="231">231</a>
-<a href="#232" id="232">232</a>
-<a href="#233" id="233">233</a>
-<a href="#234" id="234">234</a>
-<a href="#235" id="235">235</a>
-<a href="#236" id="236">236</a>
-<a href="#237" id="237">237</a>
-<a href="#238" id="238">238</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-</span><span class="attr">#![doc = <span class="macro">include_str!</span>(<span class="string">&quot;../../../../README.md&quot;</span>)]
+</span><span class="attr">#![doc = <span class="macro">include_str!</span>(<span class="string">"../../../../README.md"</span>)]
 
 </span><span class="kw">use </span>std::fmt;
 
-<span class="kw">use </span>clap::Parser;
+<span class="kw">use </span>clap::{FromArgMatches, Parser, Subcommand};
 <span class="kw">use </span>cmd::error::Result;
-<span class="kw">use </span>cmd::options::{Options, TopLevelOptions};
-<span class="kw">use </span>cmd::{cli, datanode, frontend, metasrv, standalone};
-<span class="kw">use </span>common_telemetry::logging::{error, info, TracingOptions};
-<span class="kw">use </span>metrics::gauge;
-
-<span class="attr">#[derive(Parser)]
-#[clap(name = <span class="string">&quot;greptimedb&quot;</span>, version = print_version())]
-</span><span class="kw">struct </span>Command {
-    <span class="attr">#[clap(long)]
-    </span>log_dir: <span class="prelude-ty">Option</span>&lt;String&gt;,
-    <span class="attr">#[clap(long)]
-    </span>log_level: <span class="prelude-ty">Option</span>&lt;String&gt;,
-    <span class="attr">#[clap(subcommand)]
-    </span>subcmd: SubCommand,
-
-    <span class="attr">#[cfg(feature = <span class="string">&quot;tokio-console&quot;</span>)]
-    #[clap(long)]
-    </span>tokio_console_addr: <span class="prelude-ty">Option</span>&lt;String&gt;,
-}
-
-<span class="kw">pub enum </span>Application {
-    Datanode(datanode::Instance),
-    Frontend(frontend::Instance),
-    Metasrv(metasrv::Instance),
-    Standalone(standalone::Instance),
-    Cli(cli::Instance),
-}
-
-<span class="kw">impl </span>Application {
-    <span class="kw">async fn </span>start(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="kw">match </span><span class="self">self </span>{
-            Application::Datanode(instance) =&gt; instance.start().<span class="kw">await</span>,
-            Application::Frontend(instance) =&gt; instance.start().<span class="kw">await</span>,
-            Application::Metasrv(instance) =&gt; instance.start().<span class="kw">await</span>,
-            Application::Standalone(instance) =&gt; instance.start().<span class="kw">await</span>,
-            Application::Cli(instance) =&gt; instance.start().<span class="kw">await</span>,
-        }
-    }
-
-    <span class="kw">async fn </span>stop(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="kw">match </span><span class="self">self </span>{
-            Application::Datanode(instance) =&gt; instance.stop().<span class="kw">await</span>,
-            Application::Frontend(instance) =&gt; instance.stop().<span class="kw">await</span>,
-            Application::Metasrv(instance) =&gt; instance.stop().<span class="kw">await</span>,
-            Application::Standalone(instance) =&gt; instance.stop().<span class="kw">await</span>,
-            Application::Cli(instance) =&gt; instance.stop().<span class="kw">await</span>,
-        }
-    }
-}
-
-<span class="kw">impl </span>Command {
-    <span class="kw">async fn </span>build(<span class="self">self</span>, opts: Options) -&gt; <span class="prelude-ty">Result</span>&lt;Application&gt; {
-        <span class="self">self</span>.subcmd.build(opts).<span class="kw">await
-    </span>}
-
-    <span class="kw">fn </span>load_options(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Options&gt; {
-        <span class="kw">let </span>top_level_opts = <span class="self">self</span>.top_level_options();
-        <span class="self">self</span>.subcmd.load_options(top_level_opts)
-    }
-
-    <span class="kw">fn </span>top_level_options(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; TopLevelOptions {
-        TopLevelOptions {
-            log_dir: <span class="self">self</span>.log_dir.clone(),
-            log_level: <span class="self">self</span>.log_level.clone(),
-        }
-    }
-}
+<span class="kw">use </span>cmd::options::{CliOptions, Options};
+<span class="kw">use </span>cmd::{
+    cli, datanode, frontend, greptimedb_cli, log_versions, metasrv, standalone, start_app, App,
+};
 
 <span class="attr">#[derive(Parser)]
 </span><span class="kw">enum </span>SubCommand {
-    <span class="attr">#[clap(name = <span class="string">&quot;datanode&quot;</span>)]
+    <span class="attr">#[clap(name = <span class="string">"datanode"</span>)]
     </span>Datanode(datanode::Command),
-    <span class="attr">#[clap(name = <span class="string">&quot;frontend&quot;</span>)]
+    <span class="attr">#[clap(name = <span class="string">"frontend"</span>)]
     </span>Frontend(frontend::Command),
-    <span class="attr">#[clap(name = <span class="string">&quot;metasrv&quot;</span>)]
+    <span class="attr">#[clap(name = <span class="string">"metasrv"</span>)]
     </span>Metasrv(metasrv::Command),
-    <span class="attr">#[clap(name = <span class="string">&quot;standalone&quot;</span>)]
+    <span class="attr">#[clap(name = <span class="string">"standalone"</span>)]
     </span>Standalone(standalone::Command),
-    <span class="attr">#[clap(name = <span class="string">&quot;cli&quot;</span>)]
+    <span class="attr">#[clap(name = <span class="string">"cli"</span>)]
     </span>Cli(cli::Command),
 }
 
 <span class="kw">impl </span>SubCommand {
-    <span class="kw">async fn </span>build(<span class="self">self</span>, opts: Options) -&gt; <span class="prelude-ty">Result</span>&lt;Application&gt; {
-        <span class="kw">match </span>(<span class="self">self</span>, opts) {
+    <span class="kw">async fn </span>build(<span class="self">self</span>, opts: Options) -&gt; <span class="prelude-ty">Result</span>&lt;Box&lt;<span class="kw">dyn </span>App&gt;&gt; {
+        <span class="kw">let </span>app: Box&lt;<span class="kw">dyn </span>App&gt; = <span class="kw">match </span>(<span class="self">self</span>, opts) {
             (SubCommand::Datanode(cmd), Options::Datanode(dn_opts)) =&gt; {
                 <span class="kw">let </span>app = cmd.build(<span class="kw-2">*</span>dn_opts).<span class="kw">await</span><span class="question-mark">?</span>;
-                <span class="prelude-val">Ok</span>(Application::Datanode(app))
-            }
+                Box::new(app) <span class="kw">as _
+            </span>}
             (SubCommand::Frontend(cmd), Options::Frontend(fe_opts)) =&gt; {
                 <span class="kw">let </span>app = cmd.build(<span class="kw-2">*</span>fe_opts).<span class="kw">await</span><span class="question-mark">?</span>;
-                <span class="prelude-val">Ok</span>(Application::Frontend(app))
-            }
+                Box::new(app) <span class="kw">as _
+            </span>}
             (SubCommand::Metasrv(cmd), Options::Metasrv(meta_opts)) =&gt; {
                 <span class="kw">let </span>app = cmd.build(<span class="kw-2">*</span>meta_opts).<span class="kw">await</span><span class="question-mark">?</span>;
-                <span class="prelude-val">Ok</span>(Application::Metasrv(app))
-            }
+                Box::new(app) <span class="kw">as _
+            </span>}
             (SubCommand::Standalone(cmd), Options::Standalone(opts)) =&gt; {
-                <span class="kw">let </span>app = cmd.build(opts.fe_opts, opts.dn_opts).<span class="kw">await</span><span class="question-mark">?</span>;
-                <span class="prelude-val">Ok</span>(Application::Standalone(app))
-            }
+                <span class="kw">let </span>app = cmd.build(<span class="kw-2">*</span>opts).<span class="kw">await</span><span class="question-mark">?</span>;
+                Box::new(app) <span class="kw">as _
+            </span>}
             (SubCommand::Cli(cmd), Options::Cli(<span class="kw">_</span>)) =&gt; {
                 <span class="kw">let </span>app = cmd.build().<span class="kw">await</span><span class="question-mark">?</span>;
-                <span class="prelude-val">Ok</span>(Application::Cli(app))
-            }
+                Box::new(app) <span class="kw">as _
+            </span>}
 
             <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
-        }
+        };
+        <span class="prelude-val">Ok</span>(app)
     }
 
-    <span class="kw">fn </span>load_options(<span class="kw-2">&amp;</span><span class="self">self</span>, top_level_opts: TopLevelOptions) -&gt; <span class="prelude-ty">Result</span>&lt;Options&gt; {
+    <span class="kw">fn </span>load_options(<span class="kw-2">&amp;</span><span class="self">self</span>, cli_options: <span class="kw-2">&amp;</span>CliOptions) -&gt; <span class="prelude-ty">Result</span>&lt;Options&gt; {
         <span class="kw">match </span><span class="self">self </span>{
-            SubCommand::Datanode(cmd) =&gt; cmd.load_options(top_level_opts),
-            SubCommand::Frontend(cmd) =&gt; cmd.load_options(top_level_opts),
-            SubCommand::Metasrv(cmd) =&gt; cmd.load_options(top_level_opts),
-            SubCommand::Standalone(cmd) =&gt; cmd.load_options(top_level_opts),
-            SubCommand::Cli(cmd) =&gt; cmd.load_options(top_level_opts),
+            SubCommand::Datanode(cmd) =&gt; cmd.load_options(cli_options),
+            SubCommand::Frontend(cmd) =&gt; cmd.load_options(cli_options),
+            SubCommand::Metasrv(cmd) =&gt; cmd.load_options(cli_options),
+            SubCommand::Standalone(cmd) =&gt; cmd.load_options(cli_options),
+            SubCommand::Cli(cmd) =&gt; cmd.load_options(cli_options),
         }
     }
 }
 
 <span class="kw">impl </span>fmt::Display <span class="kw">for </span>SubCommand {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; fmt::Result {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; fmt::Result {
         <span class="kw">match </span><span class="self">self </span>{
-            SubCommand::Datanode(..) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;greptime-datanode&quot;</span>),
-            SubCommand::Frontend(..) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;greptime-frontend&quot;</span>),
-            SubCommand::Metasrv(..) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;greptime-metasrv&quot;</span>),
-            SubCommand::Standalone(..) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;greptime-standalone&quot;</span>),
-            SubCommand::Cli(<span class="kw">_</span>) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;greptime-cli&quot;</span>),
+            SubCommand::Datanode(..) =&gt; <span class="macro">write!</span>(f, <span class="string">"greptime-datanode"</span>),
+            SubCommand::Frontend(..) =&gt; <span class="macro">write!</span>(f, <span class="string">"greptime-frontend"</span>),
+            SubCommand::Metasrv(..) =&gt; <span class="macro">write!</span>(f, <span class="string">"greptime-metasrv"</span>),
+            SubCommand::Standalone(..) =&gt; <span class="macro">write!</span>(f, <span class="string">"greptime-standalone"</span>),
+            SubCommand::Cli(<span class="kw">_</span>) =&gt; <span class="macro">write!</span>(f, <span class="string">"greptime-cli"</span>),
         }
-    }
-}
-
-<span class="kw">fn </span>print_version() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str {
-    <span class="macro">concat!</span>(
-        <span class="string">&quot;\nbranch: &quot;</span>,
-        <span class="macro">env!</span>(<span class="string">&quot;GIT_BRANCH&quot;</span>),
-        <span class="string">&quot;\ncommit: &quot;</span>,
-        <span class="macro">env!</span>(<span class="string">&quot;GIT_COMMIT&quot;</span>),
-        <span class="string">&quot;\ndirty: &quot;</span>,
-        <span class="macro">env!</span>(<span class="string">&quot;GIT_DIRTY&quot;</span>),
-        <span class="string">&quot;\nversion: &quot;</span>,
-        <span class="macro">env!</span>(<span class="string">&quot;CARGO_PKG_VERSION&quot;</span>)
-    )
-}
-
-<span class="kw">fn </span>short_version() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str {
-    <span class="macro">env!</span>(<span class="string">&quot;CARGO_PKG_VERSION&quot;</span>)
-}
-
-<span class="comment">// {app_name}-{branch_name}-{commit_short}
-// The branch name (tag) of a release build should already contain the short
-// version so the full version doesn&#39;t concat the short version explicitly.
-</span><span class="kw">fn </span>full_version() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str {
-    <span class="macro">concat!</span>(
-        <span class="string">&quot;greptimedb-&quot;</span>,
-        <span class="macro">env!</span>(<span class="string">&quot;GIT_BRANCH&quot;</span>),
-        <span class="string">&quot;-&quot;</span>,
-        <span class="macro">env!</span>(<span class="string">&quot;GIT_COMMIT_SHORT&quot;</span>)
-    )
-}
-
-<span class="kw">fn </span>log_env_flags() {
-    <span class="macro">info!</span>(<span class="string">&quot;command line arguments&quot;</span>);
-    <span class="kw">for </span>argument <span class="kw">in </span>std::env::args() {
-        <span class="macro">info!</span>(<span class="string">&quot;argument: {}&quot;</span>, argument);
     }
 }
 
@@ -431,47 +233,44 @@
 
 <span class="attr">#[tokio::main]
 </span><span class="kw">async fn </span>main() -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-    <span class="kw">let </span>cmd = Command::parse();
-    <span class="kw">let </span>app_name = <span class="kw-2">&amp;</span>cmd.subcmd.to_string();
-
-    <span class="kw">let </span>opts = cmd.load_options()<span class="question-mark">?</span>;
-    <span class="kw">let </span>logging_opts = opts.logging_options();
-    <span class="kw">let </span>tracing_opts = TracingOptions {
-        <span class="attr">#[cfg(feature = <span class="string">&quot;tokio-console&quot;</span>)]
-        </span>tokio_console_addr: cmd.tokio_console_addr.clone(),
+    <span class="kw">let </span>metadata = human_panic::Metadata {
+        version: <span class="macro">env!</span>(<span class="string">"CARGO_PKG_VERSION"</span>).into(),
+        name: <span class="string">"GreptimeDB"</span>.into(),
+        authors: Default::default(),
+        homepage: <span class="string">"https://github.com/GreptimeTeam/greptimedb/discussions"</span>.into(),
     };
+    <span class="macro">human_panic::setup_panic!</span>(metadata);
 
     common_telemetry::set_panic_hook();
-    common_telemetry::init_default_metrics_recorder();
-    <span class="kw">let </span>_guard = common_telemetry::init_global_logging(app_name, logging_opts, tracing_opts);
 
-    <span class="comment">// Report app version as gauge.
-    </span><span class="macro">gauge!</span>(<span class="string">&quot;app_version&quot;</span>, <span class="number">1.0</span>, <span class="string">&quot;short_version&quot; </span>=&gt; short_version(), <span class="string">&quot;version&quot; </span>=&gt; full_version());
+    <span class="kw">let </span>cli = greptimedb_cli();
 
-    <span class="comment">// Log version and argument flags.
-    </span><span class="macro">info!</span>(
-        <span class="string">&quot;short_version: {}, full_version: {}&quot;</span>,
-        short_version(),
-        full_version()
+    <span class="kw">let </span>cli = SubCommand::augment_subcommands(cli);
+
+    <span class="kw">let </span>args = cli.get_matches();
+
+    <span class="kw">let </span>subcmd = <span class="kw">match </span>SubCommand::from_arg_matches(<span class="kw-2">&amp;</span>args) {
+        <span class="prelude-val">Ok</span>(subcmd) =&gt; subcmd,
+        <span class="prelude-val">Err</span>(e) =&gt; e.exit(),
+    };
+
+    <span class="kw">let </span>app_name = subcmd.to_string();
+
+    <span class="kw">let </span>cli_options = CliOptions::new(<span class="kw-2">&amp;</span>args);
+
+    <span class="kw">let </span>opts = subcmd.load_options(<span class="kw-2">&amp;</span>cli_options)<span class="question-mark">?</span>;
+
+    <span class="kw">let </span>_guard = common_telemetry::init_global_logging(
+        <span class="kw-2">&amp;</span>app_name,
+        opts.logging_options(),
+        cli_options.tracing_options(),
+        opts.node_id(),
     );
-    log_env_flags();
 
-    <span class="kw">let </span><span class="kw-2">mut </span>app = cmd.build(opts).<span class="kw">await</span><span class="question-mark">?</span>;
+    log_versions();
 
-    <span class="macro">tokio::select! </span>{
-        result = app.start() =&gt; {
-            <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = result {
-                <span class="macro">error!</span>(err; <span class="string">&quot;Fatal error occurs!&quot;</span>);
-            }
-        }
-        <span class="kw">_ </span>= tokio::signal::ctrl_c() =&gt; {
-            <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = app.stop().<span class="kw">await </span>{
-                <span class="macro">error!</span>(err; <span class="string">&quot;Fatal error occurs!&quot;</span>);
-            }
-            <span class="macro">info!</span>(<span class="string">&quot;Goodbye!&quot;</span>);
-        }
-    }
+    <span class="kw">let </span>app = subcmd.build(opts).<span class="kw">await</span><span class="question-mark">?</span>;
 
-    <span class="prelude-val">Ok</span>(())
-}
+    start_app(app).<span class="kw">await
+</span>}
 </code></pre></div></section></main></body></html>

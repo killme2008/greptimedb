@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/servers/src/mysql/federated.rs`."><title>federated.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="servers" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../servers/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/servers/src/mysql/federated.rs`."><title>federated.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="servers" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -453,22 +454,44 @@
 <a href="#453" id="453">453</a>
 <a href="#454" id="454">454</a>
 <a href="#455" id="455">455</a>
+<a href="#456" id="456">456</a>
+<a href="#457" id="457">457</a>
+<a href="#458" id="458">458</a>
+<a href="#459" id="459">459</a>
+<a href="#460" id="460">460</a>
+<a href="#461" id="461">461</a>
+<a href="#462" id="462">462</a>
+<a href="#463" id="463">463</a>
+<a href="#464" id="464">464</a>
+<a href="#465" id="465">465</a>
+<a href="#466" id="466">466</a>
+<a href="#467" id="467">467</a>
+<a href="#468" id="468">468</a>
+<a href="#469" id="469">469</a>
+<a href="#470" id="470">470</a>
+<a href="#471" id="471">471</a>
+<a href="#472" id="472">472</a>
+<a href="#473" id="473">473</a>
+<a href="#474" id="474">474</a>
+<a href="#475" id="475">475</a>
+<a href="#476" id="476">476</a>
+<a href="#477" id="477">477</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-</span><span class="doccomment">//! Use regex to filter out some MySQL federated components&#39; emitted statements.
-//! Inspired by Databend&#39;s &quot;[mysql_federated.rs](https://github.com/datafuselabs/databend/blob/ac706bf65845e6895141c96c0a10bad6fdc2d367/src/query/service/src/servers/mysql/mysql_federated.rs)&quot;.
+</span><span class="doccomment">//! Use regex to filter out some MySQL federated components' emitted statements.
+//! Inspired by Databend's "[mysql_federated.rs](https://github.com/datafuselabs/databend/blob/ac706bf65845e6895141c96c0a10bad6fdc2d367/src/query/service/src/servers/mysql/mysql_federated.rs)".
 
 </span><span class="kw">use </span>std::collections::HashMap;
 <span class="kw">use </span>std::env;
@@ -476,8 +499,8 @@
 
 <span class="kw">use </span>common_query::Output;
 <span class="kw">use </span>common_recordbatch::RecordBatches;
-<span class="kw">use </span>common_time::timezone::system_time_zone_name;
-<span class="kw">use </span>common_time::TimeZone;
+<span class="kw">use </span>common_time::timezone::system_timezone_name;
+<span class="kw">use </span>common_time::Timezone;
 <span class="kw">use </span>datatypes::prelude::ConcreteDataType;
 <span class="kw">use </span>datatypes::schema::{ColumnSchema, Schema};
 <span class="kw">use </span>datatypes::vectors::StringVector;
@@ -485,109 +508,113 @@
 <span class="kw">use </span>regex::bytes::RegexSet;
 <span class="kw">use </span>regex::Regex;
 <span class="kw">use </span>session::context::QueryContextRef;
+<span class="kw">use </span>session::SessionRef;
 
-<span class="kw">static </span>SELECT_VAR_PATTERN: Lazy&lt;Regex&gt; = Lazy::new(|| Regex::new(<span class="string">&quot;(?i)^(SELECT @@(.*))&quot;</span>).unwrap());
+<span class="kw">static </span>SELECT_VAR_PATTERN: Lazy&lt;Regex&gt; = Lazy::new(|| Regex::new(<span class="string">"(?i)^(SELECT @@(.*))"</span>).unwrap());
 <span class="kw">static </span>MYSQL_CONN_JAVA_PATTERN: Lazy&lt;Regex&gt; =
-    Lazy::new(|| Regex::new(<span class="string">&quot;(?i)^(/\\* mysql-connector-j(.*))&quot;</span>).unwrap());
+    Lazy::new(|| Regex::new(<span class="string">"(?i)^(/\\* mysql-connector-j(.*))"</span>).unwrap());
 <span class="kw">static </span>SHOW_LOWER_CASE_PATTERN: Lazy&lt;Regex&gt; =
-    Lazy::new(|| Regex::new(<span class="string">&quot;(?i)^(SHOW VARIABLES LIKE &#39;lower_case_table_names&#39;(.*))&quot;</span>).unwrap());
+    Lazy::new(|| Regex::new(<span class="string">"(?i)^(SHOW VARIABLES LIKE 'lower_case_table_names'(.*))"</span>).unwrap());
 <span class="kw">static </span>SHOW_COLLATION_PATTERN: Lazy&lt;Regex&gt; =
-    Lazy::new(|| Regex::new(<span class="string">&quot;(?i)^(show collation where(.*))&quot;</span>).unwrap());
+    Lazy::new(|| Regex::new(<span class="string">"(?i)^(show collation where(.*))"</span>).unwrap());
 <span class="kw">static </span>SHOW_VARIABLES_PATTERN: Lazy&lt;Regex&gt; =
-    Lazy::new(|| Regex::new(<span class="string">&quot;(?i)^(SHOW VARIABLES(.*))&quot;</span>).unwrap());
+    Lazy::new(|| Regex::new(<span class="string">"(?i)^(SHOW VARIABLES(.*))"</span>).unwrap());
 
 <span class="kw">static </span>SELECT_VERSION_PATTERN: Lazy&lt;Regex&gt; =
-    Lazy::new(|| Regex::new(<span class="string">r&quot;(?i)^(SELECT VERSION\(\s*\))&quot;</span>).unwrap());
+    Lazy::new(|| Regex::new(<span class="string">r"(?i)^(SELECT VERSION\(\s*\))"</span>).unwrap());
 <span class="kw">static </span>SELECT_DATABASE_PATTERN: Lazy&lt;Regex&gt; =
-    Lazy::new(|| Regex::new(<span class="string">r&quot;(?i)^(SELECT DATABASE\(\s*\))&quot;</span>).unwrap());
+    Lazy::new(|| Regex::new(<span class="string">r"(?i)^(SELECT DATABASE\(\s*\))"</span>).unwrap());
 
 <span class="comment">// SELECT TIMEDIFF(NOW(), UTC_TIMESTAMP());
 </span><span class="kw">static </span>SELECT_TIME_DIFF_FUNC_PATTERN: Lazy&lt;Regex&gt; =
-    Lazy::new(|| Regex::new(<span class="string">&quot;(?i)^(SELECT TIMEDIFF\\(NOW\\(\\), UTC_TIMESTAMP\\(\\)\\))&quot;</span>).unwrap());
+    Lazy::new(|| Regex::new(<span class="string">"(?i)^(SELECT TIMEDIFF\\(NOW\\(\\), UTC_TIMESTAMP\\(\\)\\))"</span>).unwrap());
 
 <span class="comment">// sqlalchemy &lt; 1.4.30
 </span><span class="kw">static </span>SHOW_SQL_MODE_PATTERN: Lazy&lt;Regex&gt; =
-    Lazy::new(|| Regex::new(<span class="string">&quot;(?i)^(SHOW VARIABLES LIKE &#39;sql_mode&#39;(.*))&quot;</span>).unwrap());
+    Lazy::new(|| Regex::new(<span class="string">"(?i)^(SHOW VARIABLES LIKE 'sql_mode'(.*))"</span>).unwrap());
 
-<span class="comment">// Time zone settings
+<span class="comment">// Timezone settings
 </span><span class="kw">static </span>SET_TIME_ZONE_PATTERN: Lazy&lt;Regex&gt; =
-    Lazy::new(|| Regex::new(<span class="string">r&quot;(?i)^SET TIME_ZONE\s*=\s*&#39;(\S+)&#39;&quot;</span>).unwrap());
+    Lazy::new(|| Regex::new(<span class="string">r"(?i)^SET TIME_ZONE\s*=\s*'(\S+)'"</span>).unwrap());
 
 <span class="kw">static </span>OTHER_NOT_SUPPORTED_STMT: Lazy&lt;RegexSet&gt; = Lazy::new(|| {
     RegexSet::new([
         <span class="comment">// Txn.
-        </span><span class="string">&quot;(?i)^(ROLLBACK(.*))&quot;</span>,
-        <span class="string">&quot;(?i)^(COMMIT(.*))&quot;</span>,
-        <span class="string">&quot;(?i)^(START(.*))&quot;</span>,
+        </span><span class="string">"(?i)^(ROLLBACK(.*))"</span>,
+        <span class="string">"(?i)^(COMMIT(.*))"</span>,
+        <span class="string">"(?i)^(START(.*))"</span>,
 
         <span class="comment">// Set.
-        </span><span class="string">&quot;(?i)^(SET NAMES(.*))&quot;</span>,
-        <span class="string">&quot;(?i)^(SET character_set_results(.*))&quot;</span>,
-        <span class="string">&quot;(?i)^(SET net_write_timeout(.*))&quot;</span>,
-        <span class="string">&quot;(?i)^(SET FOREIGN_KEY_CHECKS(.*))&quot;</span>,
-        <span class="string">&quot;(?i)^(SET AUTOCOMMIT(.*))&quot;</span>,
-        <span class="string">&quot;(?i)^(SET SQL_LOG_BIN(.*))&quot;</span>,
-        <span class="string">&quot;(?i)^(SET sql_mode(.*))&quot;</span>,
-        <span class="string">&quot;(?i)^(SET SQL_SELECT_LIMIT(.*))&quot;</span>,
-        <span class="string">&quot;(?i)^(SET @@(.*))&quot;</span>,
+        </span><span class="string">"(?i)^(SET NAMES(.*))"</span>,
+        <span class="string">"(?i)^(SET character_set_results(.*))"</span>,
+        <span class="string">"(?i)^(SET net_write_timeout(.*))"</span>,
+        <span class="string">"(?i)^(SET FOREIGN_KEY_CHECKS(.*))"</span>,
+        <span class="string">"(?i)^(SET AUTOCOMMIT(.*))"</span>,
+        <span class="string">"(?i)^(SET SQL_LOG_BIN(.*))"</span>,
+        <span class="string">"(?i)^(SET sql_mode(.*))"</span>,
+        <span class="string">"(?i)^(SET SQL_SELECT_LIMIT(.*))"</span>,
+        <span class="string">"(?i)^(SET @@(.*))"</span>,
 
-        <span class="string">&quot;(?i)^(SHOW COLLATION)&quot;</span>,
-        <span class="string">&quot;(?i)^(SHOW CHARSET)&quot;</span>,
+        <span class="string">"(?i)^(SHOW COLLATION)"</span>,
+        <span class="string">"(?i)^(SHOW CHARSET)"</span>,
+
+        <span class="comment">// mysqlclient.
+        </span><span class="string">"(?i)^(SELECT \\$\\$)"</span>,
 
         <span class="comment">// mysqldump.
-        </span><span class="string">&quot;(?i)^(SET SESSION(.*))&quot;</span>,
-        <span class="string">&quot;(?i)^(SET SQL_QUOTE_SHOW_CREATE(.*))&quot;</span>,
-        <span class="string">&quot;(?i)^(LOCK TABLES(.*))&quot;</span>,
-        <span class="string">&quot;(?i)^(UNLOCK TABLES(.*))&quot;</span>,
-        <span class="string">&quot;(?i)^(SELECT LOGFILE_GROUP_NAME, FILE_NAME, TOTAL_EXTENTS, INITIAL_SIZE, ENGINE, EXTRA FROM INFORMATION_SCHEMA.FILES(.*))&quot;</span>,
+        </span><span class="string">"(?i)^(SET SESSION(.*))"</span>,
+        <span class="string">"(?i)^(SET SQL_QUOTE_SHOW_CREATE(.*))"</span>,
+        <span class="string">"(?i)^(LOCK TABLES(.*))"</span>,
+        <span class="string">"(?i)^(UNLOCK TABLES(.*))"</span>,
+        <span class="string">"(?i)^(SELECT LOGFILE_GROUP_NAME, FILE_NAME, TOTAL_EXTENTS, INITIAL_SIZE, ENGINE, EXTRA FROM INFORMATION_SCHEMA.FILES(.*))"</span>,
 
         <span class="comment">// mydumper.
-        </span><span class="string">&quot;(?i)^(/\\*!80003 SET(.*) \\*/)$&quot;</span>,
-        <span class="string">&quot;(?i)^(SHOW MASTER STATUS)&quot;</span>,
-        <span class="string">&quot;(?i)^(SHOW ALL SLAVES STATUS)&quot;</span>,
-        <span class="string">&quot;(?i)^(LOCK BINLOG FOR BACKUP)&quot;</span>,
-        <span class="string">&quot;(?i)^(LOCK TABLES FOR BACKUP)&quot;</span>,
-        <span class="string">&quot;(?i)^(UNLOCK BINLOG(.*))&quot;</span>,
-        <span class="string">&quot;(?i)^(/\\*!40101 SET(.*) \\*/)$&quot;</span>,
+        </span><span class="string">"(?i)^(/\\*!80003 SET(.*) \\*/)$"</span>,
+        <span class="string">"(?i)^(SHOW MASTER STATUS)"</span>,
+        <span class="string">"(?i)^(SHOW ALL SLAVES STATUS)"</span>,
+        <span class="string">"(?i)^(LOCK BINLOG FOR BACKUP)"</span>,
+        <span class="string">"(?i)^(LOCK TABLES FOR BACKUP)"</span>,
+        <span class="string">"(?i)^(UNLOCK BINLOG(.*))"</span>,
+        <span class="string">"(?i)^(/\\*!40101 SET(.*) \\*/)$"</span>,
 
         <span class="comment">// DBeaver.
-        </span><span class="string">&quot;(?i)^(SHOW WARNINGS)&quot;</span>,
-        <span class="string">&quot;(?i)^(/\\* ApplicationName=(.*)SHOW WARNINGS)&quot;</span>,
-        <span class="string">&quot;(?i)^(/\\* ApplicationName=(.*)SHOW PLUGINS)&quot;</span>,
-        <span class="string">&quot;(?i)^(/\\* ApplicationName=(.*)SHOW COLLATION)&quot;</span>,
-        <span class="string">&quot;(?i)^(/\\* ApplicationName=(.*)SHOW CHARSET)&quot;</span>,
-        <span class="string">&quot;(?i)^(/\\* ApplicationName=(.*)SHOW ENGINES)&quot;</span>,
-        <span class="string">&quot;(?i)^(/\\* ApplicationName=(.*)SELECT @@(.*))&quot;</span>,
-        <span class="string">&quot;(?i)^(/\\* ApplicationName=(.*)SHOW @@(.*))&quot;</span>,
-        <span class="string">&quot;(?i)^(/\\* ApplicationName=(.*)SET net_write_timeout(.*))&quot;</span>,
-        <span class="string">&quot;(?i)^(/\\* ApplicationName=(.*)SET SQL_SELECT_LIMIT(.*))&quot;</span>,
-        <span class="string">&quot;(?i)^(/\\* ApplicationName=(.*)SHOW VARIABLES(.*))&quot;</span>,
+        </span><span class="string">"(?i)^(SHOW WARNINGS)"</span>,
+        <span class="string">"(?i)^(/\\* ApplicationName=(.*)SHOW WARNINGS)"</span>,
+        <span class="string">"(?i)^(/\\* ApplicationName=(.*)SHOW PLUGINS)"</span>,
+        <span class="string">"(?i)^(/\\* ApplicationName=(.*)SHOW COLLATION)"</span>,
+        <span class="string">"(?i)^(/\\* ApplicationName=(.*)SHOW CHARSET)"</span>,
+        <span class="string">"(?i)^(/\\* ApplicationName=(.*)SHOW ENGINES)"</span>,
+        <span class="string">"(?i)^(/\\* ApplicationName=(.*)SELECT @@(.*))"</span>,
+        <span class="string">"(?i)^(/\\* ApplicationName=(.*)SHOW @@(.*))"</span>,
+        <span class="string">"(?i)^(/\\* ApplicationName=(.*)SET net_write_timeout(.*))"</span>,
+        <span class="string">"(?i)^(/\\* ApplicationName=(.*)SET SQL_SELECT_LIMIT(.*))"</span>,
+        <span class="string">"(?i)^(/\\* ApplicationName=(.*)SHOW VARIABLES(.*))"</span>,
 
         <span class="comment">// pt-toolkit
-        </span><span class="string">&quot;(?i)^(/\\*!40101 SET(.*) \\*/)$&quot;</span>,
+        </span><span class="string">"(?i)^(/\\*!40101 SET(.*) \\*/)$"</span>,
 
         <span class="comment">// mysqldump 5.7.16
-        </span><span class="string">&quot;(?i)^(/\\*!40100 SET(.*) \\*/)$&quot;</span>,
-        <span class="string">&quot;(?i)^(/\\*!40103 SET(.*) \\*/)$&quot;</span>,
-        <span class="string">&quot;(?i)^(/\\*!40111 SET(.*) \\*/)$&quot;</span>,
-        <span class="string">&quot;(?i)^(/\\*!40101 SET(.*) \\*/)$&quot;</span>,
-        <span class="string">&quot;(?i)^(/\\*!40014 SET(.*) \\*/)$&quot;</span>,
-        <span class="string">&quot;(?i)^(/\\*!40000 SET(.*) \\*/)$&quot;</span>,
+        </span><span class="string">"(?i)^(/\\*!40100 SET(.*) \\*/)$"</span>,
+        <span class="string">"(?i)^(/\\*!40103 SET(.*) \\*/)$"</span>,
+        <span class="string">"(?i)^(/\\*!40111 SET(.*) \\*/)$"</span>,
+        <span class="string">"(?i)^(/\\*!40101 SET(.*) \\*/)$"</span>,
+        <span class="string">"(?i)^(/\\*!40014 SET(.*) \\*/)$"</span>,
+        <span class="string">"(?i)^(/\\*!40000 SET(.*) \\*/)$"</span>,
     ]).unwrap()
 });
 
 <span class="kw">static </span>VAR_VALUES: Lazy&lt;HashMap&lt;<span class="kw-2">&amp;</span>str, <span class="kw-2">&amp;</span>str&gt;&gt; = Lazy::new(|| {
     HashMap::from([
-        (<span class="string">&quot;tx_isolation&quot;</span>, <span class="string">&quot;REPEATABLE-READ&quot;</span>),
-        (<span class="string">&quot;session.tx_isolation&quot;</span>, <span class="string">&quot;REPEATABLE-READ&quot;</span>),
-        (<span class="string">&quot;transaction_isolation&quot;</span>, <span class="string">&quot;REPEATABLE-READ&quot;</span>),
-        (<span class="string">&quot;session.transaction_isolation&quot;</span>, <span class="string">&quot;REPEATABLE-READ&quot;</span>),
-        (<span class="string">&quot;session.transaction_read_only&quot;</span>, <span class="string">&quot;0&quot;</span>),
-        (<span class="string">&quot;max_allowed_packet&quot;</span>, <span class="string">&quot;134217728&quot;</span>),
-        (<span class="string">&quot;interactive_timeout&quot;</span>, <span class="string">&quot;31536000&quot;</span>),
-        (<span class="string">&quot;wait_timeout&quot;</span>, <span class="string">&quot;31536000&quot;</span>),
-        (<span class="string">&quot;net_write_timeout&quot;</span>, <span class="string">&quot;31536000&quot;</span>),
-        (<span class="string">&quot;version_comment&quot;</span>, <span class="string">&quot;Greptime&quot;</span>),
+        (<span class="string">"tx_isolation"</span>, <span class="string">"REPEATABLE-READ"</span>),
+        (<span class="string">"session.tx_isolation"</span>, <span class="string">"REPEATABLE-READ"</span>),
+        (<span class="string">"transaction_isolation"</span>, <span class="string">"REPEATABLE-READ"</span>),
+        (<span class="string">"session.transaction_isolation"</span>, <span class="string">"REPEATABLE-READ"</span>),
+        (<span class="string">"session.transaction_read_only"</span>, <span class="string">"0"</span>),
+        (<span class="string">"max_allowed_packet"</span>, <span class="string">"134217728"</span>),
+        (<span class="string">"interactive_timeout"</span>, <span class="string">"31536000"</span>),
+        (<span class="string">"wait_timeout"</span>, <span class="string">"31536000"</span>),
+        (<span class="string">"net_write_timeout"</span>, <span class="string">"31536000"</span>),
+        (<span class="string">"version_comment"</span>, <span class="string">"Greptime"</span>),
     ])
 });
 
@@ -613,8 +640,8 @@
 // | xx            | yy    |
 </span><span class="kw">fn </span>show_variables(name: <span class="kw-2">&amp;</span>str, value: <span class="kw-2">&amp;</span>str) -&gt; RecordBatches {
     <span class="kw">let </span>schema = Arc::new(Schema::new(<span class="macro">vec!</span>[
-        ColumnSchema::new(<span class="string">&quot;Variable_name&quot;</span>, ConcreteDataType::string_datatype(), <span class="bool-val">true</span>),
-        ColumnSchema::new(<span class="string">&quot;Value&quot;</span>, ConcreteDataType::string_datatype(), <span class="bool-val">true</span>),
+        ColumnSchema::new(<span class="string">"Variable_name"</span>, ConcreteDataType::string_datatype(), <span class="bool-val">true</span>),
+        ColumnSchema::new(<span class="string">"Value"</span>, ConcreteDataType::string_datatype(), <span class="bool-val">true</span>),
     ]));
     <span class="kw">let </span>columns = <span class="macro">vec!</span>[
         Arc::new(StringVector::from(<span class="macro">vec!</span>[name])) <span class="kw">as _</span>,
@@ -629,54 +656,51 @@
     <span class="kw">let </span><span class="kw-2">mut </span>fields = <span class="macro">vec!</span>[];
     <span class="kw">let </span><span class="kw-2">mut </span>values = <span class="macro">vec!</span>[];
 
-    <span class="comment">// query like &quot;SELECT @@aa, @@bb as cc, @dd...&quot;
+    <span class="comment">// query like "SELECT @@aa, @@bb as cc, @dd..."
     </span><span class="kw">let </span>query = query.to_lowercase();
-    <span class="kw">let </span>vars: Vec&lt;<span class="kw-2">&amp;</span>str&gt; = query.split(<span class="string">&quot;@@&quot;</span>).collect();
+    <span class="kw">let </span>vars: Vec&lt;<span class="kw-2">&amp;</span>str&gt; = query.split(<span class="string">"@@"</span>).collect();
     <span class="kw">if </span>vars.len() &lt;= <span class="number">1 </span>{
         <span class="kw">return </span><span class="prelude-val">None</span>;
     }
 
-    <span class="comment">// skip the first &quot;select&quot;
+    <span class="comment">// skip the first "select"
     </span><span class="kw">for </span>var <span class="kw">in </span>vars.iter().skip(<span class="number">1</span>) {
-        <span class="kw">let </span>var = var.trim_matches(|c| c == <span class="string">&#39; &#39; </span>|| c == <span class="string">&#39;,&#39;</span>);
+        <span class="kw">let </span>var = var.trim_matches(|c| c == <span class="string">' ' </span>|| c == <span class="string">','</span>);
         <span class="kw">let </span>var_as: Vec&lt;<span class="kw-2">&amp;</span>str&gt; = var
-            .split(<span class="string">&quot; as &quot;</span>)
+            .split(<span class="string">" as "</span>)
             .map(|x| {
-                x.trim_matches(|c| c == <span class="string">&#39; &#39;</span>)
+                x.trim_matches(|c| c == <span class="string">' '</span>)
                     .split_whitespace()
                     .next()
-                    .unwrap_or(<span class="string">&quot;&quot;</span>)
+                    .unwrap_or(<span class="string">""</span>)
             })
             .collect();
 
         <span class="comment">// get value of variables from known sources or fallback to defaults
         </span><span class="kw">let </span>value = <span class="kw">match </span>var_as[<span class="number">0</span>] {
-            <span class="string">&quot;time_zone&quot; </span>=&gt; query_context
-                .time_zone()
-                .map(|tz| tz.to_string())
-                .unwrap_or_else(|| <span class="string">&quot;&quot;</span>.to_owned()),
-            <span class="string">&quot;system_time_zone&quot; </span>=&gt; system_time_zone_name(),
+            <span class="string">"time_zone" </span>=&gt; query_context.timezone().to_string(),
+            <span class="string">"system_time_zone" </span>=&gt; system_timezone_name(),
             <span class="kw">_ </span>=&gt; VAR_VALUES
                 .get(var_as[<span class="number">0</span>])
                 .map(|v| v.to_string())
-                .unwrap_or_else(|| <span class="string">&quot;0&quot;</span>.to_owned()),
+                .unwrap_or_else(|| <span class="string">"0"</span>.to_owned()),
         };
 
         values.push(Arc::new(StringVector::from(<span class="macro">vec!</span>[value])) <span class="kw">as _</span>);
         <span class="kw">match </span>var_as.len() {
             <span class="number">1 </span>=&gt; {
                 <span class="comment">// @@aa
-                // field is &#39;@@aa&#39;
+                // field is '@@aa'
                 </span>fields.push(ColumnSchema::new(
-                    <span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;@@{}&quot;</span>, var_as[<span class="number">0</span>]),
+                    <span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">"@@{}"</span>, var_as[<span class="number">0</span>]),
                     ConcreteDataType::string_datatype(),
                     <span class="bool-val">true</span>,
                 ));
             }
             <span class="number">2 </span>=&gt; {
                 <span class="comment">// @@bb as cc:
-                // var is &#39;bb&#39;.
-                // field is &#39;cc&#39;.
+                // var is 'bb'.
+                // field is 'cc'.
                 </span>fields.push(ColumnSchema::new(
                     var_as[<span class="number">1</span>],
                     ConcreteDataType::string_datatype(),
@@ -706,11 +730,11 @@
 
 <span class="kw">fn </span>check_show_variables(query: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;Output&gt; {
     <span class="kw">let </span>recordbatches = <span class="kw">if </span>SHOW_SQL_MODE_PATTERN.is_match(query) {
-        <span class="prelude-val">Some</span>(show_variables(<span class="string">&quot;sql_mode&quot;</span>, <span class="string">&quot;ONLY_FULL_GROUP_BY STRICT_TRANS_TABLES NO_ZERO_IN_DATE NO_ZERO_DATE ERROR_FOR_DIVISION_BY_ZERO NO_ENGINE_SUBSTITUTION&quot;</span>))
+        <span class="prelude-val">Some</span>(show_variables(<span class="string">"sql_mode"</span>, <span class="string">"ONLY_FULL_GROUP_BY STRICT_TRANS_TABLES NO_ZERO_IN_DATE NO_ZERO_DATE ERROR_FOR_DIVISION_BY_ZERO NO_ENGINE_SUBSTITUTION"</span>))
     } <span class="kw">else if </span>SHOW_LOWER_CASE_PATTERN.is_match(query) {
-        <span class="prelude-val">Some</span>(show_variables(<span class="string">&quot;lower_case_table_names&quot;</span>, <span class="string">&quot;0&quot;</span>))
+        <span class="prelude-val">Some</span>(show_variables(<span class="string">"lower_case_table_names"</span>, <span class="string">"0"</span>))
     } <span class="kw">else if </span>SHOW_COLLATION_PATTERN.is_match(query) || SHOW_VARIABLES_PATTERN.is_match(query) {
-        <span class="prelude-val">Some</span>(show_variables(<span class="string">&quot;&quot;</span>, <span class="string">&quot;&quot;</span>))
+        <span class="prelude-val">Some</span>(show_variables(<span class="string">""</span>, <span class="string">""</span>))
     } <span class="kw">else </span>{
         <span class="prelude-val">None
     </span>};
@@ -718,12 +742,12 @@
 }
 
 <span class="comment">// TODO(sunng87): extract this to use sqlparser for more variables
-</span><span class="kw">fn </span>check_set_variables(query: <span class="kw-2">&amp;</span>str, query_ctx: QueryContextRef) -&gt; <span class="prelude-ty">Option</span>&lt;Output&gt; {
+</span><span class="kw">fn </span>check_set_variables(query: <span class="kw-2">&amp;</span>str, session: SessionRef) -&gt; <span class="prelude-ty">Option</span>&lt;Output&gt; {
     <span class="kw">if let </span><span class="prelude-val">Some</span>(captures) = SET_TIME_ZONE_PATTERN.captures(query) {
         <span class="comment">// get the capture
         </span><span class="kw">let </span>tz = captures.get(<span class="number">1</span>).unwrap();
-        <span class="kw">if let </span><span class="prelude-val">Ok</span>(timezone) = TimeZone::from_tz_string(tz.as_str()) {
-            query_ctx.set_time_zone(timezone);
+        <span class="kw">if let </span><span class="prelude-val">Ok</span>(timezone) = Timezone::from_tz_string(tz.as_str()) {
+            session.set_timezone(timezone);
             <span class="kw">return </span><span class="prelude-val">Some</span>(Output::AffectedRows(<span class="number">0</span>));
         }
     }
@@ -738,14 +762,14 @@
     }
 
     <span class="kw">let </span>recordbatches = <span class="kw">if </span>SELECT_VERSION_PATTERN.is_match(query) {
-        <span class="prelude-val">Some</span>(select_function(<span class="string">&quot;version()&quot;</span>, <span class="kw-2">&amp;</span>get_version()))
+        <span class="prelude-val">Some</span>(select_function(<span class="string">"version()"</span>, <span class="kw-2">&amp;</span>get_version()))
     } <span class="kw">else if </span>SELECT_DATABASE_PATTERN.is_match(query) {
         <span class="kw">let </span>schema = query_ctx.current_schema();
-        <span class="prelude-val">Some</span>(select_function(<span class="string">&quot;database()&quot;</span>, schema))
+        <span class="prelude-val">Some</span>(select_function(<span class="string">"database()"</span>, schema))
     } <span class="kw">else if </span>SELECT_TIME_DIFF_FUNC_PATTERN.is_match(query) {
         <span class="prelude-val">Some</span>(select_function(
-            <span class="string">&quot;TIMEDIFF(NOW(), UTC_TIMESTAMP())&quot;</span>,
-            <span class="string">&quot;00:00:00&quot;</span>,
+            <span class="string">"TIMEDIFF(NOW(), UTC_TIMESTAMP())"</span>,
+            <span class="string">"00:00:00"</span>,
         ))
     } <span class="kw">else </span>{
         <span class="prelude-val">None
@@ -755,48 +779,53 @@
 
 <span class="comment">// Check whether the query is a federated or driver setup command,
 // and return some faked results if there are any.
-</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>check(query: <span class="kw-2">&amp;</span>str, query_ctx: QueryContextRef) -&gt; <span class="prelude-ty">Option</span>&lt;Output&gt; {
-    <span class="comment">// INSERT don&#39;t need MySQL federated check. We assume the query doesn&#39;t contain
-    // federated or driver setup command if it starts with a &#39;INSERT&#39; statement.
-    </span><span class="kw">if </span>query.len() &gt; <span class="number">6 </span>&amp;&amp; query[..<span class="number">6</span>].eq_ignore_ascii_case(<span class="string">&quot;INSERT&quot;</span>) {
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>check(
+    query: <span class="kw-2">&amp;</span>str,
+    query_ctx: QueryContextRef,
+    session: SessionRef,
+) -&gt; <span class="prelude-ty">Option</span>&lt;Output&gt; {
+    <span class="comment">// INSERT don't need MySQL federated check. We assume the query doesn't contain
+    // federated or driver setup command if it starts with a 'INSERT' statement.
+    </span><span class="kw">if </span>query.len() &gt; <span class="number">6 </span>&amp;&amp; query[..<span class="number">6</span>].eq_ignore_ascii_case(<span class="string">"INSERT"</span>) {
         <span class="kw">return </span><span class="prelude-val">None</span>;
     }
 
-    <span class="comment">// First to check the query is like &quot;select @@variables&quot;.
+    <span class="comment">// First to check the query is like "select @@variables".
     </span>check_select_variable(query, query_ctx.clone())
-        <span class="comment">// Then to check &quot;show variables like ...&quot;.
+        <span class="comment">// Then to check "show variables like ...".
         </span>.or_else(|| check_show_variables(query))
-        .or_else(|| check_set_variables(query, query_ctx.clone()))
+        .or_else(|| check_set_variables(query, session.clone()))
         <span class="comment">// Last check
         </span>.or_else(|| check_others(query, query_ctx))
 }
 
-<span class="comment">// get GreptimeDB&#39;s version.
+<span class="comment">// get GreptimeDB's version.
 </span><span class="kw">fn </span>get_version() -&gt; String {
-    <span class="macro">format!</span>(
-        <span class="string">&quot;{}-greptime&quot;</span>,
-        env::var(<span class="string">&quot;CARGO_PKG_VERSION&quot;</span>).unwrap_or_else(|<span class="kw">_</span>| <span class="string">&quot;unknown&quot;</span>.to_string()),
-    )
+    <span class="macro">format!</span>(<span class="string">"{}-greptime"</span>, <span class="macro">env!</span>(<span class="string">"CARGO_PKG_VERSION"</span>))
 }
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>test {
 
-    <span class="kw">use </span>session::context::QueryContext;
+    <span class="kw">use </span>common_time::timezone::set_default_timezone;
+    <span class="kw">use </span>session::context::{Channel, QueryContext};
+    <span class="kw">use </span>session::Session;
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_check() {
-        <span class="kw">let </span>query = <span class="string">&quot;select 1&quot;</span>;
-        <span class="kw">let </span>result = check(query, QueryContext::arc());
+        <span class="kw">let </span>session = Arc::new(Session::new(<span class="prelude-val">None</span>, Channel::Mysql));
+        <span class="kw">let </span>query = <span class="string">"select 1"</span>;
+        <span class="kw">let </span>result = check(query, QueryContext::arc(), session.clone());
         <span class="macro">assert!</span>(result.is_none());
 
-        <span class="kw">let </span>query = <span class="string">&quot;select versiona&quot;</span>;
-        <span class="kw">let </span>output = check(query, QueryContext::arc());
+        <span class="kw">let </span>query = <span class="string">"select versiona"</span>;
+        <span class="kw">let </span>output = check(query, QueryContext::arc(), session.clone());
         <span class="macro">assert!</span>(output.is_none());
 
         <span class="kw">fn </span>test(query: <span class="kw-2">&amp;</span>str, expected: <span class="kw-2">&amp;</span>str) {
-            <span class="kw">let </span>output = check(query, QueryContext::arc());
+            <span class="kw">let </span>session = Arc::new(Session::new(<span class="prelude-val">None</span>, Channel::Mysql));
+            <span class="kw">let </span>output = check(query, QueryContext::arc(), session.clone());
             <span class="kw">match </span>output.unwrap() {
                 Output::RecordBatches(r) =&gt; {
                     <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>r.pretty_print().unwrap(), expected)
@@ -805,103 +834,119 @@
             }
         }
 
-        <span class="kw">let </span>query = <span class="string">&quot;select version()&quot;</span>;
-        <span class="kw">let </span>expected = <span class="macro">format!</span>(
-            <span class="string">r#&quot;+----------------+
-| version()      |
-+----------------+
-| {}-greptime |
-+----------------+&quot;#</span>,
-            env::var(<span class="string">&quot;CARGO_PKG_VERSION&quot;</span>).unwrap_or_else(|<span class="kw">_</span>| <span class="string">&quot;unknown&quot;</span>.to_string())
-        );
-        test(query, <span class="kw-2">&amp;</span>expected);
+        <span class="kw">let </span>query = <span class="string">"select version()"</span>;
+        <span class="kw">let </span>version = env::var(<span class="string">"CARGO_PKG_VERSION"</span>).unwrap_or_else(|<span class="kw">_</span>| <span class="string">"unknown"</span>.to_string());
+        <span class="kw">let </span>output = check(query, QueryContext::arc(), session.clone());
+        <span class="kw">match </span>output.unwrap() {
+            Output::RecordBatches(r) =&gt; {
+                <span class="macro">assert!</span>(<span class="kw-2">&amp;</span>r
+                    .pretty_print()
+                    .unwrap()
+                    .contains(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">"{version}-greptime"</span>)));
+            }
+            <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
+        }
 
-        <span class="kw">let </span>query = <span class="string">&quot;SELECT @@version_comment LIMIT 1&quot;</span>;
-        <span class="kw">let </span>expected = <span class="string">&quot;\
+        <span class="kw">let </span>query = <span class="string">"SELECT @@version_comment LIMIT 1"</span>;
+        <span class="kw">let </span>expected = <span class="string">"\
 +-------------------+
 | @@version_comment |
 +-------------------+
 | Greptime          |
-+-------------------+&quot;</span>;
++-------------------+"</span>;
         test(query, expected);
 
         <span class="comment">// variables
-        </span><span class="kw">let </span>query = <span class="string">&quot;select @@tx_isolation, @@session.tx_isolation&quot;</span>;
-        <span class="kw">let </span>expected = <span class="string">&quot;\
+        </span><span class="kw">let </span>query = <span class="string">"select @@tx_isolation, @@session.tx_isolation"</span>;
+        <span class="kw">let </span>expected = <span class="string">"\
 +-----------------+------------------------+
 | @@tx_isolation  | @@session.tx_isolation |
 +-----------------+------------------------+
 | REPEATABLE-READ | REPEATABLE-READ        |
-+-----------------+------------------------+&quot;</span>;
++-----------------+------------------------+"</span>;
         test(query, expected);
 
-        <span class="comment">// set sysstem timezone
-        </span>std::env::set_var(<span class="string">&quot;TZ&quot;</span>, <span class="string">&quot;Asia/Shanghai&quot;</span>);
+        <span class="comment">// set system timezone
+        </span>set_default_timezone(<span class="prelude-val">Some</span>(<span class="string">"Asia/Shanghai"</span>)).unwrap();
         <span class="comment">// complex variables
-        </span><span class="kw">let </span>query = <span class="string">&quot;/* mysql-connector-java-8.0.17 (Revision: 16a712ddb3f826a1933ab42b0039f7fb9eebc6ec) */SELECT  @@session.auto_increment_increment AS auto_increment_increment, @@character_set_client AS character_set_client, @@character_set_connection AS character_set_connection, @@character_set_results AS character_set_results, @@character_set_server AS character_set_server, @@collation_server AS collation_server, @@collation_connection AS collation_connection, @@init_connect AS init_connect, @@interactive_timeout AS interactive_timeout, @@license AS license, @@lower_case_table_names AS lower_case_table_names, @@max_allowed_packet AS max_allowed_packet, @@net_write_timeout AS net_write_timeout, @@performance_schema AS performance_schema, @@sql_mode AS sql_mode, @@system_time_zone AS system_time_zone, @@time_zone AS time_zone, @@transaction_isolation AS transaction_isolation, @@wait_timeout AS wait_timeout;&quot;</span>;
-        <span class="kw">let </span>expected = <span class="string">&quot;\
-+--------------------------+----------------------+--------------------------+-----------------------+----------------------+------------------+----------------------+--------------+---------------------+---------+------------------------+--------------------+-------------------+--------------------+----------+------------------+-----------+-----------------------+---------------+
-| auto_increment_increment | character_set_client | character_set_connection | character_set_results | character_set_server | collation_server | collation_connection | init_connect | interactive_timeout | license | lower_case_table_names | max_allowed_packet | net_write_timeout | performance_schema | sql_mode | system_time_zone | time_zone | transaction_isolation | wait_timeout; |
-+--------------------------+----------------------+--------------------------+-----------------------+----------------------+------------------+----------------------+--------------+---------------------+---------+------------------------+--------------------+-------------------+--------------------+----------+------------------+-----------+-----------------------+---------------+
-| 0                        | 0                    | 0                        | 0                     | 0                    | 0                | 0                    | 0            | 31536000            | 0       | 0                      | 134217728          | 31536000          | 0                  | 0        | +08:00           |           | REPEATABLE-READ       | 31536000      |
-+--------------------------+----------------------+--------------------------+-----------------------+----------------------+------------------+----------------------+--------------+---------------------+---------+------------------------+--------------------+-------------------+--------------------+----------+------------------+-----------+-----------------------+---------------+&quot;</span>;
+        </span><span class="kw">let </span>query = <span class="string">"/* mysql-connector-java-8.0.17 (Revision: 16a712ddb3f826a1933ab42b0039f7fb9eebc6ec) */SELECT  @@session.auto_increment_increment AS auto_increment_increment, @@character_set_client AS character_set_client, @@character_set_connection AS character_set_connection, @@character_set_results AS character_set_results, @@character_set_server AS character_set_server, @@collation_server AS collation_server, @@collation_connection AS collation_connection, @@init_connect AS init_connect, @@interactive_timeout AS interactive_timeout, @@license AS license, @@lower_case_table_names AS lower_case_table_names, @@max_allowed_packet AS max_allowed_packet, @@net_write_timeout AS net_write_timeout, @@performance_schema AS performance_schema, @@sql_mode AS sql_mode, @@system_time_zone AS system_time_zone, @@time_zone AS time_zone, @@transaction_isolation AS transaction_isolation, @@wait_timeout AS wait_timeout;"</span>;
+        <span class="kw">let </span>expected = <span class="string">"\
++--------------------------+----------------------+--------------------------+-----------------------+----------------------+------------------+----------------------+--------------+---------------------+---------+------------------------+--------------------+-------------------+--------------------+----------+------------------+---------------+-----------------------+---------------+
+| auto_increment_increment | character_set_client | character_set_connection | character_set_results | character_set_server | collation_server | collation_connection | init_connect | interactive_timeout | license | lower_case_table_names | max_allowed_packet | net_write_timeout | performance_schema | sql_mode | system_time_zone | time_zone     | transaction_isolation | wait_timeout; |
++--------------------------+----------------------+--------------------------+-----------------------+----------------------+------------------+----------------------+--------------+---------------------+---------+------------------------+--------------------+-------------------+--------------------+----------+------------------+---------------+-----------------------+---------------+
+| 0                        | 0                    | 0                        | 0                     | 0                    | 0                | 0                    | 0            | 31536000            | 0       | 0                      | 134217728          | 31536000          | 0                  | 0        | Asia/Shanghai    | Asia/Shanghai | REPEATABLE-READ       | 31536000      |
++--------------------------+----------------------+--------------------------+-----------------------+----------------------+------------------+----------------------+--------------+---------------------+---------+------------------------+--------------------+-------------------+--------------------+----------+------------------+---------------+-----------------------+---------------+"</span>;
         test(query, expected);
 
-        <span class="kw">let </span>query = <span class="string">&quot;show variables&quot;</span>;
-        <span class="kw">let </span>expected = <span class="string">&quot;\
+        <span class="kw">let </span>query = <span class="string">"show variables"</span>;
+        <span class="kw">let </span>expected = <span class="string">"\
 +---------------+-------+
 | Variable_name | Value |
 +---------------+-------+
 |               |       |
-+---------------+-------+&quot;</span>;
++---------------+-------+"</span>;
         test(query, expected);
 
-        <span class="kw">let </span>query = <span class="string">&quot;show variables like &#39;lower_case_table_names&#39;&quot;</span>;
-        <span class="kw">let </span>expected = <span class="string">&quot;\
+        <span class="kw">let </span>query = <span class="string">"show variables like 'lower_case_table_names'"</span>;
+        <span class="kw">let </span>expected = <span class="string">"\
 +------------------------+-------+
 | Variable_name          | Value |
 +------------------------+-------+
 | lower_case_table_names | 0     |
-+------------------------+-------+&quot;</span>;
++------------------------+-------+"</span>;
         test(query, expected);
 
-        <span class="kw">let </span>query = <span class="string">&quot;show collation&quot;</span>;
-        <span class="kw">let </span>expected = <span class="string">&quot;\
+        <span class="kw">let </span>query = <span class="string">"show collation"</span>;
+        <span class="kw">let </span>expected = <span class="string">"\
 ++
-++&quot;</span>; <span class="comment">// empty
+++"</span>; <span class="comment">// empty
         </span>test(query, expected);
 
-        <span class="kw">let </span>query = <span class="string">&quot;SELECT TIMEDIFF(NOW(), UTC_TIMESTAMP())&quot;</span>;
-        <span class="kw">let </span>expected = <span class="string">&quot;\
+        <span class="kw">let </span>query = <span class="string">"SELECT TIMEDIFF(NOW(), UTC_TIMESTAMP())"</span>;
+        <span class="kw">let </span>expected = <span class="string">"\
 +----------------------------------+
 | TIMEDIFF(NOW(), UTC_TIMESTAMP()) |
 +----------------------------------+
 | 00:00:00                         |
-+----------------------------------+&quot;</span>;
++----------------------------------+"</span>;
         test(query, expected);
     }
 
     <span class="attr">#[test]
-    </span><span class="kw">fn </span>test_set_time_zone() {
-        <span class="kw">let </span>query_context = QueryContext::arc();
-        <span class="kw">let </span>output = check(<span class="string">&quot;set time_zone = &#39;UTC&#39;&quot;</span>, query_context.clone());
+    </span><span class="kw">fn </span>test_set_timezone() {
+        <span class="comment">// test default is UTC when no config in greptimedb
+        </span>{
+            <span class="kw">let </span>session = Arc::new(Session::new(<span class="prelude-val">None</span>, Channel::Mysql));
+            <span class="kw">let </span>query_context = session.new_query_context();
+            <span class="macro">assert_eq!</span>(<span class="string">"UTC"</span>, query_context.timezone().to_string());
+        }
+        set_default_timezone(<span class="prelude-val">Some</span>(<span class="string">"Asia/Shanghai"</span>)).unwrap();
+        <span class="kw">let </span>session = Arc::new(Session::new(<span class="prelude-val">None</span>, Channel::Mysql));
+        <span class="kw">let </span>query_context = session.new_query_context();
+        <span class="macro">assert_eq!</span>(<span class="string">"Asia/Shanghai"</span>, query_context.timezone().to_string());
+        <span class="kw">let </span>output = check(
+            <span class="string">"set time_zone = 'UTC'"</span>,
+            QueryContext::arc(),
+            session.clone(),
+        );
         <span class="kw">match </span>output.unwrap() {
             Output::AffectedRows(rows) =&gt; {
                 <span class="macro">assert_eq!</span>(rows, <span class="number">0</span>)
             }
             <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
         }
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;UTC&quot;</span>, query_context.time_zone().unwrap().to_string());
+        <span class="kw">let </span>query_context = session.new_query_context();
+        <span class="macro">assert_eq!</span>(<span class="string">"UTC"</span>, query_context.timezone().to_string());
 
-        <span class="kw">let </span>output = check(<span class="string">&quot;select @@time_zone&quot;</span>, query_context);
+        <span class="kw">let </span>output = check(<span class="string">"select @@time_zone"</span>, query_context.clone(), session.clone());
         <span class="kw">match </span>output.unwrap() {
             Output::RecordBatches(r) =&gt; {
-                <span class="kw">let </span>expected = <span class="string">&quot;\
+                <span class="kw">let </span>expected = <span class="string">"\
 +-------------+
 | @@time_zone |
 +-------------+
 | UTC         |
-+-------------+&quot;</span>;
++-------------+"</span>;
                 <span class="macro">assert_eq!</span>(r.pretty_print().unwrap(), expected);
             }
             <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),

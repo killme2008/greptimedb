@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["python"]};
+window.SIDEBAR_ITEMS = {"mod":["python"],"type":["FrontendGrpcQueryHandlerRef"]};

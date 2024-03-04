@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["DEFAULT_FIELD_COLUMN","DEFAULT_TIME_INDEX_COLUMN","FIELD_COLUMN_MATCHER","SPECIAL_TIME_FUNCTION"],"enum":["ScalarFunc"],"struct":["FunctionArgs","PromPlanner","PromPlannerContext"]};
+window.SIDEBAR_ITEMS = {"constant":["DEFAULT_FIELD_COLUMN","DEFAULT_TIME_INDEX_COLUMN","FIELD_COLUMN_MATCHER","LE_COLUMN_NAME","SPECIAL_HISTOGRAM_QUANTILE","SPECIAL_TIME_FUNCTION"],"enum":["ScalarFunc"],"struct":["FunctionArgs","PromPlanner","PromPlannerContext"]};

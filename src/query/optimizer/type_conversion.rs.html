@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/query/src/optimizer/type_conversion.rs`."><title>type_conversion.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="query" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../query/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/query/src/optimizer/type_conversion.rs`."><title>type_conversion.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="query" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -446,16 +447,53 @@
 <a href="#446" id="446">446</a>
 <a href="#447" id="447">447</a>
 <a href="#448" id="448">448</a>
+<a href="#449" id="449">449</a>
+<a href="#450" id="450">450</a>
+<a href="#451" id="451">451</a>
+<a href="#452" id="452">452</a>
+<a href="#453" id="453">453</a>
+<a href="#454" id="454">454</a>
+<a href="#455" id="455">455</a>
+<a href="#456" id="456">456</a>
+<a href="#457" id="457">457</a>
+<a href="#458" id="458">458</a>
+<a href="#459" id="459">459</a>
+<a href="#460" id="460">460</a>
+<a href="#461" id="461">461</a>
+<a href="#462" id="462">462</a>
+<a href="#463" id="463">463</a>
+<a href="#464" id="464">464</a>
+<a href="#465" id="465">465</a>
+<a href="#466" id="466">466</a>
+<a href="#467" id="467">467</a>
+<a href="#468" id="468">468</a>
+<a href="#469" id="469">469</a>
+<a href="#470" id="470">470</a>
+<a href="#471" id="471">471</a>
+<a href="#472" id="472">472</a>
+<a href="#473" id="473">473</a>
+<a href="#474" id="474">474</a>
+<a href="#475" id="475">475</a>
+<a href="#476" id="476">476</a>
+<a href="#477" id="477">477</a>
+<a href="#478" id="478">478</a>
+<a href="#479" id="479">479</a>
+<a href="#480" id="480">480</a>
+<a href="#481" id="481">481</a>
+<a href="#482" id="482">482</a>
+<a href="#483" id="483">483</a>
+<a href="#484" id="484">484</a>
+<a href="#485" id="485">485</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -542,7 +580,7 @@
                     .map(|e| e.rewrite(<span class="kw-2">&amp;mut </span>converter))
                     .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;&gt;()<span class="question-mark">?</span>;
 
-                datafusion_expr::utils::from_plan(<span class="kw-2">&amp;</span>plan, <span class="kw-2">&amp;</span>expr, <span class="kw-2">&amp;</span>inputs).map(Transformed::Yes)
+                plan.with_new_exprs(expr, <span class="kw-2">&amp;</span>inputs).map(Transformed::Yes)
             }
 
             LogicalPlan::Subquery { .. }
@@ -553,12 +591,13 @@
             | LogicalPlan::DescribeTable(<span class="kw">_</span>)
             | LogicalPlan::Unnest(<span class="kw">_</span>)
             | LogicalPlan::Statement(<span class="kw">_</span>)
-            | LogicalPlan::Ddl(<span class="kw">_</span>) =&gt; <span class="prelude-val">Ok</span>(Transformed::No(plan)),
+            | LogicalPlan::Ddl(<span class="kw">_</span>)
+            | LogicalPlan::Copy(<span class="kw">_</span>) =&gt; <span class="prelude-val">Ok</span>(Transformed::No(plan)),
         })
     }
 
     <span class="kw">fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
-        <span class="string">&quot;TypeConversionRule&quot;
+        <span class="string">"TypeConversionRule"
     </span>}
 }
 
@@ -580,8 +619,8 @@
         <span class="kw">match </span>(target_type, value) {
             (DataType::Timestamp(<span class="kw">_</span>, <span class="kw">_</span>), ScalarValue::Utf8(<span class="prelude-val">Some</span>(v))) =&gt; string_to_timestamp_ms(v),
             (DataType::Boolean, ScalarValue::Utf8(<span class="prelude-val">Some</span>(v))) =&gt; <span class="kw">match </span>v.to_lowercase().as_str() {
-                <span class="string">&quot;true&quot; </span>=&gt; <span class="prelude-val">Ok</span>(ScalarValue::Boolean(<span class="prelude-val">Some</span>(<span class="bool-val">true</span>))),
-                <span class="string">&quot;false&quot; </span>=&gt; <span class="prelude-val">Ok</span>(ScalarValue::Boolean(<span class="prelude-val">Some</span>(<span class="bool-val">false</span>))),
+                <span class="string">"true" </span>=&gt; <span class="prelude-val">Ok</span>(ScalarValue::Boolean(<span class="prelude-val">Some</span>(<span class="bool-val">true</span>))),
+                <span class="string">"false" </span>=&gt; <span class="prelude-val">Ok</span>(ScalarValue::Boolean(<span class="prelude-val">Some</span>(<span class="bool-val">false</span>))),
                 <span class="kw">_ </span>=&gt; <span class="prelude-val">Ok</span>(ScalarValue::Boolean(<span class="prelude-val">None</span>)),
             },
             (target_type, value) =&gt; {
@@ -597,41 +636,39 @@
         }
     }
 
-    <span class="kw">fn </span>convert_type&lt;<span class="lifetime">&#39;b</span>&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>left: <span class="kw-2">&amp;</span><span class="lifetime">&#39;b </span>Expr, <span class="kw-2">mut </span>right: <span class="kw-2">&amp;</span><span class="lifetime">&#39;b </span>Expr) -&gt; <span class="prelude-ty">Result</span>&lt;(Expr, Expr)&gt; {
+    <span class="kw">fn </span>convert_type&lt;<span class="lifetime">'b</span>&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, left: <span class="kw-2">&amp;</span><span class="lifetime">'b </span>Expr, right: <span class="kw-2">&amp;</span><span class="lifetime">'b </span>Expr) -&gt; <span class="prelude-ty">Result</span>&lt;(Expr, Expr)&gt; {
         <span class="kw">let </span>left_type = <span class="self">self</span>.column_type(left);
         <span class="kw">let </span>right_type = <span class="self">self</span>.column_type(right);
 
-        <span class="kw">let </span><span class="kw-2">mut </span>reverse = <span class="bool-val">false</span>;
-        <span class="kw">let </span>left_type = <span class="kw">match </span>(<span class="kw-2">&amp;</span>left_type, <span class="kw-2">&amp;</span>right_type) {
+        <span class="kw">let </span>target_type = <span class="kw">match </span>(<span class="kw-2">&amp;</span>left_type, <span class="kw-2">&amp;</span>right_type) {
             (<span class="prelude-val">Some</span>(v), <span class="prelude-val">None</span>) =&gt; v,
-            (<span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(v)) =&gt; {
-                reverse = <span class="bool-val">true</span>;
-                std::mem::swap(<span class="kw-2">&amp;mut </span>left, <span class="kw-2">&amp;mut </span>right);
-                v
-            }
+            (<span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(v)) =&gt; v,
             <span class="kw">_ </span>=&gt; <span class="kw">return </span><span class="prelude-val">Ok</span>((left.clone(), right.clone())),
         };
 
         <span class="comment">// only try to convert timestamp or boolean types
-        </span><span class="kw">if </span>!<span class="macro">matches!</span>(left_type, DataType::Timestamp(<span class="kw">_</span>, <span class="kw">_</span>))
-            &amp;&amp; !<span class="macro">matches!</span>(left_type, DataType::Boolean)
-        {
+        </span><span class="kw">if </span>!<span class="macro">matches!</span>(target_type, DataType::Timestamp(<span class="kw">_</span>, <span class="kw">_</span>) | DataType::Boolean) {
             <span class="kw">return </span><span class="prelude-val">Ok</span>((left.clone(), right.clone()));
         }
 
         <span class="kw">match </span>(left, right) {
             (Expr::Column(col), Expr::Literal(value)) =&gt; {
-                <span class="kw">let </span>casted_right = <span class="self">Self</span>::cast_scalar_value(value, left_type)<span class="question-mark">?</span>;
+                <span class="kw">let </span>casted_right = <span class="self">Self</span>::cast_scalar_value(value, target_type)<span class="question-mark">?</span>;
                 <span class="kw">if </span>casted_right.is_null() {
                     <span class="kw">return </span><span class="prelude-val">Err</span>(DataFusionError::Plan(<span class="macro">format!</span>(
-                        <span class="string">&quot;column:{col:?}. Casting value:{value:?} to {left_type:?} is invalid&quot;</span>,
+                        <span class="string">"column:{col:?}. Casting value:{value:?} to {target_type:?} is invalid"</span>,
                     )));
                 }
-                <span class="kw">if </span>reverse {
-                    <span class="prelude-val">Ok</span>((Expr::Literal(casted_right), left.clone()))
-                } <span class="kw">else </span>{
-                    <span class="prelude-val">Ok</span>((left.clone(), Expr::Literal(casted_right)))
+                <span class="prelude-val">Ok</span>((left.clone(), Expr::Literal(casted_right)))
+            }
+            (Expr::Literal(value), Expr::Column(col)) =&gt; {
+                <span class="kw">let </span>casted_left = <span class="self">Self</span>::cast_scalar_value(value, target_type)<span class="question-mark">?</span>;
+                <span class="kw">if </span>casted_left.is_null() {
+                    <span class="kw">return </span><span class="prelude-val">Err</span>(DataFusionError::Plan(<span class="macro">format!</span>(
+                        <span class="string">"column:{col:?}. Casting value:{value:?} to {target_type:?} is invalid"</span>,
+                    )));
                 }
+                <span class="prelude-val">Ok</span>((Expr::Literal(casted_left), right.clone()))
             }
             <span class="kw">_ </span>=&gt; <span class="prelude-val">Ok</span>((left.clone(), right.clone())),
         }
@@ -697,7 +734,6 @@
                 ScalarValue::TimestampMillisecond(<span class="prelude-val">Some</span>(i), <span class="kw">_</span>) =&gt; {
                     timestamp_to_timestamp_ms_expr(i, TimeUnit::Millisecond)
                 }
-
                 ScalarValue::TimestampMicrosecond(<span class="prelude-val">Some</span>(i), <span class="kw">_</span>) =&gt; {
                     timestamp_to_timestamp_ms_expr(i, TimeUnit::Microsecond)
                 }
@@ -724,14 +760,16 @@
 }
 
 <span class="kw">fn </span>string_to_timestamp_ms(string: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;ScalarValue&gt; {
-    <span class="prelude-val">Ok</span>(ScalarValue::TimestampMillisecond(
-        <span class="prelude-val">Some</span>(
-            Timestamp::from_str(string)
-                .map(|t| t.value() / <span class="number">1_000_000</span>)
-                .map_err(|e| DataFusionError::External(Box::new(e)))<span class="question-mark">?</span>,
-        ),
-        <span class="prelude-val">None</span>,
-    ))
+    <span class="kw">let </span>ts = Timestamp::from_str(string).map_err(|e| DataFusionError::External(Box::new(e)))<span class="question-mark">?</span>;
+
+    <span class="kw">let </span>value = <span class="prelude-val">Some</span>(ts.value());
+    <span class="kw">let </span>scalar = <span class="kw">match </span>ts.unit() {
+        TimeUnit::Second =&gt; ScalarValue::TimestampSecond(value, <span class="prelude-val">None</span>),
+        TimeUnit::Millisecond =&gt; ScalarValue::TimestampMillisecond(value, <span class="prelude-val">None</span>),
+        TimeUnit::Microsecond =&gt; ScalarValue::TimestampMicrosecond(value, <span class="prelude-val">None</span>),
+        TimeUnit::Nanosecond =&gt; ScalarValue::TimestampNanosecond(value, <span class="prelude-val">None</span>),
+    };
+    <span class="prelude-val">Ok</span>(scalar)
 }
 
 <span class="attr">#[cfg(test)]
@@ -749,12 +787,12 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_string_to_timestamp_ms() {
         <span class="macro">assert_eq!</span>(
-            string_to_timestamp_ms(<span class="string">&quot;2022-02-02 19:00:00+08:00&quot;</span>).unwrap(),
-            ScalarValue::TimestampMillisecond(<span class="prelude-val">Some</span>(<span class="number">1643799600000</span>), <span class="prelude-val">None</span>)
+            string_to_timestamp_ms(<span class="string">"2022-02-02 19:00:00+08:00"</span>).unwrap(),
+            ScalarValue::TimestampSecond(<span class="prelude-val">Some</span>(<span class="number">1643799600</span>), <span class="prelude-val">None</span>)
         );
         <span class="macro">assert_eq!</span>(
-            string_to_timestamp_ms(<span class="string">&quot;2009-02-13 23:31:30Z&quot;</span>).unwrap(),
-            ScalarValue::TimestampMillisecond(<span class="prelude-val">Some</span>(<span class="number">1234567890000</span>), <span class="prelude-val">None</span>)
+            string_to_timestamp_ms(<span class="string">"2009-02-13 23:31:30Z"</span>).unwrap(),
+            ScalarValue::TimestampSecond(<span class="prelude-val">Some</span>(<span class="number">1234567890</span>), <span class="prelude-val">None</span>)
         );
     }
 
@@ -803,7 +841,7 @@
             DFSchema::new_with_metadata(
                 <span class="macro">vec!</span>[DFField::new(
                     <span class="prelude-val">None</span>::&lt;TableReference&gt;,
-                    <span class="string">&quot;ts&quot;</span>,
+                    <span class="string">"ts"</span>,
                     DataType::Timestamp(ArrowTimeUnit::Millisecond, <span class="prelude-val">None</span>),
                     <span class="bool-val">true</span>,
                 )],
@@ -814,13 +852,14 @@
         <span class="kw">let </span><span class="kw-2">mut </span>converter = TypeConverter { schema };
 
         <span class="macro">assert_eq!</span>(
-            Expr::Column(Column::from_name(<span class="string">&quot;ts&quot;</span>)).gt(Expr::Literal(
-                ScalarValue::TimestampMillisecond(<span class="prelude-val">Some</span>(<span class="number">1599514949000</span>), <span class="prelude-val">None</span>)
-            )),
+            Expr::Column(Column::from_name(<span class="string">"ts"</span>)).gt(Expr::Literal(ScalarValue::TimestampSecond(
+                <span class="prelude-val">Some</span>(<span class="number">1599514949</span>),
+                <span class="prelude-val">None
+            </span>))),
             converter
                 .mutate(
-                    Expr::Column(Column::from_name(<span class="string">&quot;ts&quot;</span>)).gt(Expr::Literal(ScalarValue::Utf8(
-                        <span class="prelude-val">Some</span>(<span class="string">&quot;2020-09-08T05:42:29+08:00&quot;</span>.to_string()),
+                    Expr::Column(Column::from_name(<span class="string">"ts"</span>)).gt(Expr::Literal(ScalarValue::Utf8(
+                        <span class="prelude-val">Some</span>(<span class="string">"2020-09-08T05:42:29+08:00"</span>.to_string()),
                     )))
                 )
                 .unwrap()
@@ -829,7 +868,7 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_convert_bool() {
-        <span class="kw">let </span>col_name = <span class="string">&quot;is_valid&quot;</span>;
+        <span class="kw">let </span>col_name = <span class="string">"is_valid"</span>;
         <span class="kw">let </span>schema = Arc::new(
             DFSchema::new_with_metadata(
                 <span class="macro">vec!</span>[DFField::new(
@@ -850,7 +889,7 @@
             converter
                 .mutate(
                     Expr::Column(Column::from_name(col_name))
-                        .eq(Expr::Literal(ScalarValue::Utf8(<span class="prelude-val">Some</span>(<span class="string">&quot;true&quot;</span>.to_string()))))
+                        .eq(Expr::Literal(ScalarValue::Utf8(<span class="prelude-val">Some</span>(<span class="string">"true"</span>.to_string()))))
                 )
                 .unwrap()
         );
@@ -865,15 +904,22 @@
                 Expr::Literal(ScalarValue::TimestampMillisecond(<span class="prelude-val">Some</span>(<span class="number">1</span>), <span class="prelude-val">None</span>)),
             ]])
             .unwrap()
-            .filter(Expr::Column(Column::from_name(<span class="string">&quot;column3&quot;</span>)).gt(Expr::Literal(
-                ScalarValue::Utf8(<span class="prelude-val">Some</span>(<span class="string">&quot;1970-01-01 00:00:00+08:00&quot;</span>.to_string())),
+            .filter(Expr::Column(Column::from_name(<span class="string">"column3"</span>)).gt(Expr::Literal(
+                ScalarValue::Utf8(<span class="prelude-val">Some</span>(<span class="string">"1970-01-01 00:00:00+08:00"</span>.to_string())),
             )))
+            .unwrap()
+            .filter(
+                Expr::Literal(ScalarValue::Utf8(<span class="prelude-val">Some</span>(
+                    <span class="string">"1970-01-01 00:00:00+08:00"</span>.to_string(),
+                )))
+                .lt_eq(Expr::Column(Column::from_name(<span class="string">"column3"</span>))),
+            )
             .unwrap()
             .aggregate(
                 Vec::&lt;Expr&gt;::new(),
                 <span class="macro">vec!</span>[Expr::AggregateFunction(AggrExpr {
                     fun: AggregateFunction::Count,
-                    args: <span class="macro">vec!</span>[Expr::Column(Column::from_name(<span class="string">&quot;column1&quot;</span>))],
+                    args: <span class="macro">vec!</span>[Expr::Column(Column::from_name(<span class="string">"column1"</span>))],
                     distinct: <span class="bool-val">false</span>,
                     filter: <span class="prelude-val">None</span>,
                     order_by: <span class="prelude-val">None</span>,
@@ -887,11 +933,40 @@
             .analyze(plan, <span class="kw-2">&amp;</span>ConfigOptions::default())
             .unwrap();
         <span class="kw">let </span>expected = String::from(
-            <span class="string">&quot;Aggregate: groupBy=[[]], aggr=[[COUNT(column1)]]\
-            \n  Filter: column3 &gt; TimestampMillisecond(-28800000, None)\
-            \n    Values: (Int64(1), Float64(1), TimestampMillisecond(1, None))&quot;</span>,
+            <span class="string">"Aggregate: groupBy=[[]], aggr=[[COUNT(column1)]]\
+            \n  Filter: TimestampSecond(-28800, None) &lt;= column3\
+            \n    Filter: column3 &gt; TimestampSecond(-28800, None)\
+            \n      Values: (Int64(1), Float64(1), TimestampMillisecond(1, None))"</span>,
         );
-        <span class="macro">assert_eq!</span>(<span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, transformed_plan.display_indent()), expected);
+        <span class="macro">assert_eq!</span>(<span class="macro">format!</span>(<span class="string">"{}"</span>, transformed_plan.display_indent()), expected);
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_reverse_non_ts_type() {
+        <span class="kw">let </span>plan =
+            LogicalPlanBuilder::values(<span class="macro">vec!</span>[<span class="macro">vec!</span>[Expr::Literal(ScalarValue::Float64(<span class="prelude-val">Some</span>(<span class="number">1.0</span>)))]])
+                .unwrap()
+                .filter(
+                    Expr::Column(Column::from_name(<span class="string">"column1"</span>))
+                        .gt_eq(Expr::Literal(ScalarValue::Utf8(<span class="prelude-val">Some</span>(<span class="string">"1.2345"</span>.to_string())))),
+                )
+                .unwrap()
+                .filter(
+                    Expr::Literal(ScalarValue::Utf8(<span class="prelude-val">Some</span>(<span class="string">"1.2345"</span>.to_string())))
+                        .lt(Expr::Column(Column::from_name(<span class="string">"column1"</span>))),
+                )
+                .unwrap()
+                .build()
+                .unwrap();
+        <span class="kw">let </span>transformed_plan = TypeConversionRule
+            .analyze(plan, <span class="kw-2">&amp;</span>ConfigOptions::default())
+            .unwrap();
+        <span class="kw">let </span>expected = String::from(
+            <span class="string">"Filter: Utf8(\"1.2345\") &lt; column1\
+            \n  Filter: column1 &gt;= Utf8(\"1.2345\")\
+            \n    Values: (Float64(1))"</span>,
+        );
+        <span class="macro">assert_eq!</span>(<span class="macro">format!</span>(<span class="string">"{}"</span>, transformed_plan.display_indent()), expected);
     }
 }
 </code></pre></div></section></main></body></html>

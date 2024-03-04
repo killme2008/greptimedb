@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/cmd/src/options.rs`."><title>options.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="cmd" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../cmd/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/cmd/src/options.rs`."><title>options.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="cmd" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -272,37 +273,79 @@
 <a href="#272" id="272">272</a>
 <a href="#273" id="273">273</a>
 <a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-</span><span class="kw">use </span>common_telemetry::logging::LoggingOptions;
+</span><span class="kw">use </span>clap::ArgMatches;
+<span class="kw">use </span>common_config::KvBackendConfig;
+<span class="kw">use </span>common_meta::wal::WalConfig <span class="kw">as </span>MetaSrvWalConfig;
+<span class="kw">use </span>common_telemetry::logging::{LoggingOptions, TracingOptions};
 <span class="kw">use </span>config::{Config, Environment, File, FileFormat};
-<span class="kw">use </span>datanode::datanode::DatanodeOptions;
-<span class="kw">use </span>frontend::frontend::FrontendOptions;
+<span class="kw">use </span>datanode::config::{DatanodeOptions, ProcedureConfig};
+<span class="kw">use </span>frontend::error::{<span class="prelude-ty">Result </span><span class="kw">as </span>FeResult, TomlFormatSnafu};
+<span class="kw">use </span>frontend::frontend::{FrontendOptions, TomlSerializable};
 <span class="kw">use </span>meta_srv::metasrv::MetaSrvOptions;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>snafu::ResultExt;
 
-<span class="kw">use </span><span class="kw">crate</span>::error::{LoadLayeredConfigSnafu, <span class="prelude-ty">Result</span>};
+<span class="kw">use </span><span class="kw">crate</span>::error::{LoadLayeredConfigSnafu, <span class="prelude-ty">Result</span>, SerdeJsonSnafu};
 
-<span class="kw">pub const </span>ENV_VAR_SEP: <span class="kw-2">&amp;</span>str = <span class="string">&quot;__&quot;</span>;
-<span class="kw">pub const </span>ENV_LIST_SEP: <span class="kw-2">&amp;</span>str = <span class="string">&quot;,&quot;</span>;
+<span class="kw">pub const </span>ENV_VAR_SEP: <span class="kw-2">&amp;</span>str = <span class="string">"__"</span>;
+<span class="kw">pub const </span>ENV_LIST_SEP: <span class="kw-2">&amp;</span>str = <span class="string">","</span>;
 
-<span class="kw">pub struct </span>MixOptions {
-    <span class="kw">pub </span>fe_opts: FrontendOptions,
-    <span class="kw">pub </span>dn_opts: DatanodeOptions,
+<span class="doccomment">/// Options mixed up from datanode, frontend and metasrv.
+</span><span class="attr">#[derive(Serialize, Debug, Clone)]
+</span><span class="kw">pub struct </span>MixOptions {
+    <span class="kw">pub </span>data_home: String,
+    <span class="kw">pub </span>procedure: ProcedureConfig,
+    <span class="kw">pub </span>metadata_store: KvBackendConfig,
+    <span class="kw">pub </span>frontend: FrontendOptions,
+    <span class="kw">pub </span>datanode: DatanodeOptions,
     <span class="kw">pub </span>logging: LoggingOptions,
+    <span class="kw">pub </span>wal_meta: MetaSrvWalConfig,
+}
+
+<span class="kw">impl </span>From&lt;MixOptions&gt; <span class="kw">for </span>FrontendOptions {
+    <span class="kw">fn </span>from(value: MixOptions) -&gt; <span class="self">Self </span>{
+        value.frontend
+    }
+}
+
+<span class="kw">impl </span>TomlSerializable <span class="kw">for </span>MixOptions {
+    <span class="kw">fn </span>to_toml(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; FeResult&lt;String&gt; {
+        toml::to_string(<span class="self">self</span>).context(TomlFormatSnafu)
+    }
 }
 
 <span class="kw">pub enum </span>Options {
@@ -313,10 +356,32 @@
     Cli(Box&lt;LoggingOptions&gt;),
 }
 
-<span class="attr">#[derive(Clone, Debug, Default)]
-</span><span class="kw">pub struct </span>TopLevelOptions {
+<span class="attr">#[derive(Default)]
+</span><span class="kw">pub struct </span>CliOptions {
     <span class="kw">pub </span>log_dir: <span class="prelude-ty">Option</span>&lt;String&gt;,
     <span class="kw">pub </span>log_level: <span class="prelude-ty">Option</span>&lt;String&gt;,
+
+    <span class="attr">#[cfg(feature = <span class="string">"tokio-console"</span>)]
+    </span><span class="kw">pub </span>tokio_console_addr: <span class="prelude-ty">Option</span>&lt;String&gt;,
+}
+
+<span class="kw">impl </span>CliOptions {
+    <span class="kw">pub fn </span>new(args: <span class="kw-2">&amp;</span>ArgMatches) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            log_dir: args.get_one::&lt;String&gt;(<span class="string">"log-dir"</span>).cloned(),
+            log_level: args.get_one::&lt;String&gt;(<span class="string">"log-level"</span>).cloned(),
+
+            <span class="attr">#[cfg(feature = <span class="string">"tokio-console"</span>)]
+            </span>tokio_console_addr: args.get_one::&lt;String&gt;(<span class="string">"tokio-console-addr"</span>).cloned(),
+        }
+    }
+
+    <span class="kw">pub fn </span>tracing_options(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; TracingOptions {
+        TracingOptions {
+            <span class="attr">#[cfg(feature = <span class="string">"tokio-console"</span>)]
+            </span>tokio_console_addr: <span class="self">self</span>.tokio_console_addr.clone(),
+        }
+    }
 }
 
 <span class="kw">impl </span>Options {
@@ -332,12 +397,12 @@
 
     <span class="doccomment">/// Load the configuration from multiple sources and merge them.
     /// The precedence order is: config file &gt; environment variables &gt; default values.
-    /// `env_prefix` is the prefix of environment variables, e.g. &quot;FRONTEND__xxx&quot;.
+    /// `env_prefix` is the prefix of environment variables, e.g. "FRONTEND__xxx".
     /// The function will use dunder(double underscore) `__` as the separator for environment variables, for example:
     /// `DATANODE__STORAGE__MANIFEST__CHECKPOINT_MARGIN` will be mapped to `DatanodeOptions.storage.manifest.checkpoint_margin` field in the configuration.
-    /// `list_keys` is the list of keys that should be parsed as a list, for example, you can pass `Some(&amp;[&quot;meta_client_options.metasrv_addrs&quot;]` to parse `GREPTIMEDB_METASRV__META_CLIENT_OPTIONS__METASRV_ADDRS` as a list.
+    /// `list_keys` is the list of keys that should be parsed as a list, for example, you can pass `Some(&amp;["meta_client_options.metasrv_addrs"]` to parse `GREPTIMEDB_METASRV__META_CLIENT_OPTIONS__METASRV_ADDRS` as a list.
     /// The function will use comma `,` as the separator for list values, for example: `127.0.0.1:3001,127.0.0.1:3002,127.0.0.1:3003`.
-    </span><span class="kw">pub fn </span>load_layered_options&lt;<span class="lifetime">&#39;de</span>, T: Serialize + Deserialize&lt;<span class="lifetime">&#39;de</span>&gt; + Default&gt;(
+    </span><span class="kw">pub fn </span>load_layered_options&lt;<span class="lifetime">'de</span>, T: Serialize + Deserialize&lt;<span class="lifetime">'de</span>&gt; + Default&gt;(
         config_file: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;,
         env_prefix: <span class="kw-2">&amp;</span>str,
         list_keys: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span>str]&gt;,
@@ -363,9 +428,16 @@
                 .ignore_empty(<span class="bool-val">true</span>)
         };
 
+        <span class="comment">// Workaround: Replacement for `Config::try_from(&amp;default_opts)` due to
+        // `ConfigSerializer` cannot handle the case of an empty struct contained
+        // within an iterative structure.
+        // See: https://github.com/mehcode/config-rs/issues/461
+        </span><span class="kw">let </span>json_str = serde_json::to_string(<span class="kw-2">&amp;</span>default_opts).context(SerdeJsonSnafu)<span class="question-mark">?</span>;
+        <span class="kw">let </span>default_config = File::from_str(<span class="kw-2">&amp;</span>json_str, FileFormat::Json);
+
         <span class="comment">// Add default values and environment variables as the sources of the configuration.
         </span><span class="kw">let </span><span class="kw-2">mut </span>layered_config = Config::builder()
-            .add_source(Config::try_from(<span class="kw-2">&amp;</span>default_opts).context(LoadLayeredConfigSnafu)<span class="question-mark">?</span>)
+            .add_source(default_config)
             .add_source(env_source);
 
         <span class="comment">// Add config file as the source of the configuration if it is specified.
@@ -381,130 +453,102 @@
 
         <span class="prelude-val">Ok</span>(opts)
     }
+
+    <span class="kw">pub fn </span>node_id(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;String&gt; {
+        <span class="kw">match </span><span class="self">self </span>{
+            Options::Metasrv(<span class="kw">_</span>) | Options::Cli(<span class="kw">_</span>) =&gt; <span class="prelude-val">None</span>,
+            Options::Datanode(opt) =&gt; opt.node_id.map(|x| x.to_string()),
+            Options::Frontend(opt) =&gt; opt.node_id.clone(),
+            Options::Standalone(opt) =&gt; opt.frontend.node_id.clone(),
+        }
+    }
 }
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use </span>std::io::Write;
-    <span class="kw">use </span>std::time::Duration;
 
+    <span class="kw">use </span>common_config::WalConfig;
     <span class="kw">use </span>common_test_util::temp_dir::create_named_temp_file;
-    <span class="kw">use </span>datanode::datanode::{DatanodeOptions, ObjectStoreConfig};
+    <span class="kw">use </span>datanode::config::{DatanodeOptions, ObjectStoreConfig};
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_load_layered_options() {
         <span class="kw">let </span><span class="kw-2">mut </span>file = create_named_temp_file();
-        <span class="kw">let </span>toml_str = <span class="string">r#&quot;
-            mode = &quot;distributed&quot;
+        <span class="kw">let </span>toml_str = <span class="string">r#"
+            mode = "distributed"
             enable_memory_catalog = false
-            rpc_addr = &quot;127.0.0.1:3001&quot;
-            rpc_hostname = &quot;127.0.0.1&quot;
+            rpc_addr = "127.0.0.1:3001"
+            rpc_hostname = "127.0.0.1"
             rpc_runtime_size = 8
-            mysql_addr = &quot;127.0.0.1:4406&quot;
+            mysql_addr = "127.0.0.1:4406"
             mysql_runtime_size = 2
 
-            [meta_client_options]
-            timeout_millis = 3000
-            connect_timeout_millis = 5000
+            [meta_client]
+            timeout = "3s"
+            connect_timeout = "5s"
             tcp_nodelay = true
 
             [wal]
-            dir = &quot;/tmp/greptimedb/wal&quot;
-            file_size = &quot;1GB&quot;
-            purge_threshold = &quot;50GB&quot;
-            purge_interval = &quot;10m&quot;
+            provider = "raft_engine"
+            dir = "/tmp/greptimedb/wal"
+            file_size = "1GB"
+            purge_threshold = "50GB"
+            purge_interval = "10m"
             read_batch_size = 128
             sync_write = false
 
-            [storage.compaction]
-            max_inflight_tasks = 3
-            max_files_in_level0 = 7
-            max_purge_tasks = 32
-
             [logging]
-            level = &quot;debug&quot;
-            dir = &quot;/tmp/greptimedb/test/logs&quot;
-        &quot;#</span>;
-        <span class="macro">write!</span>(file, <span class="string">&quot;{}&quot;</span>, toml_str).unwrap();
+            level = "debug"
+            dir = "/tmp/greptimedb/test/logs"
+        "#</span>;
+        <span class="macro">write!</span>(file, <span class="string">"{}"</span>, toml_str).unwrap();
 
-        <span class="kw">let </span>env_prefix = <span class="string">&quot;DATANODE_UT&quot;</span>;
+        <span class="kw">let </span>env_prefix = <span class="string">"DATANODE_UT"</span>;
         temp_env::with_vars(
             <span class="comment">// The following environment variables will be used to override the values in the config file.
             </span>[
                 (
-                    <span class="comment">// storage.manifest.checkpoint_margin = 99
-                    </span>[
-                        env_prefix.to_string(),
-                        <span class="string">&quot;storage&quot;</span>.to_uppercase(),
-                        <span class="string">&quot;manifest&quot;</span>.to_uppercase(),
-                        <span class="string">&quot;checkpoint_margin&quot;</span>.to_uppercase(),
-                    ]
-                    .join(ENV_VAR_SEP),
-                    <span class="prelude-val">Some</span>(<span class="string">&quot;99&quot;</span>),
-                ),
-                (
                     <span class="comment">// storage.type = S3
                     </span>[
                         env_prefix.to_string(),
-                        <span class="string">&quot;storage&quot;</span>.to_uppercase(),
-                        <span class="string">&quot;type&quot;</span>.to_uppercase(),
+                        <span class="string">"storage"</span>.to_uppercase(),
+                        <span class="string">"type"</span>.to_uppercase(),
                     ]
                     .join(ENV_VAR_SEP),
-                    <span class="prelude-val">Some</span>(<span class="string">&quot;S3&quot;</span>),
+                    <span class="prelude-val">Some</span>(<span class="string">"S3"</span>),
                 ),
                 (
                     <span class="comment">// storage.bucket = mybucket
                     </span>[
                         env_prefix.to_string(),
-                        <span class="string">&quot;storage&quot;</span>.to_uppercase(),
-                        <span class="string">&quot;bucket&quot;</span>.to_uppercase(),
+                        <span class="string">"storage"</span>.to_uppercase(),
+                        <span class="string">"bucket"</span>.to_uppercase(),
                     ]
                     .join(ENV_VAR_SEP),
-                    <span class="prelude-val">Some</span>(<span class="string">&quot;mybucket&quot;</span>),
-                ),
-                (
-                    <span class="comment">// storage.manifest.gc_duration = 42s
-                    </span>[
-                        env_prefix.to_string(),
-                        <span class="string">&quot;storage&quot;</span>.to_uppercase(),
-                        <span class="string">&quot;manifest&quot;</span>.to_uppercase(),
-                        <span class="string">&quot;gc_duration&quot;</span>.to_uppercase(),
-                    ]
-                    .join(ENV_VAR_SEP),
-                    <span class="prelude-val">Some</span>(<span class="string">&quot;42s&quot;</span>),
-                ),
-                (
-                    <span class="comment">// storage.manifest.checkpoint_on_startup = true
-                    </span>[
-                        env_prefix.to_string(),
-                        <span class="string">&quot;storage&quot;</span>.to_uppercase(),
-                        <span class="string">&quot;manifest&quot;</span>.to_uppercase(),
-                        <span class="string">&quot;checkpoint_on_startup&quot;</span>.to_uppercase(),
-                    ]
-                    .join(ENV_VAR_SEP),
-                    <span class="prelude-val">Some</span>(<span class="string">&quot;true&quot;</span>),
+                    <span class="prelude-val">Some</span>(<span class="string">"mybucket"</span>),
                 ),
                 (
                     <span class="comment">// wal.dir = /other/wal/dir
                     </span>[
                         env_prefix.to_string(),
-                        <span class="string">&quot;wal&quot;</span>.to_uppercase(),
-                        <span class="string">&quot;dir&quot;</span>.to_uppercase(),
+                        <span class="string">"wal"</span>.to_uppercase(),
+                        <span class="string">"dir"</span>.to_uppercase(),
                     ]
                     .join(ENV_VAR_SEP),
-                    <span class="prelude-val">Some</span>(<span class="string">&quot;/other/wal/dir&quot;</span>),
+                    <span class="prelude-val">Some</span>(<span class="string">"/other/wal/dir"</span>),
                 ),
                 (
-                    <span class="comment">// meta_client_options.metasrv_addrs = 127.0.0.1:3001,127.0.0.1:3002,127.0.0.1:3003
+                    <span class="comment">// meta_client.metasrv_addrs = 127.0.0.1:3001,127.0.0.1:3002,127.0.0.1:3003
                     </span>[
                         env_prefix.to_string(),
-                        <span class="string">&quot;meta_client_options&quot;</span>.to_uppercase(),
-                        <span class="string">&quot;metasrv_addrs&quot;</span>.to_uppercase(),
+                        <span class="string">"meta_client"</span>.to_uppercase(),
+                        <span class="string">"metasrv_addrs"</span>.to_uppercase(),
                     ]
                     .join(ENV_VAR_SEP),
-                    <span class="prelude-val">Some</span>(<span class="string">&quot;127.0.0.1:3001,127.0.0.1:3002,127.0.0.1:3003&quot;</span>),
+                    <span class="prelude-val">Some</span>(<span class="string">"127.0.0.1:3001,127.0.0.1:3002,127.0.0.1:3003"</span>),
                 ),
             ],
             || {
@@ -516,29 +560,26 @@
                 .unwrap();
 
                 <span class="comment">// Check the configs from environment variables.
-                </span><span class="macro">assert_eq!</span>(opts.storage.manifest.checkpoint_margin, <span class="prelude-val">Some</span>(<span class="number">99</span>));
-                <span class="kw">match </span>opts.storage.store {
+                </span><span class="kw">match </span><span class="kw-2">&amp;</span>opts.storage.store {
                     ObjectStoreConfig::S3(s3_config) =&gt; {
-                        <span class="macro">assert_eq!</span>(s3_config.bucket, <span class="string">&quot;mybucket&quot;</span>.to_string());
+                        <span class="macro">assert_eq!</span>(s3_config.bucket, <span class="string">"mybucket"</span>.to_string());
                     }
-                    <span class="kw">_ </span>=&gt; <span class="macro">panic!</span>(<span class="string">&quot;unexpected store type&quot;</span>),
+                    <span class="kw">_ </span>=&gt; <span class="macro">panic!</span>(<span class="string">"unexpected store type"</span>),
                 }
                 <span class="macro">assert_eq!</span>(
-                    opts.storage.manifest.gc_duration,
-                    <span class="prelude-val">Some</span>(Duration::from_secs(<span class="number">42</span>))
-                );
-                <span class="macro">assert!</span>(opts.storage.manifest.checkpoint_on_startup);
-                <span class="macro">assert_eq!</span>(
-                    opts.meta_client_options.unwrap().metasrv_addrs,
+                    opts.meta_client.unwrap().metasrv_addrs,
                     <span class="macro">vec!</span>[
-                        <span class="string">&quot;127.0.0.1:3001&quot;</span>.to_string(),
-                        <span class="string">&quot;127.0.0.1:3002&quot;</span>.to_string(),
-                        <span class="string">&quot;127.0.0.1:3003&quot;</span>.to_string()
+                        <span class="string">"127.0.0.1:3001"</span>.to_string(),
+                        <span class="string">"127.0.0.1:3002"</span>.to_string(),
+                        <span class="string">"127.0.0.1:3003"</span>.to_string()
                     ]
                 );
 
                 <span class="comment">// Should be the values from config file, not environment variables.
-                </span><span class="macro">assert_eq!</span>(opts.wal.dir.unwrap(), <span class="string">&quot;/tmp/greptimedb/wal&quot;</span>);
+                </span><span class="kw">let </span>WalConfig::RaftEngine(raft_engine_config) = opts.wal <span class="kw">else </span>{
+                    <span class="macro">unreachable!</span>()
+                };
+                <span class="macro">assert_eq!</span>(raft_engine_config.dir.unwrap(), <span class="string">"/tmp/greptimedb/wal"</span>);
 
                 <span class="comment">// Should be default values.
                 </span><span class="macro">assert_eq!</span>(opts.node_id, <span class="prelude-val">None</span>);

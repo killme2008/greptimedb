@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"struct":["DefaultMetadataService"],"trait":["MetadataService"],"type":["MetadataServiceRef"]};

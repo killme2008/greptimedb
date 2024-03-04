@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["mock_meta_client"]};

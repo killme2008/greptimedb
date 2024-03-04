@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/script/src/python/ffi_types/vector.rs`."><title>vector.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="script" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../script/index.html"><img class="rust-logo" src="../../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/script/src/python/ffi_types/vector.rs`."><title>vector.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="script" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -551,14 +552,14 @@
 <a href="#551" id="551">551</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -568,18 +569,19 @@
 <span class="kw">use </span>std::ops::Deref;
 <span class="kw">use </span>std::sync::Arc;
 
+<span class="kw">use </span>arrow::array::Datum;
+<span class="kw">use </span>arrow::compute::kernels::{cmp, numeric};
 <span class="kw">use </span>datatypes::arrow::array::{
     Array, ArrayRef, BooleanArray, Float64Array, Int64Array, UInt64Array,
 };
 <span class="kw">use </span>datatypes::arrow::compute;
-<span class="kw">use </span>datatypes::arrow::compute::kernels::{arithmetic, comparison};
 <span class="kw">use </span>datatypes::arrow::datatypes::DataType <span class="kw">as </span>ArrowDataType;
 <span class="kw">use </span>datatypes::arrow::error::Result <span class="kw">as </span>ArrowResult;
 <span class="kw">use </span>datatypes::data_type::DataType;
 <span class="kw">use </span>datatypes::prelude::{ConcreteDataType, Value};
 <span class="kw">use </span>datatypes::value::{<span class="self">self</span>, OrderedFloat};
 <span class="kw">use </span>datatypes::vectors::{Helper, NullVector, VectorRef};
-<span class="attr">#[cfg(feature = <span class="string">&quot;pyo3_backend&quot;</span>)]
+<span class="attr">#[cfg(feature = <span class="string">"pyo3_backend"</span>)]
 </span><span class="kw">use </span>pyo3::pyclass <span class="kw">as </span>pyo3class;
 <span class="kw">use </span>rustpython_vm::builtins::{PyBaseExceptionRef, PyBool, PyFloat, PyInt, PyNone, PyStr};
 <span class="kw">use </span>rustpython_vm::sliceable::{SaturatedSlice, SequenceIndex, SequenceIndexOp};
@@ -592,8 +594,8 @@
 <span class="kw">use </span><span class="kw">crate</span>::python::rspython::utils::is_instance;
 
 <span class="doccomment">/// The Main FFI type `PyVector` that is used both in RustPython and PyO3
-</span><span class="attr">#[cfg_attr(feature = <span class="string">&quot;pyo3_backend&quot;</span>, pyo3class(name = <span class="string">&quot;vector&quot;</span>))]
-#[rspyclass(module = <span class="bool-val">false</span>, name = <span class="string">&quot;vector&quot;</span>)]
+</span><span class="attr">#[cfg_attr(feature = <span class="string">"pyo3_backend"</span>, pyo3class(name = <span class="string">"vector"</span>))]
+#[rspyclass(module = <span class="bool-val">false</span>, name = <span class="string">"vector"</span>)]
 #[repr(transparent)]
 #[derive(PyPayload, Debug, Clone)]
 </span><span class="kw">pub struct </span>PyVector {
@@ -608,43 +610,42 @@
     }
 }
 
-<span class="kw">fn </span>to_type_error(vm: <span class="kw-2">&amp;</span><span class="lifetime">&#39;_ </span>VirtualMachine) -&gt; <span class="kw">impl </span>FnOnce(String) -&gt; PyBaseExceptionRef + <span class="lifetime">&#39;_ </span>{
+<span class="kw">fn </span>to_type_error(vm: <span class="kw-2">&amp;</span><span class="lifetime">'_ </span>VirtualMachine) -&gt; <span class="kw">impl </span>FnOnce(String) -&gt; PyBaseExceptionRef + <span class="lifetime">'_ </span>{
     |msg: String| vm.new_type_error(msg)
 }
 
 <span class="doccomment">/// Performs `val - arr`.
-</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>arrow_rsub(arr: <span class="kw-2">&amp;</span><span class="kw">dyn </span>Array, val: <span class="kw-2">&amp;</span><span class="kw">dyn </span>Array) -&gt; <span class="prelude-ty">Result</span>&lt;ArrayRef, String&gt; {
-    arithmetic::subtract_dyn(val, arr).map_err(|e| <span class="macro">format!</span>(<span class="string">&quot;rsub error: {e}&quot;</span>))
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>arrow_rsub(arr: <span class="kw-2">&amp;</span><span class="kw">dyn </span>Datum, val: <span class="kw-2">&amp;</span><span class="kw">dyn </span>Datum) -&gt; <span class="prelude-ty">Result</span>&lt;ArrayRef, String&gt; {
+    numeric::sub(val, arr).map_err(|e| <span class="macro">format!</span>(<span class="string">"rsub error: {e}"</span>))
 }
 
 <span class="doccomment">/// Performs `val / arr`
-</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>arrow_rtruediv(arr: <span class="kw-2">&amp;</span><span class="kw">dyn </span>Array, val: <span class="kw-2">&amp;</span><span class="kw">dyn </span>Array) -&gt; <span class="prelude-ty">Result</span>&lt;ArrayRef, String&gt; {
-    arithmetic::divide_dyn(val, arr).map_err(|e| <span class="macro">format!</span>(<span class="string">&quot;rtruediv error: {e}&quot;</span>))
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>arrow_rtruediv(arr: <span class="kw-2">&amp;</span><span class="kw">dyn </span>Datum, val: <span class="kw-2">&amp;</span><span class="kw">dyn </span>Datum) -&gt; <span class="prelude-ty">Result</span>&lt;ArrayRef, String&gt; {
+    numeric::div(val, arr).map_err(|e| <span class="macro">format!</span>(<span class="string">"rtruediv error: {e}"</span>))
 }
 
 <span class="doccomment">/// Performs `val / arr`, but cast to i64.
-</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>arrow_rfloordiv(arr: <span class="kw-2">&amp;</span><span class="kw">dyn </span>Array, val: <span class="kw-2">&amp;</span><span class="kw">dyn </span>Array) -&gt; <span class="prelude-ty">Result</span>&lt;ArrayRef, String&gt; {
-    <span class="kw">let </span>array =
-        arithmetic::divide_dyn(val, arr).map_err(|e| <span class="macro">format!</span>(<span class="string">&quot;rfloordiv divide error: {e}&quot;</span>))<span class="question-mark">?</span>;
-    compute::cast(<span class="kw-2">&amp;</span>array, <span class="kw-2">&amp;</span>ArrowDataType::Int64).map_err(|e| <span class="macro">format!</span>(<span class="string">&quot;rfloordiv cast error: {e}&quot;</span>))
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>arrow_rfloordiv(arr: <span class="kw-2">&amp;</span><span class="kw">dyn </span>Datum, val: <span class="kw-2">&amp;</span><span class="kw">dyn </span>Datum) -&gt; <span class="prelude-ty">Result</span>&lt;ArrayRef, String&gt; {
+    <span class="kw">let </span>array = numeric::div(val, arr).map_err(|e| <span class="macro">format!</span>(<span class="string">"rfloordiv divide error: {e}"</span>))<span class="question-mark">?</span>;
+    compute::cast(<span class="kw-2">&amp;</span>array, <span class="kw-2">&amp;</span>ArrowDataType::Int64).map_err(|e| <span class="macro">format!</span>(<span class="string">"rfloordiv cast error: {e}"</span>))
 }
 
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>wrap_result&lt;F&gt;(f: F) -&gt; <span class="kw">impl </span>Fn(<span class="kw-2">&amp;</span><span class="kw">dyn </span>Array, <span class="kw-2">&amp;</span><span class="kw">dyn </span>Array) -&gt; <span class="prelude-ty">Result</span>&lt;ArrayRef, String&gt;
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>wrap_result&lt;F&gt;(f: F) -&gt; <span class="kw">impl </span>Fn(<span class="kw-2">&amp;</span><span class="kw">dyn </span>Datum, <span class="kw-2">&amp;</span><span class="kw">dyn </span>Datum) -&gt; <span class="prelude-ty">Result</span>&lt;ArrayRef, String&gt;
 <span class="kw">where
-    </span>F: Fn(<span class="kw-2">&amp;</span><span class="kw">dyn </span>Array, <span class="kw-2">&amp;</span><span class="kw">dyn </span>Array) -&gt; ArrowResult&lt;ArrayRef&gt;,
+    </span>F: Fn(<span class="kw-2">&amp;</span><span class="kw">dyn </span>Datum, <span class="kw-2">&amp;</span><span class="kw">dyn </span>Datum) -&gt; ArrowResult&lt;ArrayRef&gt;,
 {
-    <span class="kw">move </span>|left, right| f(left, right).map_err(|e| <span class="macro">format!</span>(<span class="string">&quot;arithmetic error {e}&quot;</span>))
+    <span class="kw">move </span>|left, right| f(left, right).map_err(|e| <span class="macro">format!</span>(<span class="string">"arithmetic error {e}"</span>))
 }
 
-<span class="attr">#[cfg(feature = <span class="string">&quot;pyo3_backend&quot;</span>)]
+<span class="attr">#[cfg(feature = <span class="string">"pyo3_backend"</span>)]
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>wrap_bool_result&lt;F&gt;(
     op_bool_arr: F,
-) -&gt; <span class="kw">impl </span>Fn(<span class="kw-2">&amp;</span><span class="kw">dyn </span>Array, <span class="kw-2">&amp;</span><span class="kw">dyn </span>Array) -&gt; <span class="prelude-ty">Result</span>&lt;ArrayRef, String&gt;
+) -&gt; <span class="kw">impl </span>Fn(<span class="kw-2">&amp;</span><span class="kw">dyn </span>Datum, <span class="kw-2">&amp;</span><span class="kw">dyn </span>Datum) -&gt; <span class="prelude-ty">Result</span>&lt;ArrayRef, String&gt;
 <span class="kw">where
-    </span>F: Fn(<span class="kw-2">&amp;</span><span class="kw">dyn </span>Array, <span class="kw-2">&amp;</span><span class="kw">dyn </span>Array) -&gt; ArrowResult&lt;BooleanArray&gt;,
+    </span>F: Fn(<span class="kw-2">&amp;</span><span class="kw">dyn </span>Datum, <span class="kw-2">&amp;</span><span class="kw">dyn </span>Datum) -&gt; ArrowResult&lt;BooleanArray&gt;,
 {
-    <span class="kw">move </span>|a: <span class="kw-2">&amp;</span><span class="kw">dyn </span>Array, b: <span class="kw-2">&amp;</span><span class="kw">dyn </span>Array| -&gt; <span class="prelude-ty">Result</span>&lt;ArrayRef, String&gt; {
-        <span class="kw">let </span>array = op_bool_arr(a, b).map_err(|e| <span class="macro">format!</span>(<span class="string">&quot;logical op error: {e}&quot;</span>))<span class="question-mark">?</span>;
+    <span class="kw">move </span>|a: <span class="kw-2">&amp;</span><span class="kw">dyn </span>Datum, b: <span class="kw-2">&amp;</span><span class="kw">dyn </span>Datum| -&gt; <span class="prelude-ty">Result</span>&lt;ArrayRef, String&gt; {
+        <span class="kw">let </span>array = op_bool_arr(a, b).map_err(|e| <span class="macro">format!</span>(<span class="string">"logical op error: {e}"</span>))<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(Arc::new(array))
     }
 }
@@ -703,11 +704,11 @@
         <span class="kw">let </span>left = left
             .as_any()
             .downcast_ref::&lt;BooleanArray&gt;()
-            .ok_or_else(|| <span class="macro">format!</span>(<span class="string">&quot;Can&#39;t cast {left:#?} as a Boolean Array&quot;</span>))<span class="question-mark">?</span>;
+            .ok_or_else(|| <span class="macro">format!</span>(<span class="string">"Can't cast {left:#?} as a Boolean Array"</span>))<span class="question-mark">?</span>;
         <span class="kw">let </span>right = right
             .as_any()
             .downcast_ref::&lt;BooleanArray&gt;()
-            .ok_or_else(|| <span class="macro">format!</span>(<span class="string">&quot;Can&#39;t cast {right:#?} as a Boolean Array&quot;</span>))<span class="question-mark">?</span>;
+            .ok_or_else(|| <span class="macro">format!</span>(<span class="string">"Can't cast {right:#?} as a Boolean Array"</span>))<span class="question-mark">?</span>;
         <span class="kw">let </span>res =
             Arc::new(compute::kernels::boolean::and(left, right).map_err(|err| err.to_string())<span class="question-mark">?</span>)
                 <span class="kw">as </span>ArrayRef;
@@ -720,11 +721,11 @@
         <span class="kw">let </span>left = left
             .as_any()
             .downcast_ref::&lt;BooleanArray&gt;()
-            .ok_or_else(|| <span class="macro">format!</span>(<span class="string">&quot;Can&#39;t cast {left:#?} as a Boolean Array&quot;</span>))<span class="question-mark">?</span>;
+            .ok_or_else(|| <span class="macro">format!</span>(<span class="string">"Can't cast {left:#?} as a Boolean Array"</span>))<span class="question-mark">?</span>;
         <span class="kw">let </span>right = right
             .as_any()
             .downcast_ref::&lt;BooleanArray&gt;()
-            .ok_or_else(|| <span class="macro">format!</span>(<span class="string">&quot;Can&#39;t cast {right:#?} as a Boolean Array&quot;</span>))<span class="question-mark">?</span>;
+            .ok_or_else(|| <span class="macro">format!</span>(<span class="string">"Can't cast {right:#?} as a Boolean Array"</span>))<span class="question-mark">?</span>;
         <span class="kw">let </span>res =
             Arc::new(compute::kernels::boolean::or(left, right).map_err(|err| err.to_string())<span class="question-mark">?</span>)
                 <span class="kw">as </span>ArrayRef;
@@ -736,7 +737,7 @@
         <span class="kw">let </span>zelf = zelf
             .as_any()
             .downcast_ref::&lt;BooleanArray&gt;()
-            .ok_or_else(|| <span class="macro">format!</span>(<span class="string">&quot;Can&#39;t cast {left:#?} as a Boolean Array&quot;</span>))<span class="question-mark">?</span>;
+            .ok_or_else(|| <span class="macro">format!</span>(<span class="string">"Can't cast {left:#?} as a Boolean Array"</span>))<span class="question-mark">?</span>;
         <span class="kw">let </span>res = Arc::new(compute::kernels::boolean::not(zelf).map_err(|err| err.to_string())<span class="question-mark">?</span>)
             <span class="kw">as </span>ArrayRef;
         <span class="kw">let </span>ret = Helper::try_into_vector(res.clone()).map_err(|err| err.to_string())<span class="question-mark">?</span>;
@@ -760,7 +761,7 @@
         op: F,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, String&gt;
     <span class="kw">where
-        </span>F: Fn(<span class="kw-2">&amp;</span><span class="kw">dyn </span>Array, <span class="kw-2">&amp;</span><span class="kw">dyn </span>Array) -&gt; <span class="prelude-ty">Result</span>&lt;ArrayRef, String&gt;,
+        </span>F: Fn(<span class="kw-2">&amp;</span><span class="kw">dyn </span>Datum, <span class="kw-2">&amp;</span><span class="kw">dyn </span>Datum) -&gt; <span class="prelude-ty">Result</span>&lt;ArrayRef, String&gt;,
     {
         <span class="kw">let </span>right_type = right.data_type().as_arrow_type();
         <span class="comment">// assuming they are all 64 bit type if possible
@@ -798,15 +799,15 @@
             }
         } <span class="kw">else </span>{
             <span class="kw">return </span><span class="prelude-val">Err</span>(<span class="macro">format!</span>(
-                <span class="string">&quot;Can&#39;t cast source operand of type {:?} into target type of {:?}&quot;</span>,
+                <span class="string">"Can't cast source operand of type {:?} into target type of {:?}"</span>,
                 right_type, <span class="kw-2">&amp;</span>target_type
             ));
         };
 
-        <span class="kw">let </span>result = op(left.as_ref(), right.as_ref())<span class="question-mark">?</span>;
+        <span class="kw">let </span>result = op(<span class="kw-2">&amp;</span>left, <span class="kw-2">&amp;</span>right.as_ref())<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(Helper::try_into_vector(result.clone())
-            .map_err(|e| <span class="macro">format!</span>(<span class="string">&quot;Can&#39;t cast result into vector, result: {result:?}, err: {e:?}&quot;</span>,))<span class="question-mark">?
+            .map_err(|e| <span class="macro">format!</span>(<span class="string">"Can't cast result into vector, result: {result:?}, err: {e:?}"</span>,))<span class="question-mark">?
             </span>.into())
     }
 
@@ -818,7 +819,7 @@
         vm: <span class="kw-2">&amp;</span>VirtualMachine,
     ) -&gt; PyResult&lt;PyVector&gt;
     <span class="kw">where
-        </span>F: Fn(<span class="kw-2">&amp;</span><span class="kw">dyn </span>Array, <span class="kw-2">&amp;</span><span class="kw">dyn </span>Array) -&gt; <span class="prelude-ty">Result</span>&lt;ArrayRef, String&gt;,
+        </span>F: Fn(<span class="kw-2">&amp;</span><span class="kw">dyn </span>Datum, <span class="kw-2">&amp;</span><span class="kw">dyn </span>Datum) -&gt; <span class="prelude-ty">Result</span>&lt;ArrayRef, String&gt;,
     {
         <span class="comment">// the right operand only support PyInt or PyFloat,
         </span><span class="kw">let </span>right = {
@@ -830,7 +831,7 @@
                     .map(|v| (value::Value::Float64(OrderedFloat(v))))<span class="question-mark">?
             </span>} <span class="kw">else </span>{
                 <span class="kw">return </span><span class="prelude-val">Err</span>(vm.new_type_error(<span class="macro">format!</span>(
-                    <span class="string">&quot;Can&#39;t cast right operand into Scalar of Int or Float, actual: {}&quot;</span>,
+                    <span class="string">"Can't cast right operand into Scalar of Int or Float, actual: {}"</span>,
                     other.class().name()
                 )));
             }
@@ -864,7 +865,7 @@
         op: F,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;PyVector, String&gt;
     <span class="kw">where
-        </span>F: Fn(<span class="kw-2">&amp;</span><span class="kw">dyn </span>Array, <span class="kw-2">&amp;</span><span class="kw">dyn </span>Array) -&gt; <span class="prelude-ty">Result</span>&lt;ArrayRef, String&gt;,
+        </span>F: Fn(<span class="kw-2">&amp;</span><span class="kw">dyn </span>Datum, <span class="kw-2">&amp;</span><span class="kw">dyn </span>Datum) -&gt; <span class="prelude-ty">Result</span>&lt;ArrayRef, String&gt;,
     {
         <span class="kw">let </span>left = <span class="self">self</span>.to_arrow_array();
         <span class="kw">let </span>right = right.to_arrow_array();
@@ -877,10 +878,10 @@
         <span class="kw">let </span>left = cast(left, <span class="kw-2">&amp;</span>target_type)<span class="question-mark">?</span>;
         <span class="kw">let </span>right = cast(right, <span class="kw-2">&amp;</span>target_type)<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>result = op(left.as_ref(), right.as_ref())<span class="question-mark">?</span>;
+        <span class="kw">let </span>result = op(<span class="kw-2">&amp;</span>left, <span class="kw-2">&amp;</span>right)<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(Helper::try_into_vector(result.clone())
-            .map_err(|e| <span class="macro">format!</span>(<span class="string">&quot;Can&#39;t cast result into vector, result: {result:?}, err: {e:?}&quot;</span>,))<span class="question-mark">?
+            .map_err(|e| <span class="macro">format!</span>(<span class="string">"Can't cast result into vector, result: {result:?}, err: {e:?}"</span>,))<span class="question-mark">?
             </span>.into())
     }
 
@@ -892,11 +893,11 @@
         vm: <span class="kw-2">&amp;</span>VirtualMachine,
     ) -&gt; PyResult&lt;PyVector&gt;
     <span class="kw">where
-        </span>F: Fn(<span class="kw-2">&amp;</span><span class="kw">dyn </span>Array, <span class="kw-2">&amp;</span><span class="kw">dyn </span>Array) -&gt; <span class="prelude-ty">Result</span>&lt;ArrayRef, String&gt;,
+        </span>F: Fn(<span class="kw-2">&amp;</span><span class="kw">dyn </span>Datum, <span class="kw-2">&amp;</span><span class="kw">dyn </span>Datum) -&gt; <span class="prelude-ty">Result</span>&lt;ArrayRef, String&gt;,
     {
         <span class="kw">let </span>right = other.downcast_ref::&lt;PyVector&gt;().ok_or_else(|| {
             vm.new_type_error(<span class="macro">format!</span>(
-                <span class="string">&quot;Can&#39;t cast right operand into PyVector, actual type: {}&quot;</span>,
+                <span class="string">"Can't cast right operand into PyVector, actual type: {}"</span>,
                 other.class().name()
             ))
         })<span class="question-mark">?</span>;
@@ -911,16 +912,16 @@
                 .as_any()
                 .downcast_ref::&lt;BooleanArray&gt;()
                 .ok_or_else(|| {
-                    vm.new_type_error(<span class="macro">format!</span>(<span class="string">&quot;Can&#39;t cast {seq:#?} as a Boolean Array&quot;</span>))
+                    vm.new_type_error(<span class="macro">format!</span>(<span class="string">"Can't cast {seq:#?} as a Boolean Array"</span>))
                 })<span class="question-mark">?</span>;
             <span class="kw">let </span>res = compute::filter(<span class="self">self</span>.to_arrow_array().as_ref(), mask)
-                .map_err(|err| vm.new_runtime_error(<span class="macro">format!</span>(<span class="string">&quot;Arrow Error: {err:#?}&quot;</span>)))<span class="question-mark">?</span>;
+                .map_err(|err| vm.new_runtime_error(<span class="macro">format!</span>(<span class="string">"Arrow Error: {err:#?}"</span>)))<span class="question-mark">?</span>;
             <span class="kw">let </span>ret = Helper::try_into_vector(res.clone()).map_err(|e| {
-                vm.new_type_error(<span class="macro">format!</span>(<span class="string">&quot;Can&#39;t cast result into vector, err: {e:?}&quot;</span>))
+                vm.new_type_error(<span class="macro">format!</span>(<span class="string">"Can't cast result into vector, err: {e:?}"</span>))
             })<span class="question-mark">?</span>;
             <span class="prelude-val">Ok</span>(<span class="self">Self</span>::from(ret).into_pyobject(vm))
         } <span class="kw">else </span>{
-            <span class="kw">match </span>SequenceIndex::try_from_borrowed_object(vm, needle, <span class="string">&quot;vector&quot;</span>)<span class="question-mark">? </span>{
+            <span class="kw">match </span>SequenceIndex::try_from_borrowed_object(vm, needle, <span class="string">"vector"</span>)<span class="question-mark">? </span>{
                 SequenceIndex::Int(i) =&gt; <span class="self">self</span>.getitem_by_index(i, vm),
                 SequenceIndex::Slice(slice) =&gt; <span class="self">self</span>.getitem_by_slice(<span class="kw-2">&amp;</span>slice, vm),
             }
@@ -930,7 +931,7 @@
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>getitem_by_index(<span class="kw-2">&amp;</span><span class="self">self</span>, i: isize, vm: <span class="kw-2">&amp;</span>VirtualMachine) -&gt; PyResult&lt;PyObjectRef&gt; {
         <span class="comment">// in the newest version of rustpython_vm, wrapped_at for isize is replace by wrap_index(i, len)
         </span><span class="kw">let </span>i = i.wrapped_at(<span class="self">self</span>.len()).ok_or_else(|| {
-            vm.new_index_error(<span class="macro">format!</span>(<span class="string">&quot;PyVector index {i} out of range {}&quot;</span>, <span class="self">self</span>.len()))
+            vm.new_index_error(<span class="macro">format!</span>(<span class="string">"PyVector index {i} out of range {}"</span>, <span class="self">self</span>.len()))
         })<span class="question-mark">?</span>;
         val_to_pyobj(<span class="self">self</span>.as_vector_ref().get(i), vm)
     }
@@ -955,14 +956,14 @@
             <span class="comment">// Negative step require special treatment
             // range.start &gt; range.stop if slice can found no-empty
             </span><span class="kw">for </span>i <span class="kw">in </span>range.rev().step_by(step.unsigned_abs()) {
-                <span class="comment">// Safety: This mutable vector is created from the vector&#39;s data type.
+                <span class="comment">// Safety: This mutable vector is created from the vector's data type.
                 </span>buf.push_value_ref(vector.get_ref(i));
             }
             <span class="kw">let </span>v: PyVector = buf.to_vector().into();
             <span class="prelude-val">Ok</span>(v.into_pyobject(vm))
         } <span class="kw">else </span>{
             <span class="kw">for </span>i <span class="kw">in </span>range.step_by(step.unsigned_abs()) {
-                <span class="comment">// Safety: This mutable vector is created from the vector&#39;s data type.
+                <span class="comment">// Safety: This mutable vector is created from the vector's data type.
                 </span>buf.push_value_ref(vector.get_ref(i));
             }
             <span class="kw">let </span>v: PyVector = buf.to_vector().into();
@@ -979,7 +980,7 @@
         value: PyObjectRef,
         vm: <span class="kw-2">&amp;</span>VirtualMachine,
     ) -&gt; PyResult&lt;()&gt; {
-        <span class="prelude-val">Err</span>(vm.new_not_implemented_error(<span class="string">&quot;setitem_by_index unimplemented&quot;</span>.to_string()))
+        <span class="prelude-val">Err</span>(vm.new_not_implemented_error(<span class="string">"setitem_by_index unimplemented"</span>.to_string()))
     }
 
     <span class="doccomment">/// rich compare, return a boolean array, accept type are vec and vec and vec and number
@@ -1004,17 +1005,17 @@
 }
 
 <span class="doccomment">/// get corresponding arrow op function according to given PyComaprsionOp
-</span><span class="kw">fn </span>get_arrow_op(op: PyComparisonOp) -&gt; <span class="kw">impl </span>Fn(<span class="kw-2">&amp;</span><span class="kw">dyn </span>Array, <span class="kw-2">&amp;</span><span class="kw">dyn </span>Array) -&gt; ArrowResult&lt;ArrayRef&gt; {
+</span><span class="kw">fn </span>get_arrow_op(op: PyComparisonOp) -&gt; <span class="kw">impl </span>Fn(<span class="kw-2">&amp;</span><span class="kw">dyn </span>Datum, <span class="kw-2">&amp;</span><span class="kw">dyn </span>Datum) -&gt; ArrowResult&lt;ArrayRef&gt; {
     <span class="kw">let </span>op_bool_arr = <span class="kw">match </span>op {
-        PyComparisonOp::Eq =&gt; comparison::eq_dyn,
-        PyComparisonOp::Ne =&gt; comparison::neq_dyn,
-        PyComparisonOp::Gt =&gt; comparison::gt_dyn,
-        PyComparisonOp::Lt =&gt; comparison::lt_dyn,
-        PyComparisonOp::Ge =&gt; comparison::gt_eq_dyn,
-        PyComparisonOp::Le =&gt; comparison::lt_eq_dyn,
+        PyComparisonOp::Eq =&gt; cmp::eq,
+        PyComparisonOp::Ne =&gt; cmp::neq,
+        PyComparisonOp::Gt =&gt; cmp::gt,
+        PyComparisonOp::Lt =&gt; cmp::lt,
+        PyComparisonOp::Ge =&gt; cmp::gt_eq,
+        PyComparisonOp::Le =&gt; cmp::lt_eq,
     };
 
-    <span class="kw">move </span>|a: <span class="kw-2">&amp;</span><span class="kw">dyn </span>Array, b: <span class="kw-2">&amp;</span><span class="kw">dyn </span>Array| -&gt; ArrowResult&lt;ArrayRef&gt; {
+    <span class="kw">move </span>|a: <span class="kw-2">&amp;</span><span class="kw">dyn </span>Datum, b: <span class="kw-2">&amp;</span><span class="kw">dyn </span>Datum| -&gt; ArrowResult&lt;ArrayRef&gt; {
         <span class="kw">let </span>array = op_bool_arr(a, b)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(Arc::new(array))
     }
@@ -1023,18 +1024,18 @@
 <span class="doccomment">/// get corresponding arrow scalar op function according to given PyComaprsionOp
 </span><span class="kw">fn </span>get_arrow_scalar_op(
     op: PyComparisonOp,
-) -&gt; <span class="kw">impl </span>Fn(<span class="kw-2">&amp;</span><span class="kw">dyn </span>Array, <span class="kw-2">&amp;</span><span class="kw">dyn </span>Array) -&gt; <span class="prelude-ty">Result</span>&lt;ArrayRef, String&gt; {
+) -&gt; <span class="kw">impl </span>Fn(<span class="kw-2">&amp;</span><span class="kw">dyn </span>Datum, <span class="kw-2">&amp;</span><span class="kw">dyn </span>Datum) -&gt; <span class="prelude-ty">Result</span>&lt;ArrayRef, String&gt; {
     <span class="kw">let </span>op_bool_arr = <span class="kw">match </span>op {
-        PyComparisonOp::Eq =&gt; comparison::eq_dyn,
-        PyComparisonOp::Ne =&gt; comparison::neq_dyn,
-        PyComparisonOp::Gt =&gt; comparison::gt_dyn,
-        PyComparisonOp::Lt =&gt; comparison::lt_dyn,
-        PyComparisonOp::Ge =&gt; comparison::gt_eq_dyn,
-        PyComparisonOp::Le =&gt; comparison::lt_eq_dyn,
+        PyComparisonOp::Eq =&gt; cmp::eq,
+        PyComparisonOp::Ne =&gt; cmp::neq,
+        PyComparisonOp::Gt =&gt; cmp::gt,
+        PyComparisonOp::Lt =&gt; cmp::lt,
+        PyComparisonOp::Ge =&gt; cmp::gt_eq,
+        PyComparisonOp::Le =&gt; cmp::lt_eq,
     };
 
-    <span class="kw">move </span>|a: <span class="kw-2">&amp;</span><span class="kw">dyn </span>Array, b: <span class="kw-2">&amp;</span><span class="kw">dyn </span>Array| -&gt; <span class="prelude-ty">Result</span>&lt;ArrayRef, String&gt; {
-        <span class="kw">let </span>array = op_bool_arr(a, b).map_err(|e| <span class="macro">format!</span>(<span class="string">&quot;scalar op error: {e}&quot;</span>))<span class="question-mark">?</span>;
+    <span class="kw">move </span>|a: <span class="kw-2">&amp;</span><span class="kw">dyn </span>Datum, b: <span class="kw-2">&amp;</span><span class="kw">dyn </span>Datum| -&gt; <span class="prelude-ty">Result</span>&lt;ArrayRef, String&gt; {
+        <span class="kw">let </span>array = op_bool_arr(a, b).map_err(|e| <span class="macro">format!</span>(<span class="string">"scalar op error: {e}"</span>))<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(Arc::new(array))
     }
 }
@@ -1070,7 +1071,7 @@
         value::Value::String(s) =&gt; vm.ctx.new_str(s.as_utf8()).into(),
         <span class="comment">// is this copy necessary?
         </span>value::Value::Binary(b) =&gt; vm.ctx.new_bytes(b.deref().to_vec()).into(),
-        <span class="comment">// TODO(dennis):is `Date` and `DateTime` supported yet? For now just ad hoc into PyInt, but it&#39;s better to be cast into python Date, DateTime objects etc..
+        <span class="comment">// TODO(dennis):is `Date` and `DateTime` supported yet? For now just ad hoc into PyInt, but it's better to be cast into python Date, DateTime objects etc..
         </span>value::Value::Date(v) =&gt; vm.ctx.new_int(v.val()).into(),
         value::Value::DateTime(v) =&gt; vm.ctx.new_int(v.val()).into(),
         <span class="comment">// FIXME(dennis): lose the timestamp unit here
@@ -1089,7 +1090,7 @@
             }
         }
         <span class="attr">#[allow(unreachable_patterns)]
-        </span><span class="kw">_ </span>=&gt; <span class="kw">return </span><span class="prelude-val">Err</span>(vm.new_type_error(<span class="macro">format!</span>(<span class="string">&quot;Convert from {val:?} is not supported yet&quot;</span>))),
+        </span><span class="kw">_ </span>=&gt; <span class="kw">return </span><span class="prelude-val">Err</span>(vm.new_type_error(<span class="macro">format!</span>(<span class="string">"Convert from {val:?} is not supported yet"</span>))),
     })
 }
 

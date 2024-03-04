@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["ScriptExecutor"]};
+window.SIDEBAR_ITEMS = {"struct":["DummyHandler","ScriptExecutor"]};

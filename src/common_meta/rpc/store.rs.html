@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/common/meta/src/rpc/store.rs`."><title>store.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="common_meta" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../common_meta/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/common/meta/src/rpc/store.rs`."><title>store.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="common_meta" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1105,97 +1106,22 @@
 <a href="#1105" id="1105">1105</a>
 <a href="#1106" id="1106">1106</a>
 <a href="#1107" id="1107">1107</a>
-<a href="#1108" id="1108">1108</a>
-<a href="#1109" id="1109">1109</a>
-<a href="#1110" id="1110">1110</a>
-<a href="#1111" id="1111">1111</a>
-<a href="#1112" id="1112">1112</a>
-<a href="#1113" id="1113">1113</a>
-<a href="#1114" id="1114">1114</a>
-<a href="#1115" id="1115">1115</a>
-<a href="#1116" id="1116">1116</a>
-<a href="#1117" id="1117">1117</a>
-<a href="#1118" id="1118">1118</a>
-<a href="#1119" id="1119">1119</a>
-<a href="#1120" id="1120">1120</a>
-<a href="#1121" id="1121">1121</a>
-<a href="#1122" id="1122">1122</a>
-<a href="#1123" id="1123">1123</a>
-<a href="#1124" id="1124">1124</a>
-<a href="#1125" id="1125">1125</a>
-<a href="#1126" id="1126">1126</a>
-<a href="#1127" id="1127">1127</a>
-<a href="#1128" id="1128">1128</a>
-<a href="#1129" id="1129">1129</a>
-<a href="#1130" id="1130">1130</a>
-<a href="#1131" id="1131">1131</a>
-<a href="#1132" id="1132">1132</a>
-<a href="#1133" id="1133">1133</a>
-<a href="#1134" id="1134">1134</a>
-<a href="#1135" id="1135">1135</a>
-<a href="#1136" id="1136">1136</a>
-<a href="#1137" id="1137">1137</a>
-<a href="#1138" id="1138">1138</a>
-<a href="#1139" id="1139">1139</a>
-<a href="#1140" id="1140">1140</a>
-<a href="#1141" id="1141">1141</a>
-<a href="#1142" id="1142">1142</a>
-<a href="#1143" id="1143">1143</a>
-<a href="#1144" id="1144">1144</a>
-<a href="#1145" id="1145">1145</a>
-<a href="#1146" id="1146">1146</a>
-<a href="#1147" id="1147">1147</a>
-<a href="#1148" id="1148">1148</a>
-<a href="#1149" id="1149">1149</a>
-<a href="#1150" id="1150">1150</a>
-<a href="#1151" id="1151">1151</a>
-<a href="#1152" id="1152">1152</a>
-<a href="#1153" id="1153">1153</a>
-<a href="#1154" id="1154">1154</a>
-<a href="#1155" id="1155">1155</a>
-<a href="#1156" id="1156">1156</a>
-<a href="#1157" id="1157">1157</a>
-<a href="#1158" id="1158">1158</a>
-<a href="#1159" id="1159">1159</a>
-<a href="#1160" id="1160">1160</a>
-<a href="#1161" id="1161">1161</a>
-<a href="#1162" id="1162">1162</a>
-<a href="#1163" id="1163">1163</a>
-<a href="#1164" id="1164">1164</a>
-<a href="#1165" id="1165">1165</a>
-<a href="#1166" id="1166">1166</a>
-<a href="#1167" id="1167">1167</a>
-<a href="#1168" id="1168">1168</a>
-<a href="#1169" id="1169">1169</a>
-<a href="#1170" id="1170">1170</a>
-<a href="#1171" id="1171">1171</a>
-<a href="#1172" id="1172">1172</a>
-<a href="#1173" id="1173">1173</a>
-<a href="#1174" id="1174">1174</a>
-<a href="#1175" id="1175">1175</a>
-<a href="#1176" id="1176">1176</a>
-<a href="#1177" id="1177">1177</a>
-<a href="#1178" id="1178">1178</a>
-<a href="#1179" id="1179">1179</a>
-<a href="#1180" id="1180">1180</a>
-<a href="#1181" id="1181">1181</a>
-<a href="#1182" id="1182">1182</a>
-<a href="#1183" id="1183">1183</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
 </span><span class="kw">use </span>std::fmt::{Display, Formatter};
+<span class="kw">use </span>std::ops::Bound;
 
 <span class="kw">use </span>api::v1::meta::{
     BatchDeleteRequest <span class="kw">as </span>PbBatchDeleteRequest, BatchDeleteResponse <span class="kw">as </span>PbBatchDeleteResponse,
@@ -1203,8 +1129,7 @@
     BatchPutRequest <span class="kw">as </span>PbBatchPutRequest, BatchPutResponse <span class="kw">as </span>PbBatchPutResponse,
     CompareAndPutRequest <span class="kw">as </span>PbCompareAndPutRequest,
     CompareAndPutResponse <span class="kw">as </span>PbCompareAndPutResponse, DeleteRangeRequest <span class="kw">as </span>PbDeleteRangeRequest,
-    DeleteRangeResponse <span class="kw">as </span>PbDeleteRangeResponse, MoveValueRequest <span class="kw">as </span>PbMoveValueRequest,
-    MoveValueResponse <span class="kw">as </span>PbMoveValueResponse, PutRequest <span class="kw">as </span>PbPutRequest,
+    DeleteRangeResponse <span class="kw">as </span>PbDeleteRangeResponse, PutRequest <span class="kw">as </span>PbPutRequest,
     PutResponse <span class="kw">as </span>PbPutResponse, RangeRequest <span class="kw">as </span>PbRangeRequest, RangeResponse <span class="kw">as </span>PbRangeResponse,
     ResponseHeader <span class="kw">as </span>PbResponseHeader,
 };
@@ -1213,16 +1138,27 @@
 <span class="kw">use </span><span class="kw">crate</span>::error::Result;
 <span class="kw">use </span><span class="kw">crate</span>::rpc::{util, KeyValue};
 
+<span class="kw">pub fn </span>to_range(key: Vec&lt;u8&gt;, range_end: Vec&lt;u8&gt;) -&gt; (Bound&lt;Vec&lt;u8&gt;&gt;, Bound&lt;Vec&lt;u8&gt;&gt;) {
+    <span class="kw">match </span>(<span class="kw-2">&amp;</span>key[..], <span class="kw-2">&amp;</span>range_end[..]) {
+        (<span class="kw">_</span>, []) =&gt; (Bound::Included(key.clone()), Bound::Included(key)),
+        <span class="comment">// If both key and range_end are ‘\0’, then range represents all keys.
+        </span>([<span class="number">0</span>], [<span class="number">0</span>]) =&gt; (Bound::Unbounded, Bound::Unbounded),
+        <span class="comment">// If range_end is ‘\0’, the range is all keys greater than or equal to the key argument.
+        </span>(<span class="kw">_</span>, [<span class="number">0</span>]) =&gt; (Bound::Included(key), Bound::Unbounded),
+        (<span class="kw">_</span>, <span class="kw">_</span>) =&gt; (Bound::Included(key), Bound::Excluded(range_end)),
+    }
+}
+
 <span class="attr">#[derive(Debug, Clone, Default)]
 </span><span class="kw">pub struct </span>RangeRequest {
     <span class="doccomment">/// key is the first key for the range, If range_end is not given, the
     /// request only looks up key.
     </span><span class="kw">pub </span>key: Vec&lt;u8&gt;,
     <span class="doccomment">/// range_end is the upper bound on the requested range [key, range_end).
-    /// If range_end is &#39;\0&#39;, the range is all keys &gt;= key.
-    /// If range_end is key plus one (e.g., &quot;aa&quot;+1 == &quot;ab&quot;, &quot;a\xff&quot;+1 == &quot;b&quot;),
+    /// If range_end is '\0', the range is all keys &gt;= key.
+    /// If range_end is key plus one (e.g., "aa"+1 == "ab", "a\xff"+1 == "b"),
     /// then the range request gets all keys prefixed with key.
-    /// If both key and range_end are &#39;\0&#39;, then the range request returns all
+    /// If both key and range_end are '\0', then the range request returns all
     /// keys.
     </span><span class="kw">pub </span>range_end: Vec&lt;u8&gt;,
     <span class="doccomment">/// limit is a limit on the number of keys returned for the request. When
@@ -1256,10 +1192,10 @@
 }
 
 <span class="kw">impl </span>Display <span class="kw">for </span>RangeRequest {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; std::fmt::Result {
         <span class="macro">write!</span>(
             f,
-            <span class="string">&quot;RangeRequest{{key: &#39;{}&#39;, range_end: &#39;{}&#39;, limit: {}, keys_only: {}}}&quot;</span>,
+            <span class="string">"RangeRequest{{key: '{}', range_end: '{}', limit: {}, keys_only: {}}}"</span>,
             String::from_utf8_lossy(<span class="kw-2">&amp;</span><span class="self">self</span>.key),
             String::from_utf8_lossy(<span class="kw-2">&amp;</span><span class="self">self</span>.range_end),
             <span class="self">self</span>.limit,
@@ -1279,6 +1215,11 @@
         }
     }
 
+    <span class="doccomment">/// Returns the `RangeBounds`.
+    </span><span class="kw">pub fn </span>range(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (Bound&lt;Vec&lt;u8&gt;&gt;, Bound&lt;Vec&lt;u8&gt;&gt;) {
+        to_range(<span class="self">self</span>.key.clone(), <span class="self">self</span>.range_end.clone())
+    }
+
     <span class="doccomment">/// key is the first key for the range, If range_end is not given, the
     /// request only looks up key.
     </span><span class="attr">#[inline]
@@ -1291,10 +1232,10 @@
     /// request only looks up key.
     ///
     /// range_end is the upper bound on the requested range [key, range_end).
-    /// If range_end is &#39;\0&#39;, the range is all keys &gt;= key.
-    /// If range_end is key plus one (e.g., &quot;aa&quot;+1 == &quot;ab&quot;, &quot;a\xff&quot;+1 == &quot;b&quot;),
+    /// If range_end is '\0', the range is all keys &gt;= key.
+    /// If range_end is key plus one (e.g., "aa"+1 == "ab", "a\xff"+1 == "b"),
     /// then the range request gets all keys prefixed with key.
-    /// If both key and range_end are &#39;\0&#39;, then the range request returns all
+    /// If both key and range_end are '\0', then the range request returns all
     /// keys.
     </span><span class="attr">#[inline]
     </span><span class="kw">pub fn </span>with_range(<span class="kw-2">mut </span><span class="self">self</span>, key: <span class="kw">impl </span>Into&lt;Vec&lt;u8&gt;&gt;, range_end: <span class="kw">impl </span>Into&lt;Vec&lt;u8&gt;&gt;) -&gt; <span class="self">Self </span>{
@@ -1304,7 +1245,7 @@
     </span>}
 
     <span class="doccomment">/// Gets all keys prefixed with key.
-    /// range_end is the key plus one (e.g., &quot;aa&quot;+1 == &quot;ab&quot;, &quot;a\xff&quot;+1 == &quot;b&quot;),
+    /// range_end is the key plus one (e.g., "aa"+1 == "ab", "a\xff"+1 == "b"),
     </span><span class="attr">#[inline]
     </span><span class="kw">pub fn </span>with_prefix(<span class="kw-2">mut </span><span class="self">self</span>, key: <span class="kw">impl </span>Into&lt;Vec&lt;u8&gt;&gt;) -&gt; <span class="self">Self </span>{
         <span class="self">self</span>.key = key.into();
@@ -1335,15 +1276,15 @@
 }
 
 <span class="kw">impl </span>Display <span class="kw">for </span>RangeResponse {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; std::fmt::Result {
         <span class="macro">write!</span>(
             f,
-            <span class="string">&quot;RangeResponse{{kvs: [{}], more: {}}}&quot;</span>,
+            <span class="string">"RangeResponse{{kvs: [{}], more: {}}}"</span>,
             <span class="self">self</span>.kvs
                 .iter()
                 .map(|kv| kv.to_string())
                 .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
-                .join(<span class="string">&quot;, &quot;</span>),
+                .join(<span class="string">", "</span>),
             <span class="self">self</span>.more
         )
     }
@@ -1515,15 +1456,15 @@
 }
 
 <span class="kw">impl </span>Display <span class="kw">for </span>BatchGetResponse {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; std::fmt::Result {
         <span class="macro">write!</span>(
             f,
-            <span class="string">&quot;[{}]&quot;</span>,
+            <span class="string">"[{}]"</span>,
             <span class="self">self</span>.kvs
                 .iter()
                 .map(|kv| kv.to_string())
                 .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
-                .join(<span class="string">&quot;, &quot;</span>),
+                .join(<span class="string">", "</span>),
         )
     }
 }
@@ -1831,14 +1772,14 @@
     /// argument.
     /// If range_end is one bit larger than the given key, then the range is all
     /// the keys with the prefix (the given key).
-    /// If range_end is &#39;\0&#39;, the range is all keys greater than or equal to the
+    /// If range_end is '\0', the range is all keys greater than or equal to the
     /// key argument.
     </span><span class="kw">pub </span>range_end: Vec&lt;u8&gt;,
     <span class="doccomment">/// If prev_kv is set, gets the previous key-value pairs before deleting it.
     /// The previous key-value pairs will be returned in the delete response.
     </span><span class="kw">pub </span>prev_kv: bool,
     <span class="comment">// TODO(jiachun):
-    // Add a &quot;limit&quot; in delete request?
+    // Add a "limit" in delete request?
     // To avoid a huge delete block everything.
 </span>}
 
@@ -1873,6 +1814,11 @@
         }
     }
 
+    <span class="doccomment">/// Returns the `RangeBounds`.
+    </span><span class="kw">pub fn </span>range(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (Bound&lt;Vec&lt;u8&gt;&gt;, Bound&lt;Vec&lt;u8&gt;&gt;) {
+        to_range(<span class="self">self</span>.key.clone(), <span class="self">self</span>.range_end.clone())
+    }
+
     <span class="doccomment">/// key is the first key to delete in the range. If range_end is not given,
     /// the range is defined to contain only the key argument.
     </span><span class="attr">#[inline]
@@ -1889,7 +1835,7 @@
     /// argument.
     /// If range_end is one bit larger than the given key, then the range is all
     /// the keys with the prefix (the given key).
-    /// If range_end is &#39;\0&#39;, the range is all keys greater than or equal to the
+    /// If range_end is '\0', the range is all keys greater than or equal to the
     /// key argument.
     </span><span class="attr">#[inline]
     </span><span class="kw">pub fn </span>with_range(<span class="kw-2">mut </span><span class="self">self</span>, key: <span class="kw">impl </span>Into&lt;Vec&lt;u8&gt;&gt;, range_end: <span class="kw">impl </span>Into&lt;Vec&lt;u8&gt;&gt;) -&gt; <span class="self">Self </span>{
@@ -1955,71 +1901,6 @@
     }
 }
 
-<span class="attr">#[derive(Debug, Clone, Default)]
-</span><span class="kw">pub struct </span>MoveValueRequest {
-    <span class="doccomment">/// If from_key dose not exist, return the value of to_key (if it exists).
-    /// If from_key exists, move the value of from_key to to_key (i.e. rename),
-    /// and return the value.
-    </span><span class="kw">pub </span>from_key: Vec&lt;u8&gt;,
-    <span class="kw">pub </span>to_key: Vec&lt;u8&gt;,
-}
-
-<span class="kw">impl </span>From&lt;MoveValueRequest&gt; <span class="kw">for </span>PbMoveValueRequest {
-    <span class="kw">fn </span>from(req: MoveValueRequest) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
-            header: <span class="prelude-val">None</span>,
-            from_key: req.from_key,
-            to_key: req.to_key,
-        }
-    }
-}
-
-<span class="kw">impl </span>From&lt;PbMoveValueRequest&gt; <span class="kw">for </span>MoveValueRequest {
-    <span class="kw">fn </span>from(value: PbMoveValueRequest) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
-            from_key: value.from_key,
-            to_key: value.to_key,
-        }
-    }
-}
-
-<span class="kw">impl </span>MoveValueRequest {
-    <span class="attr">#[inline]
-    </span><span class="kw">pub fn </span>new(from_key: <span class="kw">impl </span>Into&lt;Vec&lt;u8&gt;&gt;, to_key: <span class="kw">impl </span>Into&lt;Vec&lt;u8&gt;&gt;) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
-            from_key: from_key.into(),
-            to_key: to_key.into(),
-        }
-    }
-}
-
-<span class="attr">#[derive(Debug, Clone)]
-</span><span class="kw">pub struct </span>MoveValueResponse(<span class="kw">pub </span><span class="prelude-ty">Option</span>&lt;KeyValue&gt;);
-
-<span class="kw">impl </span>TryFrom&lt;PbMoveValueResponse&gt; <span class="kw">for </span>MoveValueResponse {
-    <span class="kw">type </span>Error = error::Error;
-
-    <span class="kw">fn </span>try_from(pb: PbMoveValueResponse) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
-        util::check_response_header(pb.header.as_ref())<span class="question-mark">?</span>;
-
-        <span class="prelude-val">Ok</span>(<span class="self">Self</span>(pb.kv.map(KeyValue::new)))
-    }
-}
-
-<span class="kw">impl </span>MoveValueResponse {
-    <span class="kw">pub fn </span>to_proto_resp(<span class="self">self</span>, header: PbResponseHeader) -&gt; PbMoveValueResponse {
-        PbMoveValueResponse {
-            header: <span class="prelude-val">Some</span>(header),
-            kv: <span class="self">self</span>.<span class="number">0</span>.map(Into::into),
-        }
-    }
-
-    <span class="attr">#[inline]
-    </span><span class="kw">pub fn </span>take_kv(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;KeyValue&gt; {
-        <span class="self">self</span>.<span class="number">0</span>.take()
-    }
-}
-
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use </span>api::v1::meta::{
@@ -2027,17 +1908,15 @@
         CompareAndPutRequest <span class="kw">as </span>PbCompareAndPutRequest,
         CompareAndPutResponse <span class="kw">as </span>PbCompareAndPutResponse,
         DeleteRangeRequest <span class="kw">as </span>PbDeleteRangeRequest, DeleteRangeResponse <span class="kw">as </span>PbDeleteRangeResponse,
-        KeyValue <span class="kw">as </span>PbKeyValue, MoveValueRequest <span class="kw">as </span>PbMoveValueRequest,
-        MoveValueResponse <span class="kw">as </span>PbMoveValueResponse, PutRequest <span class="kw">as </span>PbPutRequest,
-        PutResponse <span class="kw">as </span>PbPutResponse, RangeRequest <span class="kw">as </span>PbRangeRequest,
-        RangeResponse <span class="kw">as </span>PbRangeResponse,
+        KeyValue <span class="kw">as </span>PbKeyValue, PutRequest <span class="kw">as </span>PbPutRequest, PutResponse <span class="kw">as </span>PbPutResponse,
+        RangeRequest <span class="kw">as </span>PbRangeRequest, RangeResponse <span class="kw">as </span>PbRangeResponse,
     };
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_range_request_trans() {
-        <span class="kw">let </span>(key, range_end, limit) = (<span class="string">b&quot;test_key1&quot;</span>.to_vec(), <span class="string">b&quot;test_range_end1&quot;</span>.to_vec(), <span class="number">1</span>);
+        <span class="kw">let </span>(key, range_end, limit) = (<span class="string">b"test_key1"</span>.to_vec(), <span class="string">b"test_range_end1"</span>.to_vec(), <span class="number">1</span>);
 
         <span class="kw">let </span>req = RangeRequest::new()
             .with_range(key.clone(), range_end.clone())
@@ -2054,7 +1933,7 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_prefix_request_trans() {
-        <span class="kw">let </span>(key, limit) = (<span class="string">b&quot;test_key1&quot;</span>.to_vec(), <span class="number">1</span>);
+        <span class="kw">let </span>(key, limit) = (<span class="string">b"test_key1"</span>.to_vec(), <span class="number">1</span>);
 
         <span class="kw">let </span>req = RangeRequest::new()
             .with_prefix(key.clone())
@@ -2064,7 +1943,7 @@
         <span class="kw">let </span>into_req: PbRangeRequest = req.into();
         <span class="macro">assert!</span>(into_req.header.is_none());
         <span class="macro">assert_eq!</span>(key, into_req.key);
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;test_key2&quot;</span>.to_vec(), into_req.range_end);
+        <span class="macro">assert_eq!</span>(<span class="string">b"test_key2"</span>.to_vec(), into_req.range_end);
         <span class="macro">assert_eq!</span>(limit, into_req.limit);
         <span class="macro">assert!</span>(into_req.keys_only);
     }
@@ -2075,12 +1954,12 @@
             header: <span class="prelude-val">None</span>,
             kvs: <span class="macro">vec!</span>[
                 PbKeyValue {
-                    key: <span class="string">b&quot;k1&quot;</span>.to_vec(),
-                    value: <span class="string">b&quot;v1&quot;</span>.to_vec(),
+                    key: <span class="string">b"k1"</span>.to_vec(),
+                    value: <span class="string">b"v1"</span>.to_vec(),
                 },
                 PbKeyValue {
-                    key: <span class="string">b&quot;k2&quot;</span>.to_vec(),
-                    value: <span class="string">b&quot;v2&quot;</span>.to_vec(),
+                    key: <span class="string">b"k2"</span>.to_vec(),
+                    value: <span class="string">b"v2"</span>.to_vec(),
                 },
             ],
             more: <span class="bool-val">true</span>,
@@ -2090,21 +1969,21 @@
         <span class="macro">assert!</span>(res.more);
         <span class="kw">let </span><span class="kw-2">mut </span>kvs = res.take_kvs();
         <span class="kw">let </span>kv0 = kvs.get_mut(<span class="number">0</span>).unwrap();
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;k1&quot;</span>.to_vec(), kv0.key().to_vec());
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;k1&quot;</span>.to_vec(), kv0.take_key());
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;v1&quot;</span>.to_vec(), kv0.value().to_vec());
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;v1&quot;</span>.to_vec(), kv0.take_value());
+        <span class="macro">assert_eq!</span>(<span class="string">b"k1"</span>.to_vec(), kv0.key().to_vec());
+        <span class="macro">assert_eq!</span>(<span class="string">b"k1"</span>.to_vec(), kv0.take_key());
+        <span class="macro">assert_eq!</span>(<span class="string">b"v1"</span>.to_vec(), kv0.value().to_vec());
+        <span class="macro">assert_eq!</span>(<span class="string">b"v1"</span>.to_vec(), kv0.take_value());
 
         <span class="kw">let </span>kv1 = kvs.get_mut(<span class="number">1</span>).unwrap();
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;k2&quot;</span>.to_vec(), kv1.key().to_vec());
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;k2&quot;</span>.to_vec(), kv1.take_key());
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;v2&quot;</span>.to_vec(), kv1.value().to_vec());
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;v2&quot;</span>.to_vec(), kv1.take_value());
+        <span class="macro">assert_eq!</span>(<span class="string">b"k2"</span>.to_vec(), kv1.key().to_vec());
+        <span class="macro">assert_eq!</span>(<span class="string">b"k2"</span>.to_vec(), kv1.take_key());
+        <span class="macro">assert_eq!</span>(<span class="string">b"v2"</span>.to_vec(), kv1.value().to_vec());
+        <span class="macro">assert_eq!</span>(<span class="string">b"v2"</span>.to_vec(), kv1.take_value());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_put_request_trans() {
-        <span class="kw">let </span>(key, value) = (<span class="string">b&quot;test_key1&quot;</span>.to_vec(), <span class="string">b&quot;test_value1&quot;</span>.to_vec());
+        <span class="kw">let </span>(key, value) = (<span class="string">b"test_key1"</span>.to_vec(), <span class="string">b"test_value1"</span>.to_vec());
 
         <span class="kw">let </span>req = PutRequest::new()
             .with_key(key.clone())
@@ -2122,32 +2001,32 @@
         <span class="kw">let </span>pb_res = PbPutResponse {
             header: <span class="prelude-val">None</span>,
             prev_kv: <span class="prelude-val">Some</span>(PbKeyValue {
-                key: <span class="string">b&quot;k1&quot;</span>.to_vec(),
-                value: <span class="string">b&quot;v1&quot;</span>.to_vec(),
+                key: <span class="string">b"k1"</span>.to_vec(),
+                value: <span class="string">b"v1"</span>.to_vec(),
             }),
         };
 
         <span class="kw">let </span>res: PutResponse = pb_res.try_into().unwrap();
         <span class="kw">let </span><span class="kw-2">mut </span>kv = res.prev_kv.unwrap();
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;k1&quot;</span>.to_vec(), kv.key().to_vec());
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;k1&quot;</span>.to_vec(), kv.take_key());
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;v1&quot;</span>.to_vec(), kv.value().to_vec());
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;v1&quot;</span>.to_vec(), kv.take_value());
+        <span class="macro">assert_eq!</span>(<span class="string">b"k1"</span>.to_vec(), kv.key().to_vec());
+        <span class="macro">assert_eq!</span>(<span class="string">b"k1"</span>.to_vec(), kv.take_key());
+        <span class="macro">assert_eq!</span>(<span class="string">b"v1"</span>.to_vec(), kv.value().to_vec());
+        <span class="macro">assert_eq!</span>(<span class="string">b"v1"</span>.to_vec(), kv.take_value());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_batch_get_request_trans() {
         <span class="kw">let </span>req = BatchGetRequest::default()
-            .add_key(<span class="string">b&quot;test_key1&quot;</span>.to_vec())
-            .add_key(<span class="string">b&quot;test_key2&quot;</span>.to_vec())
-            .add_key(<span class="string">b&quot;test_key3&quot;</span>.to_vec());
+            .add_key(<span class="string">b"test_key1"</span>.to_vec())
+            .add_key(<span class="string">b"test_key2"</span>.to_vec())
+            .add_key(<span class="string">b"test_key3"</span>.to_vec());
 
         <span class="kw">let </span>into_req: PbBatchGetRequest = req.into();
 
         <span class="macro">assert!</span>(into_req.header.is_none());
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;test_key1&quot;</span>.as_slice(), into_req.keys.get(<span class="number">0</span>).unwrap());
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;test_key2&quot;</span>.as_slice(), into_req.keys.get(<span class="number">1</span>).unwrap());
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;test_key3&quot;</span>.as_slice(), into_req.keys.get(<span class="number">2</span>).unwrap());
+        <span class="macro">assert_eq!</span>(<span class="string">b"test_key1"</span>.as_slice(), into_req.keys.first().unwrap());
+        <span class="macro">assert_eq!</span>(<span class="string">b"test_key2"</span>.as_slice(), into_req.keys.get(<span class="number">1</span>).unwrap());
+        <span class="macro">assert_eq!</span>(<span class="string">b"test_key3"</span>.as_slice(), into_req.keys.get(<span class="number">2</span>).unwrap());
     }
 
     <span class="attr">#[test]
@@ -2155,32 +2034,32 @@
         <span class="kw">let </span>pb_res = PbBatchGetResponse {
             header: <span class="prelude-val">None</span>,
             kvs: <span class="macro">vec!</span>[PbKeyValue {
-                key: <span class="string">b&quot;test_key1&quot;</span>.to_vec(),
-                value: <span class="string">b&quot;test_value1&quot;</span>.to_vec(),
+                key: <span class="string">b"test_key1"</span>.to_vec(),
+                value: <span class="string">b"test_value1"</span>.to_vec(),
             }],
         };
         <span class="kw">let </span>res: BatchGetResponse = pb_res.try_into().unwrap();
         <span class="kw">let </span>kvs = res.kvs;
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;test_key1&quot;</span>.as_slice(), kvs[<span class="number">0</span>].key());
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;test_value1&quot;</span>.as_slice(), kvs[<span class="number">0</span>].value());
+        <span class="macro">assert_eq!</span>(<span class="string">b"test_key1"</span>.as_slice(), kvs[<span class="number">0</span>].key());
+        <span class="macro">assert_eq!</span>(<span class="string">b"test_value1"</span>.as_slice(), kvs[<span class="number">0</span>].value());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_batch_put_request_trans() {
         <span class="kw">let </span>req = BatchPutRequest::new()
-            .add_kv(<span class="string">b&quot;test_key1&quot;</span>.to_vec(), <span class="string">b&quot;test_value1&quot;</span>.to_vec())
-            .add_kv(<span class="string">b&quot;test_key2&quot;</span>.to_vec(), <span class="string">b&quot;test_value2&quot;</span>.to_vec())
-            .add_kv(<span class="string">b&quot;test_key3&quot;</span>.to_vec(), <span class="string">b&quot;test_value3&quot;</span>.to_vec())
+            .add_kv(<span class="string">b"test_key1"</span>.to_vec(), <span class="string">b"test_value1"</span>.to_vec())
+            .add_kv(<span class="string">b"test_key2"</span>.to_vec(), <span class="string">b"test_value2"</span>.to_vec())
+            .add_kv(<span class="string">b"test_key3"</span>.to_vec(), <span class="string">b"test_value3"</span>.to_vec())
             .with_prev_kv();
 
         <span class="kw">let </span>into_req: PbBatchPutRequest = req.into();
         <span class="macro">assert!</span>(into_req.header.is_none());
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;test_key1&quot;</span>.to_vec(), into_req.kvs.get(<span class="number">0</span>).unwrap().key);
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;test_key2&quot;</span>.to_vec(), into_req.kvs.get(<span class="number">1</span>).unwrap().key);
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;test_key3&quot;</span>.to_vec(), into_req.kvs.get(<span class="number">2</span>).unwrap().key);
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;test_value1&quot;</span>.to_vec(), into_req.kvs.get(<span class="number">0</span>).unwrap().value);
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;test_value2&quot;</span>.to_vec(), into_req.kvs.get(<span class="number">1</span>).unwrap().value);
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;test_value3&quot;</span>.to_vec(), into_req.kvs.get(<span class="number">2</span>).unwrap().value);
+        <span class="macro">assert_eq!</span>(<span class="string">b"test_key1"</span>.to_vec(), into_req.kvs.first().unwrap().key);
+        <span class="macro">assert_eq!</span>(<span class="string">b"test_key2"</span>.to_vec(), into_req.kvs.get(<span class="number">1</span>).unwrap().key);
+        <span class="macro">assert_eq!</span>(<span class="string">b"test_key3"</span>.to_vec(), into_req.kvs.get(<span class="number">2</span>).unwrap().key);
+        <span class="macro">assert_eq!</span>(<span class="string">b"test_value1"</span>.to_vec(), into_req.kvs.first().unwrap().value);
+        <span class="macro">assert_eq!</span>(<span class="string">b"test_value2"</span>.to_vec(), into_req.kvs.get(<span class="number">1</span>).unwrap().value);
+        <span class="macro">assert_eq!</span>(<span class="string">b"test_value3"</span>.to_vec(), into_req.kvs.get(<span class="number">2</span>).unwrap().value);
         <span class="macro">assert!</span>(into_req.prev_kv);
     }
 
@@ -2189,30 +2068,30 @@
         <span class="kw">let </span>pb_res = PbBatchPutResponse {
             header: <span class="prelude-val">None</span>,
             prev_kvs: <span class="macro">vec!</span>[PbKeyValue {
-                key: <span class="string">b&quot;k1&quot;</span>.to_vec(),
-                value: <span class="string">b&quot;v1&quot;</span>.to_vec(),
+                key: <span class="string">b"k1"</span>.to_vec(),
+                value: <span class="string">b"v1"</span>.to_vec(),
             }],
         };
 
         <span class="kw">let </span><span class="kw-2">mut </span>res: BatchPutResponse = pb_res.try_into().unwrap();
         <span class="kw">let </span>kvs = res.take_prev_kvs();
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;k1&quot;</span>.to_vec(), kvs[<span class="number">0</span>].key().to_vec());
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;v1&quot;</span>.to_vec(), kvs[<span class="number">0</span>].value().to_vec());
+        <span class="macro">assert_eq!</span>(<span class="string">b"k1"</span>.to_vec(), kvs[<span class="number">0</span>].key().to_vec());
+        <span class="macro">assert_eq!</span>(<span class="string">b"v1"</span>.to_vec(), kvs[<span class="number">0</span>].value().to_vec());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_batch_delete_request_trans() {
         <span class="kw">let </span>req = BatchDeleteRequest::new()
-            .add_key(<span class="string">b&quot;test_key1&quot;</span>.to_vec())
-            .add_key(<span class="string">b&quot;test_key2&quot;</span>.to_vec())
-            .add_key(<span class="string">b&quot;test_key3&quot;</span>.to_vec())
+            .add_key(<span class="string">b"test_key1"</span>.to_vec())
+            .add_key(<span class="string">b"test_key2"</span>.to_vec())
+            .add_key(<span class="string">b"test_key3"</span>.to_vec())
             .with_prev_kv();
 
         <span class="kw">let </span>into_req: PbBatchDeleteRequest = req.into();
         <span class="macro">assert!</span>(into_req.header.is_none());
-        <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span><span class="string">b&quot;test_key1&quot;</span>.to_vec(), into_req.keys.get(<span class="number">0</span>).unwrap());
-        <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span><span class="string">b&quot;test_key2&quot;</span>.to_vec(), into_req.keys.get(<span class="number">1</span>).unwrap());
-        <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span><span class="string">b&quot;test_key3&quot;</span>.to_vec(), into_req.keys.get(<span class="number">2</span>).unwrap());
+        <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span><span class="string">b"test_key1"</span>.to_vec(), into_req.keys.first().unwrap());
+        <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span><span class="string">b"test_key2"</span>.to_vec(), into_req.keys.get(<span class="number">1</span>).unwrap());
+        <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span><span class="string">b"test_key3"</span>.to_vec(), into_req.keys.get(<span class="number">2</span>).unwrap());
         <span class="macro">assert!</span>(into_req.prev_kv);
     }
 
@@ -2221,23 +2100,23 @@
         <span class="kw">let </span>pb_res = PbBatchDeleteResponse {
             header: <span class="prelude-val">None</span>,
             prev_kvs: <span class="macro">vec!</span>[PbKeyValue {
-                key: <span class="string">b&quot;k1&quot;</span>.to_vec(),
-                value: <span class="string">b&quot;v1&quot;</span>.to_vec(),
+                key: <span class="string">b"k1"</span>.to_vec(),
+                value: <span class="string">b"v1"</span>.to_vec(),
             }],
         };
 
         <span class="kw">let </span>res: BatchDeleteResponse = pb_res.try_into().unwrap();
         <span class="kw">let </span>kvs = res.prev_kvs;
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;k1&quot;</span>.to_vec(), kvs[<span class="number">0</span>].key().to_vec());
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;v1&quot;</span>.to_vec(), kvs[<span class="number">0</span>].value().to_vec());
+        <span class="macro">assert_eq!</span>(<span class="string">b"k1"</span>.to_vec(), kvs[<span class="number">0</span>].key().to_vec());
+        <span class="macro">assert_eq!</span>(<span class="string">b"v1"</span>.to_vec(), kvs[<span class="number">0</span>].value().to_vec());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_compare_and_put_request_trans() {
         <span class="kw">let </span>(key, expect, value) = (
-            <span class="string">b&quot;test_key1&quot;</span>.to_vec(),
-            <span class="string">b&quot;test_expect1&quot;</span>.to_vec(),
-            <span class="string">b&quot;test_value1&quot;</span>.to_vec(),
+            <span class="string">b"test_key1"</span>.to_vec(),
+            <span class="string">b"test_expect1"</span>.to_vec(),
+            <span class="string">b"test_value1"</span>.to_vec(),
         );
 
         <span class="kw">let </span>req = CompareAndPutRequest::new()
@@ -2258,22 +2137,22 @@
             header: <span class="prelude-val">None</span>,
             success: <span class="bool-val">true</span>,
             prev_kv: <span class="prelude-val">Some</span>(PbKeyValue {
-                key: <span class="string">b&quot;k1&quot;</span>.to_vec(),
-                value: <span class="string">b&quot;v1&quot;</span>.to_vec(),
+                key: <span class="string">b"k1"</span>.to_vec(),
+                value: <span class="string">b"v1"</span>.to_vec(),
             }),
         };
 
         <span class="kw">let </span><span class="kw-2">mut </span>res: CompareAndPutResponse = pb_res.try_into().unwrap();
         <span class="kw">let </span><span class="kw-2">mut </span>kv = res.take_prev_kv().unwrap();
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;k1&quot;</span>.to_vec(), kv.key().to_vec());
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;k1&quot;</span>.to_vec(), kv.take_key());
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;v1&quot;</span>.to_vec(), kv.value().to_vec());
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;v1&quot;</span>.to_vec(), kv.take_value());
+        <span class="macro">assert_eq!</span>(<span class="string">b"k1"</span>.to_vec(), kv.key().to_vec());
+        <span class="macro">assert_eq!</span>(<span class="string">b"k1"</span>.to_vec(), kv.take_key());
+        <span class="macro">assert_eq!</span>(<span class="string">b"v1"</span>.to_vec(), kv.value().to_vec());
+        <span class="macro">assert_eq!</span>(<span class="string">b"v1"</span>.to_vec(), kv.take_value());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_delete_range_request_trans() {
-        <span class="kw">let </span>(key, range_end) = (<span class="string">b&quot;test_key1&quot;</span>.to_vec(), <span class="string">b&quot;test_range_end1&quot;</span>.to_vec());
+        <span class="kw">let </span>(key, range_end) = (<span class="string">b"test_key1"</span>.to_vec(), <span class="string">b"test_range_end1"</span>.to_vec());
 
         <span class="kw">let </span>req = DeleteRangeRequest::new()
             .with_range(key.clone(), range_end.clone())
@@ -2288,7 +2167,7 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_delete_prefix_request_trans() {
-        <span class="kw">let </span>key = <span class="string">b&quot;test_key1&quot;</span>.to_vec();
+        <span class="kw">let </span>key = <span class="string">b"test_key1"</span>.to_vec();
 
         <span class="kw">let </span>req = DeleteRangeRequest::new()
             .with_prefix(key.clone())
@@ -2297,7 +2176,7 @@
         <span class="kw">let </span>into_req: PbDeleteRangeRequest = req.into();
         <span class="macro">assert!</span>(into_req.header.is_none());
         <span class="macro">assert_eq!</span>(key, into_req.key);
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;test_key2&quot;</span>.to_vec(), into_req.range_end);
+        <span class="macro">assert_eq!</span>(<span class="string">b"test_key2"</span>.to_vec(), into_req.range_end);
         <span class="macro">assert!</span>(into_req.prev_kv);
     }
 
@@ -2308,12 +2187,12 @@
             deleted: <span class="number">2</span>,
             prev_kvs: <span class="macro">vec!</span>[
                 PbKeyValue {
-                    key: <span class="string">b&quot;k1&quot;</span>.to_vec(),
-                    value: <span class="string">b&quot;v1&quot;</span>.to_vec(),
+                    key: <span class="string">b"k1"</span>.to_vec(),
+                    value: <span class="string">b"v1"</span>.to_vec(),
                 },
                 PbKeyValue {
-                    key: <span class="string">b&quot;k2&quot;</span>.to_vec(),
-                    value: <span class="string">b&quot;v2&quot;</span>.to_vec(),
+                    key: <span class="string">b"k2"</span>.to_vec(),
+                    value: <span class="string">b"v2"</span>.to_vec(),
                 },
             ],
         };
@@ -2322,46 +2201,16 @@
         <span class="macro">assert_eq!</span>(<span class="number">2</span>, res.deleted());
         <span class="kw">let </span><span class="kw-2">mut </span>kvs = res.take_prev_kvs();
         <span class="kw">let </span>kv0 = kvs.get_mut(<span class="number">0</span>).unwrap();
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;k1&quot;</span>.to_vec(), kv0.key().to_vec());
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;k1&quot;</span>.to_vec(), kv0.take_key());
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;v1&quot;</span>.to_vec(), kv0.value().to_vec());
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;v1&quot;</span>.to_vec(), kv0.take_value());
+        <span class="macro">assert_eq!</span>(<span class="string">b"k1"</span>.to_vec(), kv0.key().to_vec());
+        <span class="macro">assert_eq!</span>(<span class="string">b"k1"</span>.to_vec(), kv0.take_key());
+        <span class="macro">assert_eq!</span>(<span class="string">b"v1"</span>.to_vec(), kv0.value().to_vec());
+        <span class="macro">assert_eq!</span>(<span class="string">b"v1"</span>.to_vec(), kv0.take_value());
 
         <span class="kw">let </span>kv1 = kvs.get_mut(<span class="number">1</span>).unwrap();
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;k2&quot;</span>.to_vec(), kv1.key().to_vec());
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;k2&quot;</span>.to_vec(), kv1.take_key());
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;v2&quot;</span>.to_vec(), kv1.value().to_vec());
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;v2&quot;</span>.to_vec(), kv1.take_value());
-    }
-
-    <span class="attr">#[test]
-    </span><span class="kw">fn </span>test_move_value_request_trans() {
-        <span class="kw">let </span>(from_key, to_key) = (<span class="string">b&quot;test_key1&quot;</span>.to_vec(), <span class="string">b&quot;test_key2&quot;</span>.to_vec());
-
-        <span class="kw">let </span>req = MoveValueRequest::new(from_key.clone(), to_key.clone());
-
-        <span class="kw">let </span>into_req: PbMoveValueRequest = req.into();
-        <span class="macro">assert!</span>(into_req.header.is_none());
-        <span class="macro">assert_eq!</span>(from_key, into_req.from_key);
-        <span class="macro">assert_eq!</span>(to_key, into_req.to_key);
-    }
-
-    <span class="attr">#[test]
-    </span><span class="kw">fn </span>test_move_value_response_trans() {
-        <span class="kw">let </span>pb_res = PbMoveValueResponse {
-            header: <span class="prelude-val">None</span>,
-            kv: <span class="prelude-val">Some</span>(PbKeyValue {
-                key: <span class="string">b&quot;k1&quot;</span>.to_vec(),
-                value: <span class="string">b&quot;v1&quot;</span>.to_vec(),
-            }),
-        };
-
-        <span class="kw">let </span><span class="kw-2">mut </span>res: MoveValueResponse = pb_res.try_into().unwrap();
-        <span class="kw">let </span><span class="kw-2">mut </span>kv = res.take_kv().unwrap();
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;k1&quot;</span>.to_vec(), kv.key().to_vec());
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;k1&quot;</span>.to_vec(), kv.take_key());
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;v1&quot;</span>.to_vec(), kv.value().to_vec());
-        <span class="macro">assert_eq!</span>(<span class="string">b&quot;v1&quot;</span>.to_vec(), kv.take_value());
+        <span class="macro">assert_eq!</span>(<span class="string">b"k2"</span>.to_vec(), kv1.key().to_vec());
+        <span class="macro">assert_eq!</span>(<span class="string">b"k2"</span>.to_vec(), kv1.take_key());
+        <span class="macro">assert_eq!</span>(<span class="string">b"v2"</span>.to_vec(), kv1.value().to_vec());
+        <span class="macro">assert_eq!</span>(<span class="string">b"v2"</span>.to_vec(), kv1.take_value());
     }
 }
 </code></pre></div></section></main></body></html>

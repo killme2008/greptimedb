@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["schedule_compaction"],"struct":["AlterContext","DropContext","RegionWriter","TruncateContext","WriterCompactRequest","WriterContext","WriterInner"],"type":["RegionWriterRef"]};

@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["SqlRequest"],"mod":["alter","compact_table","create","create_external","drop_table","flush_table","insert","truncate_table"],"struct":["SqlHandler"]};

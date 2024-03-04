@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["MIN_OP_TYPE"],"type":["SequenceNumber"]};
+window.SIDEBAR_ITEMS = {"type":["SequenceNumber"]};

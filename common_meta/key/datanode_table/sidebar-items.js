@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["DatanodeTableKey","DatanodeTableManager","DatanodeTableValue"]};
+window.SIDEBAR_ITEMS = {"fn":["datanode_table_value_decoder"],"struct":["DatanodeTableKey","DatanodeTableManager","DatanodeTableValue","RegionInfo"]};

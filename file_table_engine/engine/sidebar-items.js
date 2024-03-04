@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"constant":["INIT_TABLE_VERSION"],"mod":["immutable","procedure"]};

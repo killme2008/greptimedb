@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/table/src/table/scan.rs`."><title>scan.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="table" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../table/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/table/src/table/scan.rs`."><title>scan.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="table" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -188,16 +189,27 @@
 <a href="#188" id="188">188</a>
 <a href="#189" id="189">189</a>
 <a href="#190" id="190">190</a>
+<a href="#191" id="191">191</a>
+<a href="#192" id="192">192</a>
+<a href="#193" id="193">193</a>
+<a href="#194" id="194">194</a>
+<a href="#195" id="195">195</a>
+<a href="#196" id="196">196</a>
+<a href="#197" id="197">197</a>
+<a href="#198" id="198">198</a>
+<a href="#199" id="199">199</a>
+<a href="#200" id="200">200</a>
+<a href="#201" id="201">201</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -214,13 +226,15 @@
 <span class="kw">use </span>common_recordbatch::error::Result <span class="kw">as </span>RecordBatchResult;
 <span class="kw">use </span>common_recordbatch::{RecordBatch, RecordBatchStream, SendableRecordBatchStream};
 <span class="kw">use </span>datafusion::execution::context::TaskContext;
-<span class="kw">use </span>datafusion::physical_plan::metrics::{BaselineMetrics, ExecutionPlanMetricsSet, MetricsSet};
+<span class="kw">use </span>datafusion::physical_plan::metrics::{ExecutionPlanMetricsSet, MetricsSet};
 <span class="kw">use </span>datafusion_physical_expr::PhysicalSortExpr;
 <span class="kw">use </span>datatypes::schema::SchemaRef;
 <span class="kw">use </span>futures::{Stream, StreamExt};
 <span class="kw">use </span>snafu::OptionExt;
 
-<span class="doccomment">/// Adapt greptime&#39;s [SendableRecordBatchStream] to DataFusion&#39;s [PhysicalPlan].
+<span class="kw">use </span><span class="kw">crate</span>::table::metrics::MemoryUsageMetrics;
+
+<span class="doccomment">/// Adapt greptime's [SendableRecordBatchStream] to GreptimeDB's [PhysicalPlan].
 </span><span class="kw">pub struct </span>StreamScanAdapter {
     stream: Mutex&lt;<span class="prelude-ty">Option</span>&lt;SendableRecordBatchStream&gt;&gt;,
     schema: SchemaRef,
@@ -229,10 +243,10 @@
 }
 
 <span class="kw">impl </span>Debug <span class="kw">for </span>StreamScanAdapter {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
-        f.debug_struct(<span class="string">&quot;StreamScanAdapter&quot;</span>)
-            .field(<span class="string">&quot;stream&quot;</span>, <span class="kw-2">&amp;</span><span class="string">&quot;&lt;SendableRecordBatchStream&gt;&quot;</span>)
-            .field(<span class="string">&quot;schema&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.schema.arrow_schema().fields)
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; std::fmt::Result {
+        f.debug_struct(<span class="string">"StreamScanAdapter"</span>)
+            .field(<span class="string">"stream"</span>, <span class="kw-2">&amp;</span><span class="string">"&lt;SendableRecordBatchStream&gt;"</span>)
+            .field(<span class="string">"schema"</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.schema.arrow_schema().fields)
             .finish()
     }
 }
@@ -277,7 +291,9 @@
     }
 
     <span class="kw">fn </span>with_new_children(<span class="kw-2">&amp;</span><span class="self">self</span>, _children: Vec&lt;PhysicalPlanRef&gt;) -&gt; QueryResult&lt;PhysicalPlanRef&gt; {
-        <span class="macro">unimplemented!</span>()
+        <span class="prelude-val">Ok</span>(Arc::new(<span class="self">Self</span>::new(
+            <span class="self">self</span>.stream.lock().unwrap().take().unwrap(),
+        )))
     }
 
     <span class="kw">fn </span>execute(
@@ -287,10 +303,10 @@
     ) -&gt; QueryResult&lt;SendableRecordBatchStream&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>stream = <span class="self">self</span>.stream.lock().unwrap();
         <span class="kw">let </span>stream = stream.take().context(query_error::ExecuteRepeatedlySnafu)<span class="question-mark">?</span>;
-        <span class="kw">let </span>baseline_metric = BaselineMetrics::new(<span class="kw-2">&amp;</span><span class="self">self</span>.metric, partition);
+        <span class="kw">let </span>mem_usage_metrics = MemoryUsageMetrics::new(<span class="kw-2">&amp;</span><span class="self">self</span>.metric, partition);
         <span class="prelude-val">Ok</span>(Box::pin(StreamWithMetricWrapper {
             stream,
-            metric: baseline_metric,
+            metric: mem_usage_metrics,
         }))
     }
 
@@ -301,17 +317,24 @@
 
 <span class="kw">pub struct </span>StreamWithMetricWrapper {
     stream: SendableRecordBatchStream,
-    metric: BaselineMetrics,
+    metric: MemoryUsageMetrics,
 }
 
 <span class="kw">impl </span>Stream <span class="kw">for </span>StreamWithMetricWrapper {
     <span class="kw">type </span>Item = RecordBatchResult&lt;RecordBatch&gt;;
 
-    <span class="kw">fn </span>poll_next(<span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; Poll&lt;<span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt;&gt; {
+    <span class="kw">fn </span>poll_next(<span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">'_</span>&gt;) -&gt; Poll&lt;<span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt;&gt; {
         <span class="kw">let </span>this = <span class="self">self</span>.get_mut();
-        <span class="kw">let </span>_timer = this.metric.elapsed_compute().timer();
         <span class="kw">let </span>poll = this.stream.poll_next_unpin(cx);
-        <span class="kw">if let </span>Poll::Ready(Option::Some(Result::Ok(record_batch))) = <span class="kw-2">&amp;</span>poll {
+        <span class="kw">if let </span>Poll::Ready(<span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(record_batch))) = <span class="kw-2">&amp;</span>poll {
+            <span class="kw">let </span>batch_mem_size = record_batch
+                .columns()
+                .iter()
+                .map(|vec_ref| vec_ref.memory_size())
+                .sum::&lt;usize&gt;();
+            <span class="comment">// we don't record elapsed time here
+            // since it's calling storage api involving I/O ops
+            </span>this.metric.record_mem_usage(batch_mem_size);
             this.metric.record_output(record_batch.num_rows());
         }
 
@@ -339,7 +362,7 @@
     </span><span class="kw">async fn </span>test_simple_table_scan() {
         <span class="kw">let </span>ctx = SessionContext::new();
         <span class="kw">let </span>schema = Arc::new(Schema::new(<span class="macro">vec!</span>[ColumnSchema::new(
-            <span class="string">&quot;a&quot;</span>,
+            <span class="string">"a"</span>,
             ConcreteDataType::int32_datatype(),
             <span class="bool-val">false</span>,
         )]));
@@ -373,7 +396,7 @@
         <span class="kw">match </span>result {
             <span class="prelude-val">Err</span>(e) =&gt; <span class="macro">assert!</span>(e
                 .to_string()
-                .contains(<span class="string">&quot;Not expected to run ExecutionPlan more than once&quot;</span>)),
+                .contains(<span class="string">"Not expected to run ExecutionPlan more than once"</span>)),
             <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
         }
     }

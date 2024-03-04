@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/servers/src/tls.rs`."><title>tls.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="servers" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../servers/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/servers/src/tls.rs`."><title>tls.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="servers" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -237,16 +238,17 @@
 <a href="#237" id="237">237</a>
 <a href="#238" id="238">238</a>
 <a href="#239" id="239">239</a>
+<a href="#240" id="240">240</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -254,36 +256,37 @@
 </span><span class="kw">use </span>std::fs::File;
 <span class="kw">use </span>std::io::{BufReader, Error, ErrorKind};
 
-<span class="kw">use </span>rustls::{Certificate, PrivateKey, ServerConfig};
+<span class="kw">use </span>rustls::ServerConfig;
 <span class="kw">use </span>rustls_pemfile::{certs, pkcs8_private_keys, rsa_private_keys};
+<span class="kw">use </span>rustls_pki_types::{CertificateDer, PrivateKeyDer};
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>strum::EnumString;
 
 <span class="doccomment">/// TlsMode is used for Mysql and Postgres server start up.
 </span><span class="attr">#[derive(Debug, Default, Serialize, Deserialize, Clone, PartialEq, Eq, EnumString)]
-#[serde(rename_all = <span class="string">&quot;snake_case&quot;</span>)]
+#[serde(rename_all = <span class="string">"snake_case"</span>)]
 </span><span class="kw">pub enum </span>TlsMode {
     <span class="attr">#[default]
-    #[strum(to_string = <span class="string">&quot;disable&quot;</span>)]
+    #[strum(to_string = <span class="string">"disable"</span>)]
     </span>Disable,
 
-    <span class="attr">#[strum(to_string = <span class="string">&quot;prefer&quot;</span>)]
+    <span class="attr">#[strum(to_string = <span class="string">"prefer"</span>)]
     </span>Prefer,
 
-    <span class="attr">#[strum(to_string = <span class="string">&quot;require&quot;</span>)]
+    <span class="attr">#[strum(to_string = <span class="string">"require"</span>)]
     </span>Require,
 
     <span class="comment">// TODO(SSebo): Implement the following 2 TSL mode described in
-    // [&quot;34.19.3. Protection Provided in Different Modes&quot;](https://www.postgresql.org/docs/current/libpq-ssl.html)
-    </span><span class="attr">#[strum(to_string = <span class="string">&quot;verify-ca&quot;</span>)]
+    // ["34.19.3. Protection Provided in Different Modes"](https://www.postgresql.org/docs/current/libpq-ssl.html)
+    </span><span class="attr">#[strum(to_string = <span class="string">"verify-ca"</span>)]
     </span>VerifyCa,
 
-    <span class="attr">#[strum(to_string = <span class="string">&quot;verify-full&quot;</span>)]
+    <span class="attr">#[strum(to_string = <span class="string">"verify-full"</span>)]
     </span>VerifyFull,
 }
 
 <span class="attr">#[derive(Debug, Default, Serialize, Deserialize, Clone, PartialEq, Eq)]
-#[serde(rename_all = <span class="string">&quot;snake_case&quot;</span>)]
+#[serde(rename_all = <span class="string">"snake_case"</span>)]
 </span><span class="kw">pub struct </span>TlsOption {
     <span class="kw">pub </span>mode: TlsMode,
     <span class="attr">#[serde(default)]
@@ -316,28 +319,28 @@
             <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>);
         }
         <span class="kw">let </span>cert = certs(<span class="kw-2">&amp;mut </span>BufReader::new(File::open(<span class="kw-2">&amp;</span><span class="self">self</span>.cert_path)<span class="question-mark">?</span>))
-            .map_err(|<span class="kw">_</span>| Error::new(ErrorKind::InvalidInput, <span class="string">&quot;invalid cert&quot;</span>))
-            .map(|<span class="kw-2">mut </span>certs| certs.drain(..).map(Certificate).collect())<span class="question-mark">?</span>;
+            .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;CertificateDer&gt;, Error&gt;&gt;()<span class="question-mark">?</span>;
 
         <span class="kw">let </span>key = {
             <span class="kw">let </span><span class="kw-2">mut </span>pkcs8 = pkcs8_private_keys(<span class="kw-2">&amp;mut </span>BufReader::new(File::open(<span class="kw-2">&amp;</span><span class="self">self</span>.key_path)<span class="question-mark">?</span>))
-                .map_err(|<span class="kw">_</span>| Error::new(ErrorKind::InvalidInput, <span class="string">&quot;invalid key&quot;</span>))<span class="question-mark">?</span>;
+                .map(|key| key.map(PrivateKeyDer::from))
+                .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;PrivateKeyDer&gt;, Error&gt;&gt;()<span class="question-mark">?</span>;
             <span class="kw">if </span>!pkcs8.is_empty() {
-                PrivateKey(pkcs8.remove(<span class="number">0</span>))
+                pkcs8.remove(<span class="number">0</span>)
             } <span class="kw">else </span>{
                 <span class="kw">let </span><span class="kw-2">mut </span>rsa = rsa_private_keys(<span class="kw-2">&amp;mut </span>BufReader::new(File::open(<span class="kw-2">&amp;</span><span class="self">self</span>.key_path)<span class="question-mark">?</span>))
-                    .map_err(|<span class="kw">_</span>| Error::new(ErrorKind::InvalidInput, <span class="string">&quot;invalid key&quot;</span>))<span class="question-mark">?</span>;
+                    .map(|key| key.map(PrivateKeyDer::from))
+                    .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;PrivateKeyDer&gt;, Error&gt;&gt;()<span class="question-mark">?</span>;
                 <span class="kw">if </span>!rsa.is_empty() {
-                    PrivateKey(rsa.remove(<span class="number">0</span>))
+                    rsa.remove(<span class="number">0</span>)
                 } <span class="kw">else </span>{
-                    <span class="kw">return </span><span class="prelude-val">Err</span>(Error::new(ErrorKind::InvalidInput, <span class="string">&quot;invalid key&quot;</span>));
+                    <span class="kw">return </span><span class="prelude-val">Err</span>(Error::new(ErrorKind::InvalidInput, <span class="string">"invalid key"</span>));
                 }
             }
         };
 
         <span class="comment">// TODO(SSebo): with_client_cert_verifier if TlsMode is Required.
         </span><span class="kw">let </span>config = ServerConfig::builder()
-            .with_safe_defaults()
             .with_no_client_auth()
             .with_single_cert(cert, key)
             .map_err(|err| std::io::Error::new(ErrorKind::InvalidInput, err))<span class="question-mark">?</span>;
@@ -368,24 +371,24 @@
         <span class="macro">assert_eq!</span>(
             TlsOption {
                 mode: Disable,
-                cert_path: <span class="string">&quot;/path/to/cert_path&quot;</span>.to_string(),
-                key_path: <span class="string">&quot;/path/to/key_path&quot;</span>.to_string(),
+                cert_path: <span class="string">"/path/to/cert_path"</span>.to_string(),
+                key_path: <span class="string">"/path/to/key_path"</span>.to_string(),
             },
             TlsOption::new(
                 <span class="prelude-val">Some</span>(Disable),
-                <span class="prelude-val">Some</span>(<span class="string">&quot;/path/to/cert_path&quot;</span>.to_string()),
-                <span class="prelude-val">Some</span>(<span class="string">&quot;/path/to/key_path&quot;</span>.to_string())
+                <span class="prelude-val">Some</span>(<span class="string">"/path/to/cert_path"</span>.to_string()),
+                <span class="prelude-val">Some</span>(<span class="string">"/path/to/key_path"</span>.to_string())
             )
         );
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_tls_option_disable() {
-        <span class="kw">let </span>s = <span class="string">r#&quot;
+        <span class="kw">let </span>s = <span class="string">r#"
         {
-            &quot;mode&quot;: &quot;disable&quot;
+            "mode": "disable"
         }
-        &quot;#</span>;
+        "#</span>;
 
         <span class="kw">let </span>t: TlsOption = serde_json::from_str(s).unwrap();
 
@@ -402,13 +405,13 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_tls_option_prefer() {
-        <span class="kw">let </span>s = <span class="string">r#&quot;
+        <span class="kw">let </span>s = <span class="string">r#"
         {
-            &quot;mode&quot;: &quot;prefer&quot;,
-            &quot;cert_path&quot;: &quot;/some_dir/some.crt&quot;,
-            &quot;key_path&quot;: &quot;/some_dir/some.key&quot;
+            "mode": "prefer",
+            "cert_path": "/some_dir/some.crt",
+            "key_path": "/some_dir/some.key"
         }
-        &quot;#</span>;
+        "#</span>;
 
         <span class="kw">let </span>t: TlsOption = serde_json::from_str(s).unwrap();
 
@@ -421,13 +424,13 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_tls_option_require() {
-        <span class="kw">let </span>s = <span class="string">r#&quot;
+        <span class="kw">let </span>s = <span class="string">r#"
         {
-            &quot;mode&quot;: &quot;require&quot;,
-            &quot;cert_path&quot;: &quot;/some_dir/some.crt&quot;,
-            &quot;key_path&quot;: &quot;/some_dir/some.key&quot;
+            "mode": "require",
+            "cert_path": "/some_dir/some.crt",
+            "key_path": "/some_dir/some.key"
         }
-        &quot;#</span>;
+        "#</span>;
 
         <span class="kw">let </span>t: TlsOption = serde_json::from_str(s).unwrap();
 
@@ -439,14 +442,14 @@
     }
 
     <span class="attr">#[test]
-    </span><span class="kw">fn </span>test_tls_option_verifiy_ca() {
-        <span class="kw">let </span>s = <span class="string">r#&quot;
+    </span><span class="kw">fn </span>test_tls_option_verify_ca() {
+        <span class="kw">let </span>s = <span class="string">r#"
         {
-            &quot;mode&quot;: &quot;verify_ca&quot;,
-            &quot;cert_path&quot;: &quot;/some_dir/some.crt&quot;,
-            &quot;key_path&quot;: &quot;/some_dir/some.key&quot;
+            "mode": "verify_ca",
+            "cert_path": "/some_dir/some.crt",
+            "key_path": "/some_dir/some.key"
         }
-        &quot;#</span>;
+        "#</span>;
 
         <span class="kw">let </span>t: TlsOption = serde_json::from_str(s).unwrap();
 
@@ -458,14 +461,14 @@
     }
 
     <span class="attr">#[test]
-    </span><span class="kw">fn </span>test_tls_option_verifiy_full() {
-        <span class="kw">let </span>s = <span class="string">r#&quot;
+    </span><span class="kw">fn </span>test_tls_option_verify_full() {
+        <span class="kw">let </span>s = <span class="string">r#"
         {
-            &quot;mode&quot;: &quot;verify_full&quot;,
-            &quot;cert_path&quot;: &quot;/some_dir/some.crt&quot;,
-            &quot;key_path&quot;: &quot;/some_dir/some.key&quot;
+            "mode": "verify_full",
+            "cert_path": "/some_dir/some.crt",
+            "key_path": "/some_dir/some.key"
         }
-        &quot;#</span>;
+        "#</span>;
 
         <span class="kw">let </span>t: TlsOption = serde_json::from_str(s).unwrap();
 

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["config","error","noop","raft_engine","test_util"],"struct":["LogConfig","NoopLogStore"]};
+window.SIDEBAR_ITEMS = {"mod":["error","kafka","noop","raft_engine","test_util"],"struct":["NoopLogStore"]};

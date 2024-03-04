@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/servers/src/postgres/handler.rs`."><title>handler.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="servers" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../servers/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/servers/src/postgres/handler.rs`."><title>handler.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="servers" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -274,30 +275,16 @@
 <a href="#274" id="274">274</a>
 <a href="#275" id="275">275</a>
 <a href="#276" id="276">276</a>
-<a href="#277" id="277">277</a>
-<a href="#278" id="278">278</a>
-<a href="#279" id="279">279</a>
-<a href="#280" id="280">280</a>
-<a href="#281" id="281">281</a>
-<a href="#282" id="282">282</a>
-<a href="#283" id="283">283</a>
-<a href="#284" id="284">284</a>
-<a href="#285" id="285">285</a>
-<a href="#286" id="286">286</a>
-<a href="#287" id="287">287</a>
-<a href="#288" id="288">288</a>
-<a href="#289" id="289">289</a>
-<a href="#290" id="290">290</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -305,18 +292,16 @@
 </span><span class="kw">use </span>std::sync::Arc;
 
 <span class="kw">use </span>async_trait::async_trait;
+<span class="kw">use </span>common_error::ext::ErrorExt;
 <span class="kw">use </span>common_query::Output;
 <span class="kw">use </span>common_recordbatch::error::Result <span class="kw">as </span>RecordBatchResult;
 <span class="kw">use </span>common_recordbatch::RecordBatch;
-<span class="kw">use </span>common_telemetry::timer;
 <span class="kw">use </span>datatypes::schema::SchemaRef;
 <span class="kw">use </span>futures::{future, stream, Stream, StreamExt};
-<span class="kw">use </span>metrics::increment_counter;
 <span class="kw">use </span>pgwire::api::portal::{Format, Portal};
 <span class="kw">use </span>pgwire::api::query::{ExtendedQueryHandler, SimpleQueryHandler, StatementOrPortal};
 <span class="kw">use </span>pgwire::api::results::{DataRowEncoder, DescribeResponse, QueryResponse, Response, Tag};
 <span class="kw">use </span>pgwire::api::stmt::QueryParser;
-<span class="kw">use </span>pgwire::api::store::MemPortalStore;
 <span class="kw">use </span>pgwire::api::{ClientInfo, Type};
 <span class="kw">use </span>pgwire::error::{ErrorInfo, PgWireError, PgWireResult};
 <span class="kw">use </span>query::query_engine::DescribeResult;
@@ -332,21 +317,19 @@
 
 <span class="attr">#[async_trait]
 </span><span class="kw">impl </span>SimpleQueryHandler <span class="kw">for </span>PostgresServerHandler {
-    <span class="kw">async fn </span>do_query&lt;<span class="lifetime">&#39;a</span>, C&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, _client: <span class="kw-2">&amp;</span>C, query: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str) -&gt; PgWireResult&lt;Vec&lt;Response&lt;<span class="lifetime">&#39;a</span>&gt;&gt;&gt;
+    <span class="kw">async fn </span>do_query&lt;<span class="lifetime">'a</span>, C&gt;(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        _client: <span class="kw-2">&amp;mut </span>C,
+        query: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str,
+    ) -&gt; PgWireResult&lt;Vec&lt;Response&lt;<span class="lifetime">'a</span>&gt;&gt;&gt;
     <span class="kw">where
         </span>C: ClientInfo + Unpin + Send + Sync,
     {
         <span class="kw">let </span>query_ctx = <span class="self">self</span>.session.new_query_context();
-        <span class="kw">let </span>_timer = <span class="macro">timer!</span>(
-            <span class="kw">crate</span>::metrics::METRIC_POSTGRES_QUERY_TIMER,
-            <span class="kw-2">&amp;</span>[
-                (
-                    <span class="kw">crate</span>::metrics::METRIC_POSTGRES_SUBPROTOCOL_LABEL,
-                    <span class="kw">crate</span>::metrics::METRIC_POSTGRES_SIMPLE_QUERY.to_string()
-                ),
-                (<span class="kw">crate</span>::metrics::METRIC_DB_LABEL, query_ctx.get_db_string())
-            ]
-        );
+        <span class="kw">let </span>db = query_ctx.get_db_string();
+        <span class="kw">let </span>_timer = <span class="kw">crate</span>::metrics::METRIC_POSTGRES_QUERY_TIMER
+            .with_label_values(<span class="kw-2">&amp;</span>[<span class="kw">crate</span>::metrics::METRIC_POSTGRES_SIMPLE_QUERY, db.as_str()])
+            .start_timer();
         <span class="kw">let </span>outputs = <span class="self">self</span>.query_handler.do_query(query, query_ctx).<span class="kw">await</span>;
 
         <span class="kw">let </span><span class="kw-2">mut </span>results = Vec::with_capacity(outputs.len());
@@ -360,13 +343,13 @@
     }
 }
 
-<span class="kw">fn </span>output_to_query_response&lt;<span class="lifetime">&#39;a</span>&gt;(
+<span class="kw">fn </span>output_to_query_response&lt;<span class="lifetime">'a</span>&gt;(
     output: <span class="prelude-ty">Result</span>&lt;Output&gt;,
     field_format: <span class="kw-2">&amp;</span>Format,
-) -&gt; PgWireResult&lt;Response&lt;<span class="lifetime">&#39;a</span>&gt;&gt; {
+) -&gt; PgWireResult&lt;Response&lt;<span class="lifetime">'a</span>&gt;&gt; {
     <span class="kw">match </span>output {
         <span class="prelude-val">Ok</span>(Output::AffectedRows(rows)) =&gt; <span class="prelude-val">Ok</span>(Response::Execution(Tag::new_for_execution(
-            <span class="string">&quot;OK&quot;</span>,
+            <span class="string">"OK"</span>,
             <span class="prelude-val">Some</span>(rows),
         ))),
         <span class="prelude-val">Ok</span>(Output::Stream(record_stream)) =&gt; {
@@ -378,20 +361,20 @@
             recordbatches_to_query_response(recordbatches.as_stream(), schema, field_format)
         }
         <span class="prelude-val">Err</span>(e) =&gt; <span class="prelude-val">Ok</span>(Response::Error(Box::new(ErrorInfo::new(
-            <span class="string">&quot;ERROR&quot;</span>.to_string(),
-            <span class="string">&quot;XX000&quot;</span>.to_string(),
-            e.to_string(),
+            <span class="string">"ERROR"</span>.to_string(),
+            <span class="string">"XX000"</span>.to_string(),
+            e.output_msg(),
         )))),
     }
 }
 
-<span class="kw">fn </span>recordbatches_to_query_response&lt;<span class="lifetime">&#39;a</span>, S&gt;(
+<span class="kw">fn </span>recordbatches_to_query_response&lt;<span class="lifetime">'a</span>, S&gt;(
     recordbatches_stream: S,
     schema: SchemaRef,
     field_format: <span class="kw-2">&amp;</span>Format,
-) -&gt; PgWireResult&lt;Response&lt;<span class="lifetime">&#39;a</span>&gt;&gt;
+) -&gt; PgWireResult&lt;Response&lt;<span class="lifetime">'a</span>&gt;&gt;
 <span class="kw">where
-    </span>S: Stream&lt;Item = RecordBatchResult&lt;RecordBatch&gt;&gt; + Send + Unpin + <span class="lifetime">&#39;static</span>,
+    </span>S: Stream&lt;Item = RecordBatchResult&lt;RecordBatch&gt;&gt; + Send + Unpin + <span class="lifetime">'static</span>,
 {
     <span class="kw">let </span>pg_schema = Arc::new(
         schema_to_pg(schema.as_ref(), field_format)
@@ -444,15 +427,15 @@
     <span class="kw">type </span>Statement = SqlPlan;
 
     <span class="kw">async fn </span>parse_sql(<span class="kw-2">&amp;</span><span class="self">self</span>, sql: <span class="kw-2">&amp;</span>str, _types: <span class="kw-2">&amp;</span>[Type]) -&gt; PgWireResult&lt;<span class="self">Self</span>::Statement&gt; {
-        <span class="macro">increment_counter!</span>(<span class="kw">crate</span>::metrics::METRIC_POSTGRES_PREPARED_COUNT);
+        <span class="kw">crate</span>::metrics::METRIC_POSTGRES_PREPARED_COUNT.inc();
         <span class="kw">let </span>query_ctx = <span class="self">self</span>.session.new_query_context();
         <span class="kw">let </span><span class="kw-2">mut </span>stmts = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>PostgreSqlDialect {})
             .map_err(|e| PgWireError::ApiError(Box::new(e)))<span class="question-mark">?</span>;
         <span class="kw">if </span>stmts.len() != <span class="number">1 </span>{
             <span class="prelude-val">Err</span>(PgWireError::UserError(Box::new(ErrorInfo::new(
-                <span class="string">&quot;ERROR&quot;</span>.to_owned(),
-                <span class="string">&quot;42P14&quot;</span>.to_owned(),
-                <span class="string">&quot;invalid_prepared_statement_definition&quot;</span>.to_owned(),
+                <span class="string">"ERROR"</span>.to_owned(),
+                <span class="string">"42P14"</span>.to_owned(),
+                <span class="string">"invalid_prepared_statement_definition"</span>.to_owned(),
             ))))
         } <span class="kw">else </span>{
             <span class="kw">let </span>stmt = stmts.remove(<span class="number">0</span>);
@@ -485,36 +468,26 @@
 </span><span class="kw">impl </span>ExtendedQueryHandler <span class="kw">for </span>PostgresServerHandler {
     <span class="kw">type </span>Statement = SqlPlan;
     <span class="kw">type </span>QueryParser = DefaultQueryParser;
-    <span class="kw">type </span>PortalStore = MemPortalStore&lt;<span class="self">Self</span>::Statement&gt;;
-
-    <span class="kw">fn </span>portal_store(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Arc&lt;<span class="self">Self</span>::PortalStore&gt; {
-        <span class="self">self</span>.portal_store.clone()
-    }
 
     <span class="kw">fn </span>query_parser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Arc&lt;<span class="self">Self</span>::QueryParser&gt; {
         <span class="self">self</span>.query_parser.clone()
     }
 
-    <span class="kw">async fn </span>do_query&lt;<span class="lifetime">&#39;a</span>, C&gt;(
+    <span class="kw">async fn </span>do_query&lt;<span class="lifetime">'a</span>, C&gt;(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         _client: <span class="kw-2">&amp;mut </span>C,
-        portal: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Portal&lt;<span class="self">Self</span>::Statement&gt;,
+        portal: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>Portal&lt;<span class="self">Self</span>::Statement&gt;,
         _max_rows: usize,
-    ) -&gt; PgWireResult&lt;Response&lt;<span class="lifetime">&#39;a</span>&gt;&gt;
+    ) -&gt; PgWireResult&lt;Response&lt;<span class="lifetime">'a</span>&gt;&gt;
     <span class="kw">where
         </span>C: ClientInfo + Unpin + Send + Sync,
     {
         <span class="kw">let </span>query_ctx = <span class="self">self</span>.session.new_query_context();
-        <span class="kw">let </span>_timer = <span class="macro">timer!</span>(
-            <span class="kw">crate</span>::metrics::METRIC_POSTGRES_QUERY_TIMER,
-            <span class="kw-2">&amp;</span>[
-                (
-                    <span class="kw">crate</span>::metrics::METRIC_POSTGRES_SUBPROTOCOL_LABEL,
-                    <span class="kw">crate</span>::metrics::METRIC_POSTGRES_EXTENDED_QUERY.to_string()
-                ),
-                (<span class="kw">crate</span>::metrics::METRIC_DB_LABEL, query_ctx.get_db_string())
-            ]
-        );
+        <span class="kw">let </span>db = query_ctx.get_db_string();
+        <span class="kw">let </span>_timer = <span class="kw">crate</span>::metrics::METRIC_POSTGRES_QUERY_TIMER
+            .with_label_values(<span class="kw-2">&amp;</span>[<span class="kw">crate</span>::metrics::METRIC_POSTGRES_EXTENDED_QUERY, db.as_str()])
+            .start_timer();
+
         <span class="kw">let </span>sql_plan = portal.statement().statement();
 
         <span class="kw">let </span>output = <span class="kw">if let </span><span class="prelude-val">Some</span>(plan) = <span class="kw-2">&amp;</span>sql_plan.plan {
@@ -528,7 +501,7 @@
             // supported for certain statements.
             </span><span class="kw">let </span><span class="kw-2">mut </span>sql = sql_plan.query.clone();
             <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..portal.parameter_len() {
-                sql = sql.replace(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;${}&quot;</span>, i + <span class="number">1</span>), <span class="kw-2">&amp;</span>parameter_to_string(portal, i)<span class="question-mark">?</span>);
+                sql = sql.replace(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">"${}"</span>, i + <span class="number">1</span>), <span class="kw-2">&amp;</span>parameter_to_string(portal, i)<span class="question-mark">?</span>);
             }
 
             <span class="self">self</span>.query_handler.do_query(<span class="kw-2">&amp;</span>sql, query_ctx).<span class="kw">await</span>.remove(<span class="number">0</span>)
@@ -540,7 +513,7 @@
     <span class="kw">async fn </span>do_describe&lt;C&gt;(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         _client: <span class="kw-2">&amp;mut </span>C,
-        target: StatementOrPortal&lt;<span class="lifetime">&#39;_</span>, <span class="self">Self</span>::Statement&gt;,
+        target: StatementOrPortal&lt;<span class="lifetime">'_</span>, <span class="self">Self</span>::Statement&gt;,
     ) -&gt; PgWireResult&lt;DescribeResponse&gt;
     <span class="kw">where
         </span>C: ClientInfo + Unpin + Send + Sync,

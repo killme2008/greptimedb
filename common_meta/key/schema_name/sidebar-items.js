@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["schema_decoder"],"struct":["SchemaManager","SchemaNameKey","SchemaNameValue"]};
+window.SIDEBAR_ITEMS = {"constant":["OPT_KEY_TTL"],"fn":["schema_decoder"],"struct":["SchemaManager","SchemaNameKey","SchemaNameValue"]};

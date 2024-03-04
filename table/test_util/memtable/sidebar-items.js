@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["MemTable","MemtableStream"]};
+window.SIDEBAR_ITEMS = {"struct":["MemTable","MemtableDataSource","MemtableStream"]};

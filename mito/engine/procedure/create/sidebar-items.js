@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["CreateTableState"],"struct":["CreateMitoTable","CreateTableData","TableCreator"]};

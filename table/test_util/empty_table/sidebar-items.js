@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["EmptyTable"]};
+window.SIDEBAR_ITEMS = {"struct":["EmptyDataSource","EmptyTable"]};

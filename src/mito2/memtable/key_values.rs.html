@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/mito2/src/memtable/key_values.rs`."><title>key_values.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="mito2" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../mito2/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/mito2/src/memtable/key_values.rs`."><title>key_values.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="mito2" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -347,47 +348,23 @@
 <a href="#347" id="347">347</a>
 <a href="#348" id="348">348</a>
 <a href="#349" id="349">349</a>
-<a href="#350" id="350">350</a>
-<a href="#351" id="351">351</a>
-<a href="#352" id="352">352</a>
-<a href="#353" id="353">353</a>
-<a href="#354" id="354">354</a>
-<a href="#355" id="355">355</a>
-<a href="#356" id="356">356</a>
-<a href="#357" id="357">357</a>
-<a href="#358" id="358">358</a>
-<a href="#359" id="359">359</a>
-<a href="#360" id="360">360</a>
-<a href="#361" id="361">361</a>
-<a href="#362" id="362">362</a>
-<a href="#363" id="363">363</a>
-<a href="#364" id="364">364</a>
-<a href="#365" id="365">365</a>
-<a href="#366" id="366">366</a>
-<a href="#367" id="367">367</a>
-<a href="#368" id="368">368</a>
-<a href="#369" id="369">369</a>
-<a href="#370" id="370">370</a>
-<a href="#371" id="371">371</a>
-<a href="#372" id="372">372</a>
-<a href="#373" id="373">373</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
 </span><span class="kw">use </span>std::collections::HashMap;
 
-<span class="kw">use </span>api::v1::{Mutation, OpType, Row, Rows, SemanticType};
+<span class="kw">use </span>api::v1::{ColumnSchema, Mutation, OpType, Row, Rows};
 <span class="kw">use </span>datatypes::value::ValueRef;
 <span class="kw">use </span>store_api::metadata::RegionMetadata;
 <span class="kw">use </span>store_api::storage::SequenceNumber;
@@ -418,13 +395,15 @@
     <span class="doccomment">/// Returns a key value iterator.
     </span><span class="kw">pub fn </span>iter(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = KeyValue&gt; {
         <span class="kw">let </span>rows = <span class="self">self</span>.mutation.rows.as_ref().unwrap();
+        <span class="kw">let </span>schema = <span class="kw-2">&amp;</span>rows.schema;
         rows.rows.iter().enumerate().map(|(idx, row)| {
             KeyValue {
                 row,
+                schema,
                 helper: <span class="kw-2">&amp;</span><span class="self">self</span>.helper,
                 sequence: <span class="self">self</span>.mutation.sequence + idx <span class="kw">as </span>u64, <span class="comment">// Calculate sequence for each row.
                 // Safety: This is a valid mutation.
-                </span>op_type: OpType::from_i32(<span class="self">self</span>.mutation.op_type).unwrap(),
+                </span>op_type: OpType::try_from(<span class="self">self</span>.mutation.op_type).unwrap(),
             }
         })
     }
@@ -439,37 +418,51 @@
 <span class="doccomment">/// Key value view of a row.
 ///
 /// A key value view divides primary key columns and field (value) columns.
-/// Primary key columns have the same order as region&#39;s primary key. Field
+/// Primary key columns have the same order as region's primary key. Field
 /// columns are ordered by their position in the region schema (The same order
 /// as users defined while creating the region).
 </span><span class="attr">#[derive(Debug)]
-</span><span class="kw">pub struct </span>KeyValue&lt;<span class="lifetime">&#39;a</span>&gt; {
-    row: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Row,
-    helper: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>ReadRowHelper,
+</span><span class="kw">pub struct </span>KeyValue&lt;<span class="lifetime">'a</span>&gt; {
+    row: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>Row,
+    schema: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>Vec&lt;ColumnSchema&gt;,
+    helper: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>ReadRowHelper,
     sequence: SequenceNumber,
     op_type: OpType,
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; KeyValue&lt;<span class="lifetime">&#39;a</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; KeyValue&lt;<span class="lifetime">'a</span>&gt; {
     <span class="doccomment">/// Get primary key columns.
     </span><span class="kw">pub fn </span>primary_keys(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = ValueRef&gt; {
         <span class="self">self</span>.helper.indices[..<span class="self">self</span>.helper.num_primary_key_column]
             .iter()
-            .map(|idx| api::helper::pb_value_to_value_ref(<span class="kw-2">&amp;</span><span class="self">self</span>.row.values[<span class="kw-2">*</span>idx]))
+            .map(|idx| {
+                api::helper::pb_value_to_value_ref(
+                    <span class="kw-2">&amp;</span><span class="self">self</span>.row.values[<span class="kw-2">*</span>idx],
+                    <span class="kw-2">&amp;</span><span class="self">self</span>.schema[<span class="kw-2">*</span>idx].datatype_extension,
+                )
+            })
     }
 
     <span class="doccomment">/// Get field columns.
     </span><span class="kw">pub fn </span>fields(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = ValueRef&gt; {
         <span class="self">self</span>.helper.indices[<span class="self">self</span>.helper.num_primary_key_column + <span class="number">1</span>..]
             .iter()
-            .map(|idx| api::helper::pb_value_to_value_ref(<span class="kw-2">&amp;</span><span class="self">self</span>.row.values[<span class="kw-2">*</span>idx]))
+            .map(|idx| {
+                api::helper::pb_value_to_value_ref(
+                    <span class="kw-2">&amp;</span><span class="self">self</span>.row.values[<span class="kw-2">*</span>idx],
+                    <span class="kw-2">&amp;</span><span class="self">self</span>.schema[<span class="kw-2">*</span>idx].datatype_extension,
+                )
+            })
     }
 
     <span class="doccomment">/// Get timestamp.
     </span><span class="kw">pub fn </span>timestamp(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; ValueRef {
         <span class="comment">// Timestamp is primitive, we clone it.
         </span><span class="kw">let </span>index = <span class="self">self</span>.helper.indices[<span class="self">self</span>.helper.num_primary_key_column];
-        api::helper::pb_value_to_value_ref(<span class="kw-2">&amp;</span><span class="self">self</span>.row.values[index])
+        api::helper::pb_value_to_value_ref(
+            <span class="kw-2">&amp;</span><span class="self">self</span>.row.values[index],
+            <span class="kw-2">&amp;</span><span class="self">self</span>.schema[index].datatype_extension,
+        )
     }
 
     <span class="doccomment">/// Get number of primary key columns.
@@ -515,7 +508,7 @@
         <span class="macro">assert_eq!</span>(
             metadata.column_metadatas.len(),
             rows.schema.len(),
-            <span class="string">&quot;Length mismatch, column_metas: {:?}, rows_schema: {:?}&quot;</span>,
+            <span class="string">"Length mismatch, column_metas: {:?}, rows_schema: {:?}"</span>,
             metadata.column_metadatas,
             rows.schema
         );
@@ -542,12 +535,10 @@
             .unwrap();
         indices.push(<span class="kw-2">*</span>ts_index);
         <span class="comment">// Iterate columns and find field columns.
-        </span><span class="kw">for </span>column <span class="kw">in </span>metadata.column_metadatas.iter() {
-            <span class="kw">if </span>column.semantic_type == SemanticType::Field {
-                <span class="comment">// Get index in request for each field column.
-                </span><span class="kw">let </span>index = name_to_index.get(<span class="kw-2">&amp;</span>column.column_schema.name).unwrap();
-                indices.push(<span class="kw-2">*</span>index);
-            }
+        </span><span class="kw">for </span>column <span class="kw">in </span>metadata.field_columns() {
+            <span class="comment">// Get index in request for each field column.
+            </span><span class="kw">let </span>index = name_to_index.get(<span class="kw-2">&amp;</span>column.column_schema.name).unwrap();
+            indices.push(<span class="kw-2">*</span>index);
         }
 
         ReadRowHelper {
@@ -559,61 +550,22 @@
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
-    <span class="kw">use </span>api::v1;
-    <span class="kw">use </span>api::v1::ColumnDataType;
-    <span class="kw">use </span>datatypes::prelude::ConcreteDataType;
-    <span class="kw">use </span>datatypes::schema::ColumnSchema;
-    <span class="kw">use </span>store_api::metadata::{ColumnMetadata, RegionMetadataBuilder};
-    <span class="kw">use </span>store_api::storage::RegionId;
+    <span class="kw">use </span>api::v1::{<span class="self">self</span>, ColumnDataType, SemanticType};
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use </span><span class="kw">crate</span>::test_util::i64_value;
+    <span class="kw">use </span><span class="kw">crate</span>::test_util::meta_util::TestRegionMetadataBuilder;
 
-    <span class="kw">const </span>TS_NAME: <span class="kw-2">&amp;</span>str = <span class="string">&quot;ts&quot;</span>;
+    <span class="kw">const </span>TS_NAME: <span class="kw-2">&amp;</span>str = <span class="string">"ts"</span>;
     <span class="kw">const </span>START_SEQ: SequenceNumber = <span class="number">100</span>;
 
     <span class="doccomment">/// Creates a region: `ts, k0, k1, ..., v0, v1, ...`
-    </span><span class="kw">fn </span>new_region_metadata(num_tag: usize, num_field: usize) -&gt; RegionMetadata {
-        <span class="kw">let </span><span class="kw-2">mut </span>builder = RegionMetadataBuilder::new(RegionId::new(<span class="number">1</span>, <span class="number">1</span>));
-        <span class="kw">let </span><span class="kw-2">mut </span>column_id = <span class="number">0</span>;
-        builder.push_column_metadata(ColumnMetadata {
-            column_schema: ColumnSchema::new(
-                TS_NAME,
-                ConcreteDataType::timestamp_millisecond_datatype(),
-                <span class="bool-val">false</span>,
-            ),
-            semantic_type: SemanticType::Timestamp,
-            column_id,
-        });
-        <span class="comment">// For simplicity, we use the same data type for tag/field columns.
-        </span><span class="kw">let </span><span class="kw-2">mut </span>primary_key = Vec::with_capacity(num_tag);
-        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..num_tag {
-            column_id += <span class="number">1</span>;
-            builder.push_column_metadata(ColumnMetadata {
-                column_schema: ColumnSchema::new(
-                    <span class="macro">format!</span>(<span class="string">&quot;k{i}&quot;</span>),
-                    ConcreteDataType::int64_datatype(),
-                    <span class="bool-val">true</span>,
-                ),
-                semantic_type: SemanticType::Tag,
-                column_id,
-            });
-            primary_key.push(i <span class="kw">as </span>u32 + <span class="number">1</span>);
-        }
-        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..num_field {
-            column_id += <span class="number">1</span>;
-            builder.push_column_metadata(ColumnMetadata {
-                column_schema: ColumnSchema::new(
-                    <span class="macro">format!</span>(<span class="string">&quot;v{i}&quot;</span>),
-                    ConcreteDataType::int64_datatype(),
-                    <span class="bool-val">true</span>,
-                ),
-                semantic_type: SemanticType::Field,
-                column_id,
-            });
-        }
-        builder.primary_key(primary_key);
-        builder.build().unwrap()
+    </span><span class="kw">fn </span>new_region_metadata(num_tags: usize, num_fields: usize) -&gt; RegionMetadata {
+        TestRegionMetadataBuilder::default()
+            .ts_name(TS_NAME)
+            .num_tags(num_tags)
+            .num_fields(num_fields)
+            .build()
     }
 
     <span class="doccomment">/// Creates rows `[ 0, 1, ..., n ] x num_rows`
@@ -621,7 +573,7 @@
         <span class="kw">let </span><span class="kw-2">mut </span>rows = Vec::with_capacity(num_rows);
         <span class="kw">for _ in </span><span class="number">0</span>..num_rows {
             <span class="comment">// For simplicity, we use i64 for timestamp millisecond type. This violates the column schema
-            // but it&#39;s acceptable for tests.
+            // but it's acceptable for tests.
             </span><span class="kw">let </span>values: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">0</span>..column_names.len())
                 .map(|idx| i64_value(idx <span class="kw">as </span>i64))
                 .collect();
@@ -636,9 +588,9 @@
                 } <span class="kw">else </span>{
                     ColumnDataType::Int64 <span class="kw">as </span>i32
                 };
-                <span class="kw">let </span>semantic_type = <span class="kw">if </span>column_name.starts_with(<span class="string">&#39;k&#39;</span>) {
+                <span class="kw">let </span>semantic_type = <span class="kw">if </span>column_name.starts_with(<span class="string">'k'</span>) {
                     SemanticType::Tag <span class="kw">as </span>i32
-                } <span class="kw">else if </span>column_name.starts_with(<span class="string">&#39;v&#39;</span>) {
+                } <span class="kw">else if </span>column_name.starts_with(<span class="string">'v'</span>) {
                     SemanticType::Field <span class="kw">as </span>i32
                 } <span class="kw">else </span>{
                     SemanticType::Timestamp <span class="kw">as </span>i32
@@ -647,6 +599,7 @@
                     column_name: column_name.to_string(),
                     datatype,
                     semantic_type,
+                    ..Default::default()
                 }
             })
             .collect();
@@ -699,7 +652,7 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_ts_only() {
         <span class="kw">let </span>meta = new_region_metadata(<span class="number">0</span>, <span class="number">0</span>);
-        <span class="kw">let </span>mutation = new_mutation(<span class="kw-2">&amp;</span>[<span class="string">&quot;ts&quot;</span>], <span class="number">2</span>);
+        <span class="kw">let </span>mutation = new_mutation(<span class="kw-2">&amp;</span>[<span class="string">"ts"</span>], <span class="number">2</span>);
         <span class="kw">let </span>kvs = KeyValues::new(<span class="kw-2">&amp;</span>meta, mutation).unwrap();
         check_key_values(<span class="kw-2">&amp;</span>kvs, <span class="number">2</span>, <span class="kw-2">&amp;</span>[], <span class="number">0</span>, <span class="kw-2">&amp;</span>[]);
     }
@@ -709,7 +662,7 @@
         <span class="kw">let </span>meta = new_region_metadata(<span class="number">2</span>, <span class="number">0</span>);
         <span class="comment">// The value of each row:
         // k1=0, ts=1, k0=2,
-        </span><span class="kw">let </span>mutation = new_mutation(<span class="kw-2">&amp;</span>[<span class="string">&quot;k1&quot;</span>, <span class="string">&quot;ts&quot;</span>, <span class="string">&quot;k0&quot;</span>], <span class="number">3</span>);
+        </span><span class="kw">let </span>mutation = new_mutation(<span class="kw-2">&amp;</span>[<span class="string">"k1"</span>, <span class="string">"ts"</span>, <span class="string">"k0"</span>], <span class="number">3</span>);
         <span class="kw">let </span>kvs = KeyValues::new(<span class="kw-2">&amp;</span>meta, mutation).unwrap();
         <span class="comment">// KeyValues
         // keys: [k0=2, k1=0]
@@ -722,7 +675,7 @@
         <span class="kw">let </span>meta = new_region_metadata(<span class="number">0</span>, <span class="number">2</span>);
         <span class="comment">// The value of each row:
         // v1=0, v0=1, ts=2,
-        </span><span class="kw">let </span>mutation = new_mutation(<span class="kw-2">&amp;</span>[<span class="string">&quot;v1&quot;</span>, <span class="string">&quot;v0&quot;</span>, <span class="string">&quot;ts&quot;</span>], <span class="number">3</span>);
+        </span><span class="kw">let </span>mutation = new_mutation(<span class="kw-2">&amp;</span>[<span class="string">"v1"</span>, <span class="string">"v0"</span>, <span class="string">"ts"</span>], <span class="number">3</span>);
         <span class="kw">let </span>kvs = KeyValues::new(<span class="kw-2">&amp;</span>meta, mutation).unwrap();
         <span class="comment">// KeyValues (note that v0 is in front of v1 in region schema)
         // ts: 2,
@@ -735,7 +688,7 @@
         <span class="kw">let </span>meta = new_region_metadata(<span class="number">2</span>, <span class="number">2</span>);
         <span class="comment">// The value of each row:
         // k0=0, v0=1, ts=2, k1=3, v1=4,
-        </span><span class="kw">let </span>mutation = new_mutation(<span class="kw-2">&amp;</span>[<span class="string">&quot;k0&quot;</span>, <span class="string">&quot;v0&quot;</span>, <span class="string">&quot;ts&quot;</span>, <span class="string">&quot;k1&quot;</span>, <span class="string">&quot;v1&quot;</span>], <span class="number">3</span>);
+        </span><span class="kw">let </span>mutation = new_mutation(<span class="kw-2">&amp;</span>[<span class="string">"k0"</span>, <span class="string">"v0"</span>, <span class="string">"ts"</span>, <span class="string">"k1"</span>, <span class="string">"v1"</span>], <span class="number">3</span>);
         <span class="kw">let </span>kvs = KeyValues::new(<span class="kw-2">&amp;</span>meta, mutation).unwrap();
         <span class="comment">// KeyValues
         // keys: [k0=0, k1=3]

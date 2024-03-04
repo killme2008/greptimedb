@@ -1,3 +1,0 @@
-(function() {var implementors = {
-"query":[["impl ExtensionExpr for <a class=\"struct\" href=\"query/parser/struct.AnalyzeExpr.html\" title=\"struct query::parser::AnalyzeExpr\">AnalyzeExpr</a>"],["impl ExtensionExpr for <a class=\"struct\" href=\"query/parser/struct.ExplainExpr.html\" title=\"struct query::parser::ExplainExpr\">ExplainExpr</a>"]]
-};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

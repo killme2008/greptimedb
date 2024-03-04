@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/common/grpc-expr/src/insert.rs`."><title>insert.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="common_grpc_expr" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../common_grpc_expr/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/common/grpc-expr/src/insert.rs`."><title>insert.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="common_grpc_expr" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -506,38 +507,58 @@
 <a href="#506" id="506">506</a>
 <a href="#507" id="507">507</a>
 <a href="#508" id="508">508</a>
+<a href="#509" id="509">509</a>
+<a href="#510" id="510">510</a>
+<a href="#511" id="511">511</a>
+<a href="#512" id="512">512</a>
+<a href="#513" id="513">513</a>
+<a href="#514" id="514">514</a>
+<a href="#515" id="515">515</a>
+<a href="#516" id="516">516</a>
+<a href="#517" id="517">517</a>
+<a href="#518" id="518">518</a>
+<a href="#519" id="519">519</a>
+<a href="#520" id="520">520</a>
+<a href="#521" id="521">521</a>
+<a href="#522" id="522">522</a>
+<a href="#523" id="523">523</a>
+<a href="#524" id="524">524</a>
+<a href="#525" id="525">525</a>
+<a href="#526" id="526">526</a>
+<a href="#527" id="527">527</a>
+<a href="#528" id="528">528</a>
+<a href="#529" id="529">529</a>
+<a href="#530" id="530">530</a>
+<a href="#531" id="531">531</a>
+<a href="#532" id="532">532</a>
+<a href="#533" id="533">533</a>
+<a href="#534" id="534">534</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-</span><span class="kw">use </span>std::collections::HashMap;
-
-<span class="kw">use </span>api::helper;
-<span class="kw">use </span>api::helper::ColumnDataTypeWrapper;
+</span><span class="kw">use </span>api::helper;
 <span class="kw">use </span>api::v1::column::Values;
-<span class="kw">use </span>api::v1::{AddColumns, Column, CreateTableExpr, InsertRequest <span class="kw">as </span>GrpcInsertRequest};
+<span class="kw">use </span>api::v1::{AddColumns, Column, CreateTableExpr};
 <span class="kw">use </span>common_base::BitVec;
 <span class="kw">use </span>datatypes::data_type::{ConcreteDataType, DataType};
 <span class="kw">use </span>datatypes::prelude::VectorRef;
 <span class="kw">use </span>datatypes::schema::SchemaRef;
 <span class="kw">use </span>snafu::{ensure, ResultExt};
+<span class="kw">use </span>table::engine::TableReference;
 <span class="kw">use </span>table::metadata::TableId;
-<span class="kw">use </span>table::requests::InsertRequest;
 
-<span class="kw">use </span><span class="kw">crate</span>::error::{
-    ColumnAlreadyExistsSnafu, ColumnDataTypeSnafu, CreateVectorSnafu, <span class="prelude-ty">Result</span>,
-    UnexpectedValuesLengthSnafu,
-};
+<span class="kw">use </span><span class="kw">crate</span>::error::{CreateVectorSnafu, <span class="prelude-ty">Result</span>, UnexpectedValuesLengthSnafu};
 <span class="kw">use </span><span class="kw">crate</span>::util;
 <span class="kw">use </span><span class="kw">crate</span>::util::ColumnExpr;
 
@@ -555,57 +576,15 @@
     columns: <span class="kw-2">&amp;</span>[Column],
     engine: <span class="kw-2">&amp;</span>str,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;CreateTableExpr&gt; {
+    <span class="kw">let </span>table_name = TableReference::full(catalog_name, schema_name, table_name);
     <span class="kw">let </span>column_exprs = ColumnExpr::from_columns(columns);
     util::build_create_table_expr(
-        catalog_name,
-        schema_name,
         table_id,
-        table_name,
+        <span class="kw-2">&amp;</span>table_name,
         column_exprs,
         engine,
-        <span class="string">&quot;Created on insertion&quot;</span>,
+        <span class="string">"Created on insertion"</span>,
     )
-}
-
-<span class="kw">pub fn </span>to_table_insert_request(
-    catalog_name: <span class="kw-2">&amp;</span>str,
-    schema_name: <span class="kw-2">&amp;</span>str,
-    request: GrpcInsertRequest,
-) -&gt; <span class="prelude-ty">Result</span>&lt;InsertRequest&gt; {
-    <span class="kw">let </span>table_name = <span class="kw-2">&amp;</span>request.table_name;
-    <span class="kw">let </span>row_count = request.row_count <span class="kw">as </span>usize;
-
-    <span class="kw">let </span><span class="kw-2">mut </span>columns_values = HashMap::with_capacity(request.columns.len());
-    <span class="kw">for </span>Column {
-        column_name,
-        values,
-        null_mask,
-        datatype,
-        ..
-    } <span class="kw">in </span>request.columns
-    {
-        <span class="kw">let </span><span class="prelude-val">Some</span>(values) = values <span class="kw">else </span>{ <span class="kw">continue </span>};
-
-        <span class="kw">let </span>datatype: ConcreteDataType = ColumnDataTypeWrapper::try_new(datatype)
-            .context(ColumnDataTypeSnafu)<span class="question-mark">?
-            </span>.into();
-        <span class="kw">let </span>vector = add_values_to_builder(datatype, values, row_count, null_mask)<span class="question-mark">?</span>;
-
-        <span class="macro">ensure!</span>(
-            columns_values.insert(column_name.clone(), vector).is_none(),
-            ColumnAlreadyExistsSnafu {
-                column: column_name
-            }
-        );
-    }
-
-    <span class="prelude-val">Ok</span>(InsertRequest {
-        catalog_name: catalog_name.to_string(),
-        schema_name: schema_name.to_string(),
-        table_name: table_name.to_string(),
-        columns_values,
-        region_number: request.region_number,
-    })
 }
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>add_values_to_builder(
@@ -623,7 +602,7 @@
         <span class="macro">ensure!</span>(
             null_mask.count_ones() + values.len() == row_count,
             UnexpectedValuesLengthSnafu {
-                reason: <span class="string">&quot;If null_mask is not empty, the sum of the number of nulls and the length of values must be equal to row_count.&quot;
+                reason: <span class="string">"If null_mask is not empty, the sum of the number of nulls and the length of values must be equal to row_count."
             </span>}
         );
 
@@ -654,14 +633,17 @@
 
     <span class="kw">use </span>api::helper::ColumnDataTypeWrapper;
     <span class="kw">use </span>api::v1::column::Values;
-    <span class="kw">use </span>api::v1::{Column, ColumnDataType, IntervalMonthDayNano, SemanticType};
+    <span class="kw">use </span>api::v1::column_data_type_extension::TypeExt;
+    <span class="kw">use </span>api::v1::{
+        Column, ColumnDataType, ColumnDataTypeExtension, Decimal128, DecimalTypeExtension,
+        IntervalMonthDayNano, SemanticType,
+    };
     <span class="kw">use </span>common_base::BitVec;
     <span class="kw">use </span>common_catalog::consts::MITO_ENGINE;
     <span class="kw">use </span>common_time::interval::IntervalUnit;
-    <span class="kw">use </span>common_time::timestamp::{TimeUnit, Timestamp};
+    <span class="kw">use </span>common_time::timestamp::TimeUnit;
     <span class="kw">use </span>datatypes::data_type::ConcreteDataType;
     <span class="kw">use </span>datatypes::schema::{ColumnSchema, SchemaBuilder};
-    <span class="kw">use </span>datatypes::value::Value;
     <span class="kw">use </span>snafu::ResultExt;
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
@@ -676,7 +658,7 @@
         nullable: bool,
     ) -&gt; error::Result&lt;ColumnSchema&gt; {
         <span class="kw">let </span>datatype_wrapper =
-            ColumnDataTypeWrapper::try_new(datatype).context(ColumnDataTypeSnafu)<span class="question-mark">?</span>;
+            ColumnDataTypeWrapper::try_new(datatype, <span class="prelude-val">None</span>).context(ColumnDataTypeSnafu)<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(ColumnSchema::new(
             column_name,
@@ -688,18 +670,18 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_build_create_table_request() {
         <span class="kw">let </span>table_id = <span class="prelude-val">Some</span>(<span class="number">10</span>);
-        <span class="kw">let </span>table_name = <span class="string">&quot;test_metric&quot;</span>;
+        <span class="kw">let </span>table_name = <span class="string">"test_metric"</span>;
 
         <span class="macro">assert!</span>(
-            build_create_expr_from_insertion(<span class="string">&quot;&quot;</span>, <span class="string">&quot;&quot;</span>, table_id, table_name, <span class="kw-2">&amp;</span>[], MITO_ENGINE)
+            build_create_expr_from_insertion(<span class="string">""</span>, <span class="string">""</span>, table_id, table_name, <span class="kw-2">&amp;</span>[], MITO_ENGINE)
                 .is_err()
         );
 
         <span class="kw">let </span>insert_batch = mock_insert_batch();
 
         <span class="kw">let </span>create_expr = build_create_expr_from_insertion(
-            <span class="string">&quot;&quot;</span>,
-            <span class="string">&quot;&quot;</span>,
+            <span class="string">""</span>,
+            <span class="string">""</span>,
             table_id,
             table_name,
             <span class="kw-2">&amp;</span>insert_batch.<span class="number">0</span>,
@@ -709,15 +691,15 @@
 
         <span class="macro">assert_eq!</span>(table_id, create_expr.table_id.map(|x| x.id));
         <span class="macro">assert_eq!</span>(table_name, create_expr.table_name);
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;Created on insertion&quot;</span>.to_string(), create_expr.desc);
+        <span class="macro">assert_eq!</span>(<span class="string">"Created on insertion"</span>.to_string(), create_expr.desc);
         <span class="macro">assert_eq!</span>(
             <span class="macro">vec!</span>[create_expr.column_defs[<span class="number">0</span>].name.clone()],
             create_expr.primary_keys
         );
 
         <span class="kw">let </span>column_defs = create_expr.column_defs;
-        <span class="macro">assert_eq!</span>(column_defs[<span class="number">5</span>].name, create_expr.time_index);
-        <span class="macro">assert_eq!</span>(<span class="number">6</span>, column_defs.len());
+        <span class="macro">assert_eq!</span>(column_defs[<span class="number">6</span>].name, create_expr.time_index);
+        <span class="macro">assert_eq!</span>(<span class="number">8</span>, column_defs.len());
 
         <span class="macro">assert_eq!</span>(
             ConcreteDataType::string_datatype(),
@@ -725,10 +707,11 @@
                 ColumnDataTypeWrapper::try_new(
                     column_defs
                         .iter()
-                        .find(|c| c.name == <span class="string">&quot;host&quot;</span>)
+                        .find(|c| c.name == <span class="string">"host"</span>)
                         .unwrap()
-                        .datatype
-                )
+                        .data_type,
+                    <span class="prelude-val">None
+                </span>)
                 .unwrap()
             )
         );
@@ -739,10 +722,11 @@
                 ColumnDataTypeWrapper::try_new(
                     column_defs
                         .iter()
-                        .find(|c| c.name == <span class="string">&quot;cpu&quot;</span>)
+                        .find(|c| c.name == <span class="string">"cpu"</span>)
                         .unwrap()
-                        .datatype
-                )
+                        .data_type,
+                    <span class="prelude-val">None
+                </span>)
                 .unwrap()
             )
         );
@@ -753,10 +737,11 @@
                 ColumnDataTypeWrapper::try_new(
                     column_defs
                         .iter()
-                        .find(|c| c.name == <span class="string">&quot;memory&quot;</span>)
+                        .find(|c| c.name == <span class="string">"memory"</span>)
                         .unwrap()
-                        .datatype
-                )
+                        .data_type,
+                    <span class="prelude-val">None
+                </span>)
                 .unwrap()
             )
         );
@@ -767,10 +752,11 @@
                 ColumnDataTypeWrapper::try_new(
                     column_defs
                         .iter()
-                        .find(|c| c.name == <span class="string">&quot;time&quot;</span>)
+                        .find(|c| c.name == <span class="string">"time"</span>)
                         .unwrap()
-                        .datatype
-                )
+                        .data_type,
+                    <span class="prelude-val">None
+                </span>)
                 .unwrap()
             )
         );
@@ -781,10 +767,26 @@
                 ColumnDataTypeWrapper::try_new(
                     column_defs
                         .iter()
-                        .find(|c| c.name == <span class="string">&quot;interval&quot;</span>)
+                        .find(|c| c.name == <span class="string">"interval"</span>)
                         .unwrap()
-                        .datatype
-                )
+                        .data_type,
+                    <span class="prelude-val">None
+                </span>)
+                .unwrap()
+            )
+        );
+
+        <span class="macro">assert_eq!</span>(
+            ConcreteDataType::duration_millisecond_datatype(),
+            ConcreteDataType::from(
+                ColumnDataTypeWrapper::try_new(
+                    column_defs
+                        .iter()
+                        .find(|c| c.name == <span class="string">"duration"</span>)
+                        .unwrap()
+                        .data_type,
+                    <span class="prelude-val">None
+                </span>)
                 .unwrap()
             )
         );
@@ -795,9 +797,22 @@
                 ColumnDataTypeWrapper::try_new(
                     column_defs
                         .iter()
-                        .find(|c| c.name == <span class="string">&quot;ts&quot;</span>)
+                        .find(|c| c.name == <span class="string">"ts"</span>)
                         .unwrap()
-                        .datatype
+                        .data_type,
+                    <span class="prelude-val">None
+                </span>)
+                .unwrap()
+            )
+        );
+
+        <span class="kw">let </span>decimal_column = column_defs.iter().find(|c| c.name == <span class="string">"decimals"</span>).unwrap();
+        <span class="macro">assert_eq!</span>(
+            ConcreteDataType::decimal128_datatype(<span class="number">38</span>, <span class="number">10</span>),
+            ConcreteDataType::from(
+                ColumnDataTypeWrapper::try_new(
+                    decimal_column.data_type,
+                    decimal_column.datatype_extension.clone(),
                 )
                 .unwrap()
             )
@@ -807,8 +822,8 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_find_new_columns() {
         <span class="kw">let </span><span class="kw-2">mut </span>columns = Vec::with_capacity(<span class="number">1</span>);
-        <span class="kw">let </span>cpu_column = build_column_schema(<span class="string">&quot;cpu&quot;</span>, <span class="number">10</span>, <span class="bool-val">true</span>).unwrap();
-        <span class="kw">let </span>ts_column = build_column_schema(<span class="string">&quot;ts&quot;</span>, <span class="number">15</span>, <span class="bool-val">false</span>)
+        <span class="kw">let </span>cpu_column = build_column_schema(<span class="string">"cpu"</span>, <span class="number">10</span>, <span class="bool-val">true</span>).unwrap();
+        <span class="kw">let </span>ts_column = build_column_schema(<span class="string">"ts"</span>, <span class="number">15</span>, <span class="bool-val">false</span>)
             .unwrap()
             .with_time_index(<span class="bool-val">true</span>);
         columns.push(cpu_column);
@@ -822,84 +837,84 @@
 
         <span class="kw">let </span>add_columns = find_new_columns(<span class="kw-2">&amp;</span>schema, <span class="kw-2">&amp;</span>insert_batch.<span class="number">0</span>).unwrap().unwrap();
 
-        <span class="macro">assert_eq!</span>(<span class="number">4</span>, add_columns.add_columns.len());
+        <span class="macro">assert_eq!</span>(<span class="number">6</span>, add_columns.add_columns.len());
         <span class="kw">let </span>host_column = <span class="kw-2">&amp;</span>add_columns.add_columns[<span class="number">0</span>];
-        <span class="macro">assert!</span>(host_column.is_key);
-
         <span class="macro">assert_eq!</span>(
             ConcreteDataType::string_datatype(),
             ConcreteDataType::from(
-                ColumnDataTypeWrapper::try_new(host_column.column_def.as_ref().unwrap().datatype)
-                    .unwrap()
+                ColumnDataTypeWrapper::try_new(
+                    host_column.column_def.as_ref().unwrap().data_type,
+                    <span class="prelude-val">None
+                </span>)
+                .unwrap()
             )
         );
 
         <span class="kw">let </span>memory_column = <span class="kw-2">&amp;</span>add_columns.add_columns[<span class="number">1</span>];
-        <span class="macro">assert!</span>(!memory_column.is_key);
-
         <span class="macro">assert_eq!</span>(
             ConcreteDataType::float64_datatype(),
             ConcreteDataType::from(
-                ColumnDataTypeWrapper::try_new(memory_column.column_def.as_ref().unwrap().datatype)
-                    .unwrap()
+                ColumnDataTypeWrapper::try_new(
+                    memory_column.column_def.as_ref().unwrap().data_type,
+                    <span class="prelude-val">None
+                </span>)
+                .unwrap()
             )
         );
 
         <span class="kw">let </span>time_column = <span class="kw-2">&amp;</span>add_columns.add_columns[<span class="number">2</span>];
-        <span class="macro">assert!</span>(!time_column.is_key);
-
         <span class="macro">assert_eq!</span>(
             ConcreteDataType::time_datatype(TimeUnit::Millisecond),
             ConcreteDataType::from(
-                ColumnDataTypeWrapper::try_new(time_column.column_def.as_ref().unwrap().datatype)
-                    .unwrap()
+                ColumnDataTypeWrapper::try_new(
+                    time_column.column_def.as_ref().unwrap().data_type,
+                    <span class="prelude-val">None
+                </span>)
+                .unwrap()
             )
         );
 
         <span class="kw">let </span>interval_column = <span class="kw-2">&amp;</span>add_columns.add_columns[<span class="number">3</span>];
-        <span class="macro">assert!</span>(!interval_column.is_key);
-
         <span class="macro">assert_eq!</span>(
             ConcreteDataType::interval_datatype(IntervalUnit::MonthDayNano),
             ConcreteDataType::from(
                 ColumnDataTypeWrapper::try_new(
-                    interval_column.column_def.as_ref().unwrap().datatype
+                    interval_column.column_def.as_ref().unwrap().data_type,
+                    <span class="prelude-val">None
+                </span>)
+                .unwrap()
+            )
+        );
+
+        <span class="kw">let </span>duration_column = <span class="kw-2">&amp;</span>add_columns.add_columns[<span class="number">4</span>];
+
+        <span class="macro">assert_eq!</span>(
+            ConcreteDataType::duration_millisecond_datatype(),
+            ConcreteDataType::from(
+                ColumnDataTypeWrapper::try_new(
+                    duration_column.column_def.as_ref().unwrap().data_type,
+                    <span class="prelude-val">None
+                </span>)
+                .unwrap()
+            )
+        );
+
+        <span class="kw">let </span>decimal_column = <span class="kw-2">&amp;</span>add_columns.add_columns[<span class="number">5</span>];
+        <span class="macro">assert_eq!</span>(
+            ConcreteDataType::decimal128_datatype(<span class="number">38</span>, <span class="number">10</span>),
+            ConcreteDataType::from(
+                ColumnDataTypeWrapper::try_new(
+                    decimal_column.column_def.as_ref().unwrap().data_type,
+                    decimal_column
+                        .column_def
+                        .as_ref()
+                        .unwrap()
+                        .datatype_extension
+                        .clone()
                 )
                 .unwrap()
             )
         );
-    }
-
-    <span class="attr">#[test]
-    </span><span class="kw">fn </span>test_to_table_insert_request() {
-        <span class="kw">let </span>(columns, row_count) = mock_insert_batch();
-        <span class="kw">let </span>request = GrpcInsertRequest {
-            table_name: <span class="string">&quot;demo&quot;</span>.to_string(),
-            columns,
-            row_count,
-            region_number: <span class="number">0</span>,
-        };
-        <span class="kw">let </span>insert_req = to_table_insert_request(<span class="string">&quot;greptime&quot;</span>, <span class="string">&quot;public&quot;</span>, request).unwrap();
-
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;greptime&quot;</span>, insert_req.catalog_name);
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;public&quot;</span>, insert_req.schema_name);
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;demo&quot;</span>, insert_req.table_name);
-
-        <span class="kw">let </span>host = insert_req.columns_values.get(<span class="string">&quot;host&quot;</span>).unwrap();
-        <span class="macro">assert_eq!</span>(Value::String(<span class="string">&quot;host1&quot;</span>.into()), host.get(<span class="number">0</span>));
-        <span class="macro">assert_eq!</span>(Value::String(<span class="string">&quot;host2&quot;</span>.into()), host.get(<span class="number">1</span>));
-
-        <span class="kw">let </span>cpu = insert_req.columns_values.get(<span class="string">&quot;cpu&quot;</span>).unwrap();
-        <span class="macro">assert_eq!</span>(Value::Float64(<span class="number">0.31</span>.into()), cpu.get(<span class="number">0</span>));
-        <span class="macro">assert_eq!</span>(Value::Null, cpu.get(<span class="number">1</span>));
-
-        <span class="kw">let </span>memory = insert_req.columns_values.get(<span class="string">&quot;memory&quot;</span>).unwrap();
-        <span class="macro">assert_eq!</span>(Value::Null, memory.get(<span class="number">0</span>));
-        <span class="macro">assert_eq!</span>(Value::Float64(<span class="number">0.1</span>.into()), memory.get(<span class="number">1</span>));
-
-        <span class="kw">let </span>ts = insert_req.columns_values.get(<span class="string">&quot;ts&quot;</span>).unwrap();
-        <span class="macro">assert_eq!</span>(Value::Timestamp(Timestamp::new_millisecond(<span class="number">100</span>)), ts.get(<span class="number">0</span>));
-        <span class="macro">assert_eq!</span>(Value::Timestamp(Timestamp::new_millisecond(<span class="number">101</span>)), ts.get(<span class="number">1</span>));
     }
 
     <span class="attr">#[test]
@@ -920,15 +935,16 @@
         <span class="kw">let </span>row_count = <span class="number">2</span>;
 
         <span class="kw">let </span>host_vals = Values {
-            string_values: <span class="macro">vec!</span>[<span class="string">&quot;host1&quot;</span>.to_string(), <span class="string">&quot;host2&quot;</span>.to_string()],
+            string_values: <span class="macro">vec!</span>[<span class="string">"host1"</span>.to_string(), <span class="string">"host2"</span>.to_string()],
             ..Default::default()
         };
         <span class="kw">let </span>host_column = Column {
-            column_name: <span class="string">&quot;host&quot;</span>.to_string(),
+            column_name: <span class="string">"host"</span>.to_string(),
             semantic_type: SemanticType::Tag <span class="kw">as </span>i32,
             values: <span class="prelude-val">Some</span>(host_vals),
             null_mask: <span class="macro">vec!</span>[<span class="number">0</span>],
             datatype: ColumnDataType::String <span class="kw">as </span>i32,
+            ..Default::default()
         };
 
         <span class="kw">let </span>cpu_vals = Values {
@@ -936,11 +952,12 @@
             ..Default::default()
         };
         <span class="kw">let </span>cpu_column = Column {
-            column_name: <span class="string">&quot;cpu&quot;</span>.to_string(),
+            column_name: <span class="string">"cpu"</span>.to_string(),
             semantic_type: SemanticType::Field <span class="kw">as </span>i32,
             values: <span class="prelude-val">Some</span>(cpu_vals),
             null_mask: <span class="macro">vec!</span>[<span class="number">2</span>],
             datatype: ColumnDataType::Float64 <span class="kw">as </span>i32,
+            ..Default::default()
         };
 
         <span class="kw">let </span>mem_vals = Values {
@@ -948,11 +965,12 @@
             ..Default::default()
         };
         <span class="kw">let </span>mem_column = Column {
-            column_name: <span class="string">&quot;memory&quot;</span>.to_string(),
+            column_name: <span class="string">"memory"</span>.to_string(),
             semantic_type: SemanticType::Field <span class="kw">as </span>i32,
             values: <span class="prelude-val">Some</span>(mem_vals),
             null_mask: <span class="macro">vec!</span>[<span class="number">1</span>],
             datatype: ColumnDataType::Float64 <span class="kw">as </span>i32,
+            ..Default::default()
         };
 
         <span class="kw">let </span>time_vals = Values {
@@ -960,11 +978,12 @@
             ..Default::default()
         };
         <span class="kw">let </span>time_column = Column {
-            column_name: <span class="string">&quot;time&quot;</span>.to_string(),
+            column_name: <span class="string">"time"</span>.to_string(),
             semantic_type: SemanticType::Field <span class="kw">as </span>i32,
             values: <span class="prelude-val">Some</span>(time_vals),
             null_mask: <span class="macro">vec!</span>[<span class="number">0</span>],
             datatype: ColumnDataType::TimeMillisecond <span class="kw">as </span>i32,
+            ..Default::default()
         };
 
         <span class="kw">let </span>interval1 = IntervalMonthDayNano {
@@ -982,23 +1001,55 @@
             ..Default::default()
         };
         <span class="kw">let </span>interval_column = Column {
-            column_name: <span class="string">&quot;interval&quot;</span>.to_string(),
+            column_name: <span class="string">"interval"</span>.to_string(),
             semantic_type: SemanticType::Field <span class="kw">as </span>i32,
             values: <span class="prelude-val">Some</span>(interval_vals),
             null_mask: <span class="macro">vec!</span>[<span class="number">0</span>],
             datatype: ColumnDataType::IntervalMonthDayNano <span class="kw">as </span>i32,
+            ..Default::default()
+        };
+
+        <span class="kw">let </span>duration_vals = Values {
+            duration_millisecond_values: <span class="macro">vec!</span>[<span class="number">100</span>, <span class="number">101</span>],
+            ..Default::default()
+        };
+        <span class="kw">let </span>duration_column = Column {
+            column_name: <span class="string">"duration"</span>.to_string(),
+            semantic_type: SemanticType::Field <span class="kw">as </span>i32,
+            values: <span class="prelude-val">Some</span>(duration_vals),
+            null_mask: <span class="macro">vec!</span>[<span class="number">0</span>],
+            datatype: ColumnDataType::DurationMillisecond <span class="kw">as </span>i32,
+            ..Default::default()
         };
 
         <span class="kw">let </span>ts_vals = Values {
-            ts_millisecond_values: <span class="macro">vec!</span>[<span class="number">100</span>, <span class="number">101</span>],
+            timestamp_millisecond_values: <span class="macro">vec!</span>[<span class="number">100</span>, <span class="number">101</span>],
             ..Default::default()
         };
         <span class="kw">let </span>ts_column = Column {
-            column_name: <span class="string">&quot;ts&quot;</span>.to_string(),
+            column_name: <span class="string">"ts"</span>.to_string(),
             semantic_type: SemanticType::Timestamp <span class="kw">as </span>i32,
             values: <span class="prelude-val">Some</span>(ts_vals),
             null_mask: <span class="macro">vec!</span>[<span class="number">0</span>],
             datatype: ColumnDataType::TimestampMillisecond <span class="kw">as </span>i32,
+            ..Default::default()
+        };
+        <span class="kw">let </span>decimal_vals = Values {
+            decimal128_values: <span class="macro">vec!</span>[Decimal128 { hi: <span class="number">0</span>, lo: <span class="number">123 </span>}, Decimal128 { hi: <span class="number">0</span>, lo: <span class="number">456 </span>}],
+            ..Default::default()
+        };
+        <span class="kw">let </span>decimal_column = Column {
+            column_name: <span class="string">"decimals"</span>.to_string(),
+            semantic_type: SemanticType::Field <span class="kw">as </span>i32,
+            values: <span class="prelude-val">Some</span>(decimal_vals),
+            null_mask: <span class="macro">vec!</span>[<span class="number">0</span>],
+            datatype: ColumnDataType::Decimal128 <span class="kw">as </span>i32,
+            datatype_extension: <span class="prelude-val">Some</span>(ColumnDataTypeExtension {
+                type_ext: <span class="prelude-val">Some</span>(TypeExt::DecimalType(DecimalTypeExtension {
+                    precision: <span class="number">38</span>,
+                    scale: <span class="number">10</span>,
+                })),
+            }),
         };
 
         (
@@ -1008,7 +1059,9 @@
                 mem_column,
                 time_column,
                 interval_column,
+                duration_column,
                 ts_column,
+                decimal_column,
             ],
             row_count,
         )

@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/cmd/src/standalone.rs`."><title>standalone.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="cmd" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../cmd/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/cmd/src/standalone.rs`."><title>standalone.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="cmd" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -589,46 +590,226 @@
 <a href="#589" id="589">589</a>
 <a href="#590" id="590">590</a>
 <a href="#591" id="591">591</a>
+<a href="#592" id="592">592</a>
+<a href="#593" id="593">593</a>
+<a href="#594" id="594">594</a>
+<a href="#595" id="595">595</a>
+<a href="#596" id="596">596</a>
+<a href="#597" id="597">597</a>
+<a href="#598" id="598">598</a>
+<a href="#599" id="599">599</a>
+<a href="#600" id="600">600</a>
+<a href="#601" id="601">601</a>
+<a href="#602" id="602">602</a>
+<a href="#603" id="603">603</a>
+<a href="#604" id="604">604</a>
+<a href="#605" id="605">605</a>
+<a href="#606" id="606">606</a>
+<a href="#607" id="607">607</a>
+<a href="#608" id="608">608</a>
+<a href="#609" id="609">609</a>
+<a href="#610" id="610">610</a>
+<a href="#611" id="611">611</a>
+<a href="#612" id="612">612</a>
+<a href="#613" id="613">613</a>
+<a href="#614" id="614">614</a>
+<a href="#615" id="615">615</a>
+<a href="#616" id="616">616</a>
+<a href="#617" id="617">617</a>
+<a href="#618" id="618">618</a>
+<a href="#619" id="619">619</a>
+<a href="#620" id="620">620</a>
+<a href="#621" id="621">621</a>
+<a href="#622" id="622">622</a>
+<a href="#623" id="623">623</a>
+<a href="#624" id="624">624</a>
+<a href="#625" id="625">625</a>
+<a href="#626" id="626">626</a>
+<a href="#627" id="627">627</a>
+<a href="#628" id="628">628</a>
+<a href="#629" id="629">629</a>
+<a href="#630" id="630">630</a>
+<a href="#631" id="631">631</a>
+<a href="#632" id="632">632</a>
+<a href="#633" id="633">633</a>
+<a href="#634" id="634">634</a>
+<a href="#635" id="635">635</a>
+<a href="#636" id="636">636</a>
+<a href="#637" id="637">637</a>
+<a href="#638" id="638">638</a>
+<a href="#639" id="639">639</a>
+<a href="#640" id="640">640</a>
+<a href="#641" id="641">641</a>
+<a href="#642" id="642">642</a>
+<a href="#643" id="643">643</a>
+<a href="#644" id="644">644</a>
+<a href="#645" id="645">645</a>
+<a href="#646" id="646">646</a>
+<a href="#647" id="647">647</a>
+<a href="#648" id="648">648</a>
+<a href="#649" id="649">649</a>
+<a href="#650" id="650">650</a>
+<a href="#651" id="651">651</a>
+<a href="#652" id="652">652</a>
+<a href="#653" id="653">653</a>
+<a href="#654" id="654">654</a>
+<a href="#655" id="655">655</a>
+<a href="#656" id="656">656</a>
+<a href="#657" id="657">657</a>
+<a href="#658" id="658">658</a>
+<a href="#659" id="659">659</a>
+<a href="#660" id="660">660</a>
+<a href="#661" id="661">661</a>
+<a href="#662" id="662">662</a>
+<a href="#663" id="663">663</a>
+<a href="#664" id="664">664</a>
+<a href="#665" id="665">665</a>
+<a href="#666" id="666">666</a>
+<a href="#667" id="667">667</a>
+<a href="#668" id="668">668</a>
+<a href="#669" id="669">669</a>
+<a href="#670" id="670">670</a>
+<a href="#671" id="671">671</a>
+<a href="#672" id="672">672</a>
+<a href="#673" id="673">673</a>
+<a href="#674" id="674">674</a>
+<a href="#675" id="675">675</a>
+<a href="#676" id="676">676</a>
+<a href="#677" id="677">677</a>
+<a href="#678" id="678">678</a>
+<a href="#679" id="679">679</a>
+<a href="#680" id="680">680</a>
+<a href="#681" id="681">681</a>
+<a href="#682" id="682">682</a>
+<a href="#683" id="683">683</a>
+<a href="#684" id="684">684</a>
+<a href="#685" id="685">685</a>
+<a href="#686" id="686">686</a>
+<a href="#687" id="687">687</a>
+<a href="#688" id="688">688</a>
+<a href="#689" id="689">689</a>
+<a href="#690" id="690">690</a>
+<a href="#691" id="691">691</a>
+<a href="#692" id="692">692</a>
+<a href="#693" id="693">693</a>
+<a href="#694" id="694">694</a>
+<a href="#695" id="695">695</a>
+<a href="#696" id="696">696</a>
+<a href="#697" id="697">697</a>
+<a href="#698" id="698">698</a>
+<a href="#699" id="699">699</a>
+<a href="#700" id="700">700</a>
+<a href="#701" id="701">701</a>
+<a href="#702" id="702">702</a>
+<a href="#703" id="703">703</a>
+<a href="#704" id="704">704</a>
+<a href="#705" id="705">705</a>
+<a href="#706" id="706">706</a>
+<a href="#707" id="707">707</a>
+<a href="#708" id="708">708</a>
+<a href="#709" id="709">709</a>
+<a href="#710" id="710">710</a>
+<a href="#711" id="711">711</a>
+<a href="#712" id="712">712</a>
+<a href="#713" id="713">713</a>
+<a href="#714" id="714">714</a>
+<a href="#715" id="715">715</a>
+<a href="#716" id="716">716</a>
+<a href="#717" id="717">717</a>
+<a href="#718" id="718">718</a>
+<a href="#719" id="719">719</a>
+<a href="#720" id="720">720</a>
+<a href="#721" id="721">721</a>
+<a href="#722" id="722">722</a>
+<a href="#723" id="723">723</a>
+<a href="#724" id="724">724</a>
+<a href="#725" id="725">725</a>
+<a href="#726" id="726">726</a>
+<a href="#727" id="727">727</a>
+<a href="#728" id="728">728</a>
+<a href="#729" id="729">729</a>
+<a href="#730" id="730">730</a>
+<a href="#731" id="731">731</a>
+<a href="#732" id="732">732</a>
+<a href="#733" id="733">733</a>
+<a href="#734" id="734">734</a>
+<a href="#735" id="735">735</a>
+<a href="#736" id="736">736</a>
+<a href="#737" id="737">737</a>
+<a href="#738" id="738">738</a>
+<a href="#739" id="739">739</a>
+<a href="#740" id="740">740</a>
+<a href="#741" id="741">741</a>
+<a href="#742" id="742">742</a>
+<a href="#743" id="743">743</a>
+<a href="#744" id="744">744</a>
+<a href="#745" id="745">745</a>
+<a href="#746" id="746">746</a>
+<a href="#747" id="747">747</a>
+<a href="#748" id="748">748</a>
+<a href="#749" id="749">749</a>
+<a href="#750" id="750">750</a>
+<a href="#751" id="751">751</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
 </span><span class="kw">use </span>std::sync::Arc;
+<span class="kw">use </span>std::{fs, path};
 
+<span class="kw">use </span>async_trait::async_trait;
 <span class="kw">use </span>clap::Parser;
-<span class="kw">use </span>common_base::Plugins;
+<span class="kw">use </span>common_catalog::consts::MIN_USER_TABLE_ID;
+<span class="kw">use </span>common_config::wal::StandaloneWalConfig;
+<span class="kw">use </span>common_config::{metadata_store_dir, KvBackendConfig};
+<span class="kw">use </span>common_meta::cache_invalidator::DummyCacheInvalidator;
+<span class="kw">use </span>common_meta::datanode_manager::DatanodeManagerRef;
+<span class="kw">use </span>common_meta::ddl::{DdlTaskExecutorRef, TableMetadataAllocatorRef};
+<span class="kw">use </span>common_meta::ddl_manager::DdlManager;
+<span class="kw">use </span>common_meta::key::{TableMetadataManager, TableMetadataManagerRef};
+<span class="kw">use </span>common_meta::kv_backend::KvBackendRef;
+<span class="kw">use </span>common_meta::region_keeper::MemoryRegionKeeper;
+<span class="kw">use </span>common_meta::sequence::SequenceBuilder;
+<span class="kw">use </span>common_meta::wal::{WalOptionsAllocator, WalOptionsAllocatorRef};
+<span class="kw">use </span>common_procedure::ProcedureManagerRef;
 <span class="kw">use </span>common_telemetry::info;
 <span class="kw">use </span>common_telemetry::logging::LoggingOptions;
-<span class="kw">use </span>datanode::datanode::{Datanode, DatanodeOptions, ProcedureConfig, StorageConfig, WalConfig};
-<span class="kw">use </span>datanode::instance::InstanceRef;
+<span class="kw">use </span>common_time::timezone::set_default_timezone;
+<span class="kw">use </span>datanode::config::{DatanodeOptions, ProcedureConfig, RegionEngineConfig, StorageConfig};
+<span class="kw">use </span>datanode::datanode::{Datanode, DatanodeBuilder};
+<span class="kw">use </span>file_engine::config::EngineConfig <span class="kw">as </span>FileEngineConfig;
 <span class="kw">use </span>frontend::frontend::FrontendOptions;
-<span class="kw">use </span>frontend::instance::{FrontendInstance, Instance <span class="kw">as </span>FeInstance};
+<span class="kw">use </span>frontend::instance::builder::FrontendBuilder;
+<span class="kw">use </span>frontend::instance::standalone::StandaloneTableMetadataAllocator;
+<span class="kw">use </span>frontend::instance::{FrontendInstance, Instance <span class="kw">as </span>FeInstance, StandaloneDatanodeManager};
 <span class="kw">use </span>frontend::service_config::{
     GrpcOptions, InfluxdbOptions, MysqlOptions, OpentsdbOptions, PostgresOptions, PromStoreOptions,
-    PrometheusOptions,
 };
+<span class="kw">use </span>mito2::config::MitoConfig;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
+<span class="kw">use </span>servers::export_metrics::ExportMetricsOption;
 <span class="kw">use </span>servers::http::HttpOptions;
 <span class="kw">use </span>servers::tls::{TlsMode, TlsOption};
 <span class="kw">use </span>servers::Mode;
 <span class="kw">use </span>snafu::ResultExt;
 
 <span class="kw">use </span><span class="kw">crate</span>::error::{
-    IllegalConfigSnafu, <span class="prelude-ty">Result</span>, ShutdownDatanodeSnafu, ShutdownFrontendSnafu, StartDatanodeSnafu,
-    StartFrontendSnafu,
+    CreateDirSnafu, IllegalConfigSnafu, InitDdlManagerSnafu, InitMetadataSnafu, InitTimezoneSnafu,
+    <span class="prelude-ty">Result</span>, ShutdownDatanodeSnafu, ShutdownFrontendSnafu, StartDatanodeSnafu, StartFrontendSnafu,
+    StartProcedureManagerSnafu, StartWalOptionsAllocatorSnafu, StopProcedureManagerSnafu,
 };
-<span class="kw">use </span><span class="kw">crate</span>::frontend::load_frontend_plugins;
-<span class="kw">use </span><span class="kw">crate</span>::options::{MixOptions, Options, TopLevelOptions};
+<span class="kw">use </span><span class="kw">crate</span>::options::{CliOptions, MixOptions, Options};
+<span class="kw">use </span><span class="kw">crate</span>::App;
 
 <span class="attr">#[derive(Parser)]
 </span><span class="kw">pub struct </span>Command {
@@ -637,16 +818,12 @@
 }
 
 <span class="kw">impl </span>Command {
-    <span class="kw">pub async fn </span>build(
-        <span class="self">self</span>,
-        fe_opts: FrontendOptions,
-        dn_opts: DatanodeOptions,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;Instance&gt; {
-        <span class="self">self</span>.subcmd.build(fe_opts, dn_opts).<span class="kw">await
+    <span class="kw">pub async fn </span>build(<span class="self">self</span>, opts: MixOptions) -&gt; <span class="prelude-ty">Result</span>&lt;Instance&gt; {
+        <span class="self">self</span>.subcmd.build(opts).<span class="kw">await
     </span>}
 
-    <span class="kw">pub fn </span>load_options(<span class="kw-2">&amp;</span><span class="self">self</span>, top_level_options: TopLevelOptions) -&gt; <span class="prelude-ty">Result</span>&lt;Options&gt; {
-        <span class="self">self</span>.subcmd.load_options(top_level_options)
+    <span class="kw">pub fn </span>load_options(<span class="kw-2">&amp;</span><span class="self">self</span>, cli_options: <span class="kw-2">&amp;</span>CliOptions) -&gt; <span class="prelude-ty">Result</span>&lt;Options&gt; {
+        <span class="self">self</span>.subcmd.load_options(cli_options)
     }
 }
 
@@ -656,15 +833,15 @@
 }
 
 <span class="kw">impl </span>SubCommand {
-    <span class="kw">async fn </span>build(<span class="self">self</span>, fe_opts: FrontendOptions, dn_opts: DatanodeOptions) -&gt; <span class="prelude-ty">Result</span>&lt;Instance&gt; {
+    <span class="kw">async fn </span>build(<span class="self">self</span>, opts: MixOptions) -&gt; <span class="prelude-ty">Result</span>&lt;Instance&gt; {
         <span class="kw">match </span><span class="self">self </span>{
-            SubCommand::Start(cmd) =&gt; cmd.build(fe_opts, dn_opts).<span class="kw">await</span>,
+            SubCommand::Start(cmd) =&gt; cmd.build(opts).<span class="kw">await</span>,
         }
     }
 
-    <span class="kw">fn </span>load_options(<span class="kw-2">&amp;</span><span class="self">self</span>, top_level_options: TopLevelOptions) -&gt; <span class="prelude-ty">Result</span>&lt;Options&gt; {
+    <span class="kw">fn </span>load_options(<span class="kw-2">&amp;</span><span class="self">self</span>, cli_options: <span class="kw-2">&amp;</span>CliOptions) -&gt; <span class="prelude-ty">Result</span>&lt;Options&gt; {
         <span class="kw">match </span><span class="self">self </span>{
-            SubCommand::Start(cmd) =&gt; cmd.load_options(top_level_options),
+            SubCommand::Start(cmd) =&gt; cmd.load_options(cli_options),
         }
     }
 }
@@ -673,40 +850,50 @@
 #[serde(default)]
 </span><span class="kw">pub struct </span>StandaloneOptions {
     <span class="kw">pub </span>mode: Mode,
-    <span class="kw">pub </span>enable_memory_catalog: bool,
     <span class="kw">pub </span>enable_telemetry: bool,
-    <span class="kw">pub </span>http_options: <span class="prelude-ty">Option</span>&lt;HttpOptions&gt;,
-    <span class="kw">pub </span>grpc_options: <span class="prelude-ty">Option</span>&lt;GrpcOptions&gt;,
-    <span class="kw">pub </span>mysql_options: <span class="prelude-ty">Option</span>&lt;MysqlOptions&gt;,
-    <span class="kw">pub </span>postgres_options: <span class="prelude-ty">Option</span>&lt;PostgresOptions&gt;,
-    <span class="kw">pub </span>opentsdb_options: <span class="prelude-ty">Option</span>&lt;OpentsdbOptions&gt;,
-    <span class="kw">pub </span>influxdb_options: <span class="prelude-ty">Option</span>&lt;InfluxdbOptions&gt;,
-    <span class="kw">pub </span>prom_store_options: <span class="prelude-ty">Option</span>&lt;PromStoreOptions&gt;,
-    <span class="kw">pub </span>prometheus_options: <span class="prelude-ty">Option</span>&lt;PrometheusOptions&gt;,
-    <span class="kw">pub </span>wal: WalConfig,
+    <span class="kw">pub </span>default_timezone: <span class="prelude-ty">Option</span>&lt;String&gt;,
+    <span class="kw">pub </span>http: HttpOptions,
+    <span class="kw">pub </span>grpc: GrpcOptions,
+    <span class="kw">pub </span>mysql: MysqlOptions,
+    <span class="kw">pub </span>postgres: PostgresOptions,
+    <span class="kw">pub </span>opentsdb: OpentsdbOptions,
+    <span class="kw">pub </span>influxdb: InfluxdbOptions,
+    <span class="kw">pub </span>prom_store: PromStoreOptions,
+    <span class="kw">pub </span>wal: StandaloneWalConfig,
     <span class="kw">pub </span>storage: StorageConfig,
+    <span class="kw">pub </span>metadata_store: KvBackendConfig,
     <span class="kw">pub </span>procedure: ProcedureConfig,
     <span class="kw">pub </span>logging: LoggingOptions,
+    <span class="kw">pub </span>user_provider: <span class="prelude-ty">Option</span>&lt;String&gt;,
+    <span class="doccomment">/// Options for different store engines.
+    </span><span class="kw">pub </span>region_engine: Vec&lt;RegionEngineConfig&gt;,
+    <span class="kw">pub </span>export_metrics: ExportMetricsOption,
 }
 
 <span class="kw">impl </span>Default <span class="kw">for </span>StandaloneOptions {
     <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             mode: Mode::Standalone,
-            enable_memory_catalog: <span class="bool-val">false</span>,
             enable_telemetry: <span class="bool-val">true</span>,
-            http_options: <span class="prelude-val">Some</span>(HttpOptions::default()),
-            grpc_options: <span class="prelude-val">Some</span>(GrpcOptions::default()),
-            mysql_options: <span class="prelude-val">Some</span>(MysqlOptions::default()),
-            postgres_options: <span class="prelude-val">Some</span>(PostgresOptions::default()),
-            opentsdb_options: <span class="prelude-val">Some</span>(OpentsdbOptions::default()),
-            influxdb_options: <span class="prelude-val">Some</span>(InfluxdbOptions::default()),
-            prom_store_options: <span class="prelude-val">Some</span>(PromStoreOptions::default()),
-            prometheus_options: <span class="prelude-val">Some</span>(PrometheusOptions::default()),
-            wal: WalConfig::default(),
+            default_timezone: <span class="prelude-val">None</span>,
+            http: HttpOptions::default(),
+            grpc: GrpcOptions::default(),
+            mysql: MysqlOptions::default(),
+            postgres: PostgresOptions::default(),
+            opentsdb: OpentsdbOptions::default(),
+            influxdb: InfluxdbOptions::default(),
+            prom_store: PromStoreOptions::default(),
+            wal: StandaloneWalConfig::default(),
             storage: StorageConfig::default(),
+            metadata_store: KvBackendConfig::default(),
             procedure: ProcedureConfig::default(),
             logging: LoggingOptions::default(),
+            export_metrics: ExportMetricsOption::default(),
+            user_provider: <span class="prelude-val">None</span>,
+            region_engine: <span class="macro">vec!</span>[
+                RegionEngineConfig::Mito(MitoConfig::default()),
+                RegionEngineConfig::File(FileEngineConfig::default()),
+            ],
         }
     }
 }
@@ -715,27 +902,31 @@
     <span class="kw">fn </span>frontend_options(<span class="self">self</span>) -&gt; FrontendOptions {
         FrontendOptions {
             mode: <span class="self">self</span>.mode,
-            http_options: <span class="self">self</span>.http_options,
-            grpc_options: <span class="self">self</span>.grpc_options,
-            mysql_options: <span class="self">self</span>.mysql_options,
-            postgres_options: <span class="self">self</span>.postgres_options,
-            opentsdb_options: <span class="self">self</span>.opentsdb_options,
-            influxdb_options: <span class="self">self</span>.influxdb_options,
-            prom_store_options: <span class="self">self</span>.prom_store_options,
-            prometheus_options: <span class="self">self</span>.prometheus_options,
-            meta_client_options: <span class="prelude-val">None</span>,
+            default_timezone: <span class="self">self</span>.default_timezone,
+            http: <span class="self">self</span>.http,
+            grpc: <span class="self">self</span>.grpc,
+            mysql: <span class="self">self</span>.mysql,
+            postgres: <span class="self">self</span>.postgres,
+            opentsdb: <span class="self">self</span>.opentsdb,
+            influxdb: <span class="self">self</span>.influxdb,
+            prom_store: <span class="self">self</span>.prom_store,
+            meta_client: <span class="prelude-val">None</span>,
             logging: <span class="self">self</span>.logging,
+            user_provider: <span class="self">self</span>.user_provider,
+            <span class="comment">// Handle the export metrics task run by standalone to frontend for execution
+            </span>export_metrics: <span class="self">self</span>.export_metrics,
             ..Default::default()
         }
     }
 
     <span class="kw">fn </span>datanode_options(<span class="self">self</span>) -&gt; DatanodeOptions {
         DatanodeOptions {
-            enable_memory_catalog: <span class="self">self</span>.enable_memory_catalog,
+            node_id: <span class="prelude-val">Some</span>(<span class="number">0</span>),
             enable_telemetry: <span class="self">self</span>.enable_telemetry,
-            wal: <span class="self">self</span>.wal,
+            wal: <span class="self">self</span>.wal.into(),
             storage: <span class="self">self</span>.storage,
-            procedure: <span class="self">self</span>.procedure,
+            region_engine: <span class="self">self</span>.region_engine,
+            rpc_addr: <span class="self">self</span>.grpc.addr,
             ..Default::default()
         }
     }
@@ -744,39 +935,56 @@
 <span class="kw">pub struct </span>Instance {
     datanode: Datanode,
     frontend: FeInstance,
+    procedure_manager: ProcedureManagerRef,
+    wal_options_allocator: WalOptionsAllocatorRef,
 }
 
-<span class="kw">impl </span>Instance {
-    <span class="kw">pub async fn </span>start(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="comment">// Start datanode instance before starting services, to avoid requests come in before internal components are started.
-        </span><span class="self">self</span>.datanode
-            .start_instance()
+<span class="attr">#[async_trait]
+</span><span class="kw">impl </span>App <span class="kw">for </span>Instance {
+    <span class="kw">fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
+        <span class="string">"greptime-standalone"
+    </span>}
+
+    <span class="kw">async fn </span>start(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        <span class="self">self</span>.datanode.start_telemetry();
+
+        <span class="self">self</span>.procedure_manager
+            .start()
             .<span class="kw">await
-            </span>.context(StartDatanodeSnafu)<span class="question-mark">?</span>;
-        <span class="macro">info!</span>(<span class="string">&quot;Datanode instance started&quot;</span>);
+            </span>.context(StartProcedureManagerSnafu)<span class="question-mark">?</span>;
+
+        <span class="self">self</span>.wal_options_allocator
+            .start()
+            .<span class="kw">await
+            </span>.context(StartWalOptionsAllocatorSnafu)<span class="question-mark">?</span>;
 
         <span class="self">self</span>.frontend.start().<span class="kw">await</span>.context(StartFrontendSnafu)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">pub async fn </span>stop(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="kw">async fn </span>stop(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.frontend
             .shutdown()
             .<span class="kw">await
             </span>.context(ShutdownFrontendSnafu)<span class="question-mark">?</span>;
 
+        <span class="self">self</span>.procedure_manager
+            .stop()
+            .<span class="kw">await
+            </span>.context(StopProcedureManagerSnafu)<span class="question-mark">?</span>;
+
         <span class="self">self</span>.datanode
-            .shutdown_instance()
+            .shutdown()
             .<span class="kw">await
             </span>.context(ShutdownDatanodeSnafu)<span class="question-mark">?</span>;
-        <span class="macro">info!</span>(<span class="string">&quot;Datanode instance stopped.&quot;</span>);
+        <span class="macro">info!</span>(<span class="string">"Datanode instance stopped."</span>);
 
         <span class="prelude-val">Ok</span>(())
     }
 }
 
 <span class="attr">#[derive(Debug, Default, Parser)]
-</span><span class="kw">struct </span>StartCommand {
+</span><span class="kw">pub struct </span>StartCommand {
     <span class="attr">#[clap(long)]
     </span>http_addr: <span class="prelude-ty">Option</span>&lt;String&gt;,
     <span class="attr">#[clap(long)]
@@ -784,17 +992,13 @@
     <span class="attr">#[clap(long)]
     </span>mysql_addr: <span class="prelude-ty">Option</span>&lt;String&gt;,
     <span class="attr">#[clap(long)]
-    </span>prom_addr: <span class="prelude-ty">Option</span>&lt;String&gt;,
-    <span class="attr">#[clap(long)]
     </span>postgres_addr: <span class="prelude-ty">Option</span>&lt;String&gt;,
     <span class="attr">#[clap(long)]
     </span>opentsdb_addr: <span class="prelude-ty">Option</span>&lt;String&gt;,
     <span class="attr">#[clap(short, long)]
     </span>influxdb_enable: bool,
     <span class="attr">#[clap(short, long)]
-    </span>config_file: <span class="prelude-ty">Option</span>&lt;String&gt;,
-    <span class="attr">#[clap(short = <span class="string">&#39;m&#39;</span>, long = <span class="string">&quot;memory-catalog&quot;</span>)]
-    </span>enable_memory_catalog: bool,
+    </span><span class="kw">pub </span>config_file: <span class="prelude-ty">Option</span>&lt;String&gt;,
     <span class="attr">#[clap(long)]
     </span>tls_mode: <span class="prelude-ty">Option</span>&lt;TlsMode&gt;,
     <span class="attr">#[clap(long)]
@@ -803,28 +1007,37 @@
     </span>tls_key_path: <span class="prelude-ty">Option</span>&lt;String&gt;,
     <span class="attr">#[clap(long)]
     </span>user_provider: <span class="prelude-ty">Option</span>&lt;String&gt;,
-    <span class="attr">#[clap(long, default_value = <span class="string">&quot;GREPTIMEDB_STANDALONE&quot;</span>)]
-    </span>env_prefix: String,
+    <span class="attr">#[clap(long, default_value = <span class="string">"GREPTIMEDB_STANDALONE"</span>)]
+    </span><span class="kw">pub </span>env_prefix: String,
+    <span class="doccomment">/// The working home directory of this standalone instance.
+    </span><span class="attr">#[clap(long)]
+    </span>data_home: <span class="prelude-ty">Option</span>&lt;String&gt;,
 }
 
 <span class="kw">impl </span>StartCommand {
-    <span class="kw">fn </span>load_options(<span class="kw-2">&amp;</span><span class="self">self</span>, top_level_options: TopLevelOptions) -&gt; <span class="prelude-ty">Result</span>&lt;Options&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>opts: StandaloneOptions = Options::load_layered_options(
+    <span class="kw">fn </span>load_options(<span class="kw-2">&amp;</span><span class="self">self</span>, cli_options: <span class="kw-2">&amp;</span>CliOptions) -&gt; <span class="prelude-ty">Result</span>&lt;Options&gt; {
+        <span class="kw">let </span>opts: StandaloneOptions = Options::load_layered_options(
             <span class="self">self</span>.config_file.as_deref(),
             <span class="self">self</span>.env_prefix.as_ref(),
             <span class="prelude-val">None</span>,
         )<span class="question-mark">?</span>;
 
-        opts.enable_memory_catalog = <span class="self">self</span>.enable_memory_catalog;
+        <span class="self">self</span>.convert_options(cli_options, opts)
+    }
 
+    <span class="kw">pub fn </span>convert_options(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        cli_options: <span class="kw-2">&amp;</span>CliOptions,
+        <span class="kw-2">mut </span>opts: StandaloneOptions,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;Options&gt; {
         opts.mode = Mode::Standalone;
 
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(dir) = top_level_options.log_dir {
-            opts.logging.dir = dir;
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(dir) = <span class="kw-2">&amp;</span>cli_options.log_dir {
+            opts.logging.dir = dir.clone();
         }
 
-        <span class="kw">if </span>top_level_options.log_level.is_some() {
-            opts.logging.level = top_level_options.log_level;
+        <span class="kw">if </span>cli_options.log_level.is_some() {
+            opts.logging.level = cli_options.log_level.clone();
         }
 
         <span class="kw">let </span>tls_opts = TlsOption::new(
@@ -834,9 +1047,11 @@
         );
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(addr) = <span class="kw-2">&amp;</span><span class="self">self</span>.http_addr {
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(http_opts) = <span class="kw-2">&amp;mut </span>opts.http_options {
-                http_opts.addr = addr.clone()
-            }
+            opts.http.addr = addr.clone()
+        }
+
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(data_home) = <span class="kw-2">&amp;</span><span class="self">self</span>.data_home {
+            opts.storage.data_home = data_home.clone();
         }
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(addr) = <span class="kw-2">&amp;</span><span class="self">self</span>.rpc_addr {
@@ -845,89 +1060,176 @@
             <span class="kw">if </span>addr.eq(<span class="kw-2">&amp;</span>datanode_grpc_addr) {
                 <span class="kw">return </span>IllegalConfigSnafu {
                     msg: <span class="macro">format!</span>(
-                        <span class="string">&quot;gRPC listen address conflicts with datanode reserved gRPC addr: {datanode_grpc_addr}&quot;</span>,
+                        <span class="string">"gRPC listen address conflicts with datanode reserved gRPC addr: {datanode_grpc_addr}"</span>,
                     ),
                 }
                 .fail();
             }
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(grpc_opts) = <span class="kw-2">&amp;mut </span>opts.grpc_options {
-                grpc_opts.addr = addr.clone()
-            }
+            opts.grpc.addr = addr.clone()
         }
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(addr) = <span class="kw-2">&amp;</span><span class="self">self</span>.mysql_addr {
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(mysql_opts) = <span class="kw-2">&amp;mut </span>opts.mysql_options {
-                mysql_opts.addr = addr.clone();
-                mysql_opts.tls = tls_opts.clone();
-            }
-        }
-
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(addr) = <span class="kw-2">&amp;</span><span class="self">self</span>.prom_addr {
-            opts.prometheus_options = <span class="prelude-val">Some</span>(PrometheusOptions { addr: addr.clone() })
+            opts.mysql.enable = <span class="bool-val">true</span>;
+            opts.mysql.addr = addr.clone();
+            opts.mysql.tls = tls_opts.clone();
         }
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(addr) = <span class="kw-2">&amp;</span><span class="self">self</span>.postgres_addr {
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(postgres_opts) = <span class="kw-2">&amp;mut </span>opts.postgres_options {
-                postgres_opts.addr = addr.clone();
-                postgres_opts.tls = tls_opts;
-            }
+            opts.postgres.enable = <span class="bool-val">true</span>;
+            opts.postgres.addr = addr.clone();
+            opts.postgres.tls = tls_opts;
         }
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(addr) = <span class="kw-2">&amp;</span><span class="self">self</span>.opentsdb_addr {
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(opentsdb_addr) = <span class="kw-2">&amp;mut </span>opts.opentsdb_options {
-                opentsdb_addr.addr = addr.clone();
-            }
+            opts.opentsdb.enable = <span class="bool-val">true</span>;
+            opts.opentsdb.addr = addr.clone();
         }
 
         <span class="kw">if </span><span class="self">self</span>.influxdb_enable {
-            opts.influxdb_options = <span class="prelude-val">Some</span>(InfluxdbOptions { enable: <span class="bool-val">true </span>});
+            opts.influxdb.enable = <span class="self">self</span>.influxdb_enable;
         }
 
-        <span class="kw">let </span>fe_opts = opts.clone().frontend_options();
+        opts.user_provider = <span class="self">self</span>.user_provider.clone();
+
+        <span class="kw">let </span>metadata_store = opts.metadata_store.clone();
+        <span class="kw">let </span>procedure = opts.procedure.clone();
+        <span class="kw">let </span>frontend = opts.clone().frontend_options();
         <span class="kw">let </span>logging = opts.logging.clone();
-        <span class="kw">let </span>dn_opts = opts.datanode_options();
+        <span class="kw">let </span>wal_meta = opts.wal.clone().into();
+        <span class="kw">let </span>datanode = opts.datanode_options().clone();
 
         <span class="prelude-val">Ok</span>(Options::Standalone(Box::new(MixOptions {
-            fe_opts,
-            dn_opts,
+            procedure,
+            metadata_store,
+            data_home: datanode.storage.data_home.to_string(),
+            frontend,
+            datanode,
             logging,
+            wal_meta,
         })))
     }
 
-    <span class="kw">async fn </span>build(<span class="self">self</span>, fe_opts: FrontendOptions, dn_opts: DatanodeOptions) -&gt; <span class="prelude-ty">Result</span>&lt;Instance&gt; {
-        <span class="kw">let </span>plugins = Arc::new(load_frontend_plugins(<span class="kw-2">&amp;</span><span class="self">self</span>.user_provider)<span class="question-mark">?</span>);
+    <span class="attr">#[allow(unreachable_code)]
+    #[allow(unused_variables)]
+    #[allow(clippy::diverging_sub_expression)]
+    </span><span class="kw">async fn </span>build(<span class="self">self</span>, opts: MixOptions) -&gt; <span class="prelude-ty">Result</span>&lt;Instance&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>fe_opts = opts.frontend.clone();
+        <span class="attr">#[allow(clippy::unnecessary_mut_passed)]
+        </span><span class="kw">let </span>fe_plugins = plugins::setup_frontend_plugins(<span class="kw-2">&amp;mut </span>fe_opts) <span class="comment">// mut ref is MUST, DO NOT change it
+            </span>.<span class="kw">await
+            </span>.context(StartFrontendSnafu)<span class="question-mark">?</span>;
 
-        <span class="macro">info!</span>(<span class="string">&quot;Standalone start command: {:#?}&quot;</span>, <span class="self">self</span>);
-        <span class="macro">info!</span>(
-            <span class="string">&quot;Standalone frontend options: {:#?}, datanode options: {:#?}&quot;</span>,
-            fe_opts, dn_opts
+        <span class="kw">let </span>dn_opts = opts.datanode.clone();
+
+        <span class="macro">info!</span>(<span class="string">"Standalone start command: {:#?}"</span>, <span class="self">self</span>);
+
+        <span class="macro">info!</span>(<span class="string">"Building standalone instance with {opts:#?}"</span>);
+
+        set_default_timezone(opts.frontend.default_timezone.as_deref())
+            .context(InitTimezoneSnafu)<span class="question-mark">?</span>;
+
+        <span class="comment">// Ensure the data_home directory exists.
+        </span>fs::create_dir_all(path::Path::new(<span class="kw-2">&amp;</span>opts.data_home)).context(CreateDirSnafu {
+            dir: <span class="kw-2">&amp;</span>opts.data_home,
+        })<span class="question-mark">?</span>;
+
+        <span class="kw">let </span>metadata_dir = metadata_store_dir(<span class="kw-2">&amp;</span>opts.data_home);
+        <span class="kw">let </span>(kv_backend, procedure_manager) = FeInstance::try_build_standalone_components(
+            metadata_dir,
+            opts.metadata_store.clone(),
+            opts.procedure.clone(),
+        )
+        .<span class="kw">await
+        </span>.context(StartFrontendSnafu)<span class="question-mark">?</span>;
+
+        <span class="kw">let </span>builder =
+            DatanodeBuilder::new(dn_opts, fe_plugins.clone()).with_kv_backend(kv_backend.clone());
+        <span class="kw">let </span>datanode = builder.build().<span class="kw">await</span>.context(StartDatanodeSnafu)<span class="question-mark">?</span>;
+
+        <span class="kw">let </span>datanode_manager = Arc::new(StandaloneDatanodeManager(datanode.region_server()));
+
+        <span class="kw">let </span>table_id_sequence = Arc::new(
+            SequenceBuilder::new(<span class="string">"table_id"</span>, kv_backend.clone())
+                .initial(MIN_USER_TABLE_ID <span class="kw">as </span>u64)
+                .step(<span class="number">10</span>)
+                .build(),
         );
+        <span class="kw">let </span>wal_options_allocator = Arc::new(WalOptionsAllocator::new(
+            opts.wal_meta.clone(),
+            kv_backend.clone(),
+        ));
+        <span class="kw">let </span>table_meta_allocator = Arc::new(StandaloneTableMetadataAllocator::new(
+            table_id_sequence,
+            wal_options_allocator.clone(),
+        ));
 
-        <span class="kw">let </span>datanode = Datanode::new(dn_opts.clone(), Default::default())
-            .<span class="kw">await
-            </span>.context(StartDatanodeSnafu)<span class="question-mark">?</span>;
+        <span class="kw">let </span>ddl_task_executor = <span class="self">Self</span>::create_ddl_task_executor(
+            kv_backend.clone(),
+            procedure_manager.clone(),
+            datanode_manager.clone(),
+            table_meta_allocator,
+        )
+        .<span class="kw">await</span><span class="question-mark">?</span>;
 
-        <span class="kw">let </span><span class="kw-2">mut </span>frontend = build_frontend(plugins.clone(), datanode.get_instance()).<span class="kw">await</span><span class="question-mark">?</span>;
-
-        frontend
-            .build_servers(<span class="kw-2">&amp;</span>fe_opts)
+        <span class="kw">let </span><span class="kw-2">mut </span>frontend = FrontendBuilder::new(kv_backend, datanode_manager, ddl_task_executor)
+            .with_plugin(fe_plugins)
+            .try_build()
             .<span class="kw">await
             </span>.context(StartFrontendSnafu)<span class="question-mark">?</span>;
 
-        <span class="prelude-val">Ok</span>(Instance { datanode, frontend })
-    }
-}
+        frontend
+            .build_export_metrics_task(<span class="kw-2">&amp;</span>opts.frontend.export_metrics)
+            .context(StartFrontendSnafu)<span class="question-mark">?</span>;
 
-<span class="doccomment">/// Build frontend instance in standalone mode
-</span><span class="kw">async fn </span>build_frontend(
-    plugins: Arc&lt;Plugins&gt;,
-    datanode_instance: InstanceRef,
-) -&gt; <span class="prelude-ty">Result</span>&lt;FeInstance&gt; {
-    <span class="kw">let </span><span class="kw-2">mut </span>frontend_instance = FeInstance::try_new_standalone(datanode_instance.clone())
-        .<span class="kw">await
-        </span>.context(StartFrontendSnafu)<span class="question-mark">?</span>;
-    frontend_instance.set_plugins(plugins.clone());
-    <span class="prelude-val">Ok</span>(frontend_instance)
+        frontend
+            .build_servers(opts)
+            .<span class="kw">await
+            </span>.context(StartFrontendSnafu)<span class="question-mark">?</span>;
+
+        <span class="prelude-val">Ok</span>(Instance {
+            datanode,
+            frontend,
+            procedure_manager,
+            wal_options_allocator,
+        })
+    }
+
+    <span class="kw">pub async fn </span>create_ddl_task_executor(
+        kv_backend: KvBackendRef,
+        procedure_manager: ProcedureManagerRef,
+        datanode_manager: DatanodeManagerRef,
+        table_meta_allocator: TableMetadataAllocatorRef,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;DdlTaskExecutorRef&gt; {
+        <span class="kw">let </span>table_metadata_manager =
+            <span class="self">Self</span>::create_table_metadata_manager(kv_backend.clone()).<span class="kw">await</span><span class="question-mark">?</span>;
+
+        <span class="kw">let </span>ddl_task_executor: DdlTaskExecutorRef = Arc::new(
+            DdlManager::try_new(
+                procedure_manager,
+                datanode_manager,
+                Arc::new(DummyCacheInvalidator),
+                table_metadata_manager,
+                table_meta_allocator,
+                Arc::new(MemoryRegionKeeper::default()),
+            )
+            .context(InitDdlManagerSnafu)<span class="question-mark">?</span>,
+        );
+
+        <span class="prelude-val">Ok</span>(ddl_task_executor)
+    }
+
+    <span class="kw">async fn </span>create_table_metadata_manager(
+        kv_backend: KvBackendRef,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;TableMetadataManagerRef&gt; {
+        <span class="kw">let </span>table_metadata_manager = Arc::new(TableMetadataManager::new(kv_backend));
+
+        table_metadata_manager
+            .init()
+            .<span class="kw">await
+            </span>.context(InitMetadataSnafu)<span class="question-mark">?</span>;
+
+        <span class="prelude-val">Ok</span>(table_metadata_manager)
+    }
 }
 
 <span class="attr">#[cfg(test)]
@@ -938,26 +1240,29 @@
 
     <span class="kw">use </span>auth::{Identity, Password, UserProviderRef};
     <span class="kw">use </span>common_base::readable_size::ReadableSize;
+    <span class="kw">use </span>common_config::WalConfig;
     <span class="kw">use </span>common_test_util::temp_dir::create_named_temp_file;
+    <span class="kw">use </span>datanode::config::{FileConfig, GcsConfig};
     <span class="kw">use </span>servers::Mode;
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use </span><span class="kw">crate</span>::options::ENV_VAR_SEP;
+    <span class="kw">use </span><span class="kw">crate</span>::options::{CliOptions, ENV_VAR_SEP};
 
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>test_try_from_start_command_to_anymap() {
-        <span class="kw">let </span>command = StartCommand {
-            user_provider: <span class="prelude-val">Some</span>(<span class="string">&quot;static_user_provider:cmd:test=test&quot;</span>.to_string()),
+        <span class="kw">let </span><span class="kw-2">mut </span>fe_opts = FrontendOptions {
+            user_provider: <span class="prelude-val">Some</span>(<span class="string">"static_user_provider:cmd:test=test"</span>.to_string()),
             ..Default::default()
         };
 
-        <span class="kw">let </span>plugins = load_frontend_plugins(<span class="kw-2">&amp;</span>command.user_provider);
-        <span class="kw">let </span>plugins = plugins.unwrap();
+        <span class="attr">#[allow(clippy::unnecessary_mut_passed)]
+        </span><span class="kw">let </span>plugins = plugins::setup_frontend_plugins(<span class="kw-2">&amp;mut </span>fe_opts).<span class="kw">await</span>.unwrap();
+
         <span class="kw">let </span>provider = plugins.get::&lt;UserProviderRef&gt;().unwrap();
         <span class="kw">let </span>result = provider
             .authenticate(
-                Identity::UserId(<span class="string">&quot;test&quot;</span>, <span class="prelude-val">None</span>),
-                Password::PlainText(<span class="string">&quot;test&quot;</span>.to_string().into()),
+                Identity::UserId(<span class="string">"test"</span>, <span class="prelude-val">None</span>),
+                Password::PlainText(<span class="string">"test"</span>.to_string().into()),
             )
             .<span class="kw">await</span>;
         <span class="kw">let _ </span>= result.unwrap();
@@ -973,23 +1278,33 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_read_from_config_file() {
         <span class="kw">let </span><span class="kw-2">mut </span>file = create_named_temp_file();
-        <span class="kw">let </span>toml_str = <span class="string">r#&quot;
-            mode = &quot;distributed&quot;
+        <span class="kw">let </span>toml_str = <span class="string">r#"
+            mode = "distributed"
 
             enable_memory_catalog = true
 
             [wal]
-            dir = &quot;/tmp/greptimedb/test/wal&quot;
-            file_size = &quot;1GB&quot;
-            purge_threshold = &quot;50GB&quot;
-            purge_interval = &quot;10m&quot;
+            provider = "raft_engine"
+            dir = "/tmp/greptimedb/test/wal"
+            file_size = "1GB"
+            purge_threshold = "50GB"
+            purge_interval = "10m"
             read_batch_size = 128
             sync_write = false
 
             [storage]
-            type = &quot;S3&quot;
-            access_key_id = &quot;access_key_id&quot;
-            secret_access_key = &quot;secret_access_key&quot;
+            data_home = "/tmp/greptimedb/"
+            type = "File"
+
+            [[storage.providers]]
+            type = "Gcs"
+            bucket = "foo"
+            endpoint = "bar"
+
+            [[storage.providers]]
+            type = "S3"
+            access_key_id = "access_key_id"
+            secret_access_key = "secret_access_key"
 
             [storage.compaction]
             max_inflight_tasks = 3
@@ -998,66 +1313,60 @@
 
             [storage.manifest]
             checkpoint_margin = 9
-            gc_duration = &#39;7s&#39;
-            checkpoint_on_startup = true
+            gc_duration = '7s'
 
-            [http_options]
-            addr = &quot;127.0.0.1:4000&quot;
-            timeout = &quot;30s&quot;
-            body_limit = &quot;128MB&quot;
+            [http]
+            addr = "127.0.0.1:4000"
+            timeout = "33s"
+            body_limit = "128MB"
 
             [logging]
-            level = &quot;debug&quot;
-            dir = &quot;/tmp/greptimedb/test/logs&quot;
-        &quot;#</span>;
-        <span class="macro">write!</span>(file, <span class="string">&quot;{}&quot;</span>, toml_str).unwrap();
+            level = "debug"
+            dir = "/tmp/greptimedb/test/logs"
+        "#</span>;
+        <span class="macro">write!</span>(file, <span class="string">"{}"</span>, toml_str).unwrap();
         <span class="kw">let </span>cmd = StartCommand {
             config_file: <span class="prelude-val">Some</span>(file.path().to_str().unwrap().to_string()),
-            user_provider: <span class="prelude-val">Some</span>(<span class="string">&quot;static_user_provider:cmd:test=test&quot;</span>.to_string()),
+            user_provider: <span class="prelude-val">Some</span>(<span class="string">"static_user_provider:cmd:test=test"</span>.to_string()),
             ..Default::default()
         };
 
-        <span class="kw">let </span>Options::Standalone(options) = cmd.load_options(TopLevelOptions::default()).unwrap()
-        <span class="kw">else </span>{
+        <span class="kw">let </span>Options::Standalone(options) = cmd.load_options(<span class="kw-2">&amp;</span>CliOptions::default()).unwrap() <span class="kw">else </span>{
             <span class="macro">unreachable!</span>()
         };
-        <span class="kw">let </span>fe_opts = options.fe_opts;
-        <span class="kw">let </span>dn_opts = options.dn_opts;
+        <span class="kw">let </span>fe_opts = options.frontend;
+        <span class="kw">let </span>dn_opts = options.datanode;
         <span class="kw">let </span>logging_opts = options.logging;
         <span class="macro">assert_eq!</span>(Mode::Standalone, fe_opts.mode);
-        <span class="macro">assert_eq!</span>(
-            <span class="string">&quot;127.0.0.1:4000&quot;</span>.to_string(),
-            fe_opts.http_options.as_ref().unwrap().addr
-        );
-        <span class="macro">assert_eq!</span>(
-            Duration::from_secs(<span class="number">30</span>),
-            fe_opts.http_options.as_ref().unwrap().timeout
-        );
-        <span class="macro">assert_eq!</span>(
-            ReadableSize::mb(<span class="number">128</span>),
-            fe_opts.http_options.as_ref().unwrap().body_limit
-        );
-        <span class="macro">assert_eq!</span>(
-            <span class="string">&quot;127.0.0.1:4001&quot;</span>.to_string(),
-            fe_opts.grpc_options.unwrap().addr
-        );
-        <span class="macro">assert_eq!</span>(
-            <span class="string">&quot;127.0.0.1:4002&quot;</span>,
-            fe_opts.mysql_options.as_ref().unwrap().addr
-        );
-        <span class="macro">assert_eq!</span>(<span class="number">2</span>, fe_opts.mysql_options.as_ref().unwrap().runtime_size);
-        <span class="macro">assert_eq!</span>(
-            <span class="prelude-val">None</span>,
-            fe_opts.mysql_options.as_ref().unwrap().reject_no_database
-        );
-        <span class="macro">assert!</span>(fe_opts.influxdb_options.as_ref().unwrap().enable);
+        <span class="macro">assert_eq!</span>(<span class="string">"127.0.0.1:4000"</span>.to_string(), fe_opts.http.addr);
+        <span class="macro">assert_eq!</span>(Duration::from_secs(<span class="number">33</span>), fe_opts.http.timeout);
+        <span class="macro">assert_eq!</span>(ReadableSize::mb(<span class="number">128</span>), fe_opts.http.body_limit);
+        <span class="macro">assert_eq!</span>(<span class="string">"127.0.0.1:4001"</span>.to_string(), fe_opts.grpc.addr);
+        <span class="macro">assert!</span>(fe_opts.mysql.enable);
+        <span class="macro">assert_eq!</span>(<span class="string">"127.0.0.1:4002"</span>, fe_opts.mysql.addr);
+        <span class="macro">assert_eq!</span>(<span class="number">2</span>, fe_opts.mysql.runtime_size);
+        <span class="macro">assert_eq!</span>(<span class="prelude-val">None</span>, fe_opts.mysql.reject_no_database);
+        <span class="macro">assert!</span>(fe_opts.influxdb.enable);
 
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;/tmp/greptimedb/test/wal&quot;</span>, dn_opts.wal.dir.unwrap());
-        <span class="kw">match </span><span class="kw-2">&amp;</span>dn_opts.storage.store {
-            datanode::datanode::ObjectStoreConfig::S3(s3_config) =&gt; {
+        <span class="kw">let </span>WalConfig::RaftEngine(raft_engine_config) = dn_opts.wal <span class="kw">else </span>{
+            <span class="macro">unreachable!</span>()
+        };
+        <span class="macro">assert_eq!</span>(<span class="string">"/tmp/greptimedb/test/wal"</span>, raft_engine_config.dir.unwrap());
+
+        <span class="macro">assert!</span>(<span class="macro">matches!</span>(
+            <span class="kw-2">&amp;</span>dn_opts.storage.store,
+            datanode::config::ObjectStoreConfig::File(FileConfig { .. })
+        ));
+        <span class="macro">assert_eq!</span>(dn_opts.storage.providers.len(), <span class="number">2</span>);
+        <span class="macro">assert!</span>(<span class="macro">matches!</span>(
+            dn_opts.storage.providers[<span class="number">0</span>],
+            datanode::config::ObjectStoreConfig::Gcs(GcsConfig { .. })
+        ));
+        <span class="kw">match </span><span class="kw-2">&amp;</span>dn_opts.storage.providers[<span class="number">1</span>] {
+            datanode::config::ObjectStoreConfig::S3(s3_config) =&gt; {
                 <span class="macro">assert_eq!</span>(
-                    <span class="string">&quot;Secret([REDACTED alloc::string::String])&quot;</span>.to_string(),
-                    <span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, s3_config.access_key_id)
+                    <span class="string">"Secret([REDACTED alloc::string::String])"</span>.to_string(),
+                    <span class="macro">format!</span>(<span class="string">"{:?}"</span>, s3_config.access_key_id)
                 );
             }
             <span class="kw">_ </span>=&gt; {
@@ -1065,119 +1374,131 @@
             }
         }
 
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;debug&quot;</span>, logging_opts.level.as_ref().unwrap());
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;/tmp/greptimedb/test/logs&quot;</span>.to_string(), logging_opts.dir);
+        <span class="macro">assert_eq!</span>(<span class="string">"debug"</span>, logging_opts.level.as_ref().unwrap());
+        <span class="macro">assert_eq!</span>(<span class="string">"/tmp/greptimedb/test/logs"</span>.to_string(), logging_opts.dir);
     }
 
     <span class="attr">#[test]
-    </span><span class="kw">fn </span>test_top_level_options() {
+    </span><span class="kw">fn </span>test_load_log_options_from_cli() {
         <span class="kw">let </span>cmd = StartCommand {
-            user_provider: <span class="prelude-val">Some</span>(<span class="string">&quot;static_user_provider:cmd:test=test&quot;</span>.to_string()),
+            user_provider: <span class="prelude-val">Some</span>(<span class="string">"static_user_provider:cmd:test=test"</span>.to_string()),
             ..Default::default()
         };
 
         <span class="kw">let </span>Options::Standalone(opts) = cmd
-            .load_options(TopLevelOptions {
-                log_dir: <span class="prelude-val">Some</span>(<span class="string">&quot;/tmp/greptimedb/test/logs&quot;</span>.to_string()),
-                log_level: <span class="prelude-val">Some</span>(<span class="string">&quot;debug&quot;</span>.to_string()),
+            .load_options(<span class="kw-2">&amp;</span>CliOptions {
+                log_dir: <span class="prelude-val">Some</span>(<span class="string">"/tmp/greptimedb/test/logs"</span>.to_string()),
+                log_level: <span class="prelude-val">Some</span>(<span class="string">"debug"</span>.to_string()),
+
+                <span class="attr">#[cfg(feature = <span class="string">"tokio-console"</span>)]
+                </span>tokio_console_addr: <span class="prelude-val">None</span>,
             })
             .unwrap()
         <span class="kw">else </span>{
             <span class="macro">unreachable!</span>()
         };
 
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;/tmp/greptimedb/test/logs&quot;</span>, opts.logging.dir);
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;debug&quot;</span>, opts.logging.level.unwrap());
+        <span class="macro">assert_eq!</span>(<span class="string">"/tmp/greptimedb/test/logs"</span>, opts.logging.dir);
+        <span class="macro">assert_eq!</span>(<span class="string">"debug"</span>, opts.logging.level.unwrap());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_config_precedence_order() {
         <span class="kw">let </span><span class="kw-2">mut </span>file = create_named_temp_file();
-        <span class="kw">let </span>toml_str = <span class="string">r#&quot;
-            mode = &quot;standalone&quot;
+        <span class="kw">let </span>toml_str = <span class="string">r#"
+            mode = "standalone"
 
-            [http_options]
-            addr = &quot;127.0.0.1:4000&quot;
+            [http]
+            addr = "127.0.0.1:4000"
 
             [logging]
-            level = &quot;debug&quot;
-        &quot;#</span>;
-        <span class="macro">write!</span>(file, <span class="string">&quot;{}&quot;</span>, toml_str).unwrap();
+            level = "debug"
+        "#</span>;
+        <span class="macro">write!</span>(file, <span class="string">"{}"</span>, toml_str).unwrap();
 
-        <span class="kw">let </span>env_prefix = <span class="string">&quot;STANDALONE_UT&quot;</span>;
+        <span class="kw">let </span>env_prefix = <span class="string">"STANDALONE_UT"</span>;
         temp_env::with_vars(
             [
                 (
                     <span class="comment">// logging.dir = /other/log/dir
                     </span>[
                         env_prefix.to_string(),
-                        <span class="string">&quot;logging&quot;</span>.to_uppercase(),
-                        <span class="string">&quot;dir&quot;</span>.to_uppercase(),
+                        <span class="string">"logging"</span>.to_uppercase(),
+                        <span class="string">"dir"</span>.to_uppercase(),
                     ]
                     .join(ENV_VAR_SEP),
-                    <span class="prelude-val">Some</span>(<span class="string">&quot;/other/log/dir&quot;</span>),
+                    <span class="prelude-val">Some</span>(<span class="string">"/other/log/dir"</span>),
                 ),
                 (
                     <span class="comment">// logging.level = info
                     </span>[
                         env_prefix.to_string(),
-                        <span class="string">&quot;logging&quot;</span>.to_uppercase(),
-                        <span class="string">&quot;level&quot;</span>.to_uppercase(),
+                        <span class="string">"logging"</span>.to_uppercase(),
+                        <span class="string">"level"</span>.to_uppercase(),
                     ]
                     .join(ENV_VAR_SEP),
-                    <span class="prelude-val">Some</span>(<span class="string">&quot;info&quot;</span>),
+                    <span class="prelude-val">Some</span>(<span class="string">"info"</span>),
                 ),
                 (
-                    <span class="comment">// http_options.addr = 127.0.0.1:24000
+                    <span class="comment">// http.addr = 127.0.0.1:24000
                     </span>[
                         env_prefix.to_string(),
-                        <span class="string">&quot;http_options&quot;</span>.to_uppercase(),
-                        <span class="string">&quot;addr&quot;</span>.to_uppercase(),
+                        <span class="string">"http"</span>.to_uppercase(),
+                        <span class="string">"addr"</span>.to_uppercase(),
                     ]
                     .join(ENV_VAR_SEP),
-                    <span class="prelude-val">Some</span>(<span class="string">&quot;127.0.0.1:24000&quot;</span>),
+                    <span class="prelude-val">Some</span>(<span class="string">"127.0.0.1:24000"</span>),
                 ),
             ],
             || {
                 <span class="kw">let </span>command = StartCommand {
                     config_file: <span class="prelude-val">Some</span>(file.path().to_str().unwrap().to_string()),
-                    http_addr: <span class="prelude-val">Some</span>(<span class="string">&quot;127.0.0.1:14000&quot;</span>.to_string()),
+                    http_addr: <span class="prelude-val">Some</span>(<span class="string">"127.0.0.1:14000"</span>.to_string()),
                     env_prefix: env_prefix.to_string(),
                     ..Default::default()
                 };
 
-                <span class="kw">let </span>top_level_opts = TopLevelOptions {
-                    log_dir: <span class="prelude-val">None</span>,
-                    log_level: <span class="prelude-val">None</span>,
-                };
-                <span class="kw">let </span>Options::Standalone(opts) = command.load_options(top_level_opts).unwrap()
+                <span class="kw">let </span>Options::Standalone(opts) =
+                    command.load_options(<span class="kw-2">&amp;</span>CliOptions::default()).unwrap()
                 <span class="kw">else </span>{
                     <span class="macro">unreachable!</span>()
                 };
 
                 <span class="comment">// Should be read from env, env &gt; default values.
-                </span><span class="macro">assert_eq!</span>(opts.logging.dir, <span class="string">&quot;/other/log/dir&quot;</span>);
+                </span><span class="macro">assert_eq!</span>(opts.logging.dir, <span class="string">"/other/log/dir"</span>);
 
                 <span class="comment">// Should be read from config file, config file &gt; env &gt; default values.
-                </span><span class="macro">assert_eq!</span>(opts.logging.level.as_ref().unwrap(), <span class="string">&quot;debug&quot;</span>);
+                </span><span class="macro">assert_eq!</span>(opts.logging.level.as_ref().unwrap(), <span class="string">"debug"</span>);
 
                 <span class="comment">// Should be read from cli, cli &gt; config file &gt; env &gt; default values.
-                </span><span class="macro">assert_eq!</span>(
-                    opts.fe_opts.http_options.as_ref().unwrap().addr,
-                    <span class="string">&quot;127.0.0.1:14000&quot;
-                </span>);
-                <span class="macro">assert_eq!</span>(
-                    ReadableSize::mb(<span class="number">64</span>),
-                    opts.fe_opts.http_options.as_ref().unwrap().body_limit
-                );
+                </span><span class="macro">assert_eq!</span>(opts.frontend.http.addr, <span class="string">"127.0.0.1:14000"</span>);
+                <span class="macro">assert_eq!</span>(ReadableSize::mb(<span class="number">64</span>), opts.frontend.http.body_limit);
 
                 <span class="comment">// Should be default value.
-                </span><span class="macro">assert_eq!</span>(
-                    opts.fe_opts.grpc_options.unwrap().addr,
-                    GrpcOptions::default().addr
-                );
+                </span><span class="macro">assert_eq!</span>(opts.frontend.grpc.addr, GrpcOptions::default().addr);
             },
         );
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_load_default_standalone_options() {
+        <span class="kw">let </span>options: StandaloneOptions =
+            Options::load_layered_options(<span class="prelude-val">None</span>, <span class="string">"GREPTIMEDB_FRONTEND"</span>, <span class="prelude-val">None</span>).unwrap();
+        <span class="kw">let </span>default_options = StandaloneOptions::default();
+        <span class="macro">assert_eq!</span>(options.mode, default_options.mode);
+        <span class="macro">assert_eq!</span>(options.enable_telemetry, default_options.enable_telemetry);
+        <span class="macro">assert_eq!</span>(options.http, default_options.http);
+        <span class="macro">assert_eq!</span>(options.grpc, default_options.grpc);
+        <span class="macro">assert_eq!</span>(options.mysql, default_options.mysql);
+        <span class="macro">assert_eq!</span>(options.postgres, default_options.postgres);
+        <span class="macro">assert_eq!</span>(options.opentsdb, default_options.opentsdb);
+        <span class="macro">assert_eq!</span>(options.influxdb, default_options.influxdb);
+        <span class="macro">assert_eq!</span>(options.prom_store, default_options.prom_store);
+        <span class="macro">assert_eq!</span>(options.wal, default_options.wal);
+        <span class="macro">assert_eq!</span>(options.metadata_store, default_options.metadata_store);
+        <span class="macro">assert_eq!</span>(options.procedure, default_options.procedure);
+        <span class="macro">assert_eq!</span>(options.logging, default_options.logging);
+        <span class="macro">assert_eq!</span>(options.region_engine, default_options.region_engine);
     }
 }
 </code></pre></div></section></main></body></html>

@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/servers/src/influxdb.rs`."><title>influxdb.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="servers" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../servers/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/servers/src/influxdb.rs`."><title>influxdb.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="servers" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -303,36 +304,30 @@
 <a href="#303" id="303">303</a>
 <a href="#304" id="304">304</a>
 <a href="#305" id="305">305</a>
-<a href="#306" id="306">306</a>
-<a href="#307" id="307">307</a>
-<a href="#308" id="308">308</a>
-<a href="#309" id="309">309</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-</span><span class="kw">use </span>std::collections::HashMap;
-
-<span class="kw">use </span>api::v1::{InsertRequest <span class="kw">as </span>GrpcInsertRequest, InsertRequests};
-<span class="kw">use </span>common_grpc::writer::{LinesWriter, Precision};
-<span class="kw">use </span>common_time::timestamp::TimeUnit;
-<span class="kw">use </span>common_time::Timestamp;
+</span><span class="kw">use </span>api::v1::value::ValueData;
+<span class="kw">use </span>api::v1::{ColumnDataType, RowInsertRequests};
+<span class="kw">use </span>common_grpc::writer::Precision;
 <span class="kw">use </span>influxdb_line_protocol::{parse_lines, FieldValue};
-<span class="kw">use </span>snafu::{OptionExt, ResultExt};
+<span class="kw">use </span>snafu::ResultExt;
 
-<span class="kw">use </span><span class="kw">crate</span>::error::{Error, InfluxdbLineProtocolSnafu, InfluxdbLinesWriteSnafu, TimePrecisionSnafu};
+<span class="kw">use </span><span class="kw">crate</span>::error::{Error, InfluxdbLineProtocolSnafu};
+<span class="kw">use </span><span class="kw">crate</span>::row_writer::{<span class="self">self</span>, MultiTableData};
 
-<span class="kw">pub const </span>INFLUXDB_TIMESTAMP_COLUMN_NAME: <span class="kw-2">&amp;</span>str = <span class="string">&quot;ts&quot;</span>;
+<span class="kw">pub const </span>INFLUXDB_TIMESTAMP_COLUMN_NAME: <span class="kw-2">&amp;</span>str = <span class="string">"ts"</span>;
 <span class="kw">pub const </span>DEFAULT_TIME_PRECISION: Precision = Precision::Nanosecond;
 
 <span class="attr">#[derive(Debug)]
@@ -341,116 +336,68 @@
     <span class="kw">pub </span>lines: String,
 }
 
-<span class="kw">type </span>TableName = String;
-
-<span class="kw">impl </span>TryFrom&lt;<span class="kw-2">&amp;</span>InfluxdbRequest&gt; <span class="kw">for </span>InsertRequests {
+<span class="kw">impl </span>TryFrom&lt;InfluxdbRequest&gt; <span class="kw">for </span>RowInsertRequests {
     <span class="kw">type </span>Error = Error;
 
-    <span class="kw">fn </span>try_from(value: <span class="kw-2">&amp;</span>InfluxdbRequest) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>writers: HashMap&lt;TableName, LinesWriter&gt; = HashMap::new();
+    <span class="kw">fn </span>try_from(value: InfluxdbRequest) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
         <span class="kw">let </span>lines = parse_lines(<span class="kw-2">&amp;</span>value.lines)
             .collect::&lt;influxdb_line_protocol::Result&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;&gt;()
             .context(InfluxdbLineProtocolSnafu)<span class="question-mark">?</span>;
-        <span class="kw">let </span>line_len = lines.len();
 
-        <span class="kw">for </span>line <span class="kw">in </span>lines {
-            <span class="kw">let </span>table_name = line.series.measurement;
-            <span class="kw">let </span>writer = writers
-                .entry(table_name.to_string())
-                .or_insert_with(|| LinesWriter::with_lines(line_len));
+        <span class="kw">let </span><span class="kw-2">mut </span>multi_table_data = MultiTableData::new();
 
-            <span class="kw">let </span>tags = line.series.tag_set;
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(tags) = tags {
-                <span class="kw">for </span>(k, v) <span class="kw">in </span>tags {
-                    writer
-                        .write_tag(k.as_str(), v.as_str())
-                        .context(InfluxdbLinesWriteSnafu)<span class="question-mark">?</span>;
-                }
+        <span class="kw">for </span>line <span class="kw">in </span><span class="kw-2">&amp;</span>lines {
+            <span class="kw">let </span>table_name = line.series.measurement.as_str();
+            <span class="kw">let </span>tags = <span class="kw-2">&amp;</span>line.series.tag_set;
+            <span class="kw">let </span>fields = <span class="kw-2">&amp;</span>line.field_set;
+            <span class="kw">let </span>ts = line.timestamp;
+            <span class="comment">// tags.len + fields.len + timestamp(+1)
+            </span><span class="kw">let </span>num_columns = tags.as_ref().map(|x| x.len()).unwrap_or(<span class="number">0</span>) + fields.len() + <span class="number">1</span>;
+
+            <span class="kw">let </span>table_data = multi_table_data.get_or_default_table_data(table_name, num_columns, <span class="number">0</span>);
+            <span class="kw">let </span><span class="kw-2">mut </span>one_row = table_data.alloc_one_row();
+
+            <span class="comment">// tags
+            </span><span class="kw">if let </span><span class="prelude-val">Some</span>(tags) = tags {
+                <span class="kw">let </span>kvs = tags.iter().map(|(k, v)| (k.to_string(), v.as_str()));
+                row_writer::write_tags(table_data, kvs, <span class="kw-2">&amp;mut </span>one_row)<span class="question-mark">?</span>;
             }
 
-            <span class="kw">let </span>fields = line.field_set;
-            <span class="kw">for </span>(k, v) <span class="kw">in </span>fields {
-                <span class="kw">let </span>column_name = k.as_str();
-                <span class="kw">match </span>v {
-                    FieldValue::I64(value) =&gt; {
-                        writer
-                            .write_i64(column_name, value)
-                            .context(InfluxdbLinesWriteSnafu)<span class="question-mark">?</span>;
-                    }
-                    FieldValue::U64(value) =&gt; {
-                        writer
-                            .write_u64(column_name, value)
-                            .context(InfluxdbLinesWriteSnafu)<span class="question-mark">?</span>;
-                    }
-                    FieldValue::F64(value) =&gt; {
-                        writer
-                            .write_f64(column_name, value)
-                            .context(InfluxdbLinesWriteSnafu)<span class="question-mark">?</span>;
-                    }
-                    FieldValue::String(value) =&gt; {
-                        writer
-                            .write_string(column_name, value.as_str())
-                            .context(InfluxdbLinesWriteSnafu)<span class="question-mark">?</span>;
-                    }
-                    FieldValue::Boolean(value) =&gt; {
-                        writer
-                            .write_bool(column_name, value)
-                            .context(InfluxdbLinesWriteSnafu)<span class="question-mark">?</span>;
-                    }
-                }
-            }
-
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(timestamp) = line.timestamp {
-                <span class="kw">let </span>precision = unwarp_or_default_precision(value.precision);
-                writer
-                    .write_ts(INFLUXDB_TIMESTAMP_COLUMN_NAME, (timestamp, precision))
-                    .context(InfluxdbLinesWriteSnafu)<span class="question-mark">?</span>;
-            } <span class="kw">else </span>{
-                <span class="kw">let </span>precision = unwarp_or_default_precision(value.precision);
-                <span class="kw">let </span>timestamp = Timestamp::current_millis();
-                <span class="kw">let </span>unit = <span class="kw">match </span>precision {
-                    Precision::Second =&gt; TimeUnit::Second,
-                    Precision::Millisecond =&gt; TimeUnit::Millisecond,
-                    Precision::Microsecond =&gt; TimeUnit::Microsecond,
-                    Precision::Nanosecond =&gt; TimeUnit::Nanosecond,
-                    <span class="kw">_ </span>=&gt; {
-                        <span class="kw">return </span><span class="prelude-val">Err</span>(Error::NotSupported {
-                            feat: <span class="macro">format!</span>(<span class="string">&quot;convert {precision} into TimeUnit&quot;</span>),
-                        })
-                    }
+            <span class="comment">// fields
+            </span><span class="kw">let </span>fields = fields.iter().map(|(k, v)| {
+                <span class="kw">let </span>(datatype, value) = <span class="kw">match </span>v {
+                    FieldValue::I64(v) =&gt; (ColumnDataType::Int64, ValueData::I64Value(<span class="kw-2">*</span>v)),
+                    FieldValue::U64(v) =&gt; (ColumnDataType::Uint64, ValueData::U64Value(<span class="kw-2">*</span>v)),
+                    FieldValue::F64(v) =&gt; (ColumnDataType::Float64, ValueData::F64Value(<span class="kw-2">*</span>v)),
+                    FieldValue::String(v) =&gt; (
+                        ColumnDataType::String,
+                        ValueData::StringValue(v.to_string()),
+                    ),
+                    FieldValue::Boolean(v) =&gt; (ColumnDataType::Boolean, ValueData::BoolValue(<span class="kw-2">*</span>v)),
                 };
-                <span class="kw">let </span>timestamp = timestamp
-                    .convert_to(unit)
-                    .with_context(|| TimePrecisionSnafu {
-                        name: precision.to_string(),
-                    })<span class="question-mark">?</span>;
-                writer
-                    .write_ts(
-                        INFLUXDB_TIMESTAMP_COLUMN_NAME,
-                        (timestamp.into(), precision),
-                    )
-                    .context(InfluxdbLinesWriteSnafu)<span class="question-mark">?</span>;
-            }
-            writer.commit();
+                (k.to_string(), datatype, value)
+            });
+            row_writer::write_fields(table_data, fields, <span class="kw-2">&amp;mut </span>one_row)<span class="question-mark">?</span>;
+
+            <span class="comment">// timestamp
+            </span><span class="kw">let </span>precision = unwrap_or_default_precision(value.precision);
+            row_writer::write_ts_precision(
+                table_data,
+                INFLUXDB_TIMESTAMP_COLUMN_NAME,
+                ts,
+                precision,
+                <span class="kw-2">&amp;mut </span>one_row,
+            )<span class="question-mark">?</span>;
+
+            table_data.add_row(one_row);
         }
 
-        <span class="kw">let </span>inserts = writers
-            .into_iter()
-            .map(|(table_name, writer)| {
-                <span class="kw">let </span>(columns, row_count) = writer.finish();
-                GrpcInsertRequest {
-                    table_name,
-                    region_number: <span class="number">0</span>,
-                    columns,
-                    row_count,
-                }
-            })
-            .collect();
-        <span class="prelude-val">Ok</span>(InsertRequests { inserts })
+        <span class="prelude-val">Ok</span>(multi_table_data.into_row_insert_requests().<span class="number">0</span>)
     }
 }
 
-<span class="kw">fn </span>unwarp_or_default_precision(precision: <span class="prelude-ty">Option</span>&lt;Precision&gt;) -&gt; Precision {
+<span class="attr">#[inline]
+</span><span class="kw">fn </span>unwrap_or_default_precision(precision: <span class="prelude-ty">Option</span>&lt;Precision&gt;) -&gt; Precision {
     <span class="kw">if let </span><span class="prelude-val">Some</span>(val) = precision {
         val
     } <span class="kw">else </span>{
@@ -460,159 +407,205 @@
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
-    <span class="kw">use </span>api::v1::column::Values;
-    <span class="kw">use </span>api::v1::{Column, ColumnDataType, SemanticType};
-    <span class="kw">use </span>common_base::BitVec;
+    <span class="kw">use </span>api::v1::value::ValueData;
+    <span class="kw">use </span>api::v1::{ColumnDataType, Rows, SemanticType};
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use </span><span class="kw">crate</span>::influxdb::InfluxdbRequest;
 
     <span class="attr">#[test]
-    </span><span class="kw">fn </span>test_convert_influxdb_lines() {
-        <span class="kw">let </span>lines = <span class="string">r&quot;
+    </span><span class="kw">fn </span>test_convert_influxdb_lines_to_rows() {
+        <span class="kw">let </span>lines = <span class="string">r"
 monitor1,host=host1 cpu=66.6,memory=1024 1663840496100023100
 monitor1,host=host2 memory=1027 1663840496400340001
 monitor2,host=host3 cpu=66.5 1663840496100023102
-monitor2,host=host4 cpu=66.3,memory=1029 1663840496400340003&quot;</span>;
+monitor2,host=host4 cpu=66.3,memory=1029 1663840496400340003"</span>;
 
-        <span class="kw">let </span>influxdb_req = <span class="kw-2">&amp;</span>InfluxdbRequest {
+        <span class="kw">let </span>influxdb_req = InfluxdbRequest {
             precision: <span class="prelude-val">None</span>,
             lines: lines.to_string(),
         };
 
-        <span class="kw">let </span>requests: InsertRequests = influxdb_req.try_into().unwrap();
+        <span class="kw">let </span>requests: RowInsertRequests = influxdb_req.try_into().unwrap();
         <span class="macro">assert_eq!</span>(<span class="number">2</span>, requests.inserts.len());
 
         <span class="kw">for </span>request <span class="kw">in </span>requests.inserts {
             <span class="kw">match </span><span class="kw-2">&amp;</span>request.table_name[..] {
-                <span class="string">&quot;monitor1&quot; </span>=&gt; assert_monitor_1(<span class="kw-2">&amp;</span>request.columns),
-                <span class="string">&quot;monitor2&quot; </span>=&gt; assert_monitor_2(<span class="kw-2">&amp;</span>request.columns),
+                <span class="string">"monitor1" </span>=&gt; assert_monitor1_rows(<span class="kw-2">&amp;</span>request.rows),
+                <span class="string">"monitor2" </span>=&gt; assert_monitor2_rows(<span class="kw-2">&amp;</span>request.rows),
                 <span class="kw">_ </span>=&gt; <span class="macro">panic!</span>(),
             }
         }
     }
 
-    <span class="kw">fn </span>assert_monitor_1(columns: <span class="kw-2">&amp;</span>[Column]) {
-        <span class="macro">assert_eq!</span>(<span class="number">4</span>, columns.len());
-        verify_column(
-            <span class="kw-2">&amp;</span>columns[<span class="number">0</span>],
-            <span class="string">&quot;host&quot;</span>,
-            ColumnDataType::String,
-            SemanticType::Tag,
-            Vec::new(),
-            Values {
-                string_values: <span class="macro">vec!</span>[<span class="string">&quot;host1&quot;</span>.to_string(), <span class="string">&quot;host2&quot;</span>.to_string()],
-                ..Default::default()
-            },
-        );
+    <span class="kw">fn </span>assert_monitor1_rows(rows: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;Rows&gt;) {
+        <span class="kw">let </span>rows = rows.as_ref().unwrap();
+        <span class="kw">let </span>schema = <span class="kw-2">&amp;</span>rows.schema;
+        <span class="kw">let </span>rows = <span class="kw-2">&amp;</span>rows.rows;
+        <span class="macro">assert_eq!</span>(<span class="number">4</span>, schema.len());
+        <span class="macro">assert_eq!</span>(<span class="number">2</span>, rows.len());
 
-        verify_column(
-            <span class="kw-2">&amp;</span>columns[<span class="number">1</span>],
-            <span class="string">&quot;cpu&quot;</span>,
-            ColumnDataType::Float64,
-            SemanticType::Field,
-            <span class="macro">vec!</span>[<span class="bool-val">false</span>, <span class="bool-val">true</span>],
-            Values {
-                f64_values: <span class="macro">vec!</span>[<span class="number">66.6</span>],
-                ..Default::default()
-            },
-        );
+        <span class="kw">for </span>(i, column_schema) <span class="kw">in </span>schema.iter().enumerate() {
+            <span class="kw">match </span><span class="kw-2">&amp;</span>column_schema.column_name[..] {
+                <span class="string">"host" </span>=&gt; {
+                    <span class="macro">assert_eq!</span>(ColumnDataType::String <span class="kw">as </span>i32, column_schema.datatype);
+                    <span class="macro">assert_eq!</span>(SemanticType::Tag <span class="kw">as </span>i32, column_schema.semantic_type);
 
-        verify_column(
-            <span class="kw-2">&amp;</span>columns[<span class="number">2</span>],
-            <span class="string">&quot;memory&quot;</span>,
-            ColumnDataType::Float64,
-            SemanticType::Field,
-            Vec::new(),
-            Values {
-                f64_values: <span class="macro">vec!</span>[<span class="number">1024.0</span>, <span class="number">1027.0</span>],
-                ..Default::default()
-            },
-        );
+                    <span class="kw">for </span>(j, row) <span class="kw">in </span>rows.iter().enumerate() {
+                        <span class="kw">let </span>v = row.values[i].value_data.as_ref().unwrap();
+                        <span class="kw">match </span>j {
+                            <span class="number">0 </span>=&gt; <span class="macro">assert_eq!</span>(<span class="string">"host1"</span>, extract_string_value(v)),
+                            <span class="number">1 </span>=&gt; <span class="macro">assert_eq!</span>(<span class="string">"host2"</span>, extract_string_value(v)),
+                            <span class="kw">_ </span>=&gt; <span class="macro">panic!</span>(),
+                        }
+                    }
+                }
+                <span class="string">"cpu" </span>=&gt; {
+                    <span class="macro">assert_eq!</span>(ColumnDataType::Float64 <span class="kw">as </span>i32, column_schema.datatype);
+                    <span class="macro">assert_eq!</span>(SemanticType::Field <span class="kw">as </span>i32, column_schema.semantic_type);
 
-        verify_column(
-            <span class="kw-2">&amp;</span>columns[<span class="number">3</span>],
-            <span class="string">&quot;ts&quot;</span>,
-            ColumnDataType::TimestampMillisecond,
-            SemanticType::Timestamp,
-            Vec::new(),
-            Values {
-                ts_millisecond_values: <span class="macro">vec!</span>[<span class="number">1663840496100</span>, <span class="number">1663840496400</span>],
-                ..Default::default()
-            },
-        );
+                    <span class="kw">for </span>(j, row) <span class="kw">in </span>rows.iter().enumerate() {
+                        <span class="kw">let </span>v = row.values[i].value_data.as_ref();
+                        <span class="kw">match </span>j {
+                            <span class="number">0 </span>=&gt; <span class="macro">assert_eq!</span>(<span class="number">66.6f64</span>, extract_f64_value(v.as_ref().unwrap())),
+                            <span class="number">1 </span>=&gt; <span class="macro">assert_eq!</span>(<span class="prelude-val">None</span>, v),
+                            <span class="kw">_ </span>=&gt; <span class="macro">panic!</span>(),
+                        }
+                    }
+                }
+                <span class="string">"memory" </span>=&gt; {
+                    <span class="macro">assert_eq!</span>(ColumnDataType::Float64 <span class="kw">as </span>i32, column_schema.datatype);
+                    <span class="macro">assert_eq!</span>(SemanticType::Field <span class="kw">as </span>i32, column_schema.semantic_type);
+
+                    <span class="kw">for </span>(j, row) <span class="kw">in </span>rows.iter().enumerate() {
+                        <span class="kw">let </span>v = row.values[i].value_data.as_ref();
+                        <span class="kw">match </span>j {
+                            <span class="number">0 </span>=&gt; <span class="macro">assert_eq!</span>(<span class="number">1024f64</span>, extract_f64_value(v.as_ref().unwrap())),
+                            <span class="number">1 </span>=&gt; <span class="macro">assert_eq!</span>(<span class="number">1027f64</span>, extract_f64_value(v.as_ref().unwrap())),
+                            <span class="kw">_ </span>=&gt; <span class="macro">panic!</span>(),
+                        }
+                    }
+                }
+                <span class="string">"ts" </span>=&gt; {
+                    <span class="macro">assert_eq!</span>(
+                        ColumnDataType::TimestampMillisecond <span class="kw">as </span>i32,
+                        column_schema.datatype
+                    );
+                    <span class="macro">assert_eq!</span>(SemanticType::Timestamp <span class="kw">as </span>i32, column_schema.semantic_type);
+
+                    <span class="kw">for </span>(j, row) <span class="kw">in </span>rows.iter().enumerate() {
+                        <span class="kw">let </span>v = row.values[i].value_data.as_ref();
+                        <span class="kw">match </span>j {
+                            <span class="number">0 </span>=&gt; <span class="macro">assert_eq!</span>(
+                                <span class="number">1663840496100023100 </span>/ <span class="number">1_000_000</span>,
+                                extract_ts_millis_value(v.as_ref().unwrap())
+                            ),
+                            <span class="number">1 </span>=&gt; <span class="macro">assert_eq!</span>(
+                                <span class="number">1663840496400340001 </span>/ <span class="number">1_000_000</span>,
+                                extract_ts_millis_value(v.as_ref().unwrap())
+                            ),
+                            <span class="kw">_ </span>=&gt; <span class="macro">panic!</span>(),
+                        }
+                    }
+                }
+                <span class="kw">_ </span>=&gt; <span class="macro">panic!</span>(),
+            }
+        }
     }
 
-    <span class="kw">fn </span>assert_monitor_2(columns: <span class="kw-2">&amp;</span>[Column]) {
-        <span class="macro">assert_eq!</span>(<span class="number">4</span>, columns.len());
-        verify_column(
-            <span class="kw-2">&amp;</span>columns[<span class="number">0</span>],
-            <span class="string">&quot;host&quot;</span>,
-            ColumnDataType::String,
-            SemanticType::Tag,
-            Vec::new(),
-            Values {
-                string_values: <span class="macro">vec!</span>[<span class="string">&quot;host3&quot;</span>.to_string(), <span class="string">&quot;host4&quot;</span>.to_string()],
-                ..Default::default()
-            },
-        );
+    <span class="kw">fn </span>assert_monitor2_rows(rows: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;Rows&gt;) {
+        <span class="kw">let </span>rows = rows.as_ref().unwrap();
+        <span class="kw">let </span>schema = <span class="kw-2">&amp;</span>rows.schema;
+        <span class="kw">let </span>rows = <span class="kw-2">&amp;</span>rows.rows;
+        <span class="macro">assert_eq!</span>(<span class="number">4</span>, schema.len());
+        <span class="macro">assert_eq!</span>(<span class="number">2</span>, rows.len());
 
-        verify_column(
-            <span class="kw-2">&amp;</span>columns[<span class="number">1</span>],
-            <span class="string">&quot;cpu&quot;</span>,
-            ColumnDataType::Float64,
-            SemanticType::Field,
-            Vec::new(),
-            Values {
-                f64_values: <span class="macro">vec!</span>[<span class="number">66.5</span>, <span class="number">66.3</span>],
-                ..Default::default()
-            },
-        );
+        <span class="kw">for </span>(i, column_schema) <span class="kw">in </span>schema.iter().enumerate() {
+            <span class="kw">match </span><span class="kw-2">&amp;</span>column_schema.column_name[..] {
+                <span class="string">"host" </span>=&gt; {
+                    <span class="macro">assert_eq!</span>(ColumnDataType::String <span class="kw">as </span>i32, column_schema.datatype);
+                    <span class="macro">assert_eq!</span>(SemanticType::Tag <span class="kw">as </span>i32, column_schema.semantic_type);
 
-        verify_column(
-            <span class="kw-2">&amp;</span>columns[<span class="number">2</span>],
-            <span class="string">&quot;ts&quot;</span>,
-            ColumnDataType::TimestampMillisecond,
-            SemanticType::Timestamp,
-            Vec::new(),
-            Values {
-                ts_millisecond_values: <span class="macro">vec!</span>[<span class="number">1663840496100</span>, <span class="number">1663840496400</span>],
-                ..Default::default()
-            },
-        );
+                    <span class="kw">for </span>(j, row) <span class="kw">in </span>rows.iter().enumerate() {
+                        <span class="kw">let </span>v = row.values[i].value_data.as_ref().unwrap();
+                        <span class="kw">match </span>j {
+                            <span class="number">0 </span>=&gt; <span class="macro">assert_eq!</span>(<span class="string">"host3"</span>, extract_string_value(v)),
+                            <span class="number">1 </span>=&gt; <span class="macro">assert_eq!</span>(<span class="string">"host4"</span>, extract_string_value(v)),
+                            <span class="kw">_ </span>=&gt; <span class="macro">panic!</span>(),
+                        }
+                    }
+                }
+                <span class="string">"cpu" </span>=&gt; {
+                    <span class="macro">assert_eq!</span>(ColumnDataType::Float64 <span class="kw">as </span>i32, column_schema.datatype);
+                    <span class="macro">assert_eq!</span>(SemanticType::Field <span class="kw">as </span>i32, column_schema.semantic_type);
 
-        verify_column(
-            <span class="kw-2">&amp;</span>columns[<span class="number">3</span>],
-            <span class="string">&quot;memory&quot;</span>,
-            ColumnDataType::Float64,
-            SemanticType::Field,
-            <span class="macro">vec!</span>[<span class="bool-val">true</span>, <span class="bool-val">false</span>],
-            Values {
-                f64_values: <span class="macro">vec!</span>[<span class="number">1029.0</span>],
-                ..Default::default()
-            },
-        );
+                    <span class="kw">for </span>(j, row) <span class="kw">in </span>rows.iter().enumerate() {
+                        <span class="kw">let </span>v = row.values[i].value_data.as_ref();
+                        <span class="kw">match </span>j {
+                            <span class="number">0 </span>=&gt; <span class="macro">assert_eq!</span>(<span class="number">66.5f64</span>, extract_f64_value(v.as_ref().unwrap())),
+                            <span class="number">1 </span>=&gt; <span class="macro">assert_eq!</span>(<span class="number">66.3f64</span>, extract_f64_value(v.as_ref().unwrap())),
+                            <span class="kw">_ </span>=&gt; <span class="macro">panic!</span>(),
+                        }
+                    }
+                }
+                <span class="string">"memory" </span>=&gt; {
+                    <span class="macro">assert_eq!</span>(ColumnDataType::Float64 <span class="kw">as </span>i32, column_schema.datatype);
+                    <span class="macro">assert_eq!</span>(SemanticType::Field <span class="kw">as </span>i32, column_schema.semantic_type);
+
+                    <span class="kw">for </span>(j, row) <span class="kw">in </span>rows.iter().enumerate() {
+                        <span class="kw">let </span>v = row.values[i].value_data.as_ref();
+                        <span class="kw">match </span>j {
+                            <span class="number">0 </span>=&gt; <span class="macro">assert_eq!</span>(<span class="prelude-val">None</span>, v),
+                            <span class="number">1 </span>=&gt; <span class="macro">assert_eq!</span>(<span class="number">1029f64</span>, extract_f64_value(v.as_ref().unwrap())),
+                            <span class="kw">_ </span>=&gt; <span class="macro">panic!</span>(),
+                        }
+                    }
+                }
+                <span class="string">"ts" </span>=&gt; {
+                    <span class="macro">assert_eq!</span>(
+                        ColumnDataType::TimestampMillisecond <span class="kw">as </span>i32,
+                        column_schema.datatype
+                    );
+                    <span class="macro">assert_eq!</span>(SemanticType::Timestamp <span class="kw">as </span>i32, column_schema.semantic_type);
+
+                    <span class="kw">for </span>(j, row) <span class="kw">in </span>rows.iter().enumerate() {
+                        <span class="kw">let </span>v = row.values[i].value_data.as_ref();
+                        <span class="kw">match </span>j {
+                            <span class="number">0 </span>=&gt; <span class="macro">assert_eq!</span>(
+                                <span class="number">1663840496100023102 </span>/ <span class="number">1_000_000</span>,
+                                extract_ts_millis_value(v.as_ref().unwrap())
+                            ),
+                            <span class="number">1 </span>=&gt; <span class="macro">assert_eq!</span>(
+                                <span class="number">1663840496400340003 </span>/ <span class="number">1_000_000</span>,
+                                extract_ts_millis_value(v.as_ref().unwrap())
+                            ),
+                            <span class="kw">_ </span>=&gt; <span class="macro">panic!</span>(),
+                        }
+                    }
+                }
+                <span class="kw">_ </span>=&gt; <span class="macro">panic!</span>(),
+            }
+        }
     }
 
-    <span class="kw">fn </span>verify_column(
-        column: <span class="kw-2">&amp;</span>Column,
-        name: <span class="kw-2">&amp;</span>str,
-        datatype: ColumnDataType,
-        semantic_type: SemanticType,
-        null_mask: Vec&lt;bool&gt;,
-        vals: Values,
-    ) {
-        <span class="macro">assert_eq!</span>(name, column.column_name);
-        <span class="macro">assert_eq!</span>(datatype <span class="kw">as </span>i32, column.datatype);
-        <span class="macro">assert_eq!</span>(semantic_type <span class="kw">as </span>i32, column.semantic_type);
-        verify_null_mask(<span class="kw-2">&amp;</span>column.null_mask, null_mask);
-        <span class="macro">assert_eq!</span>(<span class="prelude-val">Some</span>(vals), column.values);
+    <span class="kw">fn </span>extract_string_value(value: <span class="kw-2">&amp;</span>ValueData) -&gt; <span class="kw-2">&amp;</span>str {
+        <span class="kw">match </span>value {
+            ValueData::StringValue(v) =&gt; v,
+            <span class="kw">_ </span>=&gt; <span class="macro">panic!</span>(),
+        }
     }
 
-    <span class="kw">fn </span>verify_null_mask(data: <span class="kw-2">&amp;</span>[u8], expected: Vec&lt;bool&gt;) {
-        <span class="kw">let </span>bitvec = BitVec::from_slice(data);
-        <span class="kw">for </span>(idx, b) <span class="kw">in </span>expected.iter().enumerate() {
-            <span class="macro">assert_eq!</span>(b, bitvec.get(idx).unwrap())
+    <span class="kw">fn </span>extract_f64_value(value: <span class="kw-2">&amp;</span>ValueData) -&gt; f64 {
+        <span class="kw">match </span>value {
+            ValueData::F64Value(v) =&gt; <span class="kw-2">*</span>v,
+            <span class="kw">_ </span>=&gt; <span class="macro">panic!</span>(),
+        }
+    }
+
+    <span class="kw">fn </span>extract_ts_millis_value(value: <span class="kw-2">&amp;</span>ValueData) -&gt; i64 {
+        <span class="kw">match </span>value {
+            ValueData::TimestampMillisecondValue(v) =&gt; <span class="kw-2">*</span>v,
+            <span class="kw">_ </span>=&gt; <span class="macro">panic!</span>(),
         }
     }
 }

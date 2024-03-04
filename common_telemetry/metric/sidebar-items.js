@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["init_default_metrics_recorder","init_prometheus_recorder","try_handle"],"static":["PROMETHEUS_HANDLE"],"struct":["PrometheusHandle","Timer"]};
+window.SIDEBAR_ITEMS = {"fn":["convert_label","convert_metric_to_write_request","dump_metrics"],"struct":["MetricFilter"]};

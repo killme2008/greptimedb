@@ -1,3 +1,0 @@
-(function() {var implementors = {
-"catalog":[["impl TableIdProvider for <a class=\"struct\" href=\"catalog/local/memory/struct.MemoryCatalogManager.html\" title=\"struct catalog::local::memory::MemoryCatalogManager\">MemoryCatalogManager</a>"],["impl TableIdProvider for <a class=\"struct\" href=\"catalog/local/manager/struct.LocalCatalogManager.html\" title=\"struct catalog::local::manager::LocalCatalogManager\">LocalCatalogManager</a>"]]
-};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

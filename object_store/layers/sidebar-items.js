@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["lru_cache"],"struct":["ConcurrentLimitLayer","ImmutableIndexLayer","LoggingLayer","LruCacheAccessor","LruCacheLayer","MetricsLayer","RetryLayer","TracingLayer"]};
+window.SIDEBAR_ITEMS = {"mod":["lru_cache","prometheus"],"struct":["BlockingLayer","ConcurrentLimitLayer","ImmutableIndexLayer","LoggingLayer","LruCacheAccessor","LruCacheLayer","PrometheusMetricsLayer","RetryLayer","TimeoutLayer","TracingLayer"],"trait":["RetryInterceptor"]};

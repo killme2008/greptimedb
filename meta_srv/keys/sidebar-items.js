@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["DN_LEASE_PREFIX","DN_STAT_PREFIX","INACTIVE_NODE_PREFIX","SEQ_PREFIX"],"fn":["build_table_route_prefix"],"struct":["DATANODE_LEASE_KEY_PATTERN","DATANODE_STAT_KEY_PATTERN","InactiveNodeKey","LeaseKey","LeaseValue","StatKey","StatValue"]};
+window.SIDEBAR_ITEMS = {"constant":["DN_LEASE_PREFIX","DN_STAT_PREFIX","INACTIVE_REGION_PREFIX"],"struct":["DATANODE_LEASE_KEY_PATTERN","DATANODE_STAT_KEY_PATTERN","INACTIVE_REGION_KEY_PATTERN","InactiveRegionKey","LeaseKey","LeaseValue","StatKey","StatValue"]};

@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/sql/src/parsers/create_parser.rs`."><title>create_parser.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="sql" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../sql/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/sql/src/parsers/create_parser.rs`."><title>create_parser.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="sql" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1492,22 +1493,86 @@
 <a href="#1492" id="1492">1492</a>
 <a href="#1493" id="1493">1493</a>
 <a href="#1494" id="1494">1494</a>
+<a href="#1495" id="1495">1495</a>
+<a href="#1496" id="1496">1496</a>
+<a href="#1497" id="1497">1497</a>
+<a href="#1498" id="1498">1498</a>
+<a href="#1499" id="1499">1499</a>
+<a href="#1500" id="1500">1500</a>
+<a href="#1501" id="1501">1501</a>
+<a href="#1502" id="1502">1502</a>
+<a href="#1503" id="1503">1503</a>
+<a href="#1504" id="1504">1504</a>
+<a href="#1505" id="1505">1505</a>
+<a href="#1506" id="1506">1506</a>
+<a href="#1507" id="1507">1507</a>
+<a href="#1508" id="1508">1508</a>
+<a href="#1509" id="1509">1509</a>
+<a href="#1510" id="1510">1510</a>
+<a href="#1511" id="1511">1511</a>
+<a href="#1512" id="1512">1512</a>
+<a href="#1513" id="1513">1513</a>
+<a href="#1514" id="1514">1514</a>
+<a href="#1515" id="1515">1515</a>
+<a href="#1516" id="1516">1516</a>
+<a href="#1517" id="1517">1517</a>
+<a href="#1518" id="1518">1518</a>
+<a href="#1519" id="1519">1519</a>
+<a href="#1520" id="1520">1520</a>
+<a href="#1521" id="1521">1521</a>
+<a href="#1522" id="1522">1522</a>
+<a href="#1523" id="1523">1523</a>
+<a href="#1524" id="1524">1524</a>
+<a href="#1525" id="1525">1525</a>
+<a href="#1526" id="1526">1526</a>
+<a href="#1527" id="1527">1527</a>
+<a href="#1528" id="1528">1528</a>
+<a href="#1529" id="1529">1529</a>
+<a href="#1530" id="1530">1530</a>
+<a href="#1531" id="1531">1531</a>
+<a href="#1532" id="1532">1532</a>
+<a href="#1533" id="1533">1533</a>
+<a href="#1534" id="1534">1534</a>
+<a href="#1535" id="1535">1535</a>
+<a href="#1536" id="1536">1536</a>
+<a href="#1537" id="1537">1537</a>
+<a href="#1538" id="1538">1538</a>
+<a href="#1539" id="1539">1539</a>
+<a href="#1540" id="1540">1540</a>
+<a href="#1541" id="1541">1541</a>
+<a href="#1542" id="1542">1542</a>
+<a href="#1543" id="1543">1543</a>
+<a href="#1544" id="1544">1544</a>
+<a href="#1545" id="1545">1545</a>
+<a href="#1546" id="1546">1546</a>
+<a href="#1547" id="1547">1547</a>
+<a href="#1548" id="1548">1548</a>
+<a href="#1549" id="1549">1549</a>
+<a href="#1550" id="1550">1550</a>
+<a href="#1551" id="1551">1551</a>
+<a href="#1552" id="1552">1552</a>
+<a href="#1553" id="1553">1553</a>
+<a href="#1554" id="1554">1554</a>
+<a href="#1555" id="1555">1555</a>
+<a href="#1556" id="1556">1556</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
 </span><span class="kw">use </span>std::cmp::Ordering;
+<span class="kw">use </span>std::collections::HashMap;
 
+<span class="kw">use </span>common_catalog::consts::default_engine;
 <span class="kw">use </span>itertools::Itertools;
 <span class="kw">use </span>once_cell::sync::Lazy;
 <span class="kw">use </span>snafu::{ensure, OptionExt, ResultExt};
@@ -1517,28 +1582,31 @@
 <span class="kw">use </span>sqlparser::parser::IsOptional::Mandatory;
 <span class="kw">use </span>sqlparser::parser::{Parser, ParserError};
 <span class="kw">use </span>sqlparser::tokenizer::{Token, TokenWithLocation, Word};
+<span class="kw">use </span>table::requests::valid_table_option;
 
 <span class="kw">use </span><span class="kw">crate</span>::ast::{ColumnDef, Ident, TableConstraint, Value <span class="kw">as </span>SqlValue};
 <span class="kw">use </span><span class="kw">crate</span>::error::{
-    <span class="self">self</span>, InvalidColumnOptionSnafu, InvalidTimeIndexSnafu, MissingTimeIndexSnafu, <span class="prelude-ty">Result</span>,
-    SyntaxSnafu,
+    <span class="self">self</span>, InvalidColumnOptionSnafu, InvalidTableOptionSnafu, InvalidTimeIndexSnafu,
+    MissingTimeIndexSnafu, <span class="prelude-ty">Result</span>, SyntaxSnafu,
 };
 <span class="kw">use </span><span class="kw">crate</span>::parser::ParserContext;
 <span class="kw">use </span><span class="kw">crate</span>::statements::create::{
     CreateDatabase, CreateExternalTable, CreateTable, PartitionEntry, Partitions, TIME_INDEX,
 };
 <span class="kw">use </span><span class="kw">crate</span>::statements::statement::Statement;
-<span class="kw">use </span><span class="kw">crate</span>::statements::{sql_data_type_to_concrete_data_type, sql_value_to_value};
+<span class="kw">use </span><span class="kw">crate</span>::statements::{
+    get_data_type_by_alias_name, sql_data_type_to_concrete_data_type, sql_value_to_value,
+};
 <span class="kw">use </span><span class="kw">crate</span>::util::parse_option_string;
 
-<span class="kw">const </span>ENGINE: <span class="kw-2">&amp;</span>str = <span class="string">&quot;ENGINE&quot;</span>;
-<span class="kw">const </span>MAXVALUE: <span class="kw-2">&amp;</span>str = <span class="string">&quot;MAXVALUE&quot;</span>;
+<span class="kw">pub const </span>ENGINE: <span class="kw-2">&amp;</span>str = <span class="string">"ENGINE"</span>;
+<span class="kw">pub const </span>MAXVALUE: <span class="kw-2">&amp;</span>str = <span class="string">"MAXVALUE"</span>;
 
-<span class="kw">static </span>LESS: Lazy&lt;Token&gt; = Lazy::new(|| Token::make_keyword(<span class="string">&quot;LESS&quot;</span>));
-<span class="kw">static </span>THAN: Lazy&lt;Token&gt; = Lazy::new(|| Token::make_keyword(<span class="string">&quot;THAN&quot;</span>));
+<span class="kw">static </span>LESS: Lazy&lt;Token&gt; = Lazy::new(|| Token::make_keyword(<span class="string">"LESS"</span>));
+<span class="kw">static </span>THAN: Lazy&lt;Token&gt; = Lazy::new(|| Token::make_keyword(<span class="string">"THAN"</span>));
 
 <span class="doccomment">/// Parses create [table] statement
-</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; ParserContext&lt;<span class="lifetime">&#39;a</span>&gt; {
+</span><span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; ParserContext&lt;<span class="lifetime">'a</span>&gt; {
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>parse_create(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Statement&gt; {
         <span class="kw">match </span><span class="self">self</span>.parser.peek_token().token {
             Token::Word(w) =&gt; <span class="kw">match </span>w.keyword {
@@ -1558,24 +1626,25 @@
         <span class="kw">let _ </span>= <span class="self">self</span>.parser.next_token();
         <span class="self">self</span>.parser
             .expect_keyword(Keyword::TABLE)
-            .context(error::SyntaxSnafu { sql: <span class="self">self</span>.sql })<span class="question-mark">?</span>;
+            .context(error::SyntaxSnafu)<span class="question-mark">?</span>;
         <span class="kw">let </span>if_not_exists =
             <span class="self">self</span>.parser
                 .parse_keywords(<span class="kw-2">&amp;</span>[Keyword::IF, Keyword::NOT, Keyword::EXISTS]);
-        <span class="kw">let </span>table_name = <span class="self">self
+        <span class="kw">let </span>raw_table_name = <span class="self">self
             </span>.parser
             .parse_object_name()
             .context(error::UnexpectedSnafu {
                 sql: <span class="self">self</span>.sql,
-                expected: <span class="string">&quot;a table name&quot;</span>,
+                expected: <span class="string">"a table name"</span>,
                 actual: <span class="self">self</span>.peek_token_as_string(),
             })<span class="question-mark">?</span>;
+        <span class="kw">let </span>table_name = <span class="self">Self</span>::canonicalize_object_name(raw_table_name);
         <span class="kw">let </span>(columns, constraints) = <span class="self">self</span>.parse_columns()<span class="question-mark">?</span>;
-        <span class="kw">let </span>engine = <span class="self">self</span>.parse_table_engine(common_catalog::consts::IMMUTABLE_FILE_ENGINE)<span class="question-mark">?</span>;
+        <span class="kw">let </span>engine = <span class="self">self</span>.parse_table_engine(common_catalog::consts::FILE_ENGINE)<span class="question-mark">?</span>;
         <span class="kw">let </span>options = <span class="self">self
             </span>.parser
             .parse_options(Keyword::WITH)
-            .context(error::SyntaxSnafu { sql: <span class="self">self</span>.sql })<span class="question-mark">?
+            .context(error::SyntaxSnafu)<span class="question-mark">?
             </span>.into_iter()
             .filter_map(|option| {
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(v) = parse_option_string(option.value) {
@@ -1584,13 +1653,20 @@
                     <span class="prelude-val">None
                 </span>}
             })
-            .collect();
-
+            .collect::&lt;HashMap&lt;String, String&gt;&gt;();
+        <span class="kw">for </span>key <span class="kw">in </span>options.keys() {
+            <span class="macro">ensure!</span>(
+                valid_table_option(key),
+                InvalidTableOptionSnafu {
+                    key: key.to_string()
+                }
+            );
+        }
         <span class="prelude-val">Ok</span>(Statement::CreateExternalTable(CreateExternalTable {
             name: table_name,
             columns,
             constraints,
-            options,
+            options: options.into(),
             if_not_exists,
             engine,
         }))
@@ -1608,7 +1684,7 @@
             .parse_object_name()
             .context(error::UnexpectedSnafu {
                 sql: <span class="self">self</span>.sql,
-                expected: <span class="string">&quot;a database name&quot;</span>,
+                expected: <span class="string">"a database name"</span>,
                 actual: <span class="self">self</span>.peek_token_as_string(),
             })<span class="question-mark">?</span>;
 
@@ -1624,25 +1700,35 @@
             <span class="self">self</span>.parser
                 .parse_keywords(<span class="kw-2">&amp;</span>[Keyword::IF, Keyword::NOT, Keyword::EXISTS]);
 
-        <span class="kw">let </span>table_name = <span class="self">self
+        <span class="kw">let </span>raw_table_name = <span class="self">self
             </span>.parser
             .parse_object_name()
             .context(error::UnexpectedSnafu {
                 sql: <span class="self">self</span>.sql,
-                expected: <span class="string">&quot;a table name&quot;</span>,
+                expected: <span class="string">"a table name"</span>,
                 actual: <span class="self">self</span>.peek_token_as_string(),
             })<span class="question-mark">?</span>;
+        <span class="kw">let </span>table_name = <span class="self">Self</span>::canonicalize_object_name(raw_table_name);
 
         <span class="kw">let </span>(columns, constraints) = <span class="self">self</span>.parse_columns()<span class="question-mark">?</span>;
 
         <span class="kw">let </span>partitions = <span class="self">self</span>.parse_partitions()<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>engine = <span class="self">self</span>.parse_table_engine(common_catalog::consts::MITO_ENGINE)<span class="question-mark">?</span>;
+        <span class="kw">let </span>engine = <span class="self">self</span>.parse_table_engine(default_engine())<span class="question-mark">?</span>;
         <span class="kw">let </span>options = <span class="self">self
             </span>.parser
             .parse_options(Keyword::WITH)
-            .context(error::SyntaxSnafu { sql: <span class="self">self</span>.sql })<span class="question-mark">?</span>;
-
+            .context(error::SyntaxSnafu)<span class="question-mark">?</span>;
+        <span class="kw">for </span>option <span class="kw">in </span>options.iter() {
+            <span class="macro">ensure!</span>(
+                valid_table_option(<span class="kw-2">&amp;</span>option.name.value),
+                InvalidTableOptionSnafu {
+                    key: option.name.value.to_string()
+                }
+            );
+        }
+        <span class="comment">// Sorts options so that `test_display_create_table` can always pass.
+        </span><span class="kw">let </span>options = options.into_iter().sorted().collect();
         <span class="kw">let </span>create_table = CreateTable {
             if_not_exists,
             name: table_name,
@@ -1658,7 +1744,7 @@
         <span class="prelude-val">Ok</span>(Statement::CreateTable(create_table))
     }
 
-    <span class="comment">// &quot;PARTITION BY ...&quot; syntax:
+    <span class="comment">// "PARTITION BY ..." syntax:
     // https://dev.mysql.com/doc/refman/8.0/en/partitioning-columns-range.html
     </span><span class="kw">fn </span>parse_partitions(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;Partitions&gt;&gt; {
         <span class="kw">if </span>!<span class="self">self</span>.parser.parse_keyword(Keyword::PARTITION) {
@@ -1668,14 +1754,18 @@
             .expect_keywords(<span class="kw-2">&amp;</span>[Keyword::BY, Keyword::RANGE, Keyword::COLUMNS])
             .context(error::UnexpectedSnafu {
                 sql: <span class="self">self</span>.sql,
-                expected: <span class="string">&quot;BY, RANGE, COLUMNS&quot;</span>,
+                expected: <span class="string">"BY, RANGE, COLUMNS"</span>,
                 actual: <span class="self">self</span>.peek_token_as_string(),
             })<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>column_list = <span class="self">self
+        <span class="kw">let </span>raw_column_list = <span class="self">self
             </span>.parser
             .parse_parenthesized_column_list(Mandatory, <span class="bool-val">false</span>)
-            .context(error::SyntaxSnafu { sql: <span class="self">self</span>.sql })<span class="question-mark">?</span>;
+            .context(error::SyntaxSnafu)<span class="question-mark">?</span>;
+        <span class="kw">let </span>column_list = raw_column_list
+            .into_iter()
+            .map(<span class="self">Self</span>::canonicalize_identifier)
+            .collect();
 
         <span class="kw">let </span>entries = <span class="self">self</span>.parse_comma_separated(<span class="self">Self</span>::parse_partition_entry)<span class="question-mark">?</span>;
 
@@ -1690,20 +1780,17 @@
             .expect_keyword(Keyword::PARTITION)
             .context(error::UnexpectedSnafu {
                 sql: <span class="self">self</span>.sql,
-                expected: <span class="string">&quot;PARTITION&quot;</span>,
+                expected: <span class="string">"PARTITION"</span>,
                 actual: <span class="self">self</span>.peek_token_as_string(),
             })<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>name = <span class="self">self
-            </span>.parser
-            .parse_identifier()
-            .context(error::SyntaxSnafu { sql: <span class="self">self</span>.sql })<span class="question-mark">?</span>;
+        <span class="kw">let </span>name = <span class="self">self</span>.parser.parse_identifier().context(error::SyntaxSnafu)<span class="question-mark">?</span>;
 
         <span class="self">self</span>.parser
             .expect_keyword(Keyword::VALUES)
             .and_then(|<span class="kw">_</span>| <span class="self">self</span>.parser.expect_token(<span class="kw-2">&amp;</span>LESS))
             .and_then(|<span class="kw">_</span>| <span class="self">self</span>.parser.expect_token(<span class="kw-2">&amp;</span>THAN))
-            .context(error::SyntaxSnafu { sql: <span class="self">self</span>.sql })<span class="question-mark">?</span>;
+            .context(error::SyntaxSnafu)<span class="question-mark">?</span>;
 
         <span class="kw">let </span>value_list = <span class="self">self</span>.parse_comma_separated(<span class="self">Self</span>::parse_value_list)<span class="question-mark">?</span>;
 
@@ -1717,24 +1804,21 @@
                 <span class="kw">let _ </span>= <span class="self">self</span>.parser.next_token();
                 SqlValue::Number(MAXVALUE.to_string(), <span class="bool-val">false</span>)
             }
-            <span class="kw">_ </span>=&gt; <span class="self">self
-                </span>.parser
-                .parse_value()
-                .context(error::SyntaxSnafu { sql: <span class="self">self</span>.sql })<span class="question-mark">?</span>,
+            <span class="kw">_ </span>=&gt; <span class="self">self</span>.parser.parse_value().context(error::SyntaxSnafu)<span class="question-mark">?</span>,
         };
         <span class="prelude-val">Ok</span>(value)
     }
 
-    <span class="doccomment">/// Parse a comma-separated list wrapped by &quot;()&quot;, and of which all items accepted by `F`
+    <span class="doccomment">/// Parse a comma-separated list wrapped by "()", and of which all items accepted by `F`
     </span><span class="kw">fn </span>parse_comma_separated&lt;T, F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw-2">mut </span>f: F) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;T&gt;&gt;
     <span class="kw">where
-        </span>F: FnMut(<span class="kw-2">&amp;mut </span>ParserContext&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;T&gt;,
+        </span>F: FnMut(<span class="kw-2">&amp;mut </span>ParserContext&lt;<span class="lifetime">'a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;T&gt;,
     {
         <span class="self">self</span>.parser
             .expect_token(<span class="kw-2">&amp;</span>Token::LParen)
             .context(error::UnexpectedSnafu {
                 sql: <span class="self">self</span>.sql,
-                expected: <span class="string">&quot;(&quot;</span>,
+                expected: <span class="string">"("</span>,
                 actual: <span class="self">self</span>.peek_token_as_string(),
             })<span class="question-mark">?</span>;
 
@@ -1750,7 +1834,7 @@
             .expect_token(<span class="kw-2">&amp;</span>Token::RParen)
             .context(error::UnexpectedSnafu {
                 sql: <span class="self">self</span>.sql,
-                expected: <span class="string">&quot;)&quot;</span>,
+                expected: <span class="string">")"</span>,
                 actual: <span class="self">self</span>.peek_token_as_string(),
             })<span class="question-mark">?</span>;
 
@@ -1771,17 +1855,17 @@
                 <span class="self">self</span>.parse_column(<span class="kw-2">&amp;mut </span>columns, <span class="kw-2">&amp;mut </span>constraints)<span class="question-mark">?</span>;
             } <span class="kw">else </span>{
                 <span class="kw">return </span><span class="self">self</span>.expected(
-                    <span class="string">&quot;column name or constraint definition&quot;</span>,
+                    <span class="string">"column name or constraint definition"</span>,
                     <span class="self">self</span>.parser.peek_token(),
                 );
             }
             <span class="kw">let </span>comma = <span class="self">self</span>.parser.consume_token(<span class="kw-2">&amp;</span>Token::Comma);
             <span class="kw">if </span><span class="self">self</span>.parser.consume_token(<span class="kw-2">&amp;</span>Token::RParen) {
-                <span class="comment">// allow a trailing comma, even though it&#39;s not in standard
+                <span class="comment">// allow a trailing comma, even though it's not in standard
                 </span><span class="kw">break</span>;
             } <span class="kw">else if </span>!comma {
                 <span class="kw">return </span><span class="self">self</span>.expected(
-                    <span class="string">&quot;&#39;,&#39; or &#39;)&#39; after column definition&quot;</span>,
+                    <span class="string">"',' or ')' after column definition"</span>,
                     <span class="self">self</span>.parser.peek_token(),
                 );
             }
@@ -1795,9 +1879,7 @@
         columns: <span class="kw-2">&amp;mut </span>Vec&lt;ColumnDef&gt;,
         constraints: <span class="kw-2">&amp;mut </span>Vec&lt;TableConstraint&gt;,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>column = <span class="self">self
-            </span>.parse_column_def()
-            .context(SyntaxSnafu { sql: <span class="self">self</span>.sql })<span class="question-mark">?</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>column = <span class="self">self</span>.parse_column_def().context(SyntaxSnafu)<span class="question-mark">?</span>;
 
         <span class="kw">let </span><span class="kw-2">mut </span>time_index_opt_idx = <span class="prelude-val">None</span>;
         <span class="kw">for </span>(index, opt) <span class="kw">in </span>column.options.iter().enumerate() {
@@ -1819,7 +1901,7 @@
                         time_index_opt_idx.is_none(),
                         InvalidColumnOptionSnafu {
                             name: column.name.to_string(),
-                            msg: <span class="string">&quot;duplicated time index&quot;</span>,
+                            msg: <span class="string">"duplicated time index"</span>,
                         }
                     );
                     time_index_opt_idx = <span class="prelude-val">Some</span>(index);
@@ -1848,17 +1930,17 @@
                 }),
                 InvalidColumnOptionSnafu {
                     name: column.name.to_string(),
-                    msg: <span class="string">&quot;time index column can&#39;t be null&quot;</span>,
+                    msg: <span class="string">"time index column can't be null"</span>,
                 }
             );
+
+            <span class="comment">// The timestamp type may be an alias type, we have to retrieve the actual type.
+            </span><span class="kw">let </span>data_type = get_real_timestamp_type(<span class="kw-2">&amp;</span>column.data_type);
             <span class="macro">ensure!</span>(
-                <span class="macro">matches!</span>(
-                    column.data_type,
-                    DataType::Timestamp(<span class="kw">_</span>, <span class="kw">_</span>) | DataType::BigInt(<span class="kw">_</span>)
-                ),
+                <span class="macro">matches!</span>(data_type, DataType::Timestamp(<span class="kw">_</span>, <span class="kw">_</span>)),
                 InvalidColumnOptionSnafu {
                     name: column.name.to_string(),
-                    msg: <span class="string">&quot;time index column data type should be timestamp or bigint&quot;</span>,
+                    msg: <span class="string">"time index column data type should be timestamp"</span>,
                 }
             );
 
@@ -1884,11 +1966,11 @@
 
         <span class="kw">let </span>name = parser.parse_identifier()<span class="question-mark">?</span>;
         <span class="kw">if </span>name.quote_style.is_none() &amp;&amp;
-            <span class="comment">// &quot;ALL_KEYWORDS&quot; are sorted.
+            <span class="comment">// "ALL_KEYWORDS" are sorted.
             </span>ALL_KEYWORDS.binary_search(<span class="kw-2">&amp;</span>name.value.to_uppercase().as_str()).is_ok()
         {
             <span class="kw">return </span><span class="prelude-val">Err</span>(ParserError::ParserError(<span class="macro">format!</span>(
-                <span class="string">&quot;Cannot use keyword &#39;{}&#39; as column name. Hint: add quotes to the name.&quot;</span>,
+                <span class="string">"Cannot use keyword '{}' as column name. Hint: add quotes to the name."</span>,
                 <span class="kw-2">&amp;</span>name.value
             )));
         }
@@ -1907,7 +1989,7 @@
                     options.push(ColumnOptionDef { name, option });
                 } <span class="kw">else </span>{
                     <span class="kw">return </span>parser.expected(
-                        <span class="string">&quot;constraint details after CONSTRAINT &lt;name&gt;&quot;</span>,
+                        <span class="string">"constraint details after CONSTRAINT &lt;name&gt;"</span>,
                         parser.peek_token(),
                     );
                 }
@@ -1918,7 +2000,7 @@
             };
         }
         <span class="prelude-val">Ok</span>(ColumnDef {
-            name,
+            name: <span class="self">Self</span>::canonicalize_identifier(name),
             data_type,
             collation,
             options,
@@ -1926,7 +2008,7 @@
     }
 
     <span class="kw">fn </span>parse_optional_column_option(
-        parser: <span class="kw-2">&amp;mut </span>Parser&lt;<span class="lifetime">&#39;a</span>&gt;,
+        parser: <span class="kw-2">&amp;mut </span>Parser&lt;<span class="lifetime">'a</span>&gt;,
     ) -&gt; std::result::Result&lt;<span class="prelude-ty">Option</span>&lt;ColumnOption&gt;, ParserError&gt; {
         <span class="kw">if </span>parser.parse_keywords(<span class="kw-2">&amp;</span>[Keyword::CHARACTER, Keyword::SET]) {
             <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(ColumnOption::CharacterSet(
@@ -1940,7 +2022,7 @@
                     token: Token::SingleQuotedString(value, ..),
                     ..
                 } =&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(ColumnOption::Comment(value))),
-                unexpected =&gt; parser.expected(<span class="string">&quot;string&quot;</span>, unexpected),
+                unexpected =&gt; parser.expected(<span class="string">"string"</span>, unexpected),
             }
         } <span class="kw">else if </span>parser.parse_keyword(Keyword::NULL) {
             <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(ColumnOption::Null))
@@ -1954,12 +2036,12 @@
             <span class="comment">// Use a DialectSpecific option for time index
             </span><span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(ColumnOption::DialectSpecific(<span class="macro">vec!</span>[
                 Token::Word(Word {
-                    value: <span class="string">&quot;TIME&quot;</span>.to_string(),
+                    value: <span class="string">"TIME"</span>.to_string(),
                     quote_style: <span class="prelude-val">None</span>,
                     keyword: Keyword::TIME,
                 }),
                 Token::Word(Word {
-                    value: <span class="string">&quot;INDEX&quot;</span>.to_string(),
+                    value: <span class="string">"INDEX"</span>.to_string(),
                     quote_style: <span class="prelude-val">None</span>,
                     keyword: Keyword::INDEX,
                 }),
@@ -1971,11 +2053,8 @@
 
     <span class="kw">fn </span>parse_optional_table_constraint(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;TableConstraint&gt;&gt; {
         <span class="kw">let </span>name = <span class="kw">if </span><span class="self">self</span>.parser.parse_keyword(Keyword::CONSTRAINT) {
-            <span class="prelude-val">Some</span>(
-                <span class="self">self</span>.parser
-                    .parse_identifier()
-                    .context(error::SyntaxSnafu { sql: <span class="self">self</span>.sql })<span class="question-mark">?</span>,
-            )
+            <span class="kw">let </span>raw_name = <span class="self">self</span>.parser.parse_identifier().context(error::SyntaxSnafu)<span class="question-mark">?</span>;
+            <span class="prelude-val">Some</span>(<span class="self">Self</span>::canonicalize_identifier(raw_name))
         } <span class="kw">else </span>{
             <span class="prelude-val">None
         </span>};
@@ -1988,13 +2067,17 @@
                     .expect_keyword(Keyword::KEY)
                     .context(error::UnexpectedSnafu {
                         sql: <span class="self">self</span>.sql,
-                        expected: <span class="string">&quot;KEY&quot;</span>,
+                        expected: <span class="string">"KEY"</span>,
                         actual: <span class="self">self</span>.peek_token_as_string(),
                     })<span class="question-mark">?</span>;
-                <span class="kw">let </span>columns = <span class="self">self
+                <span class="kw">let </span>raw_columns = <span class="self">self
                     </span>.parser
                     .parse_parenthesized_column_list(Mandatory, <span class="bool-val">false</span>)
-                    .context(error::SyntaxSnafu { sql: <span class="self">self</span>.sql })<span class="question-mark">?</span>;
+                    .context(error::SyntaxSnafu)<span class="question-mark">?</span>;
+                <span class="kw">let </span>columns = raw_columns
+                    .into_iter()
+                    .map(<span class="self">Self</span>::canonicalize_identifier)
+                    .collect();
                 <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(TableConstraint::Unique {
                     name,
                     columns,
@@ -2009,23 +2092,27 @@
                     .expect_keyword(Keyword::INDEX)
                     .context(error::UnexpectedSnafu {
                         sql: <span class="self">self</span>.sql,
-                        expected: <span class="string">&quot;INDEX&quot;</span>,
+                        expected: <span class="string">"INDEX"</span>,
                         actual: <span class="self">self</span>.peek_token_as_string(),
                     })<span class="question-mark">?</span>;
 
-                <span class="kw">let </span>columns = <span class="self">self
+                <span class="kw">let </span>raw_columns = <span class="self">self
                     </span>.parser
                     .parse_parenthesized_column_list(Mandatory, <span class="bool-val">false</span>)
-                    .context(error::SyntaxSnafu { sql: <span class="self">self</span>.sql })<span class="question-mark">?</span>;
+                    .context(error::SyntaxSnafu)<span class="question-mark">?</span>;
+                <span class="kw">let </span>columns = raw_columns
+                    .into_iter()
+                    .map(<span class="self">Self</span>::canonicalize_identifier)
+                    .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
 
                 <span class="macro">ensure!</span>(
                     columns.len() == <span class="number">1</span>,
                     InvalidTimeIndexSnafu {
-                        msg: <span class="string">&quot;it should contain only one column in time index&quot;</span>,
+                        msg: <span class="string">"it should contain only one column in time index"</span>,
                     }
                 );
 
-                <span class="comment">// TODO(dennis): TableConstraint doesn&#39;t support dialect right now,
+                <span class="comment">// TODO(dennis): TableConstraint doesn't support dialect right now,
                 // so we use unique constraint with special key to represent TIME INDEX.
                 </span><span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(TableConstraint::Unique {
                     name: <span class="prelude-val">Some</span>(Ident {
@@ -2038,7 +2125,7 @@
             }
             unexpected =&gt; {
                 <span class="kw">if </span>name.is_some() {
-                    <span class="self">self</span>.expected(<span class="string">&quot;PRIMARY, TIME&quot;</span>, unexpected)
+                    <span class="self">self</span>.expected(<span class="string">"PRIMARY, TIME"</span>, unexpected)
                 } <span class="kw">else </span>{
                     <span class="self">self</span>.parser.prev_token();
                     <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
@@ -2057,7 +2144,7 @@
             .expect_token(<span class="kw-2">&amp;</span>Token::Eq)
             .context(error::UnexpectedSnafu {
                 sql: <span class="self">self</span>.sql,
-                expected: <span class="string">&quot;=&quot;</span>,
+                expected: <span class="string">"="</span>,
                 actual: <span class="self">self</span>.peek_token_as_string(),
             })<span class="question-mark">?</span>;
 
@@ -2065,7 +2152,7 @@
         <span class="kw">if let </span>Token::Word(w) = token.token {
             <span class="prelude-val">Ok</span>(w.value)
         } <span class="kw">else </span>{
-            <span class="self">self</span>.expected(<span class="string">&quot;&#39;Engine&#39; is missing&quot;</span>, token)
+            <span class="self">self</span>.expected(<span class="string">"'Engine' is missing"</span>, token)
         }
     }
 }
@@ -2091,8 +2178,7 @@
             } = c
             {
                 <span class="kw">if </span>ident.value == TIME_INDEX {
-                    <span class="kw">let </span>column_names = columns.iter().map(|c| <span class="kw-2">&amp;</span>c.value).collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
-                    <span class="prelude-val">Some</span>(column_names)
+                    <span class="prelude-val">Some</span>(columns)
                 } <span class="kw">else </span>{
                     <span class="prelude-val">None
                 </span>}
@@ -2108,7 +2194,7 @@
         time_index_constraints.len() == <span class="number">1</span>,
         InvalidTimeIndexSnafu {
             msg: <span class="macro">format!</span>(
-                <span class="string">&quot;expected only one time index constraint but actual {}&quot;</span>,
+                <span class="string">"expected only one time index constraint but actual {}"</span>,
                 time_index_constraints.len()
             ),
         }
@@ -2116,11 +2202,47 @@
     <span class="macro">ensure!</span>(
         time_index_constraints[<span class="number">0</span>].len() == <span class="number">1</span>,
         InvalidTimeIndexSnafu {
-            msg: <span class="string">&quot;it should contain only one column in time index&quot;</span>,
+            msg: <span class="string">"it should contain only one column in time index"</span>,
+        }
+    );
+
+    <span class="comment">// It's safe to use time_index_constraints[0][0],
+    // we already check the bound above.
+    </span><span class="kw">let </span>time_index_column_ident = <span class="kw-2">&amp;</span>time_index_constraints[<span class="number">0</span>][<span class="number">0</span>];
+    <span class="kw">let </span>time_index_column = create_table
+        .columns
+        .iter()
+        .find(|c| c.name.value == <span class="kw-2">*</span>time_index_column_ident.value)
+        .with_context(|| InvalidTimeIndexSnafu {
+            msg: <span class="macro">format!</span>(
+                <span class="string">"time index column {} not found in columns"</span>,
+                time_index_column_ident
+            ),
+        })<span class="question-mark">?</span>;
+
+    <span class="kw">let </span>time_index_data_type = get_real_timestamp_type(<span class="kw-2">&amp;</span>time_index_column.data_type);
+    <span class="macro">ensure!</span>(
+        <span class="macro">matches!</span>(time_index_data_type, DataType::Timestamp(<span class="kw">_</span>, <span class="kw">_</span>)),
+        InvalidColumnOptionSnafu {
+            name: time_index_column.name.to_string(),
+            msg: <span class="string">"time index column data type should be timestamp"</span>,
         }
     );
 
     <span class="prelude-val">Ok</span>(())
+}
+
+<span class="kw">fn </span>get_real_timestamp_type(data_type: <span class="kw-2">&amp;</span>DataType) -&gt; DataType {
+    <span class="kw">match </span>data_type {
+        DataType::Custom(name, tokens) <span class="kw">if </span>name.<span class="number">0</span>.len() == <span class="number">1 </span>&amp;&amp; tokens.is_empty() =&gt; {
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(real_type) = get_data_type_by_alias_name(name.<span class="number">0</span>[<span class="number">0</span>].value.as_str()) {
+                real_type
+            } <span class="kw">else </span>{
+                data_type.clone()
+            }
+        }
+        <span class="kw">_ </span>=&gt; data_type.clone(),
+    }
 }
 
 <span class="kw">fn </span>validate_partitions(columns: <span class="kw-2">&amp;</span>[ColumnDef], partitions: <span class="kw-2">&amp;</span>Partitions) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
@@ -2138,12 +2260,12 @@
 }
 
 <span class="doccomment">/// Ensure that partition ranges fully cover all values.
-</span><span class="comment">// Simply check the last partition is bounded by &quot;MAXVALUE&quot;s.
-// MySQL does not have this restriction. However, I think we&#39;d better have it because:
+</span><span class="comment">// Simply check the last partition is bounded by "MAXVALUE"s.
+// MySQL does not have this restriction. However, I think we'd better have it because:
 //   - It might save user from adding more partitions in the future by hand, which is often
 //     a tedious task. Why not provide an extra partition at the beginning and leave all
-//     other partition related jobs to us? I think it&#39;s a reasonable argument to user.
-//   - It might save us from some ugly designs and codings. The &quot;MAXVALUE&quot; bound is natural
+//     other partition related jobs to us? I think it's a reasonable argument to user.
+//   - It might save us from some ugly designs and codings. The "MAXVALUE" bound is natural
 //     in dealing with values that are unspecified upfront. Without it, we have to store
 //     and use the user defined max bound everywhere, starting from calculating regions by
 //     partition rule in Frontend, to automatically split and merge regions in Meta.
@@ -2155,17 +2277,17 @@
     <span class="macro">ensure!</span>(
         <span class="macro">matches!</span>(is_maxvalue_bound, <span class="prelude-val">Some</span>(<span class="bool-val">true</span>)),
         error::InvalidSqlSnafu {
-            msg: <span class="string">&quot;Please provide an extra partition that is bounded by &#39;MAXVALUE&#39;.&quot;
+            msg: <span class="string">"Please provide an extra partition that is bounded by 'MAXVALUE'."
         </span>}
     );
     <span class="prelude-val">Ok</span>(())
 }
 
 <span class="doccomment">/// Ensure that value lists of partitions are strictly increasing.
-</span><span class="kw">fn </span>ensure_value_lists_strictly_increased&lt;<span class="lifetime">&#39;a</span>&gt;(
-    partitions: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Partitions,
-    partition_columns: Vec&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>ColumnDef&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Vec&lt;Value&gt;&gt;&gt; {
+</span><span class="kw">fn </span>ensure_value_lists_strictly_increased&lt;<span class="lifetime">'a</span>&gt;(
+    partitions: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>Partitions,
+    partition_columns: Vec&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>ColumnDef&gt;,
+) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>Vec&lt;Value&gt;&gt;&gt; {
     <span class="kw">let </span>value_lists = partitions
         .entries
         .iter()
@@ -2194,12 +2316,12 @@
                         Ordering::Less =&gt; <span class="kw">break</span>,
                         Ordering::Equal =&gt; equal_tuples += <span class="number">1</span>,
                         Ordering::Greater =&gt; <span class="kw">return </span>error::InvalidSqlSnafu {
-                            msg: <span class="string">&quot;VALUES LESS THAN value must be strictly increasing for each partition.&quot;</span>,
+                            msg: <span class="string">"VALUES LESS THAN value must be strictly increasing for each partition."</span>,
                         }.fail()
                     }
                 }
                 (<span class="bool-val">true</span>, <span class="bool-val">false</span>) =&gt; <span class="kw">return </span>error::InvalidSqlSnafu {
-                    msg: <span class="string">&quot;VALUES LESS THAN value must be strictly increasing for each partition.&quot;</span>,
+                    msg: <span class="string">"VALUES LESS THAN value must be strictly increasing for each partition."</span>,
                 }
                 .fail(),
                 (<span class="bool-val">false</span>, <span class="bool-val">true</span>) =&gt; <span class="kw">break</span>,
@@ -2208,45 +2330,45 @@
         <span class="macro">ensure!</span>(
             equal_tuples &lt; partition_columns.len(),
             error::InvalidSqlSnafu {
-                msg: <span class="string">&quot;VALUES LESS THAN value must be strictly increasing for each partition.&quot;</span>,
+                msg: <span class="string">"VALUES LESS THAN value must be strictly increasing for each partition."</span>,
             }
         );
     }
     <span class="prelude-val">Ok</span>(value_lists)
 }
 
-<span class="doccomment">/// Ensure that value list&#39;s length matches the column list.
+<span class="doccomment">/// Ensure that value list's length matches the column list.
 </span><span class="kw">fn </span>ensure_value_list_len_matches_columns(
     partitions: <span class="kw-2">&amp;</span>Partitions,
-    partition_columns: <span class="kw-2">&amp;</span>Vec&lt;<span class="kw-2">&amp;</span>ColumnDef&gt;,
+    partition_columns: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span>ColumnDef],
 ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
     <span class="kw">for </span>entry <span class="kw">in </span>partitions.entries.iter() {
         <span class="macro">ensure!</span>(
             entry.value_list.len() == partition_columns.len(),
             error::InvalidSqlSnafu {
-                msg: <span class="string">&quot;Partition value list does not match column list.&quot;</span>,
+                msg: <span class="string">"Partition value list does not match column list."</span>,
             }
         );
     }
     <span class="prelude-val">Ok</span>(())
 }
 
-<span class="doccomment">/// Ensure that all columns used in &quot;PARTITION BY RANGE COLUMNS&quot; are defined in create table.
-</span><span class="kw">fn </span>ensure_partition_columns_defined&lt;<span class="lifetime">&#39;a</span>&gt;(
-    columns: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[ColumnDef],
-    partitions: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Partitions,
-) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>ColumnDef&gt;&gt; {
+<span class="doccomment">/// Ensure that all columns used in "PARTITION BY RANGE COLUMNS" are defined in create table.
+</span><span class="kw">fn </span>ensure_partition_columns_defined&lt;<span class="lifetime">'a</span>&gt;(
+    columns: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>[ColumnDef],
+    partitions: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>Partitions,
+) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>ColumnDef&gt;&gt; {
     partitions
         .column_list
         .iter()
         .map(|x| {
-            <span class="comment">// Normally the columns in &quot;create table&quot; won&#39;t be too many,
+            <span class="comment">// Normally the columns in "create table" won't be too many,
             // a linear search to find the target every time is fine.
             </span>columns
                 .iter()
                 .find(|c| <span class="kw-2">&amp;</span>c.name == x)
                 .context(error::InvalidSqlSnafu {
-                    msg: <span class="macro">format!</span>(<span class="string">&quot;Partition column {:?} not defined!&quot;</span>, x.value),
+                    msg: <span class="macro">format!</span>(<span class="string">"Partition column {:?} not defined!"</span>, x.value),
                 })
         })
         .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw-2">&amp;</span>ColumnDef&gt;&gt;&gt;()
@@ -2264,7 +2386,7 @@
         <span class="macro">ensure!</span>(
             w[<span class="number">0</span>] != w[<span class="number">1</span>],
             error::InvalidSqlSnafu {
-                msg: <span class="macro">format!</span>(<span class="string">&quot;Duplicate partition names: {}&quot;</span>, w[<span class="number">0</span>]),
+                msg: <span class="macro">format!</span>(<span class="string">"Duplicate partition names: {}"</span>, w[<span class="number">0</span>]),
             }
         )
     }
@@ -2276,41 +2398,60 @@
     <span class="kw">use </span>std::assert_matches::assert_matches;
     <span class="kw">use </span>std::collections::HashMap;
 
-    <span class="kw">use </span>common_catalog::consts::IMMUTABLE_FILE_ENGINE;
+    <span class="kw">use </span>common_catalog::consts::FILE_ENGINE;
+    <span class="kw">use </span>common_error::ext::ErrorExt;
     <span class="kw">use </span>sqlparser::ast::ColumnOption::NotNull;
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use </span><span class="kw">crate</span>::dialect::GreptimeDbDialect;
 
     <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_validate_external_table_options() {
+        <span class="kw">let </span>sql = <span class="string">"CREATE EXTERNAL TABLE city (
+            host string,
+            ts int64,
+            cpu float64 default 0,
+            memory float64,
+            TIME INDEX (ts),
+            PRIMARY KEY(ts, host)
+        ) with(location='/var/data/city.csv',format='csv',foo='bar');"</span>;
+
+        <span class="kw">let </span>result = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {});
+        <span class="macro">assert!</span>(<span class="macro">matches!</span>(
+            result,
+            <span class="prelude-val">Err</span>(error::Error::InvalidTableOption { .. })
+        ));
+    }
+
+    <span class="attr">#[test]
     </span><span class="kw">fn </span>test_parse_create_external_table() {
-        <span class="kw">struct </span>Test&lt;<span class="lifetime">&#39;a</span>&gt; {
-            sql: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str,
-            expected_table_name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str,
+        <span class="kw">struct </span>Test&lt;<span class="lifetime">'a</span>&gt; {
+            sql: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str,
+            expected_table_name: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str,
             expected_options: HashMap&lt;String, String&gt;,
-            expected_engine: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str,
+            expected_engine: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str,
             expected_if_not_exist: bool,
         }
 
         <span class="kw">let </span>tests = [
             Test {
-                sql: <span class="string">&quot;CREATE EXTERNAL TABLE city with(location=&#39;/var/data/city.csv&#39;,format=&#39;csv&#39;);&quot;</span>,
-                expected_table_name: <span class="string">&quot;city&quot;</span>,
+                sql: <span class="string">"CREATE EXTERNAL TABLE city with(location='/var/data/city.csv',format='csv');"</span>,
+                expected_table_name: <span class="string">"city"</span>,
                 expected_options: HashMap::from([
-                    (<span class="string">&quot;location&quot;</span>.to_string(), <span class="string">&quot;/var/data/city.csv&quot;</span>.to_string()),
-                    (<span class="string">&quot;format&quot;</span>.to_string(), <span class="string">&quot;csv&quot;</span>.to_string()),
+                    (<span class="string">"location"</span>.to_string(), <span class="string">"/var/data/city.csv"</span>.to_string()),
+                    (<span class="string">"format"</span>.to_string(), <span class="string">"csv"</span>.to_string()),
                 ]),
-                expected_engine: IMMUTABLE_FILE_ENGINE,
+                expected_engine: FILE_ENGINE,
                 expected_if_not_exist: <span class="bool-val">false</span>,
             },
             Test {
-                sql: <span class="string">&quot;CREATE EXTERNAL TABLE IF NOT EXISTS city ENGINE=foo with(location=&#39;/var/data/city.csv&#39;,format=&#39;csv&#39;);&quot;</span>,
-                expected_table_name: <span class="string">&quot;city&quot;</span>,
+                sql: <span class="string">"CREATE EXTERNAL TABLE IF NOT EXISTS city ENGINE=foo with(location='/var/data/city.csv',format='csv');"</span>,
+                expected_table_name: <span class="string">"city"</span>,
                 expected_options: HashMap::from([
-                    (<span class="string">&quot;location&quot;</span>.to_string(), <span class="string">&quot;/var/data/city.csv&quot;</span>.to_string()),
-                    (<span class="string">&quot;format&quot;</span>.to_string(), <span class="string">&quot;csv&quot;</span>.to_string()),
+                    (<span class="string">"location"</span>.to_string(), <span class="string">"/var/data/city.csv"</span>.to_string()),
+                    (<span class="string">"format"</span>.to_string(), <span class="string">"csv"</span>.to_string()),
                 ]),
-                expected_engine: <span class="string">&quot;foo&quot;</span>,
+                expected_engine: <span class="string">"foo"</span>,
                 expected_if_not_exist: <span class="bool-val">true</span>,
             },
         ];
@@ -2322,7 +2463,7 @@
             <span class="kw">match </span><span class="kw-2">&amp;</span>stmts[<span class="number">0</span>] {
                 Statement::CreateExternalTable(c) =&gt; {
                     <span class="macro">assert_eq!</span>(c.name.to_string(), test.expected_table_name.to_string());
-                    <span class="macro">assert_eq!</span>(c.options, test.expected_options);
+                    <span class="macro">assert_eq!</span>(c.options, test.expected_options.into());
                     <span class="macro">assert_eq!</span>(c.if_not_exists, test.expected_if_not_exist);
                     <span class="macro">assert_eq!</span>(c.engine, test.expected_engine);
                 }
@@ -2333,32 +2474,32 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_parse_create_external_table_with_schema() {
-        <span class="kw">let </span>sql = <span class="string">&quot;CREATE EXTERNAL TABLE city (
+        <span class="kw">let </span>sql = <span class="string">"CREATE EXTERNAL TABLE city (
             host string,
             ts int64,
-            cpu float64 default 0,
+            cpu float32 default 0,
             memory float64,
             TIME INDEX (ts),
             PRIMARY KEY(ts, host)
-        ) with(location=&#39;/var/data/city.csv&#39;,format=&#39;csv&#39;);&quot;</span>;
+        ) with(location='/var/data/city.csv',format='csv');"</span>;
 
         <span class="kw">let </span>options = HashMap::from([
-            (<span class="string">&quot;location&quot;</span>.to_string(), <span class="string">&quot;/var/data/city.csv&quot;</span>.to_string()),
-            (<span class="string">&quot;format&quot;</span>.to_string(), <span class="string">&quot;csv&quot;</span>.to_string()),
+            (<span class="string">"location"</span>.to_string(), <span class="string">"/var/data/city.csv"</span>.to_string()),
+            (<span class="string">"format"</span>.to_string(), <span class="string">"csv"</span>.to_string()),
         ]);
 
         <span class="kw">let </span>stmts = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
         <span class="macro">assert_eq!</span>(<span class="number">1</span>, stmts.len());
         <span class="kw">match </span><span class="kw-2">&amp;</span>stmts[<span class="number">0</span>] {
             Statement::CreateExternalTable(c) =&gt; {
-                <span class="macro">assert_eq!</span>(c.name.to_string(), <span class="string">&quot;city&quot;</span>);
-                <span class="macro">assert_eq!</span>(c.options, options);
+                <span class="macro">assert_eq!</span>(c.name.to_string(), <span class="string">"city"</span>);
+                <span class="macro">assert_eq!</span>(c.options, options.into());
 
                 <span class="kw">let </span>columns = <span class="kw-2">&amp;</span>c.columns;
-                assert_column_def(<span class="kw-2">&amp;</span>columns[<span class="number">0</span>], <span class="string">&quot;host&quot;</span>, <span class="string">&quot;STRING&quot;</span>);
-                assert_column_def(<span class="kw-2">&amp;</span>columns[<span class="number">1</span>], <span class="string">&quot;ts&quot;</span>, <span class="string">&quot;int64&quot;</span>);
-                assert_column_def(<span class="kw-2">&amp;</span>columns[<span class="number">2</span>], <span class="string">&quot;cpu&quot;</span>, <span class="string">&quot;float64&quot;</span>);
-                assert_column_def(<span class="kw-2">&amp;</span>columns[<span class="number">3</span>], <span class="string">&quot;memory&quot;</span>, <span class="string">&quot;float64&quot;</span>);
+                assert_column_def(<span class="kw-2">&amp;</span>columns[<span class="number">0</span>], <span class="string">"host"</span>, <span class="string">"STRING"</span>);
+                assert_column_def(<span class="kw-2">&amp;</span>columns[<span class="number">1</span>], <span class="string">"ts"</span>, <span class="string">"BIGINT"</span>);
+                assert_column_def(<span class="kw-2">&amp;</span>columns[<span class="number">2</span>], <span class="string">"cpu"</span>, <span class="string">"FLOAT"</span>);
+                assert_column_def(<span class="kw-2">&amp;</span>columns[<span class="number">3</span>], <span class="string">"memory"</span>, <span class="string">"DOUBLE"</span>);
 
                 <span class="kw">let </span>constraints = <span class="kw-2">&amp;</span>c.constraints;
                 <span class="macro">assert_matches!</span>(
@@ -2382,32 +2523,32 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_parse_create_database() {
-        <span class="kw">let </span>sql = <span class="string">&quot;create database&quot;</span>;
+        <span class="kw">let </span>sql = <span class="string">"create database"</span>;
         <span class="kw">let </span>result = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {});
         <span class="macro">assert!</span>(result
             .unwrap_err()
             .to_string()
-            .contains(<span class="string">&quot;Unexpected token while parsing SQL statement&quot;</span>));
+            .contains(<span class="string">"Unexpected token while parsing SQL statement"</span>));
 
-        <span class="kw">let </span>sql = <span class="string">&quot;create database prometheus&quot;</span>;
+        <span class="kw">let </span>sql = <span class="string">"create database prometheus"</span>;
         <span class="kw">let </span>stmts = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
 
         <span class="macro">assert_eq!</span>(<span class="number">1</span>, stmts.len());
         <span class="kw">match </span><span class="kw-2">&amp;</span>stmts[<span class="number">0</span>] {
             Statement::CreateDatabase(c) =&gt; {
-                <span class="macro">assert_eq!</span>(c.name.to_string(), <span class="string">&quot;prometheus&quot;</span>);
+                <span class="macro">assert_eq!</span>(c.name.to_string(), <span class="string">"prometheus"</span>);
                 <span class="macro">assert!</span>(!c.if_not_exists);
             }
             <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
         }
 
-        <span class="kw">let </span>sql = <span class="string">&quot;create database if not exists prometheus&quot;</span>;
+        <span class="kw">let </span>sql = <span class="string">"create database if not exists prometheus"</span>;
         <span class="kw">let </span>stmts = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
 
         <span class="macro">assert_eq!</span>(<span class="number">1</span>, stmts.len());
         <span class="kw">match </span><span class="kw-2">&amp;</span>stmts[<span class="number">0</span>] {
             Statement::CreateDatabase(c) =&gt; {
-                <span class="macro">assert_eq!</span>(c.name.to_string(), <span class="string">&quot;prometheus&quot;</span>);
+                <span class="macro">assert_eq!</span>(c.name.to_string(), <span class="string">"prometheus"</span>);
                 <span class="macro">assert!</span>(c.if_not_exists);
             }
             <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
@@ -2416,120 +2557,120 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_validate_create() {
-        <span class="kw">let </span>sql = <span class="string">r&quot;
-CREATE TABLE rcx ( a INT, b STRING, c INT, ts BIGINT TIME INDEX)
+        <span class="kw">let </span>sql = <span class="string">r"
+CREATE TABLE rcx ( a INT, b STRING, c INT, ts timestamp TIME INDEX)
 PARTITION BY RANGE COLUMNS(b, a) (
-  PARTITION r0 VALUES LESS THAN (&#39;hz&#39;, 1000),
-  PARTITION r1 VALUES LESS THAN (&#39;sh&#39;, 2000),
+  PARTITION r0 VALUES LESS THAN ('hz', 1000),
+  PARTITION r1 VALUES LESS THAN ('sh', 2000),
   PARTITION r3 VALUES LESS THAN (MAXVALUE, MAXVALUE),
 )
-ENGINE=mito&quot;</span>;
+ENGINE=mito"</span>;
         <span class="kw">let </span>result = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {});
         <span class="kw">let _ </span>= result.unwrap();
 
-        <span class="kw">let </span>sql = <span class="string">r&quot;
+        <span class="kw">let </span>sql = <span class="string">r"
 CREATE TABLE rcx ( a INT, b STRING, c INT )
 PARTITION BY RANGE COLUMNS(b, x) (
-  PARTITION r0 VALUES LESS THAN (&#39;hz&#39;, 1000),
-  PARTITION r1 VALUES LESS THAN (&#39;sh&#39;, 2000),
+  PARTITION r0 VALUES LESS THAN ('hz', 1000),
+  PARTITION r1 VALUES LESS THAN ('sh', 2000),
   PARTITION r3 VALUES LESS THAN (MAXVALUE, MAXVALUE),
 )
-ENGINE=mito&quot;</span>;
+ENGINE=mito"</span>;
         <span class="kw">let </span>result = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {});
         <span class="macro">assert!</span>(result
             .unwrap_err()
             .to_string()
-            .contains(<span class="string">&quot;Partition column \&quot;x\&quot; not defined!&quot;</span>));
+            .contains(<span class="string">"Partition column \"x\" not defined!"</span>));
 
-        <span class="kw">let </span>sql = <span class="string">r&quot;
+        <span class="kw">let </span>sql = <span class="string">r"
 CREATE TABLE rcx ( a INT, b STRING, c INT )
 PARTITION BY RANGE COLUMNS(b, a) (
-  PARTITION r0 VALUES LESS THAN (&#39;hz&#39;, 1000),
-  PARTITION r1 VALUES LESS THAN (&#39;sh&#39;, 2000),
-  PARTITION r2 VALUES LESS THAN (&#39;sz&#39;, 3000),
+  PARTITION r0 VALUES LESS THAN ('hz', 1000),
+  PARTITION r1 VALUES LESS THAN ('sh', 2000),
+  PARTITION r2 VALUES LESS THAN ('sz', 3000),
   PARTITION r1 VALUES LESS THAN (MAXVALUE, MAXVALUE),
 )
-ENGINE=mito&quot;</span>;
+ENGINE=mito"</span>;
         <span class="kw">let </span>result = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {});
         <span class="macro">assert!</span>(result
             .unwrap_err()
             .to_string()
-            .contains(<span class="string">&quot;Duplicate partition names: r1&quot;</span>));
+            .contains(<span class="string">"Duplicate partition names: r1"</span>));
 
-        <span class="kw">let </span>sql = <span class="string">r&quot;
+        <span class="kw">let </span>sql = <span class="string">r"
 CREATE TABLE rcx ( a INT, b STRING, c INT )
 PARTITION BY RANGE COLUMNS(b, a) (
-  PARTITION r0 VALUES LESS THAN (&#39;hz&#39;, 1000),
-  PARTITION r1 VALUES LESS THAN (&#39;sh&#39;),
+  PARTITION r0 VALUES LESS THAN ('hz', 1000),
+  PARTITION r1 VALUES LESS THAN ('sh'),
   PARTITION r3 VALUES LESS THAN (MAXVALUE, MAXVALUE),
 )
-ENGINE=mito&quot;</span>;
+ENGINE=mito"</span>;
         <span class="kw">let </span>result = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {});
         <span class="macro">assert!</span>(result
             .unwrap_err()
             .to_string()
-            .contains(<span class="string">&quot;Partition value list does not match column list&quot;</span>));
+            .contains(<span class="string">"Partition value list does not match column list"</span>));
 
         <span class="kw">let </span>cases = <span class="macro">vec!</span>[
-            <span class="string">r&quot;
+            <span class="string">r"
 CREATE TABLE rcx ( a INT, b STRING, c INT )
 PARTITION BY RANGE COLUMNS(b, a) (
-  PARTITION r0 VALUES LESS THAN (&#39;sh&#39;, 1000),
-  PARTITION r1 VALUES LESS THAN (&#39;hz&#39;, 2000),
+  PARTITION r0 VALUES LESS THAN ('sh', 1000),
+  PARTITION r1 VALUES LESS THAN ('hz', 2000),
   PARTITION r3 VALUES LESS THAN (MAXVALUE, MAXVALUE),
 )
-ENGINE=mito&quot;</span>,
-            <span class="string">r&quot;
+ENGINE=mito"</span>,
+            <span class="string">r"
 CREATE TABLE rcx ( a INT, b STRING, c INT )
 PARTITION BY RANGE COLUMNS(b, a) (
-  PARTITION r0 VALUES LESS THAN (&#39;hz&#39;, 2000),
-  PARTITION r1 VALUES LESS THAN (&#39;hz&#39;, 1000),
+  PARTITION r0 VALUES LESS THAN ('hz', 2000),
+  PARTITION r1 VALUES LESS THAN ('hz', 1000),
   PARTITION r3 VALUES LESS THAN (MAXVALUE, MAXVALUE),
 )
-ENGINE=mito&quot;</span>,
-            <span class="string">r&quot;
+ENGINE=mito"</span>,
+            <span class="string">r"
 CREATE TABLE rcx ( a INT, b STRING, c INT )
 PARTITION BY RANGE COLUMNS(b, a) (
-  PARTITION r0 VALUES LESS THAN (&#39;hz&#39;, 1000),
-  PARTITION r1 VALUES LESS THAN (&#39;hz&#39;, 1000),
+  PARTITION r0 VALUES LESS THAN ('hz', 1000),
+  PARTITION r1 VALUES LESS THAN ('hz', 1000),
   PARTITION r3 VALUES LESS THAN (MAXVALUE, MAXVALUE),
 )
-ENGINE=mito&quot;</span>,
-            <span class="string">r&quot;
+ENGINE=mito"</span>,
+            <span class="string">r"
 CREATE TABLE rcx ( a INT, b STRING, c INT )
 PARTITION BY RANGE COLUMNS(b, a) (
-  PARTITION r0 VALUES LESS THAN (&#39;hz&#39;, 1000),
+  PARTITION r0 VALUES LESS THAN ('hz', 1000),
   PARTITION r3 VALUES LESS THAN (MAXVALUE, 2000),
-  PARTITION r1 VALUES LESS THAN (&#39;sh&#39;, 3000),
+  PARTITION r1 VALUES LESS THAN ('sh', 3000),
 )
-ENGINE=mito&quot;</span>,
+ENGINE=mito"</span>,
         ];
         <span class="kw">for </span>sql <span class="kw">in </span>cases {
             <span class="kw">let </span>result = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {});
             <span class="macro">assert!</span>(result
                 .unwrap_err()
                 .to_string()
-                .contains(<span class="string">&quot;VALUES LESS THAN value must be strictly increasing for each partition&quot;</span>));
+                .contains(<span class="string">"VALUES LESS THAN value must be strictly increasing for each partition"</span>));
         }
 
-        <span class="kw">let </span>sql = <span class="string">r&quot;
+        <span class="kw">let </span>sql = <span class="string">r"
 CREATE TABLE rcx ( a INT, b STRING, c INT )
 PARTITION BY RANGE COLUMNS(b, a) (
-  PARTITION r0 VALUES LESS THAN (&#39;hz&#39;, 1000),
-  PARTITION r1 VALUES LESS THAN (&#39;sh&#39;, 2000),
+  PARTITION r0 VALUES LESS THAN ('hz', 1000),
+  PARTITION r1 VALUES LESS THAN ('sh', 2000),
   PARTITION r3 VALUES LESS THAN (MAXVALUE, 9999),
 )
-ENGINE=mito&quot;</span>;
+ENGINE=mito"</span>;
         <span class="kw">let </span>result = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {});
         <span class="macro">assert!</span>(result
             .unwrap_err()
             .to_string()
-            .contains(<span class="string">&quot;Please provide an extra partition that is bounded by &#39;MAXVALUE&#39;.&quot;</span>));
+            .contains(<span class="string">"Please provide an extra partition that is bounded by 'MAXVALUE'."</span>));
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_parse_create_table_with_partitions() {
-        <span class="kw">let </span>sql = <span class="string">r&quot;
+        <span class="kw">let </span>sql = <span class="string">r"
 CREATE TABLE monitor (
   host_id    INT,
   idc        STRING,
@@ -2540,12 +2681,12 @@ CREATE TABLE monitor (
   PRIMARY KEY (host),
 )
 PARTITION BY RANGE COLUMNS(idc, host_id) (
-  PARTITION r0 VALUES LESS THAN (&#39;hz&#39;, 1000),
-  PARTITION r1 VALUES LESS THAN (&#39;sh&#39;, 2000),
-  PARTITION r2 VALUES LESS THAN (&#39;sh&#39;, 3000),
+  PARTITION r0 VALUES LESS THAN ('hz', 1000),
+  PARTITION r1 VALUES LESS THAN ('sh', 2000),
+  PARTITION r2 VALUES LESS THAN ('sh', 3000),
   PARTITION r3 VALUES LESS THAN (MAXVALUE, MAXVALUE),
 )
-ENGINE=mito&quot;</span>;
+ENGINE=mito"</span>;
         <span class="kw">let </span>result = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
         <span class="macro">assert_eq!</span>(result.len(), <span class="number">1</span>);
         <span class="kw">match </span><span class="kw-2">&amp;</span>result[<span class="number">0</span>] {
@@ -2558,34 +2699,34 @@ ENGINE=mito&quot;</span>;
                     .iter()
                     .map(|x| <span class="kw-2">&amp;</span>x.value)
                     .collect::&lt;Vec&lt;<span class="kw-2">&amp;</span>String&gt;&gt;();
-                <span class="macro">assert_eq!</span>(column_list, <span class="macro">vec!</span>[<span class="string">&quot;idc&quot;</span>, <span class="string">&quot;host_id&quot;</span>]);
+                <span class="macro">assert_eq!</span>(column_list, <span class="macro">vec!</span>[<span class="string">"idc"</span>, <span class="string">"host_id"</span>]);
 
                 <span class="kw">let </span>entries = <span class="kw-2">&amp;</span>partitions.entries;
                 <span class="kw">let </span>partition_names = entries
                     .iter()
                     .map(|x| <span class="kw-2">&amp;</span>x.name.value)
                     .collect::&lt;Vec&lt;<span class="kw-2">&amp;</span>String&gt;&gt;();
-                <span class="macro">assert_eq!</span>(partition_names, <span class="macro">vec!</span>[<span class="string">&quot;r0&quot;</span>, <span class="string">&quot;r1&quot;</span>, <span class="string">&quot;r2&quot;</span>, <span class="string">&quot;r3&quot;</span>]);
+                <span class="macro">assert_eq!</span>(partition_names, <span class="macro">vec!</span>[<span class="string">"r0"</span>, <span class="string">"r1"</span>, <span class="string">"r2"</span>, <span class="string">"r3"</span>]);
 
                 <span class="macro">assert_eq!</span>(
                     entries[<span class="number">0</span>].value_list,
                     <span class="macro">vec!</span>[
-                        SqlValue::SingleQuotedString(<span class="string">&quot;hz&quot;</span>.to_string()),
-                        SqlValue::Number(<span class="string">&quot;1000&quot;</span>.to_string(), <span class="bool-val">false</span>)
+                        SqlValue::SingleQuotedString(<span class="string">"hz"</span>.to_string()),
+                        SqlValue::Number(<span class="string">"1000"</span>.to_string(), <span class="bool-val">false</span>)
                     ]
                 );
                 <span class="macro">assert_eq!</span>(
                     entries[<span class="number">1</span>].value_list,
                     <span class="macro">vec!</span>[
-                        SqlValue::SingleQuotedString(<span class="string">&quot;sh&quot;</span>.to_string()),
-                        SqlValue::Number(<span class="string">&quot;2000&quot;</span>.to_string(), <span class="bool-val">false</span>)
+                        SqlValue::SingleQuotedString(<span class="string">"sh"</span>.to_string()),
+                        SqlValue::Number(<span class="string">"2000"</span>.to_string(), <span class="bool-val">false</span>)
                     ]
                 );
                 <span class="macro">assert_eq!</span>(
                     entries[<span class="number">2</span>].value_list,
                     <span class="macro">vec!</span>[
-                        SqlValue::SingleQuotedString(<span class="string">&quot;sh&quot;</span>.to_string()),
-                        SqlValue::Number(<span class="string">&quot;3000&quot;</span>.to_string(), <span class="bool-val">false</span>)
+                        SqlValue::SingleQuotedString(<span class="string">"sh"</span>.to_string()),
+                        SqlValue::Number(<span class="string">"3000"</span>.to_string(), <span class="bool-val">false</span>)
                     ]
                 );
                 <span class="macro">assert_eq!</span>(
@@ -2602,7 +2743,7 @@ ENGINE=mito&quot;</span>;
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_parse_create_table_with_timestamp_index() {
-        <span class="kw">let </span>sql1 = <span class="string">r&quot;
+        <span class="kw">let </span>sql1 = <span class="string">r"
 CREATE TABLE monitor (
   host_id    INT,
   idc        STRING,
@@ -2611,7 +2752,7 @@ CREATE TABLE monitor (
   memory     DOUBLE,
   PRIMARY KEY (host),
 )
-ENGINE=mito&quot;</span>;
+ENGINE=mito"</span>;
         <span class="kw">let </span>result1 = ParserContext::create_with_dialect(sql1, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
 
         <span class="kw">if let </span>Statement::CreateTable(c) = <span class="kw-2">&amp;</span>result1[<span class="number">0</span>] {
@@ -2623,20 +2764,20 @@ ENGINE=mito&quot;</span>;
                     columns,
                     is_primary,
                 } =&gt; {
-                    <span class="macro">assert_eq!</span>(name.unwrap().to_string(), <span class="string">&quot;__time_index&quot;</span>);
+                    <span class="macro">assert_eq!</span>(name.unwrap().to_string(), <span class="string">"__time_index"</span>);
                     <span class="macro">assert_eq!</span>(columns.len(), <span class="number">1</span>);
-                    <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>columns[<span class="number">0</span>].value, <span class="string">&quot;ts&quot;</span>);
+                    <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>columns[<span class="number">0</span>].value, <span class="string">"ts"</span>);
                     <span class="macro">assert!</span>(!is_primary);
                 }
-                <span class="kw">_ </span>=&gt; <span class="macro">panic!</span>(<span class="string">&quot;should be time index constraint&quot;</span>),
+                <span class="kw">_ </span>=&gt; <span class="macro">panic!</span>(<span class="string">"should be time index constraint"</span>),
             };
         } <span class="kw">else </span>{
-            <span class="macro">panic!</span>(<span class="string">&quot;should be create_table statement&quot;</span>);
+            <span class="macro">panic!</span>(<span class="string">"should be create_table statement"</span>);
         }
 
         <span class="comment">// `TIME INDEX` should be in front of `PRIMARY KEY`
         // in order to equal the `TIMESTAMP TIME INDEX` constraint options vector
-        </span><span class="kw">let </span>sql2 = <span class="string">r&quot;
+        </span><span class="kw">let </span>sql2 = <span class="string">r"
 CREATE TABLE monitor (
   host_id    INT,
   idc        STRING,
@@ -2646,13 +2787,13 @@ CREATE TABLE monitor (
   TIME INDEX (ts),
   PRIMARY KEY (host),
 )
-ENGINE=mito&quot;</span>;
+ENGINE=mito"</span>;
         <span class="kw">let </span>result2 = ParserContext::create_with_dialect(sql2, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
 
         <span class="macro">assert_eq!</span>(result1, result2);
 
         <span class="comment">// TIMESTAMP can be NULL which is not equal to above
-        </span><span class="kw">let </span>sql3 = <span class="string">r&quot;
+        </span><span class="kw">let </span>sql3 = <span class="string">r"
 CREATE TABLE monitor (
   host_id    INT,
   idc        STRING,
@@ -2662,14 +2803,14 @@ CREATE TABLE monitor (
   TIME INDEX (ts),
   PRIMARY KEY (host),
 )
-ENGINE=mito&quot;</span>;
+ENGINE=mito"</span>;
 
         <span class="kw">let </span>result3 = ParserContext::create_with_dialect(sql3, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
 
         <span class="macro">assert_ne!</span>(result1, result3);
 
-        <span class="comment">// BIGINT as time index
-        </span><span class="kw">let </span>sql1 = <span class="string">r&quot;
+        <span class="comment">// BIGINT can't be time index any more
+        </span><span class="kw">let </span>sql1 = <span class="string">r"
 CREATE TABLE monitor (
   host_id    INT,
   idc        STRING,
@@ -2678,33 +2819,18 @@ CREATE TABLE monitor (
   memory     DOUBLE,
   PRIMARY KEY (host),
 )
-ENGINE=mito&quot;</span>;
-        <span class="kw">let </span>result1 = ParserContext::create_with_dialect(sql1, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
+ENGINE=mito"</span>;
+        <span class="kw">let </span>result1 = ParserContext::create_with_dialect(sql1, <span class="kw-2">&amp;</span>GreptimeDbDialect {});
 
-        <span class="kw">if let </span>Statement::CreateTable(c) = <span class="kw-2">&amp;</span>result1[<span class="number">0</span>] {
-            <span class="macro">assert_eq!</span>(c.constraints.len(), <span class="number">2</span>);
-            <span class="kw">let </span>tc = c.constraints[<span class="number">0</span>].clone();
-            <span class="kw">match </span>tc {
-                TableConstraint::Unique {
-                    name,
-                    columns,
-                    is_primary,
-                } =&gt; {
-                    <span class="macro">assert_eq!</span>(name.unwrap().to_string(), <span class="string">&quot;__time_index&quot;</span>);
-                    <span class="macro">assert_eq!</span>(columns.len(), <span class="number">1</span>);
-                    <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>columns[<span class="number">0</span>].value, <span class="string">&quot;b&quot;</span>);
-                    <span class="macro">assert!</span>(!is_primary);
-                }
-                <span class="kw">_ </span>=&gt; <span class="macro">panic!</span>(<span class="string">&quot;should be time index constraint&quot;</span>),
-            };
-        } <span class="kw">else </span>{
-            <span class="macro">panic!</span>(<span class="string">&quot;should be create_table statement&quot;</span>);
-        }
+        <span class="macro">assert!</span>(result1
+            .unwrap_err()
+            .to_string()
+            .contains(<span class="string">"time index column data type should be timestamp"</span>));
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_parse_create_table_with_timestamp_index_not_null() {
-        <span class="kw">let </span>sql = <span class="string">r&quot;
+        <span class="kw">let </span>sql = <span class="string">r"
 CREATE TABLE monitor (
   host_id    INT,
   idc        STRING,
@@ -2714,19 +2840,19 @@ CREATE TABLE monitor (
   TIME INDEX (ts),
   PRIMARY KEY (host),
 )
-ENGINE=mito&quot;</span>;
+ENGINE=mito"</span>;
         <span class="kw">let </span>result = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
 
         <span class="macro">assert_eq!</span>(result.len(), <span class="number">1</span>);
         <span class="kw">if let </span>Statement::CreateTable(c) = <span class="kw-2">&amp;</span>result[<span class="number">0</span>] {
             <span class="kw">let </span>ts = c.columns[<span class="number">2</span>].clone();
-            <span class="macro">assert_eq!</span>(ts.name.to_string(), <span class="string">&quot;ts&quot;</span>);
+            <span class="macro">assert_eq!</span>(ts.name.to_string(), <span class="string">"ts"</span>);
             <span class="macro">assert_eq!</span>(ts.options[<span class="number">0</span>].option, NotNull);
         } <span class="kw">else </span>{
-            <span class="macro">panic!</span>(<span class="string">&quot;should be create table statement&quot;</span>);
+            <span class="macro">panic!</span>(<span class="string">"should be create table statement"</span>);
         }
 
-        <span class="kw">let </span>sql1 = <span class="string">r&quot;
+        <span class="kw">let </span>sql1 = <span class="string">r"
 CREATE TABLE monitor (
   host_id    INT,
   idc        STRING,
@@ -2736,12 +2862,12 @@ CREATE TABLE monitor (
   TIME INDEX (ts),
   PRIMARY KEY (host),
 )
-ENGINE=mito&quot;</span>;
+ENGINE=mito"</span>;
 
         <span class="kw">let </span>result1 = ParserContext::create_with_dialect(sql1, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
         <span class="macro">assert_eq!</span>(result, result1);
 
-        <span class="kw">let </span>sql2 = <span class="string">r&quot;
+        <span class="kw">let </span>sql2 = <span class="string">r"
 CREATE TABLE monitor (
   host_id    INT,
   idc        STRING,
@@ -2751,12 +2877,12 @@ CREATE TABLE monitor (
   TIME INDEX (ts),
   PRIMARY KEY (host),
 )
-ENGINE=mito&quot;</span>;
+ENGINE=mito"</span>;
 
         <span class="kw">let </span>result2 = ParserContext::create_with_dialect(sql2, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
         <span class="macro">assert_eq!</span>(result, result2);
 
-        <span class="kw">let </span>sql3 = <span class="string">r&quot;
+        <span class="kw">let </span>sql3 = <span class="string">r"
 CREATE TABLE monitor (
   host_id    INT,
   idc        STRING,
@@ -2766,12 +2892,12 @@ CREATE TABLE monitor (
   TIME INDEX (ts),
   PRIMARY KEY (host),
 )
-ENGINE=mito&quot;</span>;
+ENGINE=mito"</span>;
 
         <span class="kw">let </span>result3 = ParserContext::create_with_dialect(sql3, <span class="kw-2">&amp;</span>GreptimeDbDialect {});
         <span class="macro">assert!</span>(result3.is_err());
 
-        <span class="kw">let </span>sql4 = <span class="string">r&quot;
+        <span class="kw">let </span>sql4 = <span class="string">r"
 CREATE TABLE monitor (
   host_id    INT,
   idc        STRING,
@@ -2781,12 +2907,12 @@ CREATE TABLE monitor (
   TIME INDEX (ts),
   PRIMARY KEY (host),
 )
-ENGINE=mito&quot;</span>;
+ENGINE=mito"</span>;
 
         <span class="kw">let </span>result4 = ParserContext::create_with_dialect(sql4, <span class="kw-2">&amp;</span>GreptimeDbDialect {});
         <span class="macro">assert!</span>(result4.is_err());
 
-        <span class="kw">let </span>sql = <span class="string">r&quot;
+        <span class="kw">let </span>sql = <span class="string">r"
 CREATE TABLE monitor (
   host_id    INT,
   idc        STRING,
@@ -2796,7 +2922,7 @@ CREATE TABLE monitor (
   TIME INDEX (ts),
   PRIMARY KEY (host),
 )
-ENGINE=mito&quot;</span>;
+ENGINE=mito"</span>;
 
         <span class="kw">let </span>result = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
 
@@ -2808,65 +2934,65 @@ ENGINE=mito&quot;</span>;
                     columns,
                     is_primary,
                 } =&gt; {
-                    <span class="macro">assert_eq!</span>(name.unwrap().to_string(), <span class="string">&quot;__time_index&quot;</span>);
+                    <span class="macro">assert_eq!</span>(name.unwrap().to_string(), <span class="string">"__time_index"</span>);
                     <span class="macro">assert_eq!</span>(columns.len(), <span class="number">1</span>);
-                    <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>columns[<span class="number">0</span>].value, <span class="string">&quot;ts&quot;</span>);
+                    <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>columns[<span class="number">0</span>].value, <span class="string">"ts"</span>);
                     <span class="macro">assert!</span>(!is_primary);
                 }
-                <span class="kw">_ </span>=&gt; <span class="macro">panic!</span>(<span class="string">&quot;should be time index constraint&quot;</span>),
+                <span class="kw">_ </span>=&gt; <span class="macro">panic!</span>(<span class="string">"should be time index constraint"</span>),
             }
             <span class="kw">let </span>ts = c.columns[<span class="number">2</span>].clone();
-            <span class="macro">assert_eq!</span>(ts.name.to_string(), <span class="string">&quot;ts&quot;</span>);
+            <span class="macro">assert_eq!</span>(ts.name.to_string(), <span class="string">"ts"</span>);
             <span class="macro">assert!</span>(<span class="macro">matches!</span>(ts.options[<span class="number">0</span>].option, ColumnOption::Default(..)));
             <span class="macro">assert_eq!</span>(ts.options[<span class="number">1</span>].option, NotNull);
         } <span class="kw">else </span>{
-            <span class="macro">unreachable!</span>(<span class="string">&quot;should be create table statement&quot;</span>);
+            <span class="macro">unreachable!</span>(<span class="string">"should be create table statement"</span>);
         }
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_parse_partitions_with_error_syntax() {
-        <span class="kw">let </span>sql = <span class="string">r&quot;
+        <span class="kw">let </span>sql = <span class="string">r"
 CREATE TABLE rcx ( a INT, b STRING, c INT )
 PARTITION RANGE COLUMNS(b, a) (
-  PARTITION r0 VALUES LESS THAN (&#39;hz&#39;, 1000),
-  PARTITION r1 VALUES LESS THAN (&#39;sh&#39;, 2000),
+  PARTITION r0 VALUES LESS THAN ('hz', 1000),
+  PARTITION r1 VALUES LESS THAN ('sh', 2000),
   PARTITION r3 VALUES LESS THAN (MAXVALUE, MAXVALUE),
 )
-ENGINE=mito&quot;</span>;
+ENGINE=mito"</span>;
         <span class="kw">let </span>result = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {});
         <span class="macro">assert!</span>(result
             .unwrap_err()
-            .to_string()
-            .contains(<span class="string">&quot;sql parser error: Expected BY, found: RANGE&quot;</span>));
+            .output_msg()
+            .contains(<span class="string">"sql parser error: Expected BY, found: RANGE"</span>));
 
-        <span class="kw">let </span>sql = <span class="string">r&quot;
+        <span class="kw">let </span>sql = <span class="string">r"
 CREATE TABLE rcx ( a INT, b STRING, c INT )
 PARTITION BY RANGE COLUMNS(b, a) (
-  PARTITION r0 VALUES THAN (&#39;hz&#39;, 1000),
-  PARTITION r1 VALUES LESS THAN (&#39;sh&#39;, 2000),
+  PARTITION r0 VALUES THAN ('hz', 1000),
+  PARTITION r1 VALUES LESS THAN ('sh', 2000),
   PARTITION r3 VALUES LESS THAN (MAXVALUE, MAXVALUE),
 )
-ENGINE=mito&quot;</span>;
+ENGINE=mito"</span>;
         <span class="kw">let </span>result = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {});
         <span class="macro">assert!</span>(result
             .unwrap_err()
-            .to_string()
-            .contains(<span class="string">&quot;sql parser error: Expected LESS, found: THAN&quot;</span>));
+            .output_msg()
+            .contains(<span class="string">"sql parser error: Expected LESS, found: THAN"</span>));
 
-        <span class="kw">let </span>sql = <span class="string">r&quot;
+        <span class="kw">let </span>sql = <span class="string">r"
 CREATE TABLE rcx ( a INT, b STRING, c INT )
 PARTITION BY RANGE COLUMNS(b, a) (
-  PARTITION r0 VALUES LESS THAN (&#39;hz&#39;, 1000),
-  PARTITION r1 VALUES LESS THAN (&#39;sh&#39;, 2000),
+  PARTITION r0 VALUES LESS THAN ('hz', 1000),
+  PARTITION r1 VALUES LESS THAN ('sh', 2000),
   PARTITION r3 VALUES LESS THAN (MAXVALUE, MAXVALU),
 )
-ENGINE=mito&quot;</span>;
+ENGINE=mito"</span>;
         <span class="kw">let </span>result = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {});
         <span class="macro">assert!</span>(result
             .unwrap_err()
-            .to_string()
-            .contains(<span class="string">&quot;Expected a concrete value, found: MAXVALU&quot;</span>));
+            .output_msg()
+            .contains(<span class="string">"Expected a concrete value, found: MAXVALU"</span>));
     }
 
     <span class="kw">fn </span>assert_column_def(column: <span class="kw-2">&amp;</span>ColumnDef, name: <span class="kw-2">&amp;</span>str, data_type: <span class="kw-2">&amp;</span>str) {
@@ -2876,28 +3002,29 @@ ENGINE=mito&quot;</span>;
 
     <span class="attr">#[test]
     </span><span class="kw">pub fn </span>test_parse_create_table() {
-        <span class="kw">let </span>sql = <span class="string">r&quot;create table demo(
+        <span class="kw">let </span>sql = <span class="string">r"create table demo(
                              host string,
-                             ts int64,
-                             cpu float64 default 0,
+                             ts timestamp,
+                             cpu float32 default 0,
                              memory float64,
                              TIME INDEX (ts),
                              PRIMARY KEY(ts, host)) engine=mito
                              with(regions=1);
-         &quot;</span>;
+         "</span>;
         <span class="kw">let </span>result = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
         <span class="macro">assert_eq!</span>(<span class="number">1</span>, result.len());
         <span class="kw">match </span><span class="kw-2">&amp;</span>result[<span class="number">0</span>] {
             Statement::CreateTable(c) =&gt; {
                 <span class="macro">assert!</span>(!c.if_not_exists);
-                <span class="macro">assert_eq!</span>(<span class="string">&quot;demo&quot;</span>, c.name.to_string());
-                <span class="macro">assert_eq!</span>(<span class="string">&quot;mito&quot;</span>, c.engine);
+                <span class="macro">assert_eq!</span>(<span class="string">"demo"</span>, c.name.to_string());
+                <span class="macro">assert_eq!</span>(<span class="string">"mito"</span>, c.engine);
                 <span class="macro">assert_eq!</span>(<span class="number">4</span>, c.columns.len());
                 <span class="kw">let </span>columns = <span class="kw-2">&amp;</span>c.columns;
-                assert_column_def(<span class="kw-2">&amp;</span>columns[<span class="number">0</span>], <span class="string">&quot;host&quot;</span>, <span class="string">&quot;STRING&quot;</span>);
-                assert_column_def(<span class="kw-2">&amp;</span>columns[<span class="number">1</span>], <span class="string">&quot;ts&quot;</span>, <span class="string">&quot;int64&quot;</span>);
-                assert_column_def(<span class="kw-2">&amp;</span>columns[<span class="number">2</span>], <span class="string">&quot;cpu&quot;</span>, <span class="string">&quot;float64&quot;</span>);
-                assert_column_def(<span class="kw-2">&amp;</span>columns[<span class="number">3</span>], <span class="string">&quot;memory&quot;</span>, <span class="string">&quot;float64&quot;</span>);
+                assert_column_def(<span class="kw-2">&amp;</span>columns[<span class="number">0</span>], <span class="string">"host"</span>, <span class="string">"STRING"</span>);
+                assert_column_def(<span class="kw-2">&amp;</span>columns[<span class="number">1</span>], <span class="string">"ts"</span>, <span class="string">"TIMESTAMP"</span>);
+                assert_column_def(<span class="kw-2">&amp;</span>columns[<span class="number">2</span>], <span class="string">"cpu"</span>, <span class="string">"FLOAT"</span>);
+                assert_column_def(<span class="kw-2">&amp;</span>columns[<span class="number">3</span>], <span class="string">"memory"</span>, <span class="string">"DOUBLE"</span>);
+
                 <span class="kw">let </span>constraints = <span class="kw-2">&amp;</span>c.constraints;
                 <span class="macro">assert_matches!</span>(
                     <span class="kw-2">&amp;</span>constraints[<span class="number">0</span>],
@@ -2915,8 +3042,8 @@ ENGINE=mito&quot;</span>;
                 );
                 <span class="kw">let </span>options = <span class="kw-2">&amp;</span>c.options;
                 <span class="macro">assert_eq!</span>(<span class="number">1</span>, options.len());
-                <span class="macro">assert_eq!</span>(<span class="string">&quot;regions&quot;</span>, <span class="kw-2">&amp;</span>options[<span class="number">0</span>].name.to_string());
-                <span class="macro">assert_eq!</span>(<span class="string">&quot;1&quot;</span>, <span class="kw-2">&amp;</span>options[<span class="number">0</span>].value.to_string());
+                <span class="macro">assert_eq!</span>(<span class="string">"regions"</span>, <span class="kw-2">&amp;</span>options[<span class="number">0</span>].name.to_string());
+                <span class="macro">assert_eq!</span>(<span class="string">"1"</span>, <span class="kw-2">&amp;</span>options[<span class="number">0</span>].value.to_string());
             }
             <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
         }
@@ -2924,7 +3051,7 @@ ENGINE=mito&quot;</span>;
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_invalid_index_keys() {
-        <span class="kw">let </span>sql = <span class="string">r&quot;create table demo(
+        <span class="kw">let </span>sql = <span class="string">r"create table demo(
                              host string,
                              ts int64,
                              cpu float64 default 0,
@@ -2932,7 +3059,7 @@ ENGINE=mito&quot;</span>;
                              TIME INDEX (ts, host),
                              PRIMARY KEY(ts, host)) engine=mito
                              with(regions=1);
-         &quot;</span>;
+         "</span>;
         <span class="kw">let </span>result = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {});
         <span class="macro">assert!</span>(result.is_err());
         <span class="macro">assert_matches!</span>(result, <span class="prelude-val">Err</span>(<span class="kw">crate</span>::error::Error::InvalidTimeIndex { .. }));
@@ -2940,30 +3067,30 @@ ENGINE=mito&quot;</span>;
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_duplicated_time_index() {
-        <span class="kw">let </span>sql = <span class="string">r&quot;create table demo(
+        <span class="kw">let </span>sql = <span class="string">r"create table demo(
                              host string,
-                             ts int64 time index,
+                             ts timestamp time index,
                              t timestamp time index,
                              cpu float64 default 0,
                              memory float64,
                              TIME INDEX (ts, host),
                              PRIMARY KEY(ts, host)) engine=mito
                              with(regions=1);
-         &quot;</span>;
+         "</span>;
         <span class="kw">let </span>result = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {});
         <span class="macro">assert!</span>(result.is_err());
-        <span class="macro">assert_matches!</span>(result, <span class="prelude-val">Err</span>(<span class="kw">crate</span>::error::Error::InvalidColumnOption { .. }));
+        <span class="macro">assert_matches!</span>(result, <span class="prelude-val">Err</span>(<span class="kw">crate</span>::error::Error::InvalidTimeIndex { .. }));
 
-        <span class="kw">let </span>sql = <span class="string">r&quot;create table demo(
+        <span class="kw">let </span>sql = <span class="string">r"create table demo(
                              host string,
-                             ts bigint time index,
+                             ts timestamp time index,
                              cpu float64 default 0,
                              t timestamp,
                              memory float64,
                              TIME INDEX (t),
                              PRIMARY KEY(ts, host)) engine=mito
                              with(regions=1);
-         &quot;</span>;
+         "</span>;
         <span class="kw">let </span>result = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {});
         <span class="macro">assert!</span>(result.is_err());
         <span class="macro">assert_matches!</span>(result, <span class="prelude-val">Err</span>(<span class="kw">crate</span>::error::Error::InvalidTimeIndex { .. }));
@@ -2971,17 +3098,15 @@ ENGINE=mito&quot;</span>;
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_invalid_column_name() {
-        <span class="kw">let </span>sql = <span class="string">&quot;create table foo(user string, i bigint time index)&quot;</span>;
+        <span class="kw">let </span>sql = <span class="string">"create table foo(user string, i timestamp time index)"</span>;
         <span class="kw">let </span>result = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {});
-        <span class="macro">assert!</span>(result
-            .unwrap_err()
-            .to_string()
-            .contains(<span class="string">&quot;Cannot use keyword &#39;user&#39; as column name&quot;</span>));
+        <span class="kw">let </span>err = result.unwrap_err().output_msg();
+        <span class="macro">assert!</span>(err.contains(<span class="string">"Cannot use keyword 'user' as column name"</span>));
 
-        <span class="comment">// If column name is quoted, it&#39;s valid even same with keyword.
-        </span><span class="kw">let </span>sql = <span class="string">r#&quot;
-            create table foo(&quot;user&quot; string, i bigint time index)
-        &quot;#</span>;
+        <span class="comment">// If column name is quoted, it's valid even same with keyword.
+        </span><span class="kw">let </span>sql = <span class="string">r#"
+            create table foo("user" string, i timestamp time index)
+        "#</span>;
         <span class="kw">let </span>result = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {});
         <span class="kw">let _ </span>= result.unwrap();
     }

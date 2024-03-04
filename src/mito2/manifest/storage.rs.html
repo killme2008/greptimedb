@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/mito2/src/manifest/storage.rs`."><title>storage.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="mito2" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../mito2/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/mito2/src/manifest/storage.rs`."><title>storage.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="mito2" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -714,16 +715,84 @@
 <a href="#714" id="714">714</a>
 <a href="#715" id="715">715</a>
 <a href="#716" id="716">716</a>
+<a href="#717" id="717">717</a>
+<a href="#718" id="718">718</a>
+<a href="#719" id="719">719</a>
+<a href="#720" id="720">720</a>
+<a href="#721" id="721">721</a>
+<a href="#722" id="722">722</a>
+<a href="#723" id="723">723</a>
+<a href="#724" id="724">724</a>
+<a href="#725" id="725">725</a>
+<a href="#726" id="726">726</a>
+<a href="#727" id="727">727</a>
+<a href="#728" id="728">728</a>
+<a href="#729" id="729">729</a>
+<a href="#730" id="730">730</a>
+<a href="#731" id="731">731</a>
+<a href="#732" id="732">732</a>
+<a href="#733" id="733">733</a>
+<a href="#734" id="734">734</a>
+<a href="#735" id="735">735</a>
+<a href="#736" id="736">736</a>
+<a href="#737" id="737">737</a>
+<a href="#738" id="738">738</a>
+<a href="#739" id="739">739</a>
+<a href="#740" id="740">740</a>
+<a href="#741" id="741">741</a>
+<a href="#742" id="742">742</a>
+<a href="#743" id="743">743</a>
+<a href="#744" id="744">744</a>
+<a href="#745" id="745">745</a>
+<a href="#746" id="746">746</a>
+<a href="#747" id="747">747</a>
+<a href="#748" id="748">748</a>
+<a href="#749" id="749">749</a>
+<a href="#750" id="750">750</a>
+<a href="#751" id="751">751</a>
+<a href="#752" id="752">752</a>
+<a href="#753" id="753">753</a>
+<a href="#754" id="754">754</a>
+<a href="#755" id="755">755</a>
+<a href="#756" id="756">756</a>
+<a href="#757" id="757">757</a>
+<a href="#758" id="758">758</a>
+<a href="#759" id="759">759</a>
+<a href="#760" id="760">760</a>
+<a href="#761" id="761">761</a>
+<a href="#762" id="762">762</a>
+<a href="#763" id="763">763</a>
+<a href="#764" id="764">764</a>
+<a href="#765" id="765">765</a>
+<a href="#766" id="766">766</a>
+<a href="#767" id="767">767</a>
+<a href="#768" id="768">768</a>
+<a href="#769" id="769">769</a>
+<a href="#770" id="770">770</a>
+<a href="#771" id="771">771</a>
+<a href="#772" id="772">772</a>
+<a href="#773" id="773">773</a>
+<a href="#774" id="774">774</a>
+<a href="#775" id="775">775</a>
+<a href="#776" id="776">776</a>
+<a href="#777" id="777">777</a>
+<a href="#778" id="778">778</a>
+<a href="#779" id="779">779</a>
+<a href="#780" id="780">780</a>
+<a href="#781" id="781">781</a>
+<a href="#782" id="782">782</a>
+<a href="#783" id="783">783</a>
+<a href="#784" id="784">784</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -733,14 +802,16 @@
 <span class="kw">use </span>std::str::FromStr;
 
 <span class="kw">use </span>common_datasource::compression::CompressionType;
-<span class="kw">use </span>common_telemetry::{debug, info};
+<span class="kw">use </span>common_telemetry::debug;
+<span class="kw">use </span>futures::future::try_join_all;
 <span class="kw">use </span>futures::TryStreamExt;
 <span class="kw">use </span>lazy_static::lazy_static;
-<span class="kw">use </span>object_store::{raw_normalize_path, util, Entry, ErrorKind, ObjectStore};
+<span class="kw">use </span>object_store::{util, Entry, ErrorKind, Lister, ObjectStore};
 <span class="kw">use </span>regex::Regex;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>snafu::{ensure, ResultExt};
 <span class="kw">use </span>store_api::manifest::ManifestVersion;
+<span class="kw">use </span>tokio::sync::Semaphore;
 
 <span class="kw">use </span><span class="kw">crate</span>::error::{
     CompressObjectSnafu, DecompressObjectSnafu, InvalidScanIndexSnafu, OpenDalSnafu, <span class="prelude-ty">Result</span>,
@@ -748,17 +819,19 @@
 };
 
 <span class="macro">lazy_static! </span>{
-    <span class="kw">static </span><span class="kw-2">ref </span>DELTA_RE: Regex = Regex::new(<span class="string">&quot;^\\d+\\.json&quot;</span>).unwrap();
-    <span class="kw">static </span><span class="kw-2">ref </span>CHECKPOINT_RE: Regex = Regex::new(<span class="string">&quot;^\\d+\\.checkpoint&quot;</span>).unwrap();
+    <span class="kw">static </span><span class="kw-2">ref </span>DELTA_RE: Regex = Regex::new(<span class="string">"^\\d+\\.json"</span>).unwrap();
+    <span class="kw">static </span><span class="kw-2">ref </span>CHECKPOINT_RE: Regex = Regex::new(<span class="string">"^\\d+\\.checkpoint"</span>).unwrap();
 }
 
-<span class="kw">const </span>LAST_CHECKPOINT_FILE: <span class="kw-2">&amp;</span>str = <span class="string">&quot;_last_checkpoint&quot;</span>;
+<span class="kw">const </span>LAST_CHECKPOINT_FILE: <span class="kw-2">&amp;</span>str = <span class="string">"_last_checkpoint"</span>;
 <span class="kw">const </span>DEFAULT_MANIFEST_COMPRESSION_TYPE: CompressionType = CompressionType::Gzip;
-<span class="doccomment">/// Due to backward compatibility, it is possible that the user&#39;s manifest file has not been compressed.
+<span class="doccomment">/// Due to backward compatibility, it is possible that the user's manifest file has not been compressed.
 /// So when we encounter problems, we need to fall back to `FALL_BACK_COMPRESS_TYPE` for processing.
 </span><span class="kw">const </span>FALL_BACK_COMPRESS_TYPE: CompressionType = CompressionType::Uncompressed;
+<span class="kw">const </span>FETCH_MANIFEST_PARALLELISM: usize = <span class="number">16</span>;
 
-<span class="attr">#[inline]
+<span class="doccomment">/// Returns the [CompressionType] according to whether to compress manifest files.
+</span><span class="attr">#[inline]
 </span><span class="kw">pub const fn </span>manifest_compress_type(compress: bool) -&gt; CompressionType {
     <span class="kw">if </span>compress {
         DEFAULT_MANIFEST_COMPRESSION_TYPE
@@ -769,40 +842,40 @@
 
 <span class="attr">#[inline]
 </span><span class="kw">pub fn </span>delta_file(version: ManifestVersion) -&gt; String {
-    <span class="macro">format!</span>(<span class="string">&quot;{version:020}.json&quot;</span>)
+    <span class="macro">format!</span>(<span class="string">"{version:020}.json"</span>)
 }
 
 <span class="attr">#[inline]
 </span><span class="kw">pub fn </span>checkpoint_file(version: ManifestVersion) -&gt; String {
-    <span class="macro">format!</span>(<span class="string">&quot;{version:020}.checkpoint&quot;</span>)
+    <span class="macro">format!</span>(<span class="string">"{version:020}.checkpoint"</span>)
 }
 
 <span class="attr">#[inline]
 </span><span class="kw">pub fn </span>gen_path(path: <span class="kw-2">&amp;</span>str, file: <span class="kw-2">&amp;</span>str, compress_type: CompressionType) -&gt; String {
     <span class="kw">if </span>compress_type == CompressionType::Uncompressed {
-        <span class="macro">format!</span>(<span class="string">&quot;{}{}&quot;</span>, path, file)
+        <span class="macro">format!</span>(<span class="string">"{}{}"</span>, path, file)
     } <span class="kw">else </span>{
-        <span class="macro">format!</span>(<span class="string">&quot;{}{}.{}&quot;</span>, path, file, compress_type.file_extension())
+        <span class="macro">format!</span>(<span class="string">"{}{}.{}"</span>, path, file, compress_type.file_extension())
     }
 }
 
-<span class="doccomment">/// Return&#39;s the file manifest version from path
+<span class="doccomment">/// Return's the file manifest version from path
 ///
 /// # Panics
 /// Panics if the file path is not a valid delta or checkpoint file.
 </span><span class="attr">#[inline]
 </span><span class="kw">pub fn </span>file_version(path: <span class="kw-2">&amp;</span>str) -&gt; ManifestVersion {
-    <span class="kw">let </span>s = path.split(<span class="string">&#39;.&#39;</span>).next().unwrap();
-    s.parse().unwrap_or_else(|<span class="kw">_</span>| <span class="macro">panic!</span>(<span class="string">&quot;Invalid file: {path}&quot;</span>))
+    <span class="kw">let </span>s = path.split(<span class="string">'.'</span>).next().unwrap();
+    s.parse().unwrap_or_else(|<span class="kw">_</span>| <span class="macro">panic!</span>(<span class="string">"Invalid file: {path}"</span>))
 }
 
-<span class="doccomment">/// Return&#39;s the file compress algorithm by file extension.
+<span class="doccomment">/// Return's the file compress algorithm by file extension.
 ///
 /// for example file
 /// `00000000000000000000.json.gz` -&gt; `CompressionType::GZIP`
 </span><span class="attr">#[inline]
 </span><span class="kw">pub fn </span>file_compress_type(path: <span class="kw-2">&amp;</span>str) -&gt; CompressionType {
-    <span class="kw">let </span>s = path.rsplit(<span class="string">&#39;.&#39;</span>).next().unwrap_or(<span class="string">&quot;&quot;</span>);
+    <span class="kw">let </span>s = path.rsplit(<span class="string">'.'</span>).next().unwrap_or(<span class="string">""</span>);
     CompressionType::from_str(s).unwrap_or(CompressionType::Uncompressed)
 }
 
@@ -816,33 +889,13 @@
     CHECKPOINT_RE.is_match(file_name)
 }
 
-<span class="kw">pub struct </span>ObjectStoreLogIterator {
-    object_store: ObjectStore,
-    iter: Box&lt;<span class="kw">dyn </span>Iterator&lt;Item = (ManifestVersion, Entry)&gt; + Send + Sync&gt;,
-}
-
-<span class="kw">impl </span>ObjectStoreLogIterator {
-    <span class="kw">pub async fn </span>next_log(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;(ManifestVersion, Vec&lt;u8&gt;)&gt;&gt; {
-        <span class="kw">match </span><span class="self">self</span>.iter.next() {
-            <span class="prelude-val">Some</span>((v, entry)) =&gt; {
-                <span class="kw">let </span>compress_type = file_compress_type(entry.name());
-                <span class="kw">let </span>bytes = <span class="self">self
-                    </span>.object_store
-                    .read(entry.path())
-                    .<span class="kw">await
-                    </span>.context(OpenDalSnafu)<span class="question-mark">?</span>;
-                <span class="kw">let </span>data = compress_type
-                    .decode(bytes)
-                    .<span class="kw">await
-                    </span>.context(DecompressObjectSnafu {
-                        compress_type,
-                        path: entry.path(),
-                    })<span class="question-mark">?</span>;
-                <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>((v, data)))
-            }
-            <span class="prelude-val">None </span>=&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>),
-        }
-    }
+<span class="doccomment">/// Key to identify a manifest file.
+</span><span class="attr">#[derive(Debug, Clone, Copy, Eq, PartialEq, Hash)]
+</span><span class="kw">enum </span>FileKey {
+    <span class="doccomment">/// A delta file (`.json`).
+    </span>Delta(ManifestVersion),
+    <span class="doccomment">/// A checkpoint file (`.checkpoint`).
+    </span>Checkpoint(ManifestVersion),
 }
 
 <span class="attr">#[derive(Clone, Debug)]
@@ -850,6 +903,8 @@
     object_store: ObjectStore,
     compress_type: CompressionType,
     path: String,
+    <span class="doccomment">/// Stores the size of each manifest file.
+    </span>manifest_size_map: HashMap&lt;FileKey, u64&gt;,
 }
 
 <span class="kw">impl </span>ManifestObjectStore {
@@ -858,6 +913,7 @@
             object_store,
             compress_type,
             path: util::normalize_dir(path),
+            manifest_size_map: HashMap::new(),
         }
     }
 
@@ -874,20 +930,37 @@
     <span class="doccomment">/// Returns the last checkpoint path, because the last checkpoint is not compressed,
     /// so its path name has nothing to do with the compression algorithm used by `ManifestObjectStore`
     </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>last_checkpoint_path(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
-        <span class="macro">format!</span>(<span class="string">&quot;{}{}&quot;</span>, <span class="self">self</span>.path, LAST_CHECKPOINT_FILE)
+        <span class="macro">format!</span>(<span class="string">"{}{}"</span>, <span class="self">self</span>.path, LAST_CHECKPOINT_FILE)
+    }
+
+    <span class="doccomment">/// Returns the manifest dir
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>manifest_dir(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.path
+    }
+
+    <span class="doccomment">/// Returns a iterator of manifests.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>manifest_lister(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;Lister&gt;&gt; {
+        <span class="kw">match </span><span class="self">self</span>.object_store.lister_with(<span class="kw-2">&amp;</span><span class="self">self</span>.path).<span class="kw">await </span>{
+            <span class="prelude-val">Ok</span>(streamer) =&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(streamer)),
+            <span class="prelude-val">Err</span>(e) <span class="kw">if </span>e.kind() == ErrorKind::NotFound =&gt; {
+                <span class="macro">debug!</span>(<span class="string">"Manifest directory does not exists: {}"</span>, <span class="self">self</span>.path);
+                <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
+            }
+            <span class="prelude-val">Err</span>(e) =&gt; <span class="prelude-val">Err</span>(e).context(OpenDalSnafu)<span class="question-mark">?</span>,
+        }
     }
 
     <span class="doccomment">/// Return all `R`s in the root directory that meet the `filter` conditions (that is, the `filter` closure returns `Some(R)`),
     /// and discard `R` that does not meet the conditions (that is, the `filter` closure returns `None`)
+    /// Return an empty vector when directory is not found.
     </span><span class="kw">pub async fn </span>get_paths&lt;F, R&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, filter: F) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;R&gt;&gt;
     <span class="kw">where
         </span>F: Fn(Entry) -&gt; <span class="prelude-ty">Option</span>&lt;R&gt;,
     {
-        <span class="kw">let </span>streamer = <span class="self">self
-            </span>.object_store
-            .list(<span class="kw-2">&amp;</span><span class="self">self</span>.path)
-            .<span class="kw">await
-            </span>.context(OpenDalSnafu)<span class="question-mark">?</span>;
+        <span class="kw">let </span><span class="prelude-val">Some</span>(streamer) = <span class="self">self</span>.manifest_lister().<span class="kw">await</span><span class="question-mark">? </span><span class="kw">else </span>{
+            <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="macro">vec!</span>[]);
+        };
+
         streamer
             .try_filter_map(|e| <span class="kw">async </span>{ <span class="prelude-val">Ok</span>(filter(e)) })
             .try_collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
@@ -895,15 +968,17 @@
             </span>.context(OpenDalSnafu)
     }
 
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>path(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.path
+    <span class="doccomment">/// Sorts the manifest files.
+    </span><span class="kw">fn </span>sort_manifests(entries: <span class="kw-2">&amp;mut </span>[(ManifestVersion, Entry)]) {
+        entries.sort_unstable_by(|(v1, <span class="kw">_</span>), (v2, <span class="kw">_</span>)| v1.cmp(v2));
     }
 
-    <span class="kw">pub async fn </span>scan(
+    <span class="doccomment">/// Scans the manifest files in the range of [start, end) and return all manifest entries.
+    </span><span class="kw">pub async fn </span>scan(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         start: ManifestVersion,
         end: ManifestVersion,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;ObjectStoreLogIterator&gt; {
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;(ManifestVersion, Entry)&gt;&gt; {
         <span class="macro">ensure!</span>(start &lt;= end, InvalidScanIndexSnafu { start, end });
 
         <span class="kw">let </span><span class="kw-2">mut </span>entries: Vec&lt;(ManifestVersion, Entry)&gt; = <span class="self">self
@@ -919,16 +994,48 @@
             </span>})
             .<span class="kw">await</span><span class="question-mark">?</span>;
 
-        entries.sort_unstable_by(|(v1, <span class="kw">_</span>), (v2, <span class="kw">_</span>)| v1.cmp(v2));
+        <span class="self">Self</span>::sort_manifests(<span class="kw-2">&amp;mut </span>entries);
 
-        <span class="prelude-val">Ok</span>(ObjectStoreLogIterator {
-            object_store: <span class="self">self</span>.object_store.clone(),
-            iter: Box::new(entries.into_iter()),
-        })
+        <span class="prelude-val">Ok</span>(entries)
     }
 
-    <span class="kw">pub async fn </span>delete_until(
+    <span class="doccomment">/// Fetch all manifests in concurrent.
+    </span><span class="kw">pub async fn </span>fetch_manifests(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
+        manifests: <span class="kw-2">&amp;</span>[(u64, Entry)],
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;(ManifestVersion, Vec&lt;u8&gt;)&gt;&gt; {
+        <span class="comment">// TODO(weny): Make it configurable.
+        </span><span class="kw">let </span>semaphore = Semaphore::new(FETCH_MANIFEST_PARALLELISM);
+
+        <span class="kw">let </span>tasks = manifests.iter().map(|(v, entry)| <span class="kw">async </span>{
+            <span class="comment">// Safety: semaphore must exist.
+            </span><span class="kw">let </span>_permit = semaphore.acquire().<span class="kw">await</span>.unwrap();
+
+            <span class="kw">let </span>compress_type = file_compress_type(entry.name());
+            <span class="kw">let </span>bytes = <span class="self">self
+                </span>.object_store
+                .read(entry.path())
+                .<span class="kw">await
+                </span>.context(OpenDalSnafu)<span class="question-mark">?</span>;
+            <span class="kw">let </span>data = compress_type
+                .decode(bytes)
+                .<span class="kw">await
+                </span>.context(DecompressObjectSnafu {
+                    compress_type,
+                    path: entry.path(),
+                })<span class="question-mark">?</span>;
+            <span class="prelude-val">Ok</span>((<span class="kw-2">*</span>v, data))
+        });
+
+        try_join_all(tasks).<span class="kw">await
+    </span>}
+
+    <span class="doccomment">/// Delete manifest files that version &lt; end.
+    /// If keep_last_checkpoint is true, the last checkpoint file will be kept.
+    /// ### Return
+    /// The number of deleted files.
+    </span><span class="kw">pub async fn </span>delete_until(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
         end: ManifestVersion,
         keep_last_checkpoint: bool,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;usize&gt; {
@@ -963,7 +1070,7 @@
         } <span class="kw">else </span>{
             <span class="prelude-val">None
         </span>};
-        <span class="kw">let </span>paths: Vec&lt;<span class="kw">_</span>&gt; = entries
+        <span class="kw">let </span>del_entries: Vec&lt;<span class="kw">_</span>&gt; = entries
             .iter()
             .filter(|(_e, is_checkpoint, version)| {
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(max_version) = checkpoint_version {
@@ -972,19 +1079,22 @@
                         </span>version &lt; max_version
                     } <span class="kw">else </span>{
                         <span class="comment">// We can delete the log file with max_version as the checkpoint
-                        // file contains the log file&#39;s content.
+                        // file contains the log file's content.
                         </span>version &lt;= max_version
                     }
                 } <span class="kw">else </span>{
                     <span class="bool-val">true
                 </span>}
             })
-            .map(|e| e.<span class="number">0</span>.path().to_string())
             .collect();
+        <span class="kw">let </span>paths = del_entries
+            .iter()
+            .map(|(e, <span class="kw">_</span>, <span class="kw">_</span>)| e.path().to_string())
+            .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
         <span class="kw">let </span>ret = paths.len();
 
         <span class="macro">debug!</span>(
-            <span class="string">&quot;Deleting {} logs from manifest storage path {} until {}, checkpoint: {:?}, paths: {:?}&quot;</span>,
+            <span class="string">"Deleting {} logs from manifest storage path {} until {}, checkpoint_version: {:?}, paths: {:?}"</span>,
             ret,
             <span class="self">self</span>.path,
             end,
@@ -997,51 +1107,23 @@
             .<span class="kw">await
             </span>.context(OpenDalSnafu)<span class="question-mark">?</span>;
 
+        <span class="comment">// delete manifest sizes
+        </span><span class="kw">for </span>(<span class="kw">_</span>, is_checkpoint, version) <span class="kw">in </span><span class="kw-2">&amp;</span>del_entries {
+            <span class="kw">if </span><span class="kw-2">*</span>is_checkpoint {
+                <span class="self">self</span>.manifest_size_map
+                    .remove(<span class="kw-2">&amp;</span>FileKey::Checkpoint(<span class="kw-2">*</span>version));
+            } <span class="kw">else </span>{
+                <span class="self">self</span>.manifest_size_map.remove(<span class="kw-2">&amp;</span>FileKey::Delta(<span class="kw-2">*</span>version));
+            }
+        }
+
         <span class="prelude-val">Ok</span>(ret)
     }
 
-    <span class="kw">async fn </span>delete_all(<span class="kw-2">&amp;</span><span class="self">self</span>, remove_action_manifest: ManifestVersion) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="kw">let </span>entries: Vec&lt;Entry&gt; = <span class="self">self</span>.get_paths(<span class="prelude-val">Some</span>).<span class="kw">await</span><span class="question-mark">?</span>;
-
-        <span class="comment">// Filter out the latest delta file.
-        </span><span class="kw">let </span>paths: Vec&lt;<span class="kw">_</span>&gt; = entries
-            .iter()
-            .filter(|e| {
-                <span class="kw">let </span>name = e.name();
-                <span class="kw">if </span>is_delta_file(name) &amp;&amp; file_version(name) == remove_action_manifest {
-                    <span class="kw">return </span><span class="bool-val">false</span>;
-                }
-                <span class="bool-val">true
-            </span>})
-            .map(|e| e.path().to_string())
-            .collect();
-
-        <span class="macro">info!</span>(
-            <span class="string">&quot;Deleting {} from manifest storage path {} paths: {:?}&quot;</span>,
-            paths.len(),
-            <span class="self">self</span>.path,
-            paths,
-        );
-
-        <span class="comment">// Delete all files except the latest delta file.
-        </span><span class="self">self</span>.object_store
-            .remove(paths)
-            .<span class="kw">await
-            </span>.context(OpenDalSnafu)<span class="question-mark">?</span>;
-
-        <span class="comment">// Delete the latest delta file and the manifest directory.
-        </span><span class="self">self</span>.object_store
-            .remove_all(<span class="kw-2">&amp;</span><span class="self">self</span>.path)
-            .<span class="kw">await
-            </span>.context(OpenDalSnafu)<span class="question-mark">?</span>;
-        <span class="macro">info!</span>(<span class="string">&quot;Deleted manifest storage path {}&quot;</span>, <span class="self">self</span>.path);
-
-        <span class="prelude-val">Ok</span>(())
-    }
-
-    <span class="kw">pub async fn </span>save(<span class="kw-2">&amp;</span><span class="self">self</span>, version: ManifestVersion, bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="doccomment">/// Save the delta manifest file.
+    </span><span class="kw">pub async fn </span>save(<span class="kw-2">&amp;mut </span><span class="self">self</span>, version: ManifestVersion, bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="kw">let </span>path = <span class="self">self</span>.delta_file_path(version);
-        <span class="macro">debug!</span>(<span class="string">&quot;Save log to manifest storage, version: {}&quot;</span>, version);
+        <span class="macro">debug!</span>(<span class="string">"Save log to manifest storage, version: {}"</span>, version);
         <span class="kw">let </span>data = <span class="self">self
             </span>.compress_type
             .encode(bytes)
@@ -1050,43 +1132,17 @@
                 compress_type: <span class="self">self</span>.compress_type,
                 path: <span class="kw-2">&amp;</span>path,
             })<span class="question-mark">?</span>;
+        <span class="kw">let </span>delta_size = data.len();
         <span class="self">self</span>.object_store
             .write(<span class="kw-2">&amp;</span>path, data)
             .<span class="kw">await
-            </span>.context(OpenDalSnafu)
-    }
-
-    <span class="kw">async fn </span>delete(<span class="kw-2">&amp;</span><span class="self">self</span>, start: ManifestVersion, end: ManifestVersion) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="macro">ensure!</span>(start &lt;= end, InvalidScanIndexSnafu { start, end });
-
-        <span class="comment">// Due to backward compatibility, it is possible that the user&#39;s log between start and end has not been compressed,
-        // so we need to delete the uncompressed file corresponding to that version, even if the uncompressed file in that version do not exist.
-        </span><span class="kw">let </span><span class="kw-2">mut </span>paths = Vec::with_capacity(((end - start) * <span class="number">2</span>) <span class="kw">as </span>usize);
-        <span class="kw">for </span>version <span class="kw">in </span>start..end {
-            paths.push(raw_normalize_path(<span class="kw-2">&amp;</span><span class="self">self</span>.delta_file_path(version)));
-            <span class="kw">if </span><span class="self">self</span>.compress_type != FALL_BACK_COMPRESS_TYPE {
-                paths.push(raw_normalize_path(<span class="kw-2">&amp;</span>gen_path(
-                    <span class="kw-2">&amp;</span><span class="self">self</span>.path,
-                    <span class="kw-2">&amp;</span>delta_file(version),
-                    FALL_BACK_COMPRESS_TYPE,
-                )));
-            }
-        }
-
-        <span class="macro">debug!</span>(
-            <span class="string">&quot;Deleting logs from manifest storage, start: {}, end: {}&quot;</span>,
-            start, end
-        );
-
-        <span class="self">self</span>.object_store
-            .remove(paths.clone())
-            .<span class="kw">await
             </span>.context(OpenDalSnafu)<span class="question-mark">?</span>;
-
+        <span class="self">self</span>.set_delta_file_size(version, delta_size <span class="kw">as </span>u64);
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">pub async fn </span>save_checkpoint(<span class="kw-2">&amp;</span><span class="self">self</span>, version: ManifestVersion, bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="doccomment">/// Save the checkpoint manifest file.
+    </span><span class="kw">pub async fn </span>save_checkpoint(<span class="kw-2">&amp;mut </span><span class="self">self</span>, version: ManifestVersion, bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="kw">let </span>path = <span class="self">self</span>.checkpoint_file_path(version);
         <span class="kw">let </span>data = <span class="self">self
             </span>.compress_type
@@ -1096,12 +1152,14 @@
                 compress_type: <span class="self">self</span>.compress_type,
                 path: <span class="kw-2">&amp;</span>path,
             })<span class="question-mark">?</span>;
+        <span class="kw">let </span>checkpoint_size = data.len();
         <span class="self">self</span>.object_store
             .write(<span class="kw-2">&amp;</span>path, data)
             .<span class="kw">await
             </span>.context(OpenDalSnafu)<span class="question-mark">?</span>;
+        <span class="self">self</span>.set_checkpoint_file_size(version, checkpoint_size <span class="kw">as </span>u64);
 
-        <span class="comment">// Because last checkpoint file only contain size and version, which is tiny, so we don&#39;t compress it.
+        <span class="comment">// Because last checkpoint file only contain size and version, which is tiny, so we don't compress it.
         </span><span class="kw">let </span>last_checkpoint_path = <span class="self">self</span>.last_checkpoint_path();
 
         <span class="kw">let </span>checkpoint_metadata = CheckpointMetadata {
@@ -1112,7 +1170,7 @@
         };
 
         <span class="macro">debug!</span>(
-            <span class="string">&quot;Save checkpoint in path: {},  metadata: {:?}&quot;</span>,
+            <span class="string">"Save checkpoint in path: {},  metadata: {:?}"</span>,
             last_checkpoint_path, checkpoint_metadata
         );
 
@@ -1126,21 +1184,24 @@
     }
 
     <span class="kw">pub async fn </span>load_checkpoint(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
         version: ManifestVersion,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;(ManifestVersion, Vec&lt;u8&gt;)&gt;&gt; {
         <span class="kw">let </span>path = <span class="self">self</span>.checkpoint_file_path(version);
-        <span class="comment">// Due to backward compatibility, it is possible that the user&#39;s checkpoint not compressed,
-        // so if we don&#39;t find file by compressed type. fall back to checkpoint not compressed find again.
+        <span class="comment">// Due to backward compatibility, it is possible that the user's checkpoint not compressed,
+        // so if we don't find file by compressed type. fall back to checkpoint not compressed find again.
         </span><span class="kw">let </span>checkpoint_data =
             <span class="kw">match </span><span class="self">self</span>.object_store.read(<span class="kw-2">&amp;</span>path).<span class="kw">await </span>{
                 <span class="prelude-val">Ok</span>(checkpoint) =&gt; {
+                    <span class="kw">let </span>checkpoint_size = checkpoint.len();
                     <span class="kw">let </span>decompress_data = <span class="self">self</span>.compress_type.decode(checkpoint).<span class="kw">await</span>.context(
                         DecompressObjectSnafu {
                             compress_type: <span class="self">self</span>.compress_type,
                             path,
                         },
                     )<span class="question-mark">?</span>;
+                    <span class="comment">// set the checkpoint size
+                    </span><span class="self">self</span>.set_checkpoint_file_size(version, checkpoint_size <span class="kw">as </span>u64);
                     <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(decompress_data))
                 }
                 <span class="prelude-val">Err</span>(e) =&gt; {
@@ -1152,11 +1213,12 @@
                                 FALL_BACK_COMPRESS_TYPE,
                             );
                             <span class="macro">debug!</span>(
-                                <span class="string">&quot;Failed to load checkpoint from path: {}, fall back to path: {}&quot;</span>,
+                                <span class="string">"Failed to load checkpoint from path: {}, fall back to path: {}"</span>,
                                 path, fall_back_path
                             );
                             <span class="kw">match </span><span class="self">self</span>.object_store.read(<span class="kw-2">&amp;</span>fall_back_path).<span class="kw">await </span>{
                                 <span class="prelude-val">Ok</span>(checkpoint) =&gt; {
+                                    <span class="kw">let </span>checkpoint_size = checkpoint.len();
                                     <span class="kw">let </span>decompress_data = FALL_BACK_COMPRESS_TYPE
                                         .decode(checkpoint)
                                         .<span class="kw">await
@@ -1164,6 +1226,7 @@
                                             compress_type: FALL_BACK_COMPRESS_TYPE,
                                             path,
                                         })<span class="question-mark">?</span>;
+                                    <span class="self">self</span>.set_checkpoint_file_size(version, checkpoint_size <span class="kw">as </span>u64);
                                     <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(decompress_data))
                                 }
                                 <span class="prelude-val">Err</span>(e) <span class="kw">if </span>e.kind() == ErrorKind::NotFound =&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>),
@@ -1180,32 +1243,9 @@
         <span class="prelude-val">Ok</span>(checkpoint_data.map(|data| (version, data)))
     }
 
-    <span class="kw">async fn </span>delete_checkpoint(<span class="kw-2">&amp;</span><span class="self">self</span>, version: ManifestVersion) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="comment">// Due to backward compatibility, it is possible that the user&#39;s checkpoint file has not been compressed,
-        // so we need to delete the uncompressed checkpoint file corresponding to that version, even if the uncompressed checkpoint file in that version do not exist.
-        </span><span class="kw">let </span>paths = <span class="kw">if </span><span class="self">self</span>.compress_type != FALL_BACK_COMPRESS_TYPE {
-            <span class="macro">vec!</span>[
-                raw_normalize_path(<span class="kw-2">&amp;</span><span class="self">self</span>.checkpoint_file_path(version)),
-                raw_normalize_path(<span class="kw-2">&amp;</span>gen_path(
-                    <span class="kw-2">&amp;</span><span class="self">self</span>.path,
-                    <span class="kw-2">&amp;</span>checkpoint_file(version),
-                    FALL_BACK_COMPRESS_TYPE,
-                )),
-            ]
-        } <span class="kw">else </span>{
-            <span class="macro">vec!</span>[raw_normalize_path(<span class="kw-2">&amp;</span><span class="self">self</span>.checkpoint_file_path(version))]
-        };
-
-        <span class="self">self</span>.object_store
-            .remove(paths.clone())
-            .<span class="kw">await
-            </span>.context(OpenDalSnafu)<span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(())
-    }
-
     <span class="doccomment">/// Load the latest checkpoint.
     /// Return manifest version and the raw [RegionCheckpoint](crate::manifest::action::RegionCheckpoint) content if any
-    </span><span class="kw">pub async fn </span>load_last_checkpoint(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;(ManifestVersion, Vec&lt;u8&gt;)&gt;&gt; {
+    </span><span class="kw">pub async fn </span>load_last_checkpoint(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;(ManifestVersion, Vec&lt;u8&gt;)&gt;&gt; {
         <span class="kw">let </span>last_checkpoint_path = <span class="self">self</span>.last_checkpoint_path();
         <span class="kw">let </span>last_checkpoint_data = <span class="kw">match </span><span class="self">self</span>.object_store.read(<span class="kw-2">&amp;</span>last_checkpoint_path).<span class="kw">await </span>{
             <span class="prelude-val">Ok</span>(data) =&gt; data,
@@ -1220,7 +1260,7 @@
         <span class="kw">let </span>checkpoint_metadata = CheckpointMetadata::decode(<span class="kw-2">&amp;</span>last_checkpoint_data)<span class="question-mark">?</span>;
 
         <span class="macro">debug!</span>(
-            <span class="string">&quot;Load checkpoint in path: {}, metadata: {:?}&quot;</span>,
+            <span class="string">"Load checkpoint in path: {}, metadata: {:?}"</span>,
             last_checkpoint_path, checkpoint_metadata
         );
 
@@ -1230,6 +1270,22 @@
     <span class="attr">#[cfg(test)]
     </span><span class="kw">pub async fn </span>read_file(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;u8&gt;&gt; {
         <span class="self">self</span>.object_store.read(path).<span class="kw">await</span>.context(OpenDalSnafu)
+    }
+
+    <span class="doccomment">/// Compute the size(Byte) in manifest size map.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>total_manifest_size(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u64 {
+        <span class="self">self</span>.manifest_size_map.values().sum()
+    }
+
+    <span class="doccomment">/// Set the size of the delta file by delta version.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>set_delta_file_size(<span class="kw-2">&amp;mut </span><span class="self">self</span>, version: ManifestVersion, size: u64) {
+        <span class="self">self</span>.manifest_size_map.insert(FileKey::Delta(version), size);
+    }
+
+    <span class="doccomment">/// Set the size of the checkpoint file by checkpoint version.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>set_checkpoint_file_size(<span class="kw-2">&amp;mut </span><span class="self">self</span>, version: ManifestVersion, size: u64) {
+        <span class="self">self</span>.manifest_size_map
+            .insert(FileKey::Checkpoint(version), size);
     }
 }
 
@@ -1266,20 +1322,20 @@
 
     <span class="kw">fn </span>new_test_manifest_store() -&gt; ManifestObjectStore {
         common_telemetry::init_default_ut_logging();
-        <span class="kw">let </span>tmp_dir = create_temp_dir(<span class="string">&quot;test_manifest_log_store&quot;</span>);
+        <span class="kw">let </span>tmp_dir = create_temp_dir(<span class="string">"test_manifest_log_store"</span>);
         <span class="kw">let </span><span class="kw-2">mut </span>builder = Fs::default();
         <span class="kw">let _ </span>= builder.root(<span class="kw-2">&amp;</span>tmp_dir.path().to_string_lossy());
         <span class="kw">let </span>object_store = ObjectStore::new(builder).unwrap().finish();
-        ManifestObjectStore::new(<span class="string">&quot;/&quot;</span>, object_store, CompressionType::Uncompressed)
+        ManifestObjectStore::new(<span class="string">"/"</span>, object_store, CompressionType::Uncompressed)
     }
 
     <span class="attr">#[test]
     </span><span class="comment">// Define this test mainly to prevent future unintentional changes may break the backward compatibility.
     </span><span class="kw">fn </span>test_compress_file_path_generation() {
-        <span class="kw">let </span>path = <span class="string">&quot;/foo/bar/&quot;</span>;
+        <span class="kw">let </span>path = <span class="string">"/foo/bar/"</span>;
         <span class="kw">let </span>version: ManifestVersion = <span class="number">0</span>;
         <span class="kw">let </span>file_path = gen_path(path, <span class="kw-2">&amp;</span>delta_file(version), CompressionType::Gzip);
-        <span class="macro">assert_eq!</span>(file_path.as_str(), <span class="string">&quot;/foo/bar/00000000000000000000.json.gz&quot;</span>)
+        <span class="macro">assert_eq!</span>(file_path.as_str(), <span class="string">"/foo/bar/00000000000000000000.json.gz"</span>)
     }
 
     <span class="attr">#[tokio::test]
@@ -1296,69 +1352,67 @@
         test_manifest_log_store_case(log_store).<span class="kw">await</span>;
     }
 
-    <span class="kw">async fn </span>test_manifest_log_store_case(log_store: ManifestObjectStore) {
+    <span class="kw">async fn </span>test_manifest_log_store_case(<span class="kw-2">mut </span>log_store: ManifestObjectStore) {
         <span class="kw">for </span>v <span class="kw">in </span><span class="number">0</span>..<span class="number">5 </span>{
             log_store
-                .save(v, <span class="macro">format!</span>(<span class="string">&quot;hello, {v}&quot;</span>).as_bytes())
+                .save(v, <span class="macro">format!</span>(<span class="string">"hello, {v}"</span>).as_bytes())
                 .<span class="kw">await
                 </span>.unwrap();
         }
 
-        <span class="kw">let </span><span class="kw-2">mut </span>it = log_store.scan(<span class="number">1</span>, <span class="number">4</span>).<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span>manifests = log_store.scan(<span class="number">1</span>, <span class="number">4</span>).<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span>manifests = log_store.fetch_manifests(<span class="kw-2">&amp;</span>manifests).<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span><span class="kw-2">mut </span>it = manifests.into_iter();
         <span class="kw">for </span>v <span class="kw">in </span><span class="number">1</span>..<span class="number">4 </span>{
-            <span class="kw">let </span>(version, bytes) = it.next_log().<span class="kw">await</span>.unwrap().unwrap();
+            <span class="kw">let </span>(version, bytes) = it.next().unwrap();
             <span class="macro">assert_eq!</span>(v, version);
-            <span class="macro">assert_eq!</span>(<span class="macro">format!</span>(<span class="string">&quot;hello, {v}&quot;</span>).as_bytes(), bytes);
+            <span class="macro">assert_eq!</span>(<span class="macro">format!</span>(<span class="string">"hello, {v}"</span>).as_bytes(), bytes);
         }
-        <span class="macro">assert!</span>(it.next_log().<span class="kw">await</span>.unwrap().is_none());
+        <span class="macro">assert!</span>(it.next().is_none());
 
-        <span class="kw">let </span><span class="kw-2">mut </span>it = log_store.scan(<span class="number">0</span>, <span class="number">11</span>).<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span>manifests = log_store.scan(<span class="number">0</span>, <span class="number">11</span>).<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span>manifests = log_store.fetch_manifests(<span class="kw-2">&amp;</span>manifests).<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span><span class="kw-2">mut </span>it = manifests.into_iter();
         <span class="kw">for </span>v <span class="kw">in </span><span class="number">0</span>..<span class="number">5 </span>{
-            <span class="kw">let </span>(version, bytes) = it.next_log().<span class="kw">await</span>.unwrap().unwrap();
+            <span class="kw">let </span>(version, bytes) = it.next().unwrap();
             <span class="macro">assert_eq!</span>(v, version);
-            <span class="macro">assert_eq!</span>(<span class="macro">format!</span>(<span class="string">&quot;hello, {v}&quot;</span>).as_bytes(), bytes);
+            <span class="macro">assert_eq!</span>(<span class="macro">format!</span>(<span class="string">"hello, {v}"</span>).as_bytes(), bytes);
         }
-        <span class="macro">assert!</span>(it.next_log().<span class="kw">await</span>.unwrap().is_none());
-
-        <span class="comment">// Delete [0, 3)
-        </span>log_store.delete(<span class="number">0</span>, <span class="number">3</span>).<span class="kw">await</span>.unwrap();
-
-        <span class="comment">// [3, 5) remains
-        </span><span class="kw">let </span><span class="kw-2">mut </span>it = log_store.scan(<span class="number">0</span>, <span class="number">11</span>).<span class="kw">await</span>.unwrap();
-        <span class="kw">for </span>v <span class="kw">in </span><span class="number">3</span>..<span class="number">5 </span>{
-            <span class="kw">let </span>(version, bytes) = it.next_log().<span class="kw">await</span>.unwrap().unwrap();
-            <span class="macro">assert_eq!</span>(v, version);
-            <span class="macro">assert_eq!</span>(<span class="macro">format!</span>(<span class="string">&quot;hello, {v}&quot;</span>).as_bytes(), bytes);
-        }
-        <span class="macro">assert!</span>(it.next_log().<span class="kw">await</span>.unwrap().is_none());
+        <span class="macro">assert!</span>(it.next().is_none());
 
         <span class="comment">// test checkpoint
         </span><span class="macro">assert!</span>(log_store.load_last_checkpoint().<span class="kw">await</span>.unwrap().is_none());
         log_store
-            .save_checkpoint(<span class="number">3</span>, <span class="string">&quot;checkpoint&quot;</span>.as_bytes())
+            .save_checkpoint(<span class="number">3</span>, <span class="string">"checkpoint"</span>.as_bytes())
             .<span class="kw">await
             </span>.unwrap();
 
         <span class="kw">let </span>(v, checkpoint) = log_store.load_last_checkpoint().<span class="kw">await</span>.unwrap().unwrap();
-        <span class="macro">assert_eq!</span>(checkpoint, <span class="string">&quot;checkpoint&quot;</span>.as_bytes());
+        <span class="macro">assert_eq!</span>(checkpoint, <span class="string">"checkpoint"</span>.as_bytes());
         <span class="macro">assert_eq!</span>(<span class="number">3</span>, v);
 
         <span class="comment">//delete (,4) logs and keep checkpoint 3.
         </span><span class="kw">let _ </span>= log_store.delete_until(<span class="number">4</span>, <span class="bool-val">true</span>).<span class="kw">await</span>.unwrap();
         <span class="kw">let _ </span>= log_store.load_checkpoint(<span class="number">3</span>).<span class="kw">await</span>.unwrap().unwrap();
         <span class="kw">let _ </span>= log_store.load_last_checkpoint().<span class="kw">await</span>.unwrap().unwrap();
-        <span class="kw">let </span><span class="kw-2">mut </span>it = log_store.scan(<span class="number">0</span>, <span class="number">11</span>).<span class="kw">await</span>.unwrap();
-        <span class="kw">let </span>(version, bytes) = it.next_log().<span class="kw">await</span>.unwrap().unwrap();
+        <span class="kw">let </span>manifests = log_store.scan(<span class="number">0</span>, <span class="number">11</span>).<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span>manifests = log_store.fetch_manifests(<span class="kw-2">&amp;</span>manifests).<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span><span class="kw-2">mut </span>it = manifests.into_iter();
+
+        <span class="kw">let </span>(version, bytes) = it.next().unwrap();
         <span class="macro">assert_eq!</span>(<span class="number">4</span>, version);
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;hello, 4&quot;</span>.as_bytes(), bytes);
-        <span class="macro">assert!</span>(it.next_log().<span class="kw">await</span>.unwrap().is_none());
+        <span class="macro">assert_eq!</span>(<span class="string">"hello, 4"</span>.as_bytes(), bytes);
+        <span class="macro">assert!</span>(it.next().is_none());
 
         <span class="comment">// delete all logs and checkpoints
         </span><span class="kw">let _ </span>= log_store.delete_until(<span class="number">11</span>, <span class="bool-val">false</span>).<span class="kw">await</span>.unwrap();
         <span class="macro">assert!</span>(log_store.load_checkpoint(<span class="number">3</span>).<span class="kw">await</span>.unwrap().is_none());
         <span class="macro">assert!</span>(log_store.load_last_checkpoint().<span class="kw">await</span>.unwrap().is_none());
-        <span class="kw">let </span><span class="kw-2">mut </span>it = log_store.scan(<span class="number">0</span>, <span class="number">11</span>).<span class="kw">await</span>.unwrap();
-        <span class="macro">assert!</span>(it.next_log().<span class="kw">await</span>.unwrap().is_none());
+        <span class="kw">let </span>manifests = log_store.scan(<span class="number">0</span>, <span class="number">11</span>).<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span>manifests = log_store.fetch_manifests(<span class="kw-2">&amp;</span>manifests).<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span><span class="kw-2">mut </span>it = manifests.into_iter();
+
+        <span class="macro">assert!</span>(it.next().is_none());
     }
 
     <span class="attr">#[tokio::test]
@@ -1370,12 +1424,12 @@
         </span>log_store.compress_type = CompressionType::Uncompressed;
         <span class="kw">for </span>v <span class="kw">in </span><span class="number">0</span>..<span class="number">5 </span>{
             log_store
-                .save(v, <span class="macro">format!</span>(<span class="string">&quot;hello, {v}&quot;</span>).as_bytes())
+                .save(v, <span class="macro">format!</span>(<span class="string">"hello, {v}"</span>).as_bytes())
                 .<span class="kw">await
                 </span>.unwrap();
         }
         log_store
-            .save_checkpoint(<span class="number">5</span>, <span class="string">&quot;checkpoint_uncompressed&quot;</span>.as_bytes())
+            .save_checkpoint(<span class="number">5</span>, <span class="string">"checkpoint_uncompressed"</span>.as_bytes())
             .<span class="kw">await
             </span>.unwrap();
 
@@ -1385,49 +1439,132 @@
         <span class="comment">// test load_last_checkpoint work correctly for previously uncompressed data
         </span><span class="kw">let </span>(v, checkpoint) = log_store.load_last_checkpoint().<span class="kw">await</span>.unwrap().unwrap();
         <span class="macro">assert_eq!</span>(v, <span class="number">5</span>);
-        <span class="macro">assert_eq!</span>(checkpoint, <span class="string">&quot;checkpoint_uncompressed&quot;</span>.as_bytes());
+        <span class="macro">assert_eq!</span>(checkpoint, <span class="string">"checkpoint_uncompressed"</span>.as_bytes());
 
         <span class="comment">// write compressed data to stimulate compress alogorithom take effect
         </span><span class="kw">for </span>v <span class="kw">in </span><span class="number">5</span>..<span class="number">10 </span>{
             log_store
-                .save(v, <span class="macro">format!</span>(<span class="string">&quot;hello, {v}&quot;</span>).as_bytes())
+                .save(v, <span class="macro">format!</span>(<span class="string">"hello, {v}"</span>).as_bytes())
                 .<span class="kw">await
                 </span>.unwrap();
         }
         log_store
-            .save_checkpoint(<span class="number">10</span>, <span class="string">&quot;checkpoint_compressed&quot;</span>.as_bytes())
+            .save_checkpoint(<span class="number">10</span>, <span class="string">"checkpoint_compressed"</span>.as_bytes())
             .<span class="kw">await
             </span>.unwrap();
 
         <span class="comment">// test data reading
-        </span><span class="kw">let </span><span class="kw-2">mut </span>it = log_store.scan(<span class="number">0</span>, <span class="number">10</span>).<span class="kw">await</span>.unwrap();
+        </span><span class="kw">let </span>manifests = log_store.scan(<span class="number">0</span>, <span class="number">10</span>).<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span>manifests = log_store.fetch_manifests(<span class="kw-2">&amp;</span>manifests).<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span><span class="kw-2">mut </span>it = manifests.into_iter();
+
         <span class="kw">for </span>v <span class="kw">in </span><span class="number">0</span>..<span class="number">10 </span>{
-            <span class="kw">let </span>(version, bytes) = it.next_log().<span class="kw">await</span>.unwrap().unwrap();
+            <span class="kw">let </span>(version, bytes) = it.next().unwrap();
             <span class="macro">assert_eq!</span>(v, version);
-            <span class="macro">assert_eq!</span>(<span class="macro">format!</span>(<span class="string">&quot;hello, {v}&quot;</span>).as_bytes(), bytes);
+            <span class="macro">assert_eq!</span>(<span class="macro">format!</span>(<span class="string">"hello, {v}"</span>).as_bytes(), bytes);
         }
         <span class="kw">let </span>(v, checkpoint) = log_store.load_checkpoint(<span class="number">5</span>).<span class="kw">await</span>.unwrap().unwrap();
         <span class="macro">assert_eq!</span>(v, <span class="number">5</span>);
-        <span class="macro">assert_eq!</span>(checkpoint, <span class="string">&quot;checkpoint_uncompressed&quot;</span>.as_bytes());
+        <span class="macro">assert_eq!</span>(checkpoint, <span class="string">"checkpoint_uncompressed"</span>.as_bytes());
         <span class="kw">let </span>(v, checkpoint) = log_store.load_last_checkpoint().<span class="kw">await</span>.unwrap().unwrap();
         <span class="macro">assert_eq!</span>(v, <span class="number">10</span>);
-        <span class="macro">assert_eq!</span>(checkpoint, <span class="string">&quot;checkpoint_compressed&quot;</span>.as_bytes());
-
-        <span class="comment">// Delete previously uncompressed checkpoint
-        </span>log_store.delete_checkpoint(<span class="number">5</span>).<span class="kw">await</span>.unwrap();
-        <span class="macro">assert!</span>(log_store.load_checkpoint(<span class="number">5</span>).<span class="kw">await</span>.unwrap().is_none());
-
-        <span class="comment">// Delete [3, 7), contain uncompressed/compressed data
-        </span>log_store.delete(<span class="number">3</span>, <span class="number">7</span>).<span class="kw">await</span>.unwrap();
-        <span class="comment">// [3, 7) deleted
-        </span><span class="kw">let </span><span class="kw-2">mut </span>it = log_store.scan(<span class="number">3</span>, <span class="number">7</span>).<span class="kw">await</span>.unwrap();
-        <span class="macro">assert!</span>(it.next_log().<span class="kw">await</span>.unwrap().is_none());
+        <span class="macro">assert_eq!</span>(checkpoint, <span class="string">"checkpoint_compressed"</span>.as_bytes());
 
         <span class="comment">// Delete util 10, contain uncompressed/compressed data
         // log 0, 1, 2, 7, 8, 9 will be delete
-        </span><span class="macro">assert_eq!</span>(<span class="number">6</span>, log_store.delete_until(<span class="number">10</span>, <span class="bool-val">false</span>).<span class="kw">await</span>.unwrap());
-        <span class="kw">let </span><span class="kw-2">mut </span>it = log_store.scan(<span class="number">0</span>, <span class="number">10</span>).<span class="kw">await</span>.unwrap();
-        <span class="macro">assert!</span>(it.next_log().<span class="kw">await</span>.unwrap().is_none());
+        </span><span class="macro">assert_eq!</span>(<span class="number">11</span>, log_store.delete_until(<span class="number">10</span>, <span class="bool-val">false</span>).<span class="kw">await</span>.unwrap());
+        <span class="kw">let </span>manifests = log_store.scan(<span class="number">0</span>, <span class="number">10</span>).<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span>manifests = log_store.fetch_manifests(<span class="kw-2">&amp;</span>manifests).<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span><span class="kw-2">mut </span>it = manifests.into_iter();
+        <span class="macro">assert!</span>(it.next().is_none());
+    }
+
+    <span class="attr">#[tokio::test]
+    </span><span class="kw">async fn </span>test_file_version() {
+        <span class="kw">let </span>version = file_version(<span class="string">"00000000000000000007.checkpoint"</span>);
+        <span class="macro">assert_eq!</span>(version, <span class="number">7</span>);
+
+        <span class="kw">let </span>name = delta_file(version);
+        <span class="macro">assert_eq!</span>(name, <span class="string">"00000000000000000007.json"</span>);
+
+        <span class="kw">let </span>name = checkpoint_file(version);
+        <span class="macro">assert_eq!</span>(name, <span class="string">"00000000000000000007.checkpoint"</span>);
+    }
+
+    <span class="attr">#[tokio::test]
+    </span><span class="kw">async fn </span>test_uncompressed_manifest_files_size() {
+        <span class="kw">let </span><span class="kw-2">mut </span>log_store = new_test_manifest_store();
+        <span class="comment">// write 5 manifest files with uncompressed（8B per file）
+        </span>log_store.compress_type = CompressionType::Uncompressed;
+        <span class="kw">for </span>v <span class="kw">in </span><span class="number">0</span>..<span class="number">5 </span>{
+            log_store
+                .save(v, <span class="macro">format!</span>(<span class="string">"hello, {v}"</span>).as_bytes())
+                .<span class="kw">await
+                </span>.unwrap();
+        }
+        <span class="comment">// write 1 checkpoint file with uncompressed（23B）
+        </span>log_store
+            .save_checkpoint(<span class="number">5</span>, <span class="string">"checkpoint_uncompressed"</span>.as_bytes())
+            .<span class="kw">await
+            </span>.unwrap();
+
+        <span class="comment">// manifest files size
+        </span><span class="macro">assert_eq!</span>(log_store.total_manifest_size(), <span class="number">63</span>);
+
+        <span class="comment">// delete 3 manifest files
+        </span><span class="macro">assert_eq!</span>(log_store.delete_until(<span class="number">3</span>, <span class="bool-val">false</span>).<span class="kw">await</span>.unwrap(), <span class="number">3</span>);
+
+        <span class="comment">// manifest files size after delete
+        </span><span class="macro">assert_eq!</span>(log_store.total_manifest_size(), <span class="number">39</span>);
+
+        <span class="comment">// delete all manifest files
+        </span><span class="macro">assert_eq!</span>(
+            log_store
+                .delete_until(ManifestVersion::MAX, <span class="bool-val">false</span>)
+                .<span class="kw">await
+                </span>.unwrap(),
+            <span class="number">3
+        </span>);
+
+        <span class="macro">assert_eq!</span>(log_store.total_manifest_size(), <span class="number">0</span>);
+    }
+
+    <span class="attr">#[tokio::test]
+    </span><span class="kw">async fn </span>test_compressed_manifest_files_size() {
+        <span class="kw">let </span><span class="kw-2">mut </span>log_store = new_test_manifest_store();
+        <span class="comment">// Test with compressed manifest files
+        </span>log_store.compress_type = CompressionType::Gzip;
+        <span class="comment">// write 5 manifest files
+        </span><span class="kw">for </span>v <span class="kw">in </span><span class="number">0</span>..<span class="number">5 </span>{
+            log_store
+                .save(v, <span class="macro">format!</span>(<span class="string">"hello, {v}"</span>).as_bytes())
+                .<span class="kw">await
+                </span>.unwrap();
+        }
+        log_store
+            .save_checkpoint(<span class="number">5</span>, <span class="string">"checkpoint_compressed"</span>.as_bytes())
+            .<span class="kw">await
+            </span>.unwrap();
+
+        <span class="comment">// manifest files size
+        </span><span class="macro">assert_eq!</span>(log_store.total_manifest_size(), <span class="number">181</span>);
+
+        <span class="comment">// delete 3 manifest files
+        </span><span class="macro">assert_eq!</span>(log_store.delete_until(<span class="number">3</span>, <span class="bool-val">false</span>).<span class="kw">await</span>.unwrap(), <span class="number">3</span>);
+
+        <span class="comment">// manifest files size after delete
+        </span><span class="macro">assert_eq!</span>(log_store.total_manifest_size(), <span class="number">97</span>);
+
+        <span class="comment">// delete all manifest files
+        </span><span class="macro">assert_eq!</span>(
+            log_store
+                .delete_until(ManifestVersion::MAX, <span class="bool-val">false</span>)
+                .<span class="kw">await
+                </span>.unwrap(),
+            <span class="number">3
+        </span>);
+
+        <span class="macro">assert_eq!</span>(log_store.total_manifest_size(), <span class="number">0</span>);
     }
 }
 </code></pre></div></section></main></body></html>

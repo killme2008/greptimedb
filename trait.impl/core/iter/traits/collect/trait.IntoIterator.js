@@ -1,0 +1,4 @@
+(function() {var implementors = {
+"common_recordbatch":[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html\" title=\"trait core::iter::traits::collect::IntoIterator\">IntoIterator</a> for <a class=\"struct\" href=\"common_recordbatch/struct.RecordBatches.html\" title=\"struct common_recordbatch::RecordBatches\">RecordBatches</a>"]],
+"puffin":[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html\" title=\"trait core::iter::traits::collect::IntoIterator\">IntoIterator</a> for <a class=\"struct\" href=\"puffin/file_format/struct.Flags.html\" title=\"struct puffin::file_format::Flags\">Flags</a>"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

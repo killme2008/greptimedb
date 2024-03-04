@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/servers/src/mysql/writer.rs`."><title>writer.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="servers" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../servers/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/servers/src/mysql/writer.rs`."><title>writer.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="servers" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -264,27 +265,62 @@
 <a href="#264" id="264">264</a>
 <a href="#265" id="265">265</a>
 <a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
+<a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
 </span><span class="kw">use </span>std::ops::Deref;
 
+<span class="kw">use </span>common_error::ext::ErrorExt;
 <span class="kw">use </span>common_query::Output;
-<span class="kw">use </span>common_recordbatch::{util, RecordBatch};
+<span class="kw">use </span>common_recordbatch::{RecordBatch, SendableRecordBatchStream};
+<span class="kw">use </span>common_telemetry::{debug, error};
 <span class="kw">use </span>datatypes::prelude::{ConcreteDataType, Value};
 <span class="kw">use </span>datatypes::schema::SchemaRef;
-<span class="kw">use </span>metrics::increment_counter;
+<span class="kw">use </span>futures::StreamExt;
 <span class="kw">use </span>opensrv_mysql::{
     Column, ColumnFlags, ColumnType, ErrorKind, OkResponse, QueryResultWriter, RowWriter,
 };
@@ -297,14 +333,14 @@
 
 <span class="doccomment">/// Try to write multiple output to the writer if possible.
 </span><span class="kw">pub async fn </span>write_output&lt;W: AsyncWrite + Send + Sync + Unpin&gt;(
-    w: QueryResultWriter&lt;<span class="lifetime">&#39;_</span>, W&gt;,
+    w: QueryResultWriter&lt;<span class="lifetime">'_</span>, W&gt;,
     query_context: QueryContextRef,
     outputs: Vec&lt;<span class="prelude-ty">Result</span>&lt;Output&gt;&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
     <span class="kw">let </span><span class="kw-2">mut </span>writer = <span class="prelude-val">Some</span>(MysqlResultWriter::new(w, query_context.clone()));
     <span class="kw">for </span>output <span class="kw">in </span>outputs {
         <span class="kw">let </span>result_writer = writer.take().context(error::InternalSnafu {
-            err_msg: <span class="string">&quot;Sending multiple result set is unsupported&quot;</span>,
+            err_msg: <span class="string">"Sending multiple result set is unsupported"</span>,
         })<span class="question-mark">?</span>;
         writer = result_writer.try_write_one(output).<span class="kw">await</span><span class="question-mark">?</span>;
     }
@@ -316,21 +352,21 @@
 }
 
 <span class="kw">struct </span>QueryResult {
-    recordbatches: Vec&lt;RecordBatch&gt;,
     schema: SchemaRef,
+    stream: SendableRecordBatchStream,
 }
 
-<span class="kw">pub struct </span>MysqlResultWriter&lt;<span class="lifetime">&#39;a</span>, W: AsyncWrite + Unpin&gt; {
-    writer: QueryResultWriter&lt;<span class="lifetime">&#39;a</span>, W&gt;,
+<span class="kw">pub struct </span>MysqlResultWriter&lt;<span class="lifetime">'a</span>, W: AsyncWrite + Unpin&gt; {
+    writer: QueryResultWriter&lt;<span class="lifetime">'a</span>, W&gt;,
     query_context: QueryContextRef,
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, W: AsyncWrite + Unpin&gt; MysqlResultWriter&lt;<span class="lifetime">&#39;a</span>, W&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, W: AsyncWrite + Unpin&gt; MysqlResultWriter&lt;<span class="lifetime">'a</span>, W&gt; {
     <span class="kw">pub fn </span>new(
-        writer: QueryResultWriter&lt;<span class="lifetime">&#39;a</span>, W&gt;,
+        writer: QueryResultWriter&lt;<span class="lifetime">'a</span>, W&gt;,
         query_context: QueryContextRef,
-    ) -&gt; MysqlResultWriter&lt;<span class="lifetime">&#39;a</span>, W&gt; {
-        MysqlResultWriter::&lt;<span class="lifetime">&#39;a</span>, W&gt; {
+    ) -&gt; MysqlResultWriter&lt;<span class="lifetime">'a</span>, W&gt; {
+        MysqlResultWriter::&lt;<span class="lifetime">'a</span>, W&gt; {
             writer,
             query_context,
         }
@@ -340,26 +376,22 @@
     </span><span class="kw">pub async fn </span>try_write_one(
         <span class="self">self</span>,
         output: <span class="prelude-ty">Result</span>&lt;Output&gt;,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;MysqlResultWriter&lt;<span class="lifetime">&#39;a</span>, W&gt;&gt;&gt; {
-        <span class="comment">// We don&#39;t support sending multiple query result because the RowWriter&#39;s lifetime is bound to
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;MysqlResultWriter&lt;<span class="lifetime">'a</span>, W&gt;&gt;&gt; {
+        <span class="comment">// We don't support sending multiple query result because the RowWriter's lifetime is bound to
         // a local variable.
         </span><span class="kw">match </span>output {
             <span class="prelude-val">Ok</span>(output) =&gt; <span class="kw">match </span>output {
                 Output::Stream(stream) =&gt; {
-                    <span class="kw">let </span>schema = stream.schema().clone();
-                    <span class="kw">let </span>recordbatches = util::collect(stream)
-                        .<span class="kw">await
-                        </span>.context(error::CollectRecordbatchSnafu)<span class="question-mark">?</span>;
                     <span class="kw">let </span>query_result = QueryResult {
-                        recordbatches,
-                        schema,
+                        schema: stream.schema(),
+                        stream,
                     };
                     <span class="self">Self</span>::write_query_result(query_result, <span class="self">self</span>.writer, <span class="self">self</span>.query_context).<span class="kw">await</span><span class="question-mark">?</span>;
                 }
                 Output::RecordBatches(recordbatches) =&gt; {
                     <span class="kw">let </span>query_result = QueryResult {
                         schema: recordbatches.schema(),
-                        recordbatches: recordbatches.take(),
+                        stream: recordbatches.as_stream(),
                     };
                     <span class="self">Self</span>::write_query_result(query_result, <span class="self">self</span>.writer, <span class="self">self</span>.query_context).<span class="kw">await</span><span class="question-mark">?</span>;
                 }
@@ -383,9 +415,9 @@
     }
 
     <span class="kw">async fn </span>write_affected_rows(
-        w: QueryResultWriter&lt;<span class="lifetime">&#39;a</span>, W&gt;,
+        w: QueryResultWriter&lt;<span class="lifetime">'a</span>, W&gt;,
         rows: usize,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;QueryResultWriter&lt;<span class="lifetime">&#39;a</span>, W&gt;&gt; {
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;QueryResultWriter&lt;<span class="lifetime">'a</span>, W&gt;&gt; {
         <span class="kw">let </span>next_writer = w
             .complete_one(OkResponse {
                 affected_rows: rows <span class="kw">as </span>u64,
@@ -396,18 +428,39 @@
     }
 
     <span class="kw">async fn </span>write_query_result(
-        query_result: QueryResult,
-        writer: QueryResultWriter&lt;<span class="lifetime">&#39;a</span>, W&gt;,
+        <span class="kw-2">mut </span>query_result: QueryResult,
+        writer: QueryResultWriter&lt;<span class="lifetime">'a</span>, W&gt;,
         query_context: QueryContextRef,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="kw">match </span>create_mysql_column_def(<span class="kw-2">&amp;</span>query_result.schema) {
             <span class="prelude-val">Ok</span>(column_def) =&gt; {
-                <span class="comment">// The RowWriter&#39;s lifetime is bound to `column_def` thus we can&#39;t use finish_one()
+                <span class="comment">// The RowWriter's lifetime is bound to `column_def` thus we can't use finish_one()
                 // to return a new QueryResultWriter.
                 </span><span class="kw">let </span><span class="kw-2">mut </span>row_writer = writer.start(<span class="kw-2">&amp;</span>column_def).<span class="kw">await</span><span class="question-mark">?</span>;
-                <span class="kw">for </span>recordbatch <span class="kw">in </span><span class="kw-2">&amp;</span>query_result.recordbatches {
-                    <span class="self">Self</span>::write_recordbatch(<span class="kw-2">&amp;mut </span>row_writer, recordbatch, query_context.clone())
-                        .<span class="kw">await</span><span class="question-mark">?</span>;
+                <span class="kw">while let </span><span class="prelude-val">Some</span>(record_batch) = query_result.stream.next().<span class="kw">await </span>{
+                    <span class="kw">match </span>record_batch {
+                        <span class="prelude-val">Ok</span>(record_batch) =&gt; {
+                            <span class="self">Self</span>::write_recordbatch(
+                                <span class="kw-2">&amp;mut </span>row_writer,
+                                <span class="kw-2">&amp;</span>record_batch,
+                                query_context.clone(),
+                            )
+                            .<span class="kw">await</span><span class="question-mark">?
+                        </span>}
+                        <span class="prelude-val">Err</span>(e) =&gt; {
+                            <span class="kw">if </span>e.status_code().should_log_error() {
+                                <span class="macro">error!</span>(e; <span class="string">"Failed to handle mysql query"</span>);
+                            } <span class="kw">else </span>{
+                                <span class="macro">debug!</span>(<span class="string">"Failed to handle mysql query, error: {e:?}"</span>);
+                            }
+                            <span class="kw">let </span>err = e.output_msg();
+                            row_writer
+                                .finish_error(ErrorKind::ER_INTERNAL_ERROR, <span class="kw-2">&amp;</span>err.as_bytes())
+                                .<span class="kw">await</span><span class="question-mark">?</span>;
+
+                            <span class="kw">return </span><span class="prelude-val">Ok</span>(());
+                        }
+                    }
                 }
                 row_writer.finish().<span class="kw">await</span><span class="question-mark">?</span>;
                 <span class="prelude-val">Ok</span>(())
@@ -417,7 +470,7 @@
     }
 
     <span class="kw">async fn </span>write_recordbatch(
-        row_writer: <span class="kw-2">&amp;mut </span>RowWriter&lt;<span class="lifetime">&#39;_</span>, W&gt;,
+        row_writer: <span class="kw-2">&amp;mut </span>RowWriter&lt;<span class="lifetime">'_</span>, W&gt;,
         recordbatch: <span class="kw-2">&amp;</span>RecordBatch,
         query_context: QueryContextRef,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
@@ -439,20 +492,26 @@
                     Value::String(v) =&gt; row_writer.write_col(v.as_utf8())<span class="question-mark">?</span>,
                     Value::Binary(v) =&gt; row_writer.write_col(v.deref())<span class="question-mark">?</span>,
                     Value::Date(v) =&gt; row_writer.write_col(v.to_chrono_date())<span class="question-mark">?</span>,
-                    Value::DateTime(v) =&gt; row_writer.write_col(v.to_chrono_datetime())<span class="question-mark">?</span>,
-                    Value::Timestamp(v) =&gt; row_writer
-                        .write_col(v.to_timezone_aware_string(query_context.time_zone()))<span class="question-mark">?</span>,
+                    <span class="comment">// convert datetime and timestamp to timezone of current connection
+                    </span>Value::DateTime(v) =&gt; row_writer.write_col(
+                        v.to_chrono_datetime_with_timezone(<span class="prelude-val">Some</span>(query_context.timezone())),
+                    )<span class="question-mark">?</span>,
+                    Value::Timestamp(v) =&gt; row_writer.write_col(
+                        v.to_chrono_datetime_with_timezone(<span class="prelude-val">Some</span>(query_context.timezone())),
+                    )<span class="question-mark">?</span>,
                     Value::Interval(v) =&gt; row_writer.write_col(v.to_iso8601_string())<span class="question-mark">?</span>,
+                    Value::Duration(v) =&gt; row_writer.write_col(v.to_std_duration())<span class="question-mark">?</span>,
                     Value::List(<span class="kw">_</span>) =&gt; {
                         <span class="kw">return </span><span class="prelude-val">Err</span>(Error::Internal {
                             err_msg: <span class="macro">format!</span>(
-                                <span class="string">&quot;cannot write value {:?} in mysql protocol: unimplemented&quot;</span>,
+                                <span class="string">"cannot write value {:?} in mysql protocol: unimplemented"</span>,
                                 <span class="kw-2">&amp;</span>value
                             ),
                         })
                     }
                     Value::Time(v) =&gt; row_writer
-                        .write_col(v.to_timezone_aware_string(query_context.time_zone()))<span class="question-mark">?</span>,
+                        .write_col(v.to_timezone_aware_string(<span class="prelude-val">Some</span>(query_context.timezone())))<span class="question-mark">?</span>,
+                    Value::Decimal128(v) =&gt; row_writer.write_col(v.to_string())<span class="question-mark">?</span>,
                 }
             }
             row_writer.end_row().<span class="kw">await</span><span class="question-mark">?</span>;
@@ -460,14 +519,20 @@
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">async fn </span>write_query_error(error: Error, w: QueryResultWriter&lt;<span class="lifetime">&#39;a</span>, W&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="macro">increment_counter!</span>(
-            METRIC_ERROR_COUNTER,
-            <span class="kw-2">&amp;</span>[(METRIC_PROTOCOL_LABEL, METRIC_ERROR_COUNTER_LABEL_MYSQL)]
-        );
+    <span class="kw">async fn </span>write_query_error(error: <span class="kw">impl </span>ErrorExt, w: QueryResultWriter&lt;<span class="lifetime">'a</span>, W&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        METRIC_ERROR_COUNTER
+            .with_label_values(<span class="kw-2">&amp;</span>[METRIC_ERROR_COUNTER_LABEL_MYSQL])
+            .inc();
+
+        <span class="kw">if </span>error.status_code().should_log_error() {
+            <span class="macro">error!</span>(error; <span class="string">"Failed to handle mysql query"</span>);
+        } <span class="kw">else </span>{
+            <span class="macro">debug!</span>(<span class="string">"Failed to handle mysql query, error: {error:?}"</span>);
+        }
 
         <span class="kw">let </span>kind = ErrorKind::ER_INTERNAL_ERROR;
-        w.error(kind, error.to_string().as_bytes()).<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>error = error.output_msg();
+        w.error(kind, error.as_bytes()).<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 }
@@ -498,8 +563,10 @@
         ConcreteDataType::Date(<span class="kw">_</span>) =&gt; <span class="prelude-val">Ok</span>(ColumnType::MYSQL_TYPE_DATE),
         ConcreteDataType::DateTime(<span class="kw">_</span>) =&gt; <span class="prelude-val">Ok</span>(ColumnType::MYSQL_TYPE_DATETIME),
         ConcreteDataType::Interval(<span class="kw">_</span>) =&gt; <span class="prelude-val">Ok</span>(ColumnType::MYSQL_TYPE_VARCHAR),
+        ConcreteDataType::Duration(<span class="kw">_</span>) =&gt; <span class="prelude-val">Ok</span>(ColumnType::MYSQL_TYPE_TIME),
+        ConcreteDataType::Decimal128(<span class="kw">_</span>) =&gt; <span class="prelude-val">Ok</span>(ColumnType::MYSQL_TYPE_DECIMAL),
         <span class="kw">_ </span>=&gt; error::InternalSnafu {
-            err_msg: <span class="macro">format!</span>(<span class="string">&quot;not implemented for column datatype {:?}&quot;</span>, data_type),
+            err_msg: <span class="macro">format!</span>(<span class="string">"not implemented for column datatype {:?}"</span>, data_type),
         }
         .fail(),
     };
@@ -515,9 +582,9 @@
         column: column_name.to_string(),
         coltype: column_type,
 
-        <span class="comment">// TODO(LFC): Currently &quot;table&quot; and &quot;colflags&quot; are not relevant in MySQL server
+        <span class="comment">// TODO(LFC): Currently "table" and "colflags" are not relevant in MySQL server
         //   implementation, will revisit them again in the future.
-        </span>table: <span class="string">&quot;&quot;</span>.to_string(),
+        </span>table: <span class="string">""</span>.to_string(),
         colflags,
     })
 }

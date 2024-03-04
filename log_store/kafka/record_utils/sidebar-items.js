@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["decode_from_record","encode_to_record"],"struct":["RecordMeta","RecordProducer"]};

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["DefaultParquetFileReaderFactory","LazyParquetFileReader","ParquetFormat"]};
+window.SIDEBAR_ITEMS = {"fn":["stream_to_parquet"],"struct":["BufferedWriter","DefaultParquetFileReaderFactory","LazyParquetFileReader","ParquetFormat"],"type":["InnerBufferedWriter"]};

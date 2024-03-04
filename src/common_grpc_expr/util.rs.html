@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/common/grpc-expr/src/util.rs`."><title>util.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="common_grpc_expr" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../common_grpc_expr/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/common/grpc-expr/src/util.rs`."><title>util.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="common_grpc_expr" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -182,16 +183,27 @@
 <a href="#182" id="182">182</a>
 <a href="#183" id="183">183</a>
 <a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
+<a href="#186" id="186">186</a>
+<a href="#187" id="187">187</a>
+<a href="#188" id="188">188</a>
+<a href="#189" id="189">189</a>
+<a href="#190" id="190">190</a>
+<a href="#191" id="191">191</a>
+<a href="#192" id="192">192</a>
+<a href="#193" id="193">193</a>
+<a href="#194" id="194">194</a>
+<a href="#195" id="195">195</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -199,54 +211,62 @@
 </span><span class="kw">use </span>std::collections::HashSet;
 
 <span class="kw">use </span>api::v1::{
-    AddColumn, AddColumns, Column, ColumnDef, ColumnSchema, CreateTableExpr, SemanticType,
+    AddColumn, AddColumns, Column, ColumnDataTypeExtension, ColumnDef, ColumnSchema,
+    CreateTableExpr, SemanticType,
 };
 <span class="kw">use </span>datatypes::schema::Schema;
 <span class="kw">use </span>snafu::{ensure, OptionExt};
+<span class="kw">use </span>table::engine::TableReference;
 <span class="kw">use </span>table::metadata::TableId;
 
 <span class="kw">use </span><span class="kw">crate</span>::error::{
     DuplicatedColumnNameSnafu, DuplicatedTimestampColumnSnafu, MissingTimestampColumnSnafu, <span class="prelude-ty">Result</span>,
 };
 
-<span class="kw">pub struct </span>ColumnExpr {
-    <span class="kw">pub </span>column_name: String,
+<span class="kw">pub struct </span>ColumnExpr&lt;<span class="lifetime">'a</span>&gt; {
+    <span class="kw">pub </span>column_name: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str,
     <span class="kw">pub </span>datatype: i32,
     <span class="kw">pub </span>semantic_type: i32,
+    <span class="kw">pub </span>datatype_extension: <span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="prelude-ty">Option</span>&lt;ColumnDataTypeExtension&gt;,
 }
 
-<span class="kw">impl </span>ColumnExpr {
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; ColumnExpr&lt;<span class="lifetime">'a</span>&gt; {
     <span class="attr">#[inline]
-    </span><span class="kw">pub fn </span>from_columns(columns: <span class="kw-2">&amp;</span>[Column]) -&gt; Vec&lt;<span class="self">Self</span>&gt; {
+    </span><span class="kw">pub fn </span>from_columns(columns: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>[Column]) -&gt; Vec&lt;<span class="self">Self</span>&gt; {
         columns.iter().map(<span class="self">Self</span>::from).collect()
+    }
+
+    <span class="attr">#[inline]
+    </span><span class="kw">pub fn </span>from_column_schemas(schemas: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>[ColumnSchema]) -&gt; Vec&lt;<span class="self">Self</span>&gt; {
+        schemas.iter().map(<span class="self">Self</span>::from).collect()
     }
 }
 
-<span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>Column&gt; <span class="kw">for </span>ColumnExpr {
-    <span class="kw">fn </span>from(column: <span class="kw-2">&amp;</span>Column) -&gt; <span class="self">Self </span>{
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; From&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>Column&gt; <span class="kw">for </span>ColumnExpr&lt;<span class="lifetime">'a</span>&gt; {
+    <span class="kw">fn </span>from(column: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>Column) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            column_name: column.column_name.clone(),
+            column_name: <span class="kw-2">&amp;</span>column.column_name,
             datatype: column.datatype,
             semantic_type: column.semantic_type,
+            datatype_extension: <span class="kw-2">&amp;</span>column.datatype_extension,
         }
     }
 }
 
-<span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>ColumnSchema&gt; <span class="kw">for </span>ColumnExpr {
-    <span class="kw">fn </span>from(schema: <span class="kw-2">&amp;</span>ColumnSchema) -&gt; <span class="self">Self </span>{
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; From&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>ColumnSchema&gt; <span class="kw">for </span>ColumnExpr&lt;<span class="lifetime">'a</span>&gt; {
+    <span class="kw">fn </span>from(schema: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>ColumnSchema) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            column_name: schema.column_name.clone(),
+            column_name: <span class="kw-2">&amp;</span>schema.column_name,
             datatype: schema.datatype,
             semantic_type: schema.semantic_type,
+            datatype_extension: <span class="kw-2">&amp;</span>schema.datatype_extension,
         }
     }
 }
 
 <span class="kw">pub fn </span>build_create_table_expr(
-    catalog_name: <span class="kw-2">&amp;</span>str,
-    schema_name: <span class="kw-2">&amp;</span>str,
     table_id: <span class="prelude-ty">Option</span>&lt;TableId&gt;,
-    table_name: <span class="kw-2">&amp;</span>str,
+    table_name: <span class="kw-2">&amp;</span>TableReference&lt;<span class="lifetime">'_</span>&gt;,
     column_exprs: Vec&lt;ColumnExpr&gt;,
     engine: <span class="kw-2">&amp;</span>str,
     desc: <span class="kw-2">&amp;</span>str,
@@ -261,8 +281,8 @@
     </span><span class="kw">let </span><span class="kw-2">mut </span>distinct_names = HashSet::with_capacity(column_exprs.len());
     <span class="kw">for </span>ColumnExpr { column_name, .. } <span class="kw">in </span><span class="kw-2">&amp;</span>column_exprs {
         <span class="macro">ensure!</span>(
-            distinct_names.insert(column_name),
-            DuplicatedColumnNameSnafu { name: column_name }
+            distinct_names.insert(<span class="kw-2">*</span>column_name),
+            DuplicatedColumnNameSnafu { name: <span class="kw-2">*</span>column_name }
         );
     }
 
@@ -274,20 +294,21 @@
         column_name,
         datatype,
         semantic_type,
+        datatype_extension,
     } <span class="kw">in </span>column_exprs
     {
         <span class="kw">let </span><span class="kw-2">mut </span>is_nullable = <span class="bool-val">true</span>;
         <span class="kw">match </span>semantic_type {
-            v <span class="kw">if </span>v == SemanticType::Tag <span class="kw">as </span>i32 =&gt; primary_keys.push(column_name.clone()),
+            v <span class="kw">if </span>v == SemanticType::Tag <span class="kw">as </span>i32 =&gt; primary_keys.push(column_name.to_string()),
             v <span class="kw">if </span>v == SemanticType::Timestamp <span class="kw">as </span>i32 =&gt; {
                 <span class="macro">ensure!</span>(
                     time_index.is_none(),
                     DuplicatedTimestampColumnSnafu {
                         exists: time_index.unwrap(),
-                        duplicated: <span class="kw-2">&amp;</span>column_name,
+                        duplicated: column_name,
                     }
                 );
-                time_index = <span class="prelude-val">Some</span>(column_name.clone());
+                time_index = <span class="prelude-val">Some</span>(column_name.to_string());
                 <span class="comment">// Timestamp column must not be null.
                 </span>is_nullable = <span class="bool-val">false</span>;
             }
@@ -295,22 +316,25 @@
         }
 
         <span class="kw">let </span>column_def = ColumnDef {
-            name: column_name,
-            datatype,
+            name: column_name.to_string(),
+            data_type: datatype,
             is_nullable,
             default_constraint: <span class="macro">vec!</span>[],
+            semantic_type,
+            comment: String::new(),
+            datatype_extension: datatype_extension.clone(),
         };
         column_defs.push(column_def);
     }
 
     <span class="kw">let </span>time_index = time_index.context(MissingTimestampColumnSnafu {
-        msg: <span class="macro">format!</span>(<span class="string">&quot;table is {}&quot;</span>, table_name),
+        msg: <span class="macro">format!</span>(<span class="string">"table is {}"</span>, table_name.table),
     })<span class="question-mark">?</span>;
 
     <span class="kw">let </span>expr = CreateTableExpr {
-        catalog_name: catalog_name.to_string(),
-        schema_name: schema_name.to_string(),
-        table_name: table_name.to_string(),
+        catalog_name: table_name.catalog.to_string(),
+        schema_name: table_name.schema.to_string(),
+        table_name: table_name.table.to_string(),
         desc: desc.to_string(),
         column_defs,
         time_index,
@@ -318,8 +342,6 @@
         create_if_not_exists: <span class="bool-val">true</span>,
         table_options: Default::default(),
         table_id: table_id.map(|id| api::v1::TableId { id }),
-        <span class="comment">// TODO(hl): region number should be allocated by frontend
-        </span>region_numbers: <span class="macro">vec!</span>[<span class="number">0</span>],
         engine: engine.to_string(),
     };
 
@@ -332,18 +354,19 @@
 ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;AddColumns&gt;&gt; {
     <span class="kw">let </span>columns_to_add = column_exprs
         .into_iter()
-        .filter(|expr| schema.column_schema_by_name(<span class="kw-2">&amp;</span>expr.column_name).is_none())
+        .filter(|expr| schema.column_schema_by_name(expr.column_name).is_none())
         .map(|expr| {
-            <span class="kw">let </span>is_key = expr.semantic_type == SemanticType::Tag <span class="kw">as </span>i32;
             <span class="kw">let </span>column_def = <span class="prelude-val">Some</span>(ColumnDef {
-                name: expr.column_name,
-                datatype: expr.datatype,
+                name: expr.column_name.to_string(),
+                data_type: expr.datatype,
                 is_nullable: <span class="bool-val">true</span>,
                 default_constraint: <span class="macro">vec!</span>[],
+                semantic_type: expr.semantic_type,
+                comment: String::new(),
+                datatype_extension: expr.datatype_extension.clone(),
             });
             AddColumn {
                 column_def,
-                is_key,
                 location: <span class="prelude-val">None</span>,
             }
         })
@@ -354,7 +377,7 @@
     } <span class="kw">else </span>{
         <span class="kw">let </span><span class="kw-2">mut </span>distinct_names = HashSet::with_capacity(columns_to_add.len());
         <span class="kw">for </span>add_column <span class="kw">in </span><span class="kw-2">&amp;</span>columns_to_add {
-            <span class="kw">let </span>name = <span class="kw-2">&amp;</span>add_column.column_def.as_ref().unwrap().name;
+            <span class="kw">let </span>name = add_column.column_def.as_ref().unwrap().name.as_str();
             <span class="macro">ensure!</span>(
                 distinct_names.insert(name),
                 DuplicatedColumnNameSnafu { name }

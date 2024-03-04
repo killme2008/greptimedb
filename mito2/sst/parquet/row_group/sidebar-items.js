@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["ColumnChunkData"],"fn":["fetch_byte_ranges","fetch_ranges_concurrent","fetch_ranges_seq","maybe_spawn_blocking"],"struct":["ColumnChunkIterator","InMemoryRowGroup"]};

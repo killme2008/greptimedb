@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/query/src/sql/show_create_table.rs`."><title>show_create_table.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="query" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../query/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/query/src/sql/show_create_table.rs`."><title>show_create_table.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="query" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -336,14 +337,14 @@
 <a href="#336" id="336">336</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -356,7 +357,7 @@
 <span class="kw">use </span>humantime::format_duration;
 <span class="kw">use </span>snafu::ResultExt;
 <span class="kw">use </span>sql::ast::{
-    ColumnDef, ColumnOption, ColumnOptionDef, Expr, ObjectName, SqlOption, TableConstraint,
+    ColumnDef, ColumnOption, ColumnOptionDef, Expr, Ident, ObjectName, SqlOption, TableConstraint,
     Value <span class="kw">as </span>SqlValue,
 };
 <span class="kw">use </span>sql::dialect::GreptimeDbDialect;
@@ -364,13 +365,13 @@
 <span class="kw">use </span>sql::statements::create::{CreateTable, TIME_INDEX};
 <span class="kw">use </span>sql::statements::{<span class="self">self</span>};
 <span class="kw">use </span>table::metadata::{TableInfoRef, TableMeta};
-<span class="kw">use </span>table::requests::IMMUTABLE_TABLE_META_KEY;
+<span class="kw">use </span>table::requests::FILE_TABLE_META_KEY;
 
 <span class="kw">use </span><span class="kw">crate</span>::error::{ConvertSqlTypeSnafu, ConvertSqlValueSnafu, <span class="prelude-ty">Result</span>, SqlSnafu};
 
 <span class="attr">#[inline]
 </span><span class="kw">fn </span>number_value&lt;T: Display&gt;(n: T) -&gt; SqlValue {
-    SqlValue::Number(<span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, n), <span class="bool-val">false</span>)
+    SqlValue::Number(<span class="macro">format!</span>(<span class="string">"{}"</span>, n), <span class="bool-val">false</span>)
 }
 
 <span class="attr">#[inline]
@@ -392,20 +393,20 @@
 
     <span class="kw">if </span>!table_meta.region_numbers.is_empty() {
         options.push(sql_option(
-            <span class="string">&quot;regions&quot;</span>,
+            <span class="string">"regions"</span>,
             number_value(table_meta.region_numbers.len()),
         ));
     }
 
     <span class="kw">if let </span><span class="prelude-val">Some</span>(write_buffer_size) = table_opts.write_buffer_size {
         options.push(sql_option(
-            <span class="string">&quot;write_buffer_size&quot;</span>,
+            <span class="string">"write_buffer_size"</span>,
             string_value(write_buffer_size.to_string()),
         ));
     }
     <span class="kw">if let </span><span class="prelude-val">Some</span>(ttl) = table_opts.ttl {
         options.push(sql_option(
-            <span class="string">&quot;ttl&quot;</span>,
+            <span class="string">"ttl"</span>,
             string_value(format_duration(ttl).to_string()),
         ));
     }
@@ -413,7 +414,7 @@
     <span class="kw">for </span>(k, v) <span class="kw">in </span>table_opts
         .extra_options
         .iter()
-        .filter(|(k, <span class="kw">_</span>)| k != <span class="kw-2">&amp;</span>IMMUTABLE_TABLE_META_KEY)
+        .filter(|(k, <span class="kw">_</span>)| k != <span class="kw-2">&amp;</span>FILE_TABLE_META_KEY)
     {
         options.push(sql_option(k, string_value(v)));
     }
@@ -426,7 +427,7 @@
     ColumnOptionDef { name: <span class="prelude-val">None</span>, option }
 }
 
-<span class="kw">fn </span>create_column_def(column_schema: <span class="kw-2">&amp;</span>ColumnSchema) -&gt; <span class="prelude-ty">Result</span>&lt;ColumnDef&gt; {
+<span class="kw">fn </span>create_column_def(column_schema: <span class="kw-2">&amp;</span>ColumnSchema, quote_style: char) -&gt; <span class="prelude-ty">Result</span>&lt;ColumnDef&gt; {
     <span class="kw">let </span>name = <span class="kw-2">&amp;</span>column_schema.name;
     <span class="kw">let </span><span class="kw-2">mut </span>options = Vec::with_capacity(<span class="number">2</span>);
 
@@ -455,7 +456,7 @@
     }
 
     <span class="prelude-val">Ok</span>(ColumnDef {
-        name: name[..].into(),
+        name: Ident::with_quote(quote_style, name),
         data_type: statements::concrete_data_type_to_sql_data_type(<span class="kw-2">&amp;</span>column_schema.data_type)
             .with_context(|<span class="kw">_</span>| ConvertSqlTypeSnafu {
                 datatype: column_schema.data_type.clone(),
@@ -465,20 +466,24 @@
     })
 }
 
-<span class="kw">fn </span>create_table_constraints(schema: <span class="kw-2">&amp;</span>SchemaRef, table_meta: <span class="kw-2">&amp;</span>TableMeta) -&gt; Vec&lt;TableConstraint&gt; {
+<span class="kw">fn </span>create_table_constraints(
+    schema: <span class="kw-2">&amp;</span>SchemaRef,
+    table_meta: <span class="kw-2">&amp;</span>TableMeta,
+    quote_style: char,
+) -&gt; Vec&lt;TableConstraint&gt; {
     <span class="kw">let </span><span class="kw-2">mut </span>constraints = Vec::with_capacity(<span class="number">2</span>);
     <span class="kw">if let </span><span class="prelude-val">Some</span>(timestamp_column) = schema.timestamp_column() {
         <span class="kw">let </span>column_name = <span class="kw-2">&amp;</span>timestamp_column.name;
         constraints.push(TableConstraint::Unique {
             name: <span class="prelude-val">Some</span>(TIME_INDEX.into()),
-            columns: <span class="macro">vec!</span>[column_name[..].into()],
+            columns: <span class="macro">vec!</span>[Ident::with_quote(quote_style, column_name)],
             is_primary: <span class="bool-val">false</span>,
         });
     }
     <span class="kw">if </span>!table_meta.primary_key_indices.is_empty() {
         <span class="kw">let </span>columns = table_meta
             .row_key_column_names()
-            .map(|name| name[..].into())
+            .map(|name| Ident::with_quote(quote_style, name))
             .collect();
         constraints.push(TableConstraint::Unique {
             name: <span class="prelude-val">None</span>,
@@ -491,7 +496,7 @@
 }
 
 <span class="doccomment">/// Create a CreateTable statement from table info.
-</span><span class="kw">pub fn </span>create_table_stmt(table_info: <span class="kw-2">&amp;</span>TableInfoRef) -&gt; <span class="prelude-ty">Result</span>&lt;CreateTable&gt; {
+</span><span class="kw">pub fn </span>create_table_stmt(table_info: <span class="kw-2">&amp;</span>TableInfoRef, quote_style: char) -&gt; <span class="prelude-ty">Result</span>&lt;CreateTable&gt; {
     <span class="kw">let </span>table_meta = <span class="kw-2">&amp;</span>table_info.meta;
     <span class="kw">let </span>table_name = <span class="kw-2">&amp;</span>table_info.name;
     <span class="kw">let </span>schema = <span class="kw-2">&amp;</span>table_info.meta.schema;
@@ -499,15 +504,15 @@
     <span class="kw">let </span>columns = schema
         .column_schemas()
         .iter()
-        .map(create_column_def)
+        .map(|c| create_column_def(c, quote_style))
         .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;&gt;()<span class="question-mark">?</span>;
 
-    <span class="kw">let </span>constraints = create_table_constraints(schema, table_meta);
+    <span class="kw">let </span>constraints = create_table_constraints(schema, table_meta, quote_style);
 
     <span class="prelude-val">Ok</span>(CreateTable {
         if_not_exists: <span class="bool-val">true</span>,
         table_id: table_info.ident.table_id,
-        name: ObjectName(<span class="macro">vec!</span>[table_name[..].into()]),
+        name: ObjectName(<span class="macro">vec!</span>[Ident::with_quote(quote_style, table_name)]),
         columns,
         engine: table_meta.engine.clone(),
         constraints,
@@ -525,8 +530,7 @@
     <span class="kw">use </span>datatypes::schema::{Schema, SchemaRef};
     <span class="kw">use </span>table::metadata::<span class="kw-2">*</span>;
     <span class="kw">use </span>table::requests::{
-        TableOptions, IMMUTABLE_TABLE_FORMAT_KEY, IMMUTABLE_TABLE_LOCATION_KEY,
-        IMMUTABLE_TABLE_META_KEY,
+        TableOptions, FILE_TABLE_FORMAT_KEY, FILE_TABLE_LOCATION_KEY, FILE_TABLE_META_KEY,
     };
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
@@ -534,34 +538,33 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_show_create_table_sql() {
         <span class="kw">let </span>schema = <span class="macro">vec!</span>[
-            ColumnSchema::new(<span class="string">&quot;id&quot;</span>, ConcreteDataType::uint32_datatype(), <span class="bool-val">true</span>),
-            ColumnSchema::new(<span class="string">&quot;host&quot;</span>, ConcreteDataType::string_datatype(), <span class="bool-val">true</span>),
-            ColumnSchema::new(<span class="string">&quot;cpu&quot;</span>, ConcreteDataType::float64_datatype(), <span class="bool-val">true</span>),
-            ColumnSchema::new(<span class="string">&quot;disk&quot;</span>, ConcreteDataType::float32_datatype(), <span class="bool-val">true</span>),
+            ColumnSchema::new(<span class="string">"id"</span>, ConcreteDataType::uint32_datatype(), <span class="bool-val">true</span>),
+            ColumnSchema::new(<span class="string">"host"</span>, ConcreteDataType::string_datatype(), <span class="bool-val">true</span>),
+            ColumnSchema::new(<span class="string">"cpu"</span>, ConcreteDataType::float64_datatype(), <span class="bool-val">true</span>),
+            ColumnSchema::new(<span class="string">"disk"</span>, ConcreteDataType::float32_datatype(), <span class="bool-val">true</span>),
             ColumnSchema::new(
-                <span class="string">&quot;ts&quot;</span>,
+                <span class="string">"ts"</span>,
                 ConcreteDataType::timestamp_datatype(TimeUnit::Millisecond),
                 <span class="bool-val">false</span>,
             )
             .with_default_constraint(<span class="prelude-val">Some</span>(ColumnDefaultConstraint::Function(String::from(
-                <span class="string">&quot;current_timestamp()&quot;</span>,
+                <span class="string">"current_timestamp()"</span>,
             ))))
             .unwrap()
             .with_time_index(<span class="bool-val">true</span>),
         ];
         <span class="kw">let </span>table_schema = SchemaRef::new(Schema::new(schema));
-        <span class="kw">let </span>table_name = <span class="string">&quot;system_metrics&quot;</span>;
-        <span class="kw">let </span>schema_name = <span class="string">&quot;public&quot;</span>.to_string();
-        <span class="kw">let </span>catalog_name = <span class="string">&quot;greptime&quot;</span>.to_string();
+        <span class="kw">let </span>table_name = <span class="string">"system_metrics"</span>;
+        <span class="kw">let </span>schema_name = <span class="string">"public"</span>.to_string();
+        <span class="kw">let </span>catalog_name = <span class="string">"greptime"</span>.to_string();
         <span class="kw">let </span>regions = <span class="macro">vec!</span>[<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>];
 
         <span class="kw">let </span>meta = TableMetaBuilder::default()
             .schema(table_schema)
             .primary_key_indices(<span class="macro">vec!</span>[<span class="number">0</span>, <span class="number">1</span>])
             .value_indices(<span class="macro">vec!</span>[<span class="number">2</span>, <span class="number">3</span>])
-            .engine(<span class="string">&quot;mito&quot;</span>.to_string())
+            .engine(<span class="string">"mito"</span>.to_string())
             .next_column_id(<span class="number">0</span>)
-            .engine_options(Default::default())
             .options(Default::default())
             .created_on(Default::default())
             .region_numbers(regions)
@@ -582,24 +585,24 @@
                 .unwrap(),
         );
 
-        <span class="kw">let </span>stmt = create_table_stmt(<span class="kw-2">&amp;</span>info).unwrap();
+        <span class="kw">let </span>stmt = create_table_stmt(<span class="kw-2">&amp;</span>info, <span class="string">'"'</span>).unwrap();
 
-        <span class="kw">let </span>sql = <span class="macro">format!</span>(<span class="string">&quot;\n{}&quot;</span>, stmt);
+        <span class="kw">let </span>sql = <span class="macro">format!</span>(<span class="string">"\n{}"</span>, stmt);
         <span class="macro">assert_eq!</span>(
-            <span class="string">r#&quot;
-CREATE TABLE IF NOT EXISTS system_metrics (
-  id INT UNSIGNED NULL,
-  host STRING NULL,
-  cpu DOUBLE NULL,
-  disk FLOAT NULL,
-  ts TIMESTAMP(3) NOT NULL DEFAULT current_timestamp(),
-  TIME INDEX (ts),
-  PRIMARY KEY (id, host)
+            <span class="string">r#"
+CREATE TABLE IF NOT EXISTS "system_metrics" (
+  "id" INT UNSIGNED NULL,
+  "host" STRING NULL,
+  "cpu" DOUBLE NULL,
+  "disk" FLOAT NULL,
+  "ts" TIMESTAMP(3) NOT NULL DEFAULT current_timestamp(),
+  TIME INDEX ("ts"),
+  PRIMARY KEY ("id", "host")
 )
 ENGINE=mito
 WITH(
   regions = 3
-)&quot;#</span>,
+)"#</span>,
             sql
         );
     }
@@ -607,31 +610,29 @@ WITH(
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_show_create_external_table_sql() {
         <span class="kw">let </span>schema = <span class="macro">vec!</span>[
-            ColumnSchema::new(<span class="string">&quot;host&quot;</span>, ConcreteDataType::string_datatype(), <span class="bool-val">true</span>),
-            ColumnSchema::new(<span class="string">&quot;cpu&quot;</span>, ConcreteDataType::float64_datatype(), <span class="bool-val">true</span>),
+            ColumnSchema::new(<span class="string">"host"</span>, ConcreteDataType::string_datatype(), <span class="bool-val">true</span>),
+            ColumnSchema::new(<span class="string">"cpu"</span>, ConcreteDataType::float64_datatype(), <span class="bool-val">true</span>),
         ];
         <span class="kw">let </span>table_schema = SchemaRef::new(Schema::new(schema));
-        <span class="kw">let </span>table_name = <span class="string">&quot;system_metrics&quot;</span>;
-        <span class="kw">let </span>schema_name = <span class="string">&quot;public&quot;</span>.to_string();
-        <span class="kw">let </span>catalog_name = <span class="string">&quot;greptime&quot;</span>.to_string();
+        <span class="kw">let </span>table_name = <span class="string">"system_metrics"</span>;
+        <span class="kw">let </span>schema_name = <span class="string">"public"</span>.to_string();
+        <span class="kw">let </span>catalog_name = <span class="string">"greptime"</span>.to_string();
         <span class="kw">let </span><span class="kw-2">mut </span>options: TableOptions = Default::default();
+        <span class="kw">let _ </span>= options
+            .extra_options
+            .insert(FILE_TABLE_LOCATION_KEY.to_string(), <span class="string">"foo.csv"</span>.to_string());
         <span class="kw">let _ </span>= options.extra_options.insert(
-            IMMUTABLE_TABLE_LOCATION_KEY.to_string(),
-            <span class="string">&quot;foo.csv&quot;</span>.to_string(),
-        );
-        <span class="kw">let _ </span>= options.extra_options.insert(
-            IMMUTABLE_TABLE_META_KEY.to_string(),
-            <span class="string">&quot;{{\&quot;files\&quot;:[\&quot;foo.csv\&quot;]}}&quot;</span>.to_string(),
+            FILE_TABLE_META_KEY.to_string(),
+            <span class="string">"{{\"files\":[\"foo.csv\"]}}"</span>.to_string(),
         );
         <span class="kw">let _ </span>= options
             .extra_options
-            .insert(IMMUTABLE_TABLE_FORMAT_KEY.to_string(), <span class="string">&quot;csv&quot;</span>.to_string());
+            .insert(FILE_TABLE_FORMAT_KEY.to_string(), <span class="string">"csv"</span>.to_string());
         <span class="kw">let </span>meta = TableMetaBuilder::default()
             .schema(table_schema)
             .primary_key_indices(<span class="macro">vec!</span>[])
-            .engine(<span class="string">&quot;file&quot;</span>.to_string())
+            .engine(<span class="string">"file"</span>.to_string())
             .next_column_id(<span class="number">0</span>)
-            .engine_options(Default::default())
             .options(options)
             .created_on(Default::default())
             .build()
@@ -651,21 +652,21 @@ WITH(
                 .unwrap(),
         );
 
-        <span class="kw">let </span>stmt = create_table_stmt(<span class="kw-2">&amp;</span>info).unwrap();
+        <span class="kw">let </span>stmt = create_table_stmt(<span class="kw-2">&amp;</span>info, <span class="string">'"'</span>).unwrap();
 
-        <span class="kw">let </span>sql = <span class="macro">format!</span>(<span class="string">&quot;\n{}&quot;</span>, stmt);
+        <span class="kw">let </span>sql = <span class="macro">format!</span>(<span class="string">"\n{}"</span>, stmt);
         <span class="macro">assert_eq!</span>(
-            <span class="string">r#&quot;
-CREATE EXTERNAL TABLE IF NOT EXISTS system_metrics (
-  host STRING NULL,
-  cpu DOUBLE NULL,
+            <span class="string">r#"
+CREATE EXTERNAL TABLE IF NOT EXISTS "system_metrics" (
+  "host" STRING NULL,
+  "cpu" DOUBLE NULL,
 
 )
 ENGINE=file
 WITH(
-  format = &#39;csv&#39;,
-  location = &#39;foo.csv&#39;
-)&quot;#</span>,
+  format = 'csv',
+  location = 'foo.csv'
+)"#</span>,
             sql
         );
     }

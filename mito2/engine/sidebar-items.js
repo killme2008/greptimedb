@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["EngineInner","MitoEngine"]};
+window.SIDEBAR_ITEMS = {"constant":["MITO_ENGINE_NAME"],"struct":["EngineInner","MitoEngine"]};

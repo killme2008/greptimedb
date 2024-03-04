@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/script/src/python/rspython/builtins.rs`."><title>builtins.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="script" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../script/index.html"><img class="rust-logo" src="../../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/script/src/python/rspython/builtins.rs`."><title>builtins.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="script" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1175,16 +1176,21 @@
 <a href="#1175" id="1175">1175</a>
 <a href="#1176" id="1176">1176</a>
 <a href="#1177" id="1177">1177</a>
+<a href="#1178" id="1178">1178</a>
+<a href="#1179" id="1179">1179</a>
+<a href="#1180" id="1180">1180</a>
+<a href="#1181" id="1181">1181</a>
+<a href="#1182" id="1182">1182</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -1216,9 +1222,9 @@
     );
 }
 
-<span class="doccomment">/// &quot;Can&#39;t cast operand of type `{name}` into `{ty}`.&quot;
+<span class="doccomment">/// "Can't cast operand of type `{name}` into `{ty}`."
 </span><span class="kw">fn </span>type_cast_error(name: <span class="kw-2">&amp;</span>str, ty: <span class="kw-2">&amp;</span>str, vm: <span class="kw-2">&amp;</span>VirtualMachine) -&gt; PyBaseExceptionRef {
-    vm.new_type_error(<span class="macro">format!</span>(<span class="string">&quot;Can&#39;t cast operand of type `{name}` into `{ty}`.&quot;</span>))
+    vm.new_type_error(<span class="macro">format!</span>(<span class="string">"Can't cast operand of type `{name}` into `{ty}`."</span>))
 }
 
 <span class="kw">fn </span>collect_diff_types_string(values: <span class="kw-2">&amp;</span>[ScalarValue], ty: <span class="kw-2">&amp;</span>ArrowDataType) -&gt; String {
@@ -1226,22 +1232,22 @@
         .iter()
         .enumerate()
         .filter_map(|(idx, val)| {
-            <span class="kw">if </span>val.get_datatype() != <span class="kw-2">*</span>ty {
-                <span class="prelude-val">Some</span>((idx, val.get_datatype()))
+            <span class="kw">if </span>val.data_type() != <span class="kw-2">*</span>ty {
+                <span class="prelude-val">Some</span>((idx, val.data_type()))
             } <span class="kw">else </span>{
                 <span class="prelude-val">None
             </span>}
         })
-        .map(|(idx, ty)| <span class="macro">format!</span>(<span class="string">&quot; {:?} at {}th location\n&quot;</span>, ty, idx + <span class="number">1</span>))
+        .map(|(idx, ty)| <span class="macro">format!</span>(<span class="string">" {:?} at {}th location\n"</span>, ty, idx + <span class="number">1</span>))
         .reduce(|<span class="kw-2">mut </span>acc, item| {
             acc.push_str(<span class="kw-2">&amp;</span>item);
             acc
         })
-        .unwrap_or_else(|| <span class="string">&quot;Nothing&quot;</span>.to_string())
+        .unwrap_or_else(|| <span class="string">"Nothing"</span>.to_string())
 }
 
 <span class="kw">fn </span>new_item_field(data_type: ArrowDataType) -&gt; Field {
-    Field::new(<span class="string">&quot;item&quot;</span>, data_type, <span class="bool-val">false</span>)
+    Field::new(<span class="string">"item"</span>, data_type, <span class="bool-val">false</span>)
 }
 
 <span class="doccomment">/// try to turn a Python Object into a PyVector or a scalar that can be use for calculate
@@ -1260,7 +1266,7 @@
     <span class="kw">if </span>is_instance::&lt;PyVector&gt;(<span class="kw-2">&amp;</span>obj, vm) {
         <span class="kw">let </span>ret = obj
             .payload::&lt;PyVector&gt;()
-            .ok_or_else(|| type_cast_error(<span class="kw-2">&amp;</span>obj.class().name(), <span class="string">&quot;vector&quot;</span>, vm))<span class="question-mark">?</span>;
+            .ok_or_else(|| type_cast_error(<span class="kw-2">&amp;</span>obj.class().name(), <span class="string">"vector"</span>, vm))<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(DFColValue::Array(ret.to_arrow_array()))
     } <span class="kw">else if </span>is_instance::&lt;PyBool&gt;(<span class="kw-2">&amp;</span>obj, vm) {
         <span class="comment">// Note that a `PyBool` is also a `PyInt`, so check if it is a bool first to get a more precise type
@@ -1278,7 +1284,7 @@
     } <span class="kw">else if </span>is_instance::&lt;PyList&gt;(<span class="kw-2">&amp;</span>obj, vm) {
         <span class="kw">let </span>ret = obj
             .payload::&lt;PyList&gt;()
-            .ok_or_else(|| type_cast_error(<span class="kw-2">&amp;</span>obj.class().name(), <span class="string">&quot;vector&quot;</span>, vm))<span class="question-mark">?</span>;
+            .ok_or_else(|| type_cast_error(<span class="kw-2">&amp;</span>obj.class().name(), <span class="string">"vector"</span>, vm))<span class="question-mark">?</span>;
         <span class="kw">let </span>ret: Vec&lt;ScalarValue&gt; = ret
             .borrow_vec()
             .iter()
@@ -1286,7 +1292,7 @@
                 <span class="kw">let </span>col = try_into_columnar_value(obj.clone(), vm)<span class="question-mark">?</span>;
                 <span class="kw">match </span>col {
                     DFColValue::Array(arr) =&gt; <span class="prelude-val">Err</span>(vm.new_type_error(<span class="macro">format!</span>(
-                        <span class="string">&quot;Expect only scalar value in a list, found a vector of type {:?} nested in list&quot;</span>, arr.data_type()
+                        <span class="string">"Expect only scalar value in a list, found a vector of type {:?} nested in list"</span>, arr.data_type()
                     ))),
                     DFColValue::Scalar(val) =&gt; <span class="prelude-val">Ok</span>(val),
                 }
@@ -1301,10 +1307,10 @@
             )));
         }
 
-        <span class="kw">let </span>ty = ret[<span class="number">0</span>].get_datatype();
-        <span class="kw">if </span>ret.iter().any(|i| i.get_datatype() != ty) {
+        <span class="kw">let </span>ty = ret[<span class="number">0</span>].data_type();
+        <span class="kw">if </span>ret.iter().any(|i| i.data_type() != ty) {
             <span class="kw">return </span><span class="prelude-val">Err</span>(vm.new_type_error(<span class="macro">format!</span>(
-                <span class="string">&quot;All elements in a list should be same type to cast to Datafusion list!\nExpect {ty:?}, found {}&quot;</span>,
+                <span class="string">"All elements in a list should be same type to cast to Datafusion list!\nExpect {ty:?}, found {}"</span>,
                 collect_diff_types_string(<span class="kw-2">&amp;</span>ret, <span class="kw-2">&amp;</span>ty)
             )));
         }
@@ -1314,7 +1320,7 @@
         )))
     } <span class="kw">else </span>{
         <span class="prelude-val">Err</span>(vm.new_type_error(<span class="macro">format!</span>(
-            <span class="string">&quot;Can&#39;t cast object of type {} into vector or scalar&quot;</span>,
+            <span class="string">"Can't cast object of type {} into vector or scalar"</span>,
             obj.class().name()
         )))
     }
@@ -1331,7 +1337,7 @@
         DFColValue::Array(arr) =&gt; {
             <span class="kw">let </span>ret = PyVector::from(
                 HelperVec::try_into_vector(arr)
-                    .map_err(|err| vm.new_type_error(<span class="macro">format!</span>(<span class="string">&quot;Unsupported type: {err:#?}&quot;</span>)))<span class="question-mark">?</span>,
+                    .map_err(|err| vm.new_type_error(<span class="macro">format!</span>(<span class="string">"Unsupported type: {err:#?}"</span>)))<span class="question-mark">?</span>,
             )
             .into_pyobject(vm);
             <span class="prelude-val">Ok</span>(ret)
@@ -1362,19 +1368,19 @@
             <span class="prelude-val">Ok</span>(list.into())
         }
         <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(vm.new_type_error(<span class="macro">format!</span>(
-            <span class="string">&quot;Can&#39;t cast a Scalar Value `{val:#?}` of type {:#?} to a Python Object&quot;</span>,
-            val.get_datatype()
+            <span class="string">"Can't cast a Scalar Value `{val:#?}` of type {:#?} to a Python Object"</span>,
+            val.data_type()
         ))),
     }
 }
 
-<span class="doccomment">/// Because most of the datafusion&#39;s UDF only support f32/64, so cast all to f64 to use datafusion&#39;s UDF
+<span class="doccomment">/// Because most of the datafusion's UDF only support f32/64, so cast all to f64 to use datafusion's UDF
 </span><span class="kw">fn </span>all_to_f64(col: DFColValue, vm: <span class="kw-2">&amp;</span>VirtualMachine) -&gt; PyResult&lt;DFColValue&gt; {
     <span class="kw">match </span>col {
         DFColValue::Array(arr) =&gt; {
             <span class="kw">let </span>res = compute::cast(<span class="kw-2">&amp;</span>arr, <span class="kw-2">&amp;</span>ArrowDataType::Float64).map_err(|err| {
                 vm.new_type_error(<span class="macro">format!</span>(
-                    <span class="string">&quot;Arrow Type Cast Fail(from {:#?} to {:#?}): {err:#?}&quot;</span>,
+                    <span class="string">"Arrow Type Cast Fail(from {:#?} to {:#?}): {err:#?}"</span>,
                     arr.data_type(),
                     ArrowDataType::Float64
                 ))
@@ -1388,8 +1394,8 @@
                 ScalarValue::Boolean(<span class="prelude-val">Some</span>(v)) =&gt; v <span class="kw">as </span>i64 <span class="kw">as </span>f64,
                 <span class="kw">_ </span>=&gt; {
                     <span class="kw">return </span><span class="prelude-val">Err</span>(vm.new_type_error(<span class="macro">format!</span>(
-                        <span class="string">&quot;Can&#39;t cast type {:#?} to {:#?}&quot;</span>,
-                        val.get_datatype(),
+                        <span class="string">"Can't cast type {:#?} to {:#?}"</span>,
+                        val.data_type(),
                         ArrowDataType::Float64
                     )))
                 }
@@ -1399,8 +1405,8 @@
     }
 }
 
-<span class="doccomment">/// use to bind to Data Fusion&#39;s UDF function
-/// P.S: seems due to proc macro issues, can&#39;t just use #[pyfunction] in here
+<span class="doccomment">/// use to bind to Data Fusion's UDF function
+/// P.S: seems due to proc macro issues, can't just use `#[pyfunction]` in here
 </span><span class="macro">macro_rules! </span>bind_call_unary_math_function {
     (<span class="macro-nonterminal">$DF_FUNC</span>: ident, <span class="macro-nonterminal">$vm</span>: ident $(,<span class="macro-nonterminal">$ARG</span>: ident)<span class="kw-2">*</span>) =&gt; {
         <span class="kw">fn </span>inner_fn($(<span class="macro-nonterminal">$ARG</span>: PyObjectRef,)* vm: <span class="kw-2">&amp;</span>VirtualMachine) -&gt; PyResult&lt;PyObjectRef&gt; {
@@ -1422,7 +1428,7 @@
 /// - lastly ARE names given to expr of those function, i.e. `expr0, expr1,`....
 </span><span class="macro">macro_rules! </span>bind_aggr_fn {
     (<span class="macro-nonterminal">$AGGR_FUNC</span>: ident, <span class="macro-nonterminal">$VM</span>: ident, <span class="macro-nonterminal">$ARGS</span>:expr, <span class="macro-nonterminal">$DATA_TYPE</span>: expr $(, <span class="macro-nonterminal">$EXPR_ARGS</span>: ident)<span class="kw-2">*</span>) =&gt; {
-        <span class="comment">// just a place holder, we just want the inner `XXXAccumulator`&#39;s function
+        <span class="comment">// just a place holder, we just want the inner `XXXAccumulator`'s function
         // so its expr is irrelevant
         </span><span class="kw">return </span>eval_aggr_fn(
             expressions::<span class="macro-nonterminal">$AGGR_FUNC::new</span>(
@@ -1436,7 +1442,7 @@
 
 <span class="attr">#[inline]
 </span><span class="kw">fn </span>from_df_err(err: DataFusionError, vm: <span class="kw-2">&amp;</span>VirtualMachine) -&gt; PyBaseExceptionRef {
-    vm.new_runtime_error(<span class="macro">format!</span>(<span class="string">&quot;Data Fusion Error: {err:#?}&quot;</span>))
+    vm.new_runtime_error(<span class="macro">format!</span>(<span class="string">"Data Fusion Error: {err:#?}"</span>))
 }
 
 <span class="doccomment">/// evaluate Aggregate Expr using its backing accumulator
@@ -1464,10 +1470,10 @@
     <span class="comment">// P.S.: not extract to file because not-inlined proc macro attribute is *unstable*
     </span><span class="kw">use </span>std::sync::Arc;
 
-    <span class="kw">use </span>arrow::compute::kernels::{aggregate, boolean, comparison};
-    <span class="kw">use </span>common_function::scalars::function::FunctionContext;
+    <span class="kw">use </span>arrow::compute::kernels::{aggregate, boolean};
+    <span class="kw">use </span>common_function::function::{Function, FunctionContext, FunctionRef};
+    <span class="kw">use </span>common_function::function_registry::FUNCTION_REGISTRY;
     <span class="kw">use </span>common_function::scalars::math::PowFunction;
-    <span class="kw">use </span>common_function::scalars::{Function, FunctionRef, FUNCTION_REGISTRY};
     <span class="kw">use </span>datafusion::arrow::datatypes::DataType <span class="kw">as </span>ArrowDataType;
     <span class="kw">use </span>datafusion::dataframe::DataFrame <span class="kw">as </span>DfDataFrame;
     <span class="kw">use </span>datafusion::physical_plan::expressions;
@@ -1495,7 +1501,7 @@
     <span class="kw">use </span><span class="kw">crate</span>::python::rspython::utils::{is_instance, py_obj_to_value, py_obj_to_vec};
 
     <span class="attr">#[pyattr]
-    #[pyclass(module = <span class="string">&quot;greptime_builtin&quot;</span>, name = <span class="string">&quot;PyDataFrame&quot;</span>)]
+    #[pyclass(module = <span class="string">"greptime_builtin"</span>, name = <span class="string">"PyDataFrame"</span>)]
     #[derive(PyPayload, Debug, Clone)]
     </span><span class="kw">pub struct </span>PyDataFrame {
         <span class="kw">pub </span>inner: DfDataFrame,
@@ -1505,10 +1511,10 @@
     /// TODO(discord9): this is a terrible hack, we should find a better way to get `__dataframe__`
     </span><span class="attr">#[pyfunction]
     </span><span class="kw">fn </span>dataframe(vm: <span class="kw-2">&amp;</span>VirtualMachine) -&gt; PyResult&lt;PyDataFrame&gt; {
-        <span class="kw">let </span>df = vm.current_globals().get_item(<span class="string">&quot;__dataframe__&quot;</span>, vm)<span class="question-mark">?</span>;
+        <span class="kw">let </span>df = vm.current_globals().get_item(<span class="string">"__dataframe__"</span>, vm)<span class="question-mark">?</span>;
         <span class="kw">let </span>df = df
             .payload::&lt;PyDataFrame&gt;()
-            .ok_or_else(|| vm.new_type_error(<span class="macro">format!</span>(<span class="string">&quot;object {:?} is not a DataFrame&quot;</span>, df)))<span class="question-mark">?</span>;
+            .ok_or_else(|| vm.new_type_error(<span class="macro">format!</span>(<span class="string">"object {:?} is not a DataFrame"</span>, df)))<span class="question-mark">?</span>;
         <span class="kw">let </span>df = df.clone();
         <span class="prelude-val">Ok</span>(df)
     }
@@ -1517,9 +1523,9 @@
     /// TODO(discord9): this is a terrible hack, we should find a better way to get `__query__`
     </span><span class="attr">#[pyfunction]
     </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>query(vm: <span class="kw-2">&amp;</span>VirtualMachine) -&gt; PyResult&lt;PyQueryEngine&gt; {
-        <span class="kw">let </span>query_engine = vm.current_globals().get_item(<span class="string">&quot;__query__&quot;</span>, vm)<span class="question-mark">?</span>;
+        <span class="kw">let </span>query_engine = vm.current_globals().get_item(<span class="string">"__query__"</span>, vm)<span class="question-mark">?</span>;
         <span class="kw">let </span>query_engine = query_engine.payload::&lt;PyQueryEngine&gt;().ok_or_else(|| {
-            vm.new_type_error(<span class="macro">format!</span>(<span class="string">&quot;object {:?} is not a QueryEngine&quot;</span>, query_engine))
+            vm.new_type_error(<span class="macro">format!</span>(<span class="string">"object {:?} is not a QueryEngine"</span>, query_engine))
         })<span class="question-mark">?</span>;
         <span class="kw">let </span>query_engine = query_engine.clone();
         <span class="prelude-val">Ok</span>(query_engine)
@@ -1541,15 +1547,15 @@
         <span class="kw">let </span>val = py_obj_to_value(<span class="kw-2">&amp;</span>obj, vm)<span class="question-mark">?</span>;
         <span class="kw">let </span>scalar_val = val
             .try_to_scalar_value(<span class="kw-2">&amp;</span>val.data_type())
-            .map_err(|e| vm.new_runtime_error(<span class="macro">format!</span>(<span class="string">&quot;{e}&quot;</span>)))<span class="question-mark">?</span>;
+            .map_err(|e| vm.new_runtime_error(<span class="macro">format!</span>(<span class="string">"{e}"</span>)))<span class="question-mark">?</span>;
         <span class="kw">let </span>expr: PyExpr = DfExpr::Literal(scalar_val).into();
         <span class="prelude-val">Ok</span>(expr.into_ref(<span class="kw-2">&amp;</span>vm.ctx))
     }
 
-    <span class="comment">// the main binding code, due to proc macro things, can&#39;t directly use a simpler macro
+    <span class="comment">// the main binding code, due to proc macro things, can't directly use a simpler macro
     // because pyfunction is not a attr?
     // ------
-    // GrepTime DB&#39;s own UDF&amp;UDAF
+    // GrepTime DB's own UDF&amp;UDAF
     // ------
 
     </span><span class="kw">fn </span>eval_func(name: <span class="kw-2">&amp;</span>str, v: <span class="kw-2">&amp;</span>[PyVectorRef], vm: <span class="kw-2">&amp;</span>VirtualMachine) -&gt; PyResult&lt;PyVector&gt; {
@@ -1557,11 +1563,11 @@
         <span class="kw">let </span>func: <span class="prelude-ty">Option</span>&lt;FunctionRef&gt; = FUNCTION_REGISTRY.get_function(name);
         <span class="kw">let </span>res = <span class="kw">match </span>func {
             <span class="prelude-val">Some</span>(f) =&gt; f.eval(Default::default(), <span class="kw-2">&amp;</span>v),
-            <span class="prelude-val">None </span>=&gt; <span class="kw">return </span><span class="prelude-val">Err</span>(vm.new_type_error(<span class="macro">format!</span>(<span class="string">&quot;Can&#39;t find function {name}&quot;</span>))),
+            <span class="prelude-val">None </span>=&gt; <span class="kw">return </span><span class="prelude-val">Err</span>(vm.new_type_error(<span class="macro">format!</span>(<span class="string">"Can't find function {name}"</span>))),
         };
         <span class="kw">match </span>res {
             <span class="prelude-val">Ok</span>(v) =&gt; <span class="prelude-val">Ok</span>(v.into()),
-            <span class="prelude-val">Err</span>(err) =&gt; <span class="prelude-val">Err</span>(vm.new_runtime_error(<span class="macro">format!</span>(<span class="string">&quot;Fail to evaluate the function,: {err}&quot;</span>))),
+            <span class="prelude-val">Err</span>(err) =&gt; <span class="prelude-val">Err</span>(vm.new_runtime_error(<span class="macro">format!</span>(<span class="string">"Fail to evaluate the function,: {err}"</span>))),
         }
     }
 
@@ -1574,34 +1580,34 @@
         <span class="kw">let </span>func = FUNCTION_REGISTRY.get_aggr_function(name);
         <span class="kw">let </span>f = <span class="kw">match </span>func {
             <span class="prelude-val">Some</span>(f) =&gt; f.create().creator(),
-            <span class="prelude-val">None </span>=&gt; <span class="kw">return </span><span class="prelude-val">Err</span>(vm.new_type_error(<span class="macro">format!</span>(<span class="string">&quot;Can&#39;t find function {name}&quot;</span>))),
+            <span class="prelude-val">None </span>=&gt; <span class="kw">return </span><span class="prelude-val">Err</span>(vm.new_type_error(<span class="macro">format!</span>(<span class="string">"Can't find function {name}"</span>))),
         };
         <span class="kw">let </span>types: Vec&lt;<span class="kw">_</span>&gt; = v.iter().map(|v| v.data_type()).collect();
         <span class="kw">let </span>acc = f(<span class="kw-2">&amp;</span>types);
         <span class="kw">let </span><span class="kw-2">mut </span>acc = <span class="kw">match </span>acc {
             <span class="prelude-val">Ok</span>(acc) =&gt; acc,
             <span class="prelude-val">Err</span>(err) =&gt; {
-                <span class="kw">return </span><span class="prelude-val">Err</span>(vm.new_runtime_error(<span class="macro">format!</span>(<span class="string">&quot;Failed to create accumulator: {err}&quot;</span>)))
+                <span class="kw">return </span><span class="prelude-val">Err</span>(vm.new_runtime_error(<span class="macro">format!</span>(<span class="string">"Failed to create accumulator: {err}"</span>)))
             }
         };
         <span class="kw">match </span>acc.update_batch(<span class="kw-2">&amp;</span>v) {
             <span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; (),
-            <span class="prelude-val">Err</span>(err) =&gt; <span class="kw">return </span><span class="prelude-val">Err</span>(vm.new_runtime_error(<span class="macro">format!</span>(<span class="string">&quot;Failed to update batch: {err}&quot;</span>))),
+            <span class="prelude-val">Err</span>(err) =&gt; <span class="kw">return </span><span class="prelude-val">Err</span>(vm.new_runtime_error(<span class="macro">format!</span>(<span class="string">"Failed to update batch: {err}"</span>))),
         };
         <span class="kw">let </span>res = <span class="kw">match </span>acc.evaluate() {
             <span class="prelude-val">Ok</span>(r) =&gt; r,
             <span class="prelude-val">Err</span>(err) =&gt; {
-                <span class="kw">return </span><span class="prelude-val">Err</span>(vm.new_runtime_error(<span class="macro">format!</span>(<span class="string">&quot;Failed to evaluate accumulator: {err}&quot;</span>)))
+                <span class="kw">return </span><span class="prelude-val">Err</span>(vm.new_runtime_error(<span class="macro">format!</span>(<span class="string">"Failed to evaluate accumulator: {err}"</span>)))
             }
         };
         <span class="kw">let </span>res = val_to_pyobj(res, vm)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(res)
     }
 
-    <span class="doccomment">/// GrepTime&#39;s own impl of pow function
+    <span class="doccomment">/// GrepTime's own impl of pow function
     </span><span class="attr">#[pyfunction]
     </span><span class="kw">fn </span>pow_gp(v0: PyVectorRef, v1: PyVectorRef, vm: <span class="kw-2">&amp;</span>VirtualMachine) -&gt; PyResult&lt;PyVector&gt; {
-        eval_func(<span class="string">&quot;pow&quot;</span>, <span class="kw-2">&amp;</span>[v0, v1], vm)
+        eval_func(<span class="string">"pow"</span>, <span class="kw-2">&amp;</span>[v0, v1], vm)
     }
 
     <span class="attr">#[pyfunction]
@@ -1611,37 +1617,37 @@
         v2: PyVectorRef,
         vm: <span class="kw-2">&amp;</span>VirtualMachine,
     ) -&gt; PyResult&lt;PyVector&gt; {
-        eval_func(<span class="string">&quot;clip&quot;</span>, <span class="kw-2">&amp;</span>[v0, v1, v2], vm)
+        eval_func(<span class="string">"clip"</span>, <span class="kw-2">&amp;</span>[v0, v1, v2], vm)
     }
 
     <span class="attr">#[pyfunction]
     </span><span class="kw">fn </span>diff(v: PyVectorRef, vm: <span class="kw-2">&amp;</span>VirtualMachine) -&gt; PyResult&lt;PyObjectRef&gt; {
-        eval_aggr_func(<span class="string">&quot;diff&quot;</span>, <span class="kw-2">&amp;</span>[v], vm)
+        eval_aggr_func(<span class="string">"diff"</span>, <span class="kw-2">&amp;</span>[v], vm)
     }
 
     <span class="attr">#[pyfunction]
     </span><span class="kw">fn </span>mean(v: PyVectorRef, vm: <span class="kw-2">&amp;</span>VirtualMachine) -&gt; PyResult&lt;PyObjectRef&gt; {
-        eval_aggr_func(<span class="string">&quot;mean&quot;</span>, <span class="kw-2">&amp;</span>[v], vm)
+        eval_aggr_func(<span class="string">"mean"</span>, <span class="kw-2">&amp;</span>[v], vm)
     }
 
     <span class="attr">#[pyfunction]
     </span><span class="kw">fn </span>polyval(v0: PyVectorRef, v1: PyVectorRef, vm: <span class="kw-2">&amp;</span>VirtualMachine) -&gt; PyResult&lt;PyObjectRef&gt; {
-        eval_aggr_func(<span class="string">&quot;polyval&quot;</span>, <span class="kw-2">&amp;</span>[v0, v1], vm)
+        eval_aggr_func(<span class="string">"polyval"</span>, <span class="kw-2">&amp;</span>[v0, v1], vm)
     }
 
     <span class="attr">#[pyfunction]
     </span><span class="kw">fn </span>argmax(v0: PyVectorRef, vm: <span class="kw-2">&amp;</span>VirtualMachine) -&gt; PyResult&lt;PyObjectRef&gt; {
-        eval_aggr_func(<span class="string">&quot;argmax&quot;</span>, <span class="kw-2">&amp;</span>[v0], vm)
+        eval_aggr_func(<span class="string">"argmax"</span>, <span class="kw-2">&amp;</span>[v0], vm)
     }
 
     <span class="attr">#[pyfunction]
     </span><span class="kw">fn </span>argmin(v0: PyVectorRef, vm: <span class="kw-2">&amp;</span>VirtualMachine) -&gt; PyResult&lt;PyObjectRef&gt; {
-        eval_aggr_func(<span class="string">&quot;argmin&quot;</span>, <span class="kw-2">&amp;</span>[v0], vm)
+        eval_aggr_func(<span class="string">"argmin"</span>, <span class="kw-2">&amp;</span>[v0], vm)
     }
 
     <span class="attr">#[pyfunction]
     </span><span class="kw">fn </span>percentile(v0: PyVectorRef, v1: PyVectorRef, vm: <span class="kw-2">&amp;</span>VirtualMachine) -&gt; PyResult&lt;PyObjectRef&gt; {
-        eval_aggr_func(<span class="string">&quot;percentile&quot;</span>, <span class="kw-2">&amp;</span>[v0, v1], vm)
+        eval_aggr_func(<span class="string">"percentile"</span>, <span class="kw-2">&amp;</span>[v0, v1], vm)
     }
 
     <span class="attr">#[pyfunction]
@@ -1650,7 +1656,7 @@
         v1: PyVectorRef,
         vm: <span class="kw-2">&amp;</span>VirtualMachine,
     ) -&gt; PyResult&lt;PyObjectRef&gt; {
-        eval_aggr_func(<span class="string">&quot;scipystatsnormcdf&quot;</span>, <span class="kw-2">&amp;</span>[v0, v1], vm)
+        eval_aggr_func(<span class="string">"scipystatsnormcdf"</span>, <span class="kw-2">&amp;</span>[v0, v1], vm)
     }
 
     <span class="attr">#[pyfunction]
@@ -1659,69 +1665,69 @@
         v1: PyVectorRef,
         vm: <span class="kw-2">&amp;</span>VirtualMachine,
     ) -&gt; PyResult&lt;PyObjectRef&gt; {
-        eval_aggr_func(<span class="string">&quot;scipystatsnormpdf&quot;</span>, <span class="kw-2">&amp;</span>[v0, v1], vm)
+        eval_aggr_func(<span class="string">"scipystatsnormpdf"</span>, <span class="kw-2">&amp;</span>[v0, v1], vm)
     }
 
     <span class="comment">// The math function return a general PyObjectRef
     // so it can return both PyVector or a scalar PyInt/Float/Bool
 
     // ------
-    // DataFusion&#39;s UDF&amp;UDAF
+    // DataFusion's UDF&amp;UDAF
     // ------
-    </span><span class="doccomment">/// simple math function, the backing implement is datafusion&#39;s `sqrt` math function
+    </span><span class="doccomment">/// simple math function, the backing implement is datafusion's `sqrt` math function
     </span><span class="attr">#[pyfunction]
     </span><span class="kw">fn </span>sqrt(val: PyObjectRef, vm: <span class="kw-2">&amp;</span>VirtualMachine) -&gt; PyResult&lt;PyObjectRef&gt; {
         <span class="macro">bind_call_unary_math_function!</span>(sqrt, vm, val);
     }
 
-    <span class="doccomment">/// simple math function, the backing implement is datafusion&#39;s `sin` math function
+    <span class="doccomment">/// simple math function, the backing implement is datafusion's `sin` math function
     </span><span class="attr">#[pyfunction]
     </span><span class="kw">fn </span>sin(val: PyObjectRef, vm: <span class="kw-2">&amp;</span>VirtualMachine) -&gt; PyResult&lt;PyObjectRef&gt; {
         <span class="macro">bind_call_unary_math_function!</span>(sin, vm, val);
     }
 
-    <span class="doccomment">/// simple math function, the backing implement is datafusion&#39;s `cos` math function
+    <span class="doccomment">/// simple math function, the backing implement is datafusion's `cos` math function
     </span><span class="attr">#[pyfunction]
     </span><span class="kw">fn </span>cos(val: PyObjectRef, vm: <span class="kw-2">&amp;</span>VirtualMachine) -&gt; PyResult&lt;PyObjectRef&gt; {
         <span class="macro">bind_call_unary_math_function!</span>(cos, vm, val);
     }
 
-    <span class="doccomment">/// simple math function, the backing implement is datafusion&#39;s `tan` math function
+    <span class="doccomment">/// simple math function, the backing implement is datafusion's `tan` math function
     </span><span class="attr">#[pyfunction]
     </span><span class="kw">fn </span>tan(val: PyObjectRef, vm: <span class="kw-2">&amp;</span>VirtualMachine) -&gt; PyResult&lt;PyObjectRef&gt; {
         <span class="macro">bind_call_unary_math_function!</span>(tan, vm, val);
     }
 
-    <span class="doccomment">/// simple math function, the backing implement is datafusion&#39;s `asin` math function
+    <span class="doccomment">/// simple math function, the backing implement is datafusion's `asin` math function
     </span><span class="attr">#[pyfunction]
     </span><span class="kw">fn </span>asin(val: PyObjectRef, vm: <span class="kw-2">&amp;</span>VirtualMachine) -&gt; PyResult&lt;PyObjectRef&gt; {
         <span class="macro">bind_call_unary_math_function!</span>(asin, vm, val);
     }
 
-    <span class="doccomment">/// simple math function, the backing implement is datafusion&#39;s `acos` math function
+    <span class="doccomment">/// simple math function, the backing implement is datafusion's `acos` math function
     </span><span class="attr">#[pyfunction]
     </span><span class="kw">fn </span>acos(val: PyObjectRef, vm: <span class="kw-2">&amp;</span>VirtualMachine) -&gt; PyResult&lt;PyObjectRef&gt; {
         <span class="macro">bind_call_unary_math_function!</span>(acos, vm, val);
     }
 
-    <span class="doccomment">/// simple math function, the backing implement is datafusion&#39;s `atan` math function
+    <span class="doccomment">/// simple math function, the backing implement is datafusion's `atan` math function
     </span><span class="attr">#[pyfunction]
     </span><span class="kw">fn </span>atan(val: PyObjectRef, vm: <span class="kw-2">&amp;</span>VirtualMachine) -&gt; PyResult&lt;PyObjectRef&gt; {
         <span class="macro">bind_call_unary_math_function!</span>(atan, vm, val);
     }
 
-    <span class="doccomment">/// simple math function, the backing implement is datafusion&#39;s `floor` math function
+    <span class="doccomment">/// simple math function, the backing implement is datafusion's `floor` math function
     </span><span class="attr">#[pyfunction]
     </span><span class="kw">fn </span>floor(val: PyObjectRef, vm: <span class="kw-2">&amp;</span>VirtualMachine) -&gt; PyResult&lt;PyObjectRef&gt; {
         <span class="macro">bind_call_unary_math_function!</span>(floor, vm, val);
     }
-    <span class="doccomment">/// simple math function, the backing implement is datafusion&#39;s `ceil` math function
+    <span class="doccomment">/// simple math function, the backing implement is datafusion's `ceil` math function
     </span><span class="attr">#[pyfunction]
     </span><span class="kw">fn </span>ceil(val: PyObjectRef, vm: <span class="kw-2">&amp;</span>VirtualMachine) -&gt; PyResult&lt;PyObjectRef&gt; {
         <span class="macro">bind_call_unary_math_function!</span>(ceil, vm, val);
     }
 
-    <span class="doccomment">/// simple math function, the backing implement is datafusion&#39;s `round` math function
+    <span class="doccomment">/// simple math function, the backing implement is datafusion's `round` math function
     </span><span class="attr">#[pyfunction]
     </span><span class="kw">fn </span>round(val: PyObjectRef, vm: <span class="kw-2">&amp;</span>VirtualMachine) -&gt; PyResult&lt;PyObjectRef&gt; {
         <span class="kw">let </span>value = try_into_columnar_value(val, vm)<span class="question-mark">?</span>;
@@ -1730,44 +1736,45 @@
         try_into_py_obj(DFColValue::Array(result), vm)
     }
 
-    <span class="doccomment">/// simple math function, the backing implement is datafusion&#39;s `trunc` math function
-    </span><span class="attr">#[pyfunction]
-    </span><span class="kw">fn </span>trunc(val: PyObjectRef, vm: <span class="kw-2">&amp;</span>VirtualMachine) -&gt; PyResult&lt;PyObjectRef&gt; {
-        <span class="macro">bind_call_unary_math_function!</span>(trunc, vm, val);
-    }
+    <span class="comment">//
+    // /// simple math function, the backing implement is datafusion's `trunc` math function
+    // #[pyfunction]
+    // fn trunc(val: PyObjectRef, vm: &amp;VirtualMachine) -&gt; PyResult&lt;PyObjectRef&gt; {
+    //     bind_call_unary_math_function!(trunc, vm, val);
+    // }
 
-    <span class="doccomment">/// simple math function, the backing implement is datafusion&#39;s `abs` math function
+    </span><span class="doccomment">/// simple math function, the backing implement is datafusion's `abs` math function
     </span><span class="attr">#[pyfunction]
     </span><span class="kw">fn </span>abs(val: PyObjectRef, vm: <span class="kw-2">&amp;</span>VirtualMachine) -&gt; PyResult&lt;PyObjectRef&gt; {
         <span class="macro">bind_call_unary_math_function!</span>(abs, vm, val);
     }
 
-    <span class="doccomment">/// simple math function, the backing implement is datafusion&#39;s `signum` math function
+    <span class="doccomment">/// simple math function, the backing implement is datafusion's `signum` math function
     </span><span class="attr">#[pyfunction]
     </span><span class="kw">fn </span>signum(val: PyObjectRef, vm: <span class="kw-2">&amp;</span>VirtualMachine) -&gt; PyResult&lt;PyObjectRef&gt; {
         <span class="macro">bind_call_unary_math_function!</span>(signum, vm, val);
     }
 
-    <span class="doccomment">/// simple math function, the backing implement is datafusion&#39;s `exp` math function
+    <span class="doccomment">/// simple math function, the backing implement is datafusion's `exp` math function
     </span><span class="attr">#[pyfunction]
     </span><span class="kw">fn </span>exp(val: PyObjectRef, vm: <span class="kw-2">&amp;</span>VirtualMachine) -&gt; PyResult&lt;PyObjectRef&gt; {
         <span class="macro">bind_call_unary_math_function!</span>(exp, vm, val);
     }
 
-    <span class="doccomment">/// simple math function, the backing implement is datafusion&#39;s `ln` math function
-    </span><span class="attr">#[pyfunction(name = <span class="string">&quot;log&quot;</span>)]
+    <span class="doccomment">/// simple math function, the backing implement is datafusion's `ln` math function
+    </span><span class="attr">#[pyfunction(name = <span class="string">"log"</span>)]
     #[pyfunction]
     </span><span class="kw">fn </span>ln(val: PyObjectRef, vm: <span class="kw-2">&amp;</span>VirtualMachine) -&gt; PyResult&lt;PyObjectRef&gt; {
         <span class="macro">bind_call_unary_math_function!</span>(ln, vm, val);
     }
 
-    <span class="doccomment">/// simple math function, the backing implement is datafusion&#39;s `log2` math function
+    <span class="doccomment">/// simple math function, the backing implement is datafusion's `log2` math function
     </span><span class="attr">#[pyfunction]
     </span><span class="kw">fn </span>log2(val: PyObjectRef, vm: <span class="kw-2">&amp;</span>VirtualMachine) -&gt; PyResult&lt;PyObjectRef&gt; {
         <span class="macro">bind_call_unary_math_function!</span>(log2, vm, val);
     }
 
-    <span class="doccomment">/// simple math function, the backing implement is datafusion&#39;s `log10` math function
+    <span class="doccomment">/// simple math function, the backing implement is datafusion's `log10` math function
     </span><span class="attr">#[pyfunction]
     </span><span class="kw">fn </span>log10(val: PyObjectRef, vm: <span class="kw-2">&amp;</span>VirtualMachine) -&gt; PyResult&lt;PyObjectRef&gt; {
         <span class="macro">bind_call_unary_math_function!</span>(log10, vm, val);
@@ -1809,7 +1816,7 @@
     }
 
     <span class="doccomment">/// Not implement in datafusion
-    /// TODO(discord9): use greptime&#39;s own impl instead
+    /// TODO(discord9): use greptime's own impl instead
     </span><span class="comment">/*
         #[pyfunction]
         fn approx_median(values: PyVectorRef, vm: &amp;VirtualMachine) -&gt; PyResult&lt;PyObjectRef&gt; {
@@ -1834,10 +1841,10 @@
         eval_aggr_fn(
             expressions::ApproxPercentileCont::new(
                 <span class="macro">vec!</span>[
-                    Arc::new(expressions::Column::new(<span class="string">&quot;expr0&quot;</span>, <span class="number">0</span>)) <span class="kw">as _</span>,
+                    Arc::new(expressions::Column::new(<span class="string">"expr0"</span>, <span class="number">0</span>)) <span class="kw">as _</span>,
                     Arc::new(percent) <span class="kw">as _</span>,
                 ],
-                <span class="string">&quot;ApproxPercentileCont&quot;</span>,
+                <span class="string">"ApproxPercentileCont"</span>,
                 values.arrow_data_type(),
             )
             .map_err(|err| from_df_err(err, vm))<span class="question-mark">?</span>,
@@ -1858,7 +1865,7 @@
         );
     }
 
-    <span class="doccomment">/// directly port from datafusion&#39;s `avg` function
+    <span class="doccomment">/// directly port from datafusion's `avg` function
     </span><span class="attr">#[pyfunction]
     </span><span class="kw">fn </span>avg(values: PyVectorRef, vm: <span class="kw-2">&amp;</span>VirtualMachine) -&gt; PyResult&lt;PyObjectRef&gt; {
         <span class="macro">bind_aggr_fn!</span>(
@@ -2006,17 +2013,17 @@
         );
     }
 
-    <span class="doccomment">/// Pow function, bind from gp&#39;s [`PowFunction`]
+    <span class="doccomment">/// Pow function, bind from gp's [`PowFunction`]
     </span><span class="attr">#[pyfunction]
     </span><span class="kw">fn </span>pow(base: PyObjectRef, pow: PyObjectRef, vm: <span class="kw-2">&amp;</span>VirtualMachine) -&gt; PyResult&lt;PyVector&gt; {
         <span class="kw">let </span>base = base
             .payload::&lt;PyVector&gt;()
-            .ok_or_else(|| type_cast_error(<span class="kw-2">&amp;</span>base.class().name(), <span class="string">&quot;vector&quot;</span>, vm))<span class="question-mark">?</span>;
+            .ok_or_else(|| type_cast_error(<span class="kw-2">&amp;</span>base.class().name(), <span class="string">"vector"</span>, vm))<span class="question-mark">?</span>;
         <span class="kw">let </span>len_base = base.as_vector_ref().len();
         <span class="kw">let </span>arg_pow = <span class="kw">if </span>is_instance::&lt;PyVector&gt;(<span class="kw-2">&amp;</span>pow, vm) {
             <span class="kw">let </span>pow = pow
                 .payload::&lt;PyVector&gt;()
-                .ok_or_else(|| type_cast_error(<span class="kw-2">&amp;</span>pow.class().name(), <span class="string">&quot;vector&quot;</span>, vm))<span class="question-mark">?</span>;
+                .ok_or_else(|| type_cast_error(<span class="kw-2">&amp;</span>pow.class().name(), <span class="string">"vector"</span>, vm))<span class="question-mark">?</span>;
             pow.as_vector_ref()
         } <span class="kw">else if </span>is_instance::&lt;PyFloat&gt;(<span class="kw-2">&amp;</span>pow, vm) {
             <span class="kw">let </span>pow = pow.try_into_value::&lt;f64&gt;(vm)<span class="question-mark">?</span>;
@@ -2029,7 +2036,7 @@
                 ConstantVector::new(Arc::new(Int64Vector::from_vec(<span class="macro">vec!</span>[pow])) <span class="kw">as _</span>, len_base);
             Arc::new(ret) <span class="kw">as _
         </span>} <span class="kw">else </span>{
-            <span class="kw">return </span><span class="prelude-val">Err</span>(vm.new_type_error(<span class="macro">format!</span>(<span class="string">&quot;Unsupported type({pow:#?}) for pow()&quot;</span>)));
+            <span class="kw">return </span><span class="prelude-val">Err</span>(vm.new_type_error(<span class="macro">format!</span>(<span class="string">"Unsupported type({pow:#?}) for pow()"</span>)));
         };
         <span class="comment">// pyfunction can return PyResult&lt;...&gt;, args can be like PyObjectRef or anything
         // impl IntoPyNativeFunc, see rustpython-vm function for more details
@@ -2038,7 +2045,7 @@
             .eval(FunctionContext::default(), <span class="kw-2">&amp;</span>args)
             .map_err(|err| {
                 vm.new_runtime_error(<span class="macro">format!</span>(
-                    <span class="string">&quot;Fail to eval pow() withi given args: {args:?}, Error: {err}&quot;
+                    <span class="string">"Fail to eval pow() withi given args: {args:?}, Error: {err}"
                 </span>))
             })<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(res.into())
@@ -2054,7 +2061,7 @@
                 <span class="macro">paste!</span>{
                     <span class="kw">match </span><span class="macro-nonterminal">$VAR</span>{
                         $(ArrowDataType::<span class="macro-nonterminal">$TY </span>=&gt; Arc::new(arrow::array::[&lt;<span class="macro-nonterminal">$TY </span>Array&gt;]::from(<span class="macro">vec!</span>[<span class="prelude-val">None</span>;<span class="macro-nonterminal">$LEN</span>])), )*
-                        <span class="kw">_ </span>=&gt; <span class="kw">return </span><span class="prelude-val">Err</span>(vm.new_type_error(<span class="macro">format!</span>(<span class="string">&quot;gen_none_array() does not support {:?}&quot;</span>, data_type)))
+                        <span class="kw">_ </span>=&gt; <span class="kw">return </span><span class="prelude-val">Err</span>(vm.new_type_error(<span class="macro">format!</span>(<span class="string">"gen_none_array() does not support {:?}"</span>, data_type)))
                     }
                 }
             };
@@ -2062,7 +2069,7 @@
         <span class="kw">let </span>ret: ArrayRef = <span class="macro">match_none_array!</span>(
             data_type,
             len,
-            [Boolean, Int8, Int16, Int32, Int64, UInt8, UInt16, UInt32, UInt64, Float32, Float64] <span class="comment">// We don&#39;t support float16 right now, it&#39;s not common in usage.
+            [Boolean, Int8, Int16, Int32, Int64, UInt8, UInt16, UInt32, UInt64, Float32, Float64] <span class="comment">// We don't support float16 right now, it's not common in usage.
         </span>);
         <span class="prelude-val">Ok</span>(ret)
     }
@@ -2074,7 +2081,7 @@
             <span class="kw">let </span>ret = cur.slice(<span class="number">0</span>, <span class="number">0</span>);
             <span class="kw">let </span>ret = Helper::try_into_vector(ret.clone()).map_err(|e| {
                 vm.new_type_error(<span class="macro">format!</span>(
-                    <span class="string">&quot;Can&#39;t cast result into vector, result: {ret:?}, err: {e:?}&quot;</span>,
+                    <span class="string">"Can't cast result into vector, result: {ret:?}, err: {e:?}"</span>,
                 ))
             })<span class="question-mark">?</span>;
             <span class="kw">return </span><span class="prelude-val">Ok</span>(ret.into());
@@ -2082,11 +2089,11 @@
         <span class="kw">let </span>cur = cur.slice(<span class="number">0</span>, cur.len() - <span class="number">1</span>); <span class="comment">// except the last one that is
         </span><span class="kw">let </span>fill = gen_none_array(cur.data_type().clone(), <span class="number">1</span>, vm)<span class="question-mark">?</span>;
         <span class="kw">let </span>ret = compute::concat(<span class="kw-2">&amp;</span>[<span class="kw-2">&amp;*</span>fill, <span class="kw-2">&amp;*</span>cur]).map_err(|err| {
-            vm.new_runtime_error(<span class="macro">format!</span>(<span class="string">&quot;Can&#39;t concat array[0] with array[0:-1]!{err:#?}&quot;</span>))
+            vm.new_runtime_error(<span class="macro">format!</span>(<span class="string">"Can't concat array[0] with array[0:-1]!{err:#?}"</span>))
         })<span class="question-mark">?</span>;
         <span class="kw">let </span>ret = Helper::try_into_vector(ret.clone()).map_err(|e| {
             vm.new_type_error(<span class="macro">format!</span>(
-                <span class="string">&quot;Can&#39;t cast result into vector, result: {ret:?}, err: {e:?}&quot;</span>,
+                <span class="string">"Can't cast result into vector, result: {ret:?}, err: {e:?}"</span>,
             ))
         })<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(ret.into())
@@ -2099,7 +2106,7 @@
             <span class="kw">let </span>ret = cur.slice(<span class="number">0</span>, <span class="number">0</span>);
             <span class="kw">let </span>ret = Helper::try_into_vector(ret.clone()).map_err(|e| {
                 vm.new_type_error(<span class="macro">format!</span>(
-                    <span class="string">&quot;Can&#39;t cast result into vector, result: {ret:?}, err: {e:?}&quot;</span>,
+                    <span class="string">"Can't cast result into vector, result: {ret:?}, err: {e:?}"</span>,
                 ))
             })<span class="question-mark">?</span>;
             <span class="kw">return </span><span class="prelude-val">Ok</span>(ret.into());
@@ -2107,11 +2114,11 @@
         <span class="kw">let </span>cur = cur.slice(<span class="number">1</span>, cur.len() - <span class="number">1</span>); <span class="comment">// except the last one that is
         </span><span class="kw">let </span>fill = gen_none_array(cur.data_type().clone(), <span class="number">1</span>, vm)<span class="question-mark">?</span>;
         <span class="kw">let </span>ret = compute::concat(<span class="kw-2">&amp;</span>[<span class="kw-2">&amp;*</span>cur, <span class="kw-2">&amp;*</span>fill]).map_err(|err| {
-            vm.new_runtime_error(<span class="macro">format!</span>(<span class="string">&quot;Can&#39;t concat array[0] with array[0:-1]!{err:#?}&quot;</span>))
+            vm.new_runtime_error(<span class="macro">format!</span>(<span class="string">"Can't concat array[0] with array[0:-1]!{err:#?}"</span>))
         })<span class="question-mark">?</span>;
         <span class="kw">let </span>ret = Helper::try_into_vector(ret.clone()).map_err(|e| {
             vm.new_type_error(<span class="macro">format!</span>(
-                <span class="string">&quot;Can&#39;t cast result into vector, result: {ret:?}, err: {e:?}&quot;</span>,
+                <span class="string">"Can't cast result into vector, result: {ret:?}, err: {e:?}"</span>,
             ))
         })<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(ret.into())
@@ -2125,7 +2132,7 @@
         vm: <span class="kw-2">&amp;</span>VirtualMachine,
     ) -&gt; PyResult&lt;Vec&lt;i64&gt;&gt; {
         <span class="kw">if </span>oldest &gt; newest {
-            <span class="kw">return </span><span class="prelude-val">Err</span>(vm.new_value_error(<span class="macro">format!</span>(<span class="string">&quot;{oldest} is greater than {newest}&quot;</span>)));
+            <span class="kw">return </span><span class="prelude-val">Err</span>(vm.new_value_error(<span class="macro">format!</span>(<span class="string">"{oldest} is greater than {newest}"</span>)));
         }
         <span class="kw">if </span>duration &gt; <span class="number">0 </span>{
             <span class="kw">let </span>ret = (oldest..=newest)
@@ -2133,14 +2140,14 @@
                 .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
             <span class="prelude-val">Ok</span>(ret)
         } <span class="kw">else </span>{
-            <span class="prelude-val">Err</span>(vm.new_value_error(<span class="macro">format!</span>(<span class="string">&quot;duration: {duration} is not positive number.&quot;</span>)))
+            <span class="prelude-val">Err</span>(vm.new_value_error(<span class="macro">format!</span>(<span class="string">"duration: {duration} is not positive number."</span>)))
         }
     }
 
     <span class="doccomment">/// `func`: exec on sliding window slice of given `arr`, expect it to always return a PyVector of one element
     /// `ts`: a vector of time stamp, expect to be Monotonous increase
     /// `arr`: actual data vector
-    /// `duration`: the size of sliding window, also is the default step of sliding window&#39;s per step
+    /// `duration`: the size of sliding window, also is the default step of sliding window's per step
     </span><span class="attr">#[pyfunction]
     </span><span class="kw">fn </span>interval(
         ts: PyVectorRef,
@@ -2152,23 +2159,23 @@
         <span class="comment">// TODO(discord9): change to use PyDict to mimic a table?
         // then: table: PyDict, , lambda t:
         // ts: PyStr, duration: i64
-        // TODO: try to return a PyVector if possible, using concat array in arrow&#39;s compute module
+        // TODO: try to return a PyVector if possible, using concat array in arrow's compute module
         // 1. slice them according to duration
-        </span><span class="kw">let </span>arrow_error = |err: ArrowError| vm.new_runtime_error(<span class="macro">format!</span>(<span class="string">&quot;Arrow Error: {err:#?}&quot;</span>));
+        </span><span class="kw">let </span>arrow_error = |err: ArrowError| vm.new_runtime_error(<span class="macro">format!</span>(<span class="string">"Arrow Error: {err:#?}"</span>));
         <span class="kw">let </span>datatype_error =
-            |err: datatypes::Error| vm.new_runtime_error(<span class="macro">format!</span>(<span class="string">&quot;DataType Errors!: {err:#?}&quot;</span>));
+            |err: datatypes::Error| vm.new_runtime_error(<span class="macro">format!</span>(<span class="string">"DataType Errors!: {err:#?}"</span>));
         <span class="kw">let </span>ts_array_ref: ArrayRef = ts.to_arrow_array();
         <span class="kw">let </span>ts = ts_array_ref
             .as_any()
             .downcast_ref::&lt;Int64Array&gt;()
             .ok_or_else(|| {
-                vm.new_type_error(<span class="macro">format!</span>(<span class="string">&quot;ts must be int64, found: {ts_array_ref:?}&quot;</span>))
+                vm.new_type_error(<span class="macro">format!</span>(<span class="string">"ts must be int64, found: {ts_array_ref:?}"</span>))
             })<span class="question-mark">?</span>;
         <span class="kw">let </span>slices = {
             <span class="kw">let </span>oldest = aggregate::min(ts)
-                .ok_or_else(|| vm.new_runtime_error(<span class="string">&quot;ts must has min value&quot;</span>.to_string()))<span class="question-mark">?</span>;
+                .ok_or_else(|| vm.new_runtime_error(<span class="string">"ts must has min value"</span>.to_string()))<span class="question-mark">?</span>;
             <span class="kw">let </span>newest = aggregate::max(ts)
-                .ok_or_else(|| vm.new_runtime_error(<span class="string">&quot;ts must has max value&quot;</span>.to_string()))<span class="question-mark">?</span>;
+                .ok_or_else(|| vm.new_runtime_error(<span class="string">"ts must has max value"</span>.to_string()))<span class="question-mark">?</span>;
             gen_inteveral(oldest, newest, duration, vm)<span class="question-mark">?
         </span>};
 
@@ -2177,8 +2184,12 @@
                 .iter()
                 .zip(slices.iter().skip(<span class="number">1</span>))
                 .map(|(first, second)| {
-                    <span class="kw">let </span>left = comparison::gt_eq_scalar(ts, <span class="kw-2">*</span>first).map_err(arrow_error)<span class="question-mark">?</span>;
-                    <span class="kw">let </span>right = comparison::lt_eq_scalar(ts, <span class="kw-2">*</span>second).map_err(arrow_error)<span class="question-mark">?</span>;
+                    <span class="kw">let </span>first = Int64Array::new_scalar(<span class="kw-2">*</span>first);
+                    <span class="kw">let </span>second = Int64Array::new_scalar(<span class="kw-2">*</span>second);
+                    <span class="kw">let </span>left =
+                        arrow::compute::kernels::cmp::gt_eq(ts, <span class="kw-2">&amp;</span>first).map_err(arrow_error)<span class="question-mark">?</span>;
+                    <span class="kw">let </span>right =
+                        arrow::compute::kernels::cmp::lt_eq(ts, <span class="kw-2">&amp;</span>second).map_err(arrow_error)<span class="question-mark">?</span>;
                     boolean::and(<span class="kw-2">&amp;</span>left, <span class="kw-2">&amp;</span>right).map_err(arrow_error)
                 })
                 .map(|mask| <span class="kw">match </span>mask {
@@ -2200,11 +2211,11 @@
                             <span class="prelude-val">Ok</span>(v) =&gt; <span class="kw">if </span>v.len()==<span class="number">1</span>{
                                 <span class="prelude-val">Ok</span>(v)
                             }<span class="kw">else</span>{
-                                <span class="prelude-val">Err</span>(vm.new_runtime_error(<span class="macro">format!</span>(<span class="string">&quot;Expect return&#39;s length to be at most one, found to be length of {}.&quot;</span>, v.len())))
+                                <span class="prelude-val">Err</span>(vm.new_runtime_error(<span class="macro">format!</span>(<span class="string">"Expect return's length to be at most one, found to be length of {}."</span>, v.len())))
                             },
                             <span class="prelude-val">Err</span>(err) =&gt; <span class="prelude-val">Err</span>(vm
                                 .new_runtime_error(
-                                    <span class="macro">format!</span>(<span class="string">&quot;expect `interval()`&#39;s `func` return a PyVector(`vector`) or int/float/bool, found return to be {obj:?}, error msg: {err}&quot;</span>)
+                                    <span class="macro">format!</span>(<span class="string">"expect `interval()`'s `func` return a PyVector(`vector`) or int/float/bool, found return to be {obj:?}, error msg: {err}"</span>)
                                 )
                             )
                         }
@@ -2238,7 +2249,7 @@
         </span><span class="prelude-val">Ok</span>(PyVector::from(vector))
     }
 
-    <span class="doccomment">/// return first element in a `PyVector` in sliced new `PyVector`, if vector&#39;s length is zero, return a zero sized slice instead
+    <span class="doccomment">/// return first element in a `PyVector` in sliced new `PyVector`, if vector's length is zero, return a zero sized slice instead
     </span><span class="attr">#[pyfunction]
     </span><span class="kw">fn </span>first(arr: PyVectorRef, vm: <span class="kw-2">&amp;</span>VirtualMachine) -&gt; PyResult&lt;PyVector&gt; {
         <span class="kw">let </span>arr: ArrayRef = arr.to_arrow_array();
@@ -2248,13 +2259,13 @@
         };
         <span class="kw">let </span>ret = Helper::try_into_vector(ret.clone()).map_err(|e| {
             vm.new_type_error(<span class="macro">format!</span>(
-                <span class="string">&quot;Can&#39;t cast result into vector, result: {ret:?}, err: {e:?}&quot;</span>,
+                <span class="string">"Can't cast result into vector, result: {ret:?}, err: {e:?}"</span>,
             ))
         })<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(ret.into())
     }
 
-    <span class="doccomment">/// return last element in a `PyVector` in sliced new `PyVector`, if vector&#39;s length is zero, return a zero sized slice instead
+    <span class="doccomment">/// return last element in a `PyVector` in sliced new `PyVector`, if vector's length is zero, return a zero sized slice instead
     </span><span class="attr">#[pyfunction]
     </span><span class="kw">fn </span>last(arr: PyVectorRef, vm: <span class="kw-2">&amp;</span>VirtualMachine) -&gt; PyResult&lt;PyVector&gt; {
         <span class="kw">let </span>arr: ArrayRef = arr.to_arrow_array();
@@ -2264,7 +2275,7 @@
         };
         <span class="kw">let </span>ret = Helper::try_into_vector(ret.clone()).map_err(|e| {
             vm.new_type_error(<span class="macro">format!</span>(
-                <span class="string">&quot;Can&#39;t cast result into vector, result: {ret:?}, err: {e:?}&quot;</span>,
+                <span class="string">"Can't cast result into vector, result: {ret:?}, err: {e:?}"</span>,
             ))
         })<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(ret.into())
@@ -2292,7 +2303,7 @@
                 }
                 (<span class="bool-val">false</span>, State::Num(<span class="kw">_</span>)) =&gt; {
                     <span class="kw">let </span>res = str::parse(<span class="kw-2">&amp;</span>input[prev..idx]).map_err(|err| {
-                        vm.new_runtime_error(<span class="macro">format!</span>(<span class="string">&quot;Fail to parse num: {err:#?}&quot;</span>))
+                        vm.new_runtime_error(<span class="macro">format!</span>(<span class="string">"Fail to parse num: {err:#?}"</span>))
                     })<span class="question-mark">?</span>;
                     <span class="kw">let </span>res = State::Num(res);
                     parsed.push(res);
@@ -2305,7 +2316,7 @@
         <span class="kw">let </span>last = <span class="kw">match </span>state {
             State::Num(<span class="kw">_</span>) =&gt; {
                 <span class="kw">let </span>res = str::parse(<span class="kw-2">&amp;</span>input[prev..])
-                    .map_err(|err| vm.new_runtime_error(<span class="macro">format!</span>(<span class="string">&quot;Fail to parse num: {err:#?}&quot;</span>)))<span class="question-mark">?</span>;
+                    .map_err(|err| vm.new_runtime_error(<span class="macro">format!</span>(<span class="string">"Fail to parse num: {err:#?}"</span>)))<span class="question-mark">?</span>;
                 State::Num(res)
             }
             State::Separator(<span class="kw">_</span>) =&gt; {
@@ -2318,11 +2329,11 @@
         <span class="kw">let </span><span class="kw-2">mut </span>tot_time = <span class="number">0</span>;
         <span class="kw">fn </span>factor(unit: <span class="kw-2">&amp;</span>str, vm: <span class="kw-2">&amp;</span>VirtualMachine) -&gt; PyResult&lt;i64&gt; {
             <span class="kw">let </span>ret = <span class="kw">match </span>unit {
-                <span class="string">&quot;d&quot; </span>=&gt; <span class="number">24 </span>* <span class="number">60 </span>* <span class="number">60</span>,
-                <span class="string">&quot;h&quot; </span>=&gt; <span class="number">60 </span>* <span class="number">60</span>,
-                <span class="string">&quot;m&quot; </span>=&gt; <span class="number">60</span>,
-                <span class="string">&quot;s&quot; </span>=&gt; <span class="number">1</span>,
-                <span class="kw">_ </span>=&gt; <span class="kw">return </span><span class="prelude-val">Err</span>(vm.new_type_error(<span class="macro">format!</span>(<span class="string">&quot;Unknown time unit: {unit}&quot;</span>))),
+                <span class="string">"d" </span>=&gt; <span class="number">24 </span>* <span class="number">60 </span>* <span class="number">60</span>,
+                <span class="string">"h" </span>=&gt; <span class="number">60 </span>* <span class="number">60</span>,
+                <span class="string">"m" </span>=&gt; <span class="number">60</span>,
+                <span class="string">"s" </span>=&gt; <span class="number">1</span>,
+                <span class="kw">_ </span>=&gt; <span class="kw">return </span><span class="prelude-val">Err</span>(vm.new_type_error(<span class="macro">format!</span>(<span class="string">"Unknown time unit: {unit}"</span>))),
             };
             <span class="prelude-val">Ok</span>(ret)
         }
@@ -2331,7 +2342,7 @@
                 State::Num(v) =&gt; {
                     <span class="kw">if </span>cur_idx + <span class="number">1 </span>&gt; parsed.len() {
                         <span class="kw">return </span><span class="prelude-val">Err</span>(vm.new_runtime_error(
-                            <span class="string">&quot;Expect a separator after number, found nothing!&quot;</span>.to_string(),
+                            <span class="string">"Expect a separator after number, found nothing!"</span>.to_string(),
                         ));
                     }
                     <span class="kw">let </span>nxt = <span class="kw-2">&amp;</span>parsed[cur_idx + <span class="number">1</span>];
@@ -2339,13 +2350,13 @@
                         tot_time += v * factor(sep, vm)<span class="question-mark">?</span>;
                     } <span class="kw">else </span>{
                         <span class="kw">return </span><span class="prelude-val">Err</span>(vm.new_runtime_error(<span class="macro">format!</span>(
-                            <span class="string">&quot;Expect a separator after number, found `{nxt:#?}`&quot;
+                            <span class="string">"Expect a separator after number, found `{nxt:#?}`"
                         </span>)));
                     }
                     cur_idx += <span class="number">2</span>;
                 }
                 State::Separator(sep) =&gt; {
-                    <span class="kw">return </span><span class="prelude-val">Err</span>(vm.new_runtime_error(<span class="macro">format!</span>(<span class="string">&quot;Expect a number, found `{sep}`&quot;</span>)))
+                    <span class="kw">return </span><span class="prelude-val">Err</span>(vm.new_runtime_error(<span class="macro">format!</span>(<span class="string">"Expect a number, found `{sep}`"</span>)))
                 }
             }
         }

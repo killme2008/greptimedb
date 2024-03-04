@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/servers/src/line_writer.rs`."><title>line_writer.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="servers" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../servers/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/servers/src/line_writer.rs`."><title>line_writer.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="servers" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -222,17 +223,16 @@
 <a href="#222" id="222">222</a>
 <a href="#223" id="223">223</a>
 <a href="#224" id="224">224</a>
-<a href="#225" id="225">225</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -366,8 +366,7 @@
             schema_name: <span class="self">self</span>.db,
             table_name: <span class="self">self</span>.table_name,
             columns_values,
-            region_number: <span class="number">0</span>, <span class="comment">// TODO(hl): Check if assign 0 region is ok?
-        </span>}
+        }
     }
 }
 
@@ -384,42 +383,42 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_writer() {
-        <span class="kw">let </span><span class="kw-2">mut </span>writer = LineWriter::with_lines(DEFAULT_SCHEMA_NAME, <span class="string">&quot;demo&quot;</span>.to_string(), <span class="number">4</span>);
-        writer.write_ts(<span class="string">&quot;ts&quot;</span>, (<span class="number">1665893727685</span>, Precision::Millisecond));
-        writer.write_tag(<span class="string">&quot;host&quot;</span>, <span class="string">&quot;host-1&quot;</span>);
-        writer.write_i64(<span class="string">&quot;memory&quot;</span>, <span class="number">10_i64</span>);
+        <span class="kw">let </span><span class="kw-2">mut </span>writer = LineWriter::with_lines(DEFAULT_SCHEMA_NAME, <span class="string">"demo"</span>.to_string(), <span class="number">4</span>);
+        writer.write_ts(<span class="string">"ts"</span>, (<span class="number">1665893727685</span>, Precision::Millisecond));
+        writer.write_tag(<span class="string">"host"</span>, <span class="string">"host-1"</span>);
+        writer.write_i64(<span class="string">"memory"</span>, <span class="number">10_i64</span>);
         writer.commit();
 
-        writer.write_ts(<span class="string">&quot;ts&quot;</span>, (<span class="number">1665893727686</span>, Precision::Millisecond));
-        writer.write_tag(<span class="string">&quot;host&quot;</span>, <span class="string">&quot;host-2&quot;</span>);
-        writer.write_tag(<span class="string">&quot;region&quot;</span>, <span class="string">&quot;region-2&quot;</span>);
-        writer.write_i64(<span class="string">&quot;memory&quot;</span>, <span class="number">9_i64</span>);
+        writer.write_ts(<span class="string">"ts"</span>, (<span class="number">1665893727686</span>, Precision::Millisecond));
+        writer.write_tag(<span class="string">"host"</span>, <span class="string">"host-2"</span>);
+        writer.write_tag(<span class="string">"region"</span>, <span class="string">"region-2"</span>);
+        writer.write_i64(<span class="string">"memory"</span>, <span class="number">9_i64</span>);
         writer.commit();
 
-        writer.write_ts(<span class="string">&quot;ts&quot;</span>, (<span class="number">1665893727689</span>, Precision::Millisecond));
-        writer.write_tag(<span class="string">&quot;host&quot;</span>, <span class="string">&quot;host-3&quot;</span>);
-        writer.write_tag(<span class="string">&quot;region&quot;</span>, <span class="string">&quot;region-3&quot;</span>);
-        writer.write_i64(<span class="string">&quot;cpu&quot;</span>, <span class="number">19_i64</span>);
+        writer.write_ts(<span class="string">"ts"</span>, (<span class="number">1665893727689</span>, Precision::Millisecond));
+        writer.write_tag(<span class="string">"host"</span>, <span class="string">"host-3"</span>);
+        writer.write_tag(<span class="string">"region"</span>, <span class="string">"region-3"</span>);
+        writer.write_i64(<span class="string">"cpu"</span>, <span class="number">19_i64</span>);
         writer.commit();
 
         <span class="kw">let </span>insert_request = writer.finish();
 
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;demo&quot;</span>, insert_request.table_name);
+        <span class="macro">assert_eq!</span>(<span class="string">"demo"</span>, insert_request.table_name);
         <span class="macro">assert_eq!</span>(DEFAULT_SCHEMA_NAME, insert_request.schema_name);
 
         <span class="kw">let </span>columns = insert_request.columns_values;
         <span class="macro">assert_eq!</span>(<span class="number">5</span>, columns.len());
-        <span class="macro">assert!</span>(columns.contains_key(<span class="string">&quot;ts&quot;</span>));
-        <span class="macro">assert!</span>(columns.contains_key(<span class="string">&quot;host&quot;</span>));
-        <span class="macro">assert!</span>(columns.contains_key(<span class="string">&quot;memory&quot;</span>));
-        <span class="macro">assert!</span>(columns.contains_key(<span class="string">&quot;region&quot;</span>));
-        <span class="macro">assert!</span>(columns.contains_key(<span class="string">&quot;cpu&quot;</span>));
+        <span class="macro">assert!</span>(columns.contains_key(<span class="string">"ts"</span>));
+        <span class="macro">assert!</span>(columns.contains_key(<span class="string">"host"</span>));
+        <span class="macro">assert!</span>(columns.contains_key(<span class="string">"memory"</span>));
+        <span class="macro">assert!</span>(columns.contains_key(<span class="string">"region"</span>));
+        <span class="macro">assert!</span>(columns.contains_key(<span class="string">"cpu"</span>));
 
-        <span class="kw">let </span>ts = columns.get(<span class="string">&quot;ts&quot;</span>).unwrap();
-        <span class="kw">let </span>host = columns.get(<span class="string">&quot;host&quot;</span>).unwrap();
-        <span class="kw">let </span>memory = columns.get(<span class="string">&quot;memory&quot;</span>).unwrap();
-        <span class="kw">let </span>region = columns.get(<span class="string">&quot;region&quot;</span>).unwrap();
-        <span class="kw">let </span>cpu = columns.get(<span class="string">&quot;cpu&quot;</span>).unwrap();
+        <span class="kw">let </span>ts = columns.get(<span class="string">"ts"</span>).unwrap();
+        <span class="kw">let </span>host = columns.get(<span class="string">"host"</span>).unwrap();
+        <span class="kw">let </span>memory = columns.get(<span class="string">"memory"</span>).unwrap();
+        <span class="kw">let </span>region = columns.get(<span class="string">"region"</span>).unwrap();
+        <span class="kw">let </span>cpu = columns.get(<span class="string">"cpu"</span>).unwrap();
 
         <span class="kw">let </span>expected: Vec&lt;Value&gt; = <span class="macro">vec!</span>[
             Value::Timestamp(Timestamp::new_millisecond(<span class="number">1665893727685_i64</span>)),
@@ -428,13 +427,13 @@
         ];
         assert_vector(<span class="kw-2">&amp;</span>expected, ts);
 
-        <span class="kw">let </span>expected: Vec&lt;Value&gt; = <span class="macro">vec!</span>[<span class="string">&quot;host-1&quot;</span>.into(), <span class="string">&quot;host-2&quot;</span>.into(), <span class="string">&quot;host-3&quot;</span>.into()];
+        <span class="kw">let </span>expected: Vec&lt;Value&gt; = <span class="macro">vec!</span>[<span class="string">"host-1"</span>.into(), <span class="string">"host-2"</span>.into(), <span class="string">"host-3"</span>.into()];
         assert_vector(<span class="kw-2">&amp;</span>expected, host);
 
         <span class="kw">let </span>expected: Vec&lt;Value&gt; = <span class="macro">vec!</span>[<span class="number">10_i64</span>.into(), <span class="number">9_i64</span>.into(), Value::Null];
         assert_vector(<span class="kw-2">&amp;</span>expected, memory);
 
-        <span class="kw">let </span>expected: Vec&lt;Value&gt; = <span class="macro">vec!</span>[Value::Null, <span class="string">&quot;region-2&quot;</span>.into(), <span class="string">&quot;region-3&quot;</span>.into()];
+        <span class="kw">let </span>expected: Vec&lt;Value&gt; = <span class="macro">vec!</span>[Value::Null, <span class="string">"region-2"</span>.into(), <span class="string">"region-3"</span>.into()];
         assert_vector(<span class="kw-2">&amp;</span>expected, region);
 
         <span class="kw">let </span>expected: Vec&lt;Value&gt; = <span class="macro">vec!</span>[Value::Null, Value::Null, <span class="number">19_i64</span>.into()];

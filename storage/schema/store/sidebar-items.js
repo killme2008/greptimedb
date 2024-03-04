@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"constant":["ROW_KEY_END_KEY","USER_COLUMN_END_KEY"],"fn":["parse_index_from_metadata"],"struct":["StoreSchema"],"type":["StoreSchemaRef"]};

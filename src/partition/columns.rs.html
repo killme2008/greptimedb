@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/partition/src/columns.rs`."><title>columns.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="partition" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../partition/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/partition/src/columns.rs`."><title>columns.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="partition" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -416,14 +417,14 @@
 <a href="#416" id="416">416</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -438,10 +439,10 @@
 <span class="kw">use </span><span class="kw">crate</span>::error::{<span class="self">self</span>, <span class="prelude-ty">Result</span>};
 <span class="kw">use </span><span class="kw">crate</span>::partition::{PartitionBound, PartitionExpr, PartitionRule};
 
-<span class="doccomment">/// A [RangeColumnsPartitionRule] is very similar to [RangePartitionRule] except that it allows
+<span class="doccomment">/// A [RangeColumnsPartitionRule] is very similar to [RangePartitionRule](crate::range::RangePartitionRule) except that it allows
 /// partitioning by multiple columns.
 ///
-/// This rule is generated from create table request, using MySQL&#39;s syntax:
+/// This rule is generated from create table request, using MySQL's syntax:
 ///
 /// ```SQL
 /// CREATE TABLE table_name (
@@ -460,7 +461,7 @@
 ///     value[, value][, ...]
 /// ```
 ///
-/// Please refer to MySQL&#39;s [&quot;RANGE COLUMNS Partitioning&quot;](https://dev.mysql.com/doc/refman/8.0/en/partitioning-columns-range.html)
+/// Please refer to MySQL's ["RANGE COLUMNS Partitioning"](https://dev.mysql.com/doc/refman/8.0/en/partitioning-columns-range.html)
 /// document for more details.
 </span><span class="kw">pub struct </span>RangeColumnsPartitionRule {
     column_list: Vec&lt;String&gt;,
@@ -468,30 +469,30 @@
     regions: Vec&lt;RegionNumber&gt;,
 
     <span class="comment">// TODO(LFC): Implement finding regions by all partitioning columns, not by the first one only.
-    // Singled out the first partitioning column&#39;s bounds for finding regions by range.
+    // Singled out the first partitioning column's bounds for finding regions by range.
     //
     // Theoretically, finding regions in `value_list`s should use all the partition columns values
-    // as a whole in the comparison (think of how Rust&#39;s vector is compared to each other). And
+    // as a whole in the comparison (think of how Rust's vector is compared to each other). And
     // this is how we do it if provided with concrete values (see `find_region` method).
     //
-    // However, when we need to find regions by range, for example, a filter of &quot;x &lt; 100&quot; defined
-    // in SQL, currently I&#39;m not quite sure how that could be implemented. Especially facing the complex
-    // filter expression like &quot;a &lt; 1 AND (b &gt; 2 OR c != 3)&quot;.
+    // However, when we need to find regions by range, for example, a filter of "x &lt; 100" defined
+    // in SQL, currently I'm not quite sure how that could be implemented. Especially facing the complex
+    // filter expression like "a &lt; 1 AND (b &gt; 2 OR c != 3)".
     //
     // So I decided to use the first partitioning column temporarily in finding regions by range,
     // and further investigate how MySQL (and others) implemented this feature in detail.
     //
     // Finding regions only using the first partitioning column is fine. It might return regions that
-    // actually do not contain the range&#39;s value (causing unnecessary table scans), but will
+    // actually do not contain the range's value (causing unnecessary table scans), but will
     // not lose any data that should have been scanned.
     //
-    // The following two fields are acted as caches, so we don&#39;t need to recalculate them every time.
+    // The following two fields are acted as caches, so we don't need to recalculate them every time.
     </span>first_column_bounds: Vec&lt;PartitionBound&gt;,
     first_column_regions: Vec&lt;Vec&lt;RegionNumber&gt;&gt;,
 }
 
 <span class="kw">impl </span>RangeColumnsPartitionRule {
-    <span class="comment">// It&#39;s assured that input arguments are valid because they are checked in SQL parsing stage.
+    <span class="comment">// It's assured that input arguments are valid because they are checked in SQL parsing stage.
     // So we can skip validating them.
     </span><span class="kw">pub fn </span>new(
         column_list: Vec&lt;String&gt;,
@@ -500,11 +501,11 @@
     ) -&gt; <span class="self">Self </span>{
         <span class="comment">// An example range columns partition rule to calculate the first column bounds and regions:
         // SQL:
-        //   PARTITION p1 VALUES LESS THAN (10, &#39;c&#39;),
-        //   PARTITION p2 VALUES LESS THAN (20, &#39;h&#39;),
-        //   PARTITION p3 VALUES LESS THAN (20, &#39;m&#39;),
-        //   PARTITION p4 VALUES LESS THAN (50, &#39;p&#39;),
-        //   PARTITION p5 VALUES LESS THAN (MAXVALUE, &#39;x&#39;),
+        //   PARTITION p1 VALUES LESS THAN (10, 'c'),
+        //   PARTITION p2 VALUES LESS THAN (20, 'h'),
+        //   PARTITION p3 VALUES LESS THAN (20, 'm'),
+        //   PARTITION p4 VALUES LESS THAN (50, 'p'),
+        //   PARTITION p5 VALUES LESS THAN (MAXVALUE, 'x'),
         //   PARTITION p6 VALUES LESS THAN (MAXVALUE, MAXVALUE),
         // first column bounds:
         //   [10, 20, 50, MAXVALUE]
@@ -592,7 +593,7 @@
                 } = exprs
                     .iter()
                     .find(|x| x.column == <span class="self">self</span>.column_list[<span class="number">0</span>])
-                    <span class="comment">// &quot;unwrap&quot; is safe because we have checked that &quot;self.column_list&quot; contains all columns in &quot;exprs&quot;
+                    <span class="comment">// "unwrap" is safe because we have checked that "self.column_list" contains all columns in "exprs"
                     </span>.unwrap();
 
                 <span class="kw">let </span>regions = <span class="kw-2">&amp;</span><span class="self">self</span>.first_column_regions;
@@ -637,29 +638,29 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_find_regions() {
         <span class="comment">// PARTITION BY RANGE COLUMNS(a, b)
-        //   PARTITION p1 VALUES LESS THAN (&#39;hz&#39;, 10),
-        //   PARTITION p2 VALUES LESS THAN (&#39;sh&#39;, 20),
-        //   PARTITION p3 VALUES LESS THAN (&#39;sh&#39;, 50),
-        //   PARTITION p4 VALUES LESS THAN (&#39;sz&#39;, 100),
+        //   PARTITION p1 VALUES LESS THAN ('hz', 10),
+        //   PARTITION p2 VALUES LESS THAN ('sh', 20),
+        //   PARTITION p3 VALUES LESS THAN ('sh', 50),
+        //   PARTITION p4 VALUES LESS THAN ('sz', 100),
         //   PARTITION p5 VALUES LESS THAN (MAXVALUE, 200),
         //   PARTITION p6 VALUES LESS THAN (MAXVALUE, MAXVALUE),
         </span><span class="kw">let </span>rule = RangeColumnsPartitionRule::new(
-            <span class="macro">vec!</span>[<span class="string">&quot;a&quot;</span>.to_string(), <span class="string">&quot;b&quot;</span>.to_string()],
+            <span class="macro">vec!</span>[<span class="string">"a"</span>.to_string(), <span class="string">"b"</span>.to_string()],
             <span class="macro">vec!</span>[
                 <span class="macro">vec!</span>[
-                    PartitionBound::Value(<span class="string">&quot;hz&quot;</span>.into()),
+                    PartitionBound::Value(<span class="string">"hz"</span>.into()),
                     PartitionBound::Value(<span class="number">10_i32</span>.into()),
                 ],
                 <span class="macro">vec!</span>[
-                    PartitionBound::Value(<span class="string">&quot;sh&quot;</span>.into()),
+                    PartitionBound::Value(<span class="string">"sh"</span>.into()),
                     PartitionBound::Value(<span class="number">20_i32</span>.into()),
                 ],
                 <span class="macro">vec!</span>[
-                    PartitionBound::Value(<span class="string">&quot;sh&quot;</span>.into()),
+                    PartitionBound::Value(<span class="string">"sh"</span>.into()),
                     PartitionBound::Value(<span class="number">50_i32</span>.into()),
                 ],
                 <span class="macro">vec!</span>[
-                    PartitionBound::Value(<span class="string">&quot;sz&quot;</span>.into()),
+                    PartitionBound::Value(<span class="string">"sz"</span>.into()),
                     PartitionBound::Value(<span class="number">100_i32</span>.into()),
                 ],
                 <span class="macro">vec!</span>[
@@ -673,15 +674,15 @@
 
         <span class="kw">let </span>test = |op: Operator, value: <span class="kw-2">&amp;</span>str, expected_regions: Vec&lt;RegionNumber&gt;| {
             <span class="kw">let </span>exprs = <span class="macro">vec!</span>[
-                <span class="comment">// Intentionally fix column b&#39;s partition expr to &quot;b &lt; 1&quot;. If we support finding
-                // regions by both columns(&quot;a&quot; and &quot;b&quot;) in the future, some test cases should fail.
+                <span class="comment">// Intentionally fix column b's partition expr to "b &lt; 1". If we support finding
+                // regions by both columns("a" and "b") in the future, some test cases should fail.
                 </span>PartitionExpr {
-                    column: <span class="string">&quot;b&quot;</span>.to_string(),
+                    column: <span class="string">"b"</span>.to_string(),
                     op: Operator::Lt,
                     value: <span class="number">1_i32</span>.into(),
                 },
                 PartitionExpr {
-                    column: <span class="string">&quot;a&quot;</span>.to_string(),
+                    column: <span class="string">"a"</span>.to_string(),
                     op,
                     value: value.into(),
                 },
@@ -693,60 +694,60 @@
             );
         };
 
-        test(Operator::NotEq, <span class="string">&quot;hz&quot;</span>, <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]);
-        test(Operator::NotEq, <span class="string">&quot;what&quot;</span>, <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]);
+        test(Operator::NotEq, <span class="string">"hz"</span>, <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]);
+        test(Operator::NotEq, <span class="string">"what"</span>, <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]);
 
-        test(Operator::GtEq, <span class="string">&quot;ab&quot;</span>, <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]);
-        test(Operator::GtEq, <span class="string">&quot;hz&quot;</span>, <span class="macro">vec!</span>[<span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]);
-        test(Operator::GtEq, <span class="string">&quot;ijk&quot;</span>, <span class="macro">vec!</span>[<span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]);
-        test(Operator::GtEq, <span class="string">&quot;sh&quot;</span>, <span class="macro">vec!</span>[<span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]);
-        test(Operator::GtEq, <span class="string">&quot;ssh&quot;</span>, <span class="macro">vec!</span>[<span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]);
-        test(Operator::GtEq, <span class="string">&quot;sz&quot;</span>, <span class="macro">vec!</span>[<span class="number">5</span>, <span class="number">6</span>]);
-        test(Operator::GtEq, <span class="string">&quot;zz&quot;</span>, <span class="macro">vec!</span>[<span class="number">5</span>, <span class="number">6</span>]);
+        test(Operator::GtEq, <span class="string">"ab"</span>, <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]);
+        test(Operator::GtEq, <span class="string">"hz"</span>, <span class="macro">vec!</span>[<span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]);
+        test(Operator::GtEq, <span class="string">"ijk"</span>, <span class="macro">vec!</span>[<span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]);
+        test(Operator::GtEq, <span class="string">"sh"</span>, <span class="macro">vec!</span>[<span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]);
+        test(Operator::GtEq, <span class="string">"ssh"</span>, <span class="macro">vec!</span>[<span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]);
+        test(Operator::GtEq, <span class="string">"sz"</span>, <span class="macro">vec!</span>[<span class="number">5</span>, <span class="number">6</span>]);
+        test(Operator::GtEq, <span class="string">"zz"</span>, <span class="macro">vec!</span>[<span class="number">5</span>, <span class="number">6</span>]);
 
-        test(Operator::Gt, <span class="string">&quot;ab&quot;</span>, <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]);
-        test(Operator::Gt, <span class="string">&quot;hz&quot;</span>, <span class="macro">vec!</span>[<span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]);
-        test(Operator::Gt, <span class="string">&quot;ijk&quot;</span>, <span class="macro">vec!</span>[<span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]);
-        test(Operator::Gt, <span class="string">&quot;sh&quot;</span>, <span class="macro">vec!</span>[<span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]);
-        test(Operator::Gt, <span class="string">&quot;ssh&quot;</span>, <span class="macro">vec!</span>[<span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]);
-        test(Operator::Gt, <span class="string">&quot;sz&quot;</span>, <span class="macro">vec!</span>[<span class="number">5</span>, <span class="number">6</span>]);
-        test(Operator::Gt, <span class="string">&quot;zz&quot;</span>, <span class="macro">vec!</span>[<span class="number">5</span>, <span class="number">6</span>]);
+        test(Operator::Gt, <span class="string">"ab"</span>, <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]);
+        test(Operator::Gt, <span class="string">"hz"</span>, <span class="macro">vec!</span>[<span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]);
+        test(Operator::Gt, <span class="string">"ijk"</span>, <span class="macro">vec!</span>[<span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]);
+        test(Operator::Gt, <span class="string">"sh"</span>, <span class="macro">vec!</span>[<span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]);
+        test(Operator::Gt, <span class="string">"ssh"</span>, <span class="macro">vec!</span>[<span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]);
+        test(Operator::Gt, <span class="string">"sz"</span>, <span class="macro">vec!</span>[<span class="number">5</span>, <span class="number">6</span>]);
+        test(Operator::Gt, <span class="string">"zz"</span>, <span class="macro">vec!</span>[<span class="number">5</span>, <span class="number">6</span>]);
 
-        test(Operator::Eq, <span class="string">&quot;ab&quot;</span>, <span class="macro">vec!</span>[<span class="number">1</span>]);
-        test(Operator::Eq, <span class="string">&quot;hz&quot;</span>, <span class="macro">vec!</span>[<span class="number">2</span>, <span class="number">3</span>]);
-        test(Operator::Eq, <span class="string">&quot;ijk&quot;</span>, <span class="macro">vec!</span>[<span class="number">2</span>, <span class="number">3</span>]);
-        test(Operator::Eq, <span class="string">&quot;sh&quot;</span>, <span class="macro">vec!</span>[<span class="number">4</span>]);
-        test(Operator::Eq, <span class="string">&quot;ssh&quot;</span>, <span class="macro">vec!</span>[<span class="number">4</span>]);
-        test(Operator::Eq, <span class="string">&quot;sz&quot;</span>, <span class="macro">vec!</span>[<span class="number">5</span>, <span class="number">6</span>]);
-        test(Operator::Eq, <span class="string">&quot;zz&quot;</span>, <span class="macro">vec!</span>[<span class="number">5</span>, <span class="number">6</span>]);
+        test(Operator::Eq, <span class="string">"ab"</span>, <span class="macro">vec!</span>[<span class="number">1</span>]);
+        test(Operator::Eq, <span class="string">"hz"</span>, <span class="macro">vec!</span>[<span class="number">2</span>, <span class="number">3</span>]);
+        test(Operator::Eq, <span class="string">"ijk"</span>, <span class="macro">vec!</span>[<span class="number">2</span>, <span class="number">3</span>]);
+        test(Operator::Eq, <span class="string">"sh"</span>, <span class="macro">vec!</span>[<span class="number">4</span>]);
+        test(Operator::Eq, <span class="string">"ssh"</span>, <span class="macro">vec!</span>[<span class="number">4</span>]);
+        test(Operator::Eq, <span class="string">"sz"</span>, <span class="macro">vec!</span>[<span class="number">5</span>, <span class="number">6</span>]);
+        test(Operator::Eq, <span class="string">"zz"</span>, <span class="macro">vec!</span>[<span class="number">5</span>, <span class="number">6</span>]);
 
-        test(Operator::Lt, <span class="string">&quot;ab&quot;</span>, <span class="macro">vec!</span>[<span class="number">1</span>]);
-        test(Operator::Lt, <span class="string">&quot;hz&quot;</span>, <span class="macro">vec!</span>[<span class="number">1</span>]);
-        test(Operator::Lt, <span class="string">&quot;ijk&quot;</span>, <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]);
-        test(Operator::Lt, <span class="string">&quot;sh&quot;</span>, <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]);
-        test(Operator::Lt, <span class="string">&quot;ssh&quot;</span>, <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>]);
-        test(Operator::Lt, <span class="string">&quot;sz&quot;</span>, <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>]);
-        test(Operator::Lt, <span class="string">&quot;zz&quot;</span>, <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]);
+        test(Operator::Lt, <span class="string">"ab"</span>, <span class="macro">vec!</span>[<span class="number">1</span>]);
+        test(Operator::Lt, <span class="string">"hz"</span>, <span class="macro">vec!</span>[<span class="number">1</span>]);
+        test(Operator::Lt, <span class="string">"ijk"</span>, <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]);
+        test(Operator::Lt, <span class="string">"sh"</span>, <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]);
+        test(Operator::Lt, <span class="string">"ssh"</span>, <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>]);
+        test(Operator::Lt, <span class="string">"sz"</span>, <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>]);
+        test(Operator::Lt, <span class="string">"zz"</span>, <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]);
 
-        test(Operator::LtEq, <span class="string">&quot;ab&quot;</span>, <span class="macro">vec!</span>[<span class="number">1</span>]);
-        test(Operator::LtEq, <span class="string">&quot;hz&quot;</span>, <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]);
-        test(Operator::LtEq, <span class="string">&quot;ijk&quot;</span>, <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]);
-        test(Operator::LtEq, <span class="string">&quot;sh&quot;</span>, <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>]);
-        test(Operator::LtEq, <span class="string">&quot;ssh&quot;</span>, <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>]);
-        test(Operator::LtEq, <span class="string">&quot;sz&quot;</span>, <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]);
-        test(Operator::LtEq, <span class="string">&quot;zz&quot;</span>, <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]);
+        test(Operator::LtEq, <span class="string">"ab"</span>, <span class="macro">vec!</span>[<span class="number">1</span>]);
+        test(Operator::LtEq, <span class="string">"hz"</span>, <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]);
+        test(Operator::LtEq, <span class="string">"ijk"</span>, <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]);
+        test(Operator::LtEq, <span class="string">"sh"</span>, <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>]);
+        test(Operator::LtEq, <span class="string">"ssh"</span>, <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>]);
+        test(Operator::LtEq, <span class="string">"sz"</span>, <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]);
+        test(Operator::LtEq, <span class="string">"zz"</span>, <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]);
 
         <span class="comment">// If trying to find regions that is not partitioning column, return all regions.
         </span><span class="kw">let </span>exprs = <span class="macro">vec!</span>[
             PartitionExpr {
-                column: <span class="string">&quot;c&quot;</span>.to_string(),
+                column: <span class="string">"c"</span>.to_string(),
                 op: Operator::Lt,
                 value: <span class="number">1_i32</span>.into(),
             },
             PartitionExpr {
-                column: <span class="string">&quot;a&quot;</span>.to_string(),
+                column: <span class="string">"a"</span>.to_string(),
                 op: Operator::Lt,
-                value: <span class="string">&quot;hz&quot;</span>.into(),
+                value: <span class="string">"hz"</span>.into(),
             },
         ];
         <span class="kw">let </span>regions = rule.find_regions_by_exprs(<span class="kw-2">&amp;</span>exprs).unwrap();
@@ -756,53 +757,53 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_find_region() {
         <span class="comment">// PARTITION BY RANGE COLUMNS(a) (
-        //   PARTITION r1 VALUES LESS THAN (&#39;hz&#39;),
-        //   PARTITION r2 VALUES LESS THAN (&#39;sh&#39;),
+        //   PARTITION r1 VALUES LESS THAN ('hz'),
+        //   PARTITION r2 VALUES LESS THAN ('sh'),
         //   PARTITION r3 VALUES LESS THAN (MAXVALUE),
         // )
         </span><span class="kw">let </span>rule = RangeColumnsPartitionRule::new(
-            <span class="macro">vec!</span>[<span class="string">&quot;a&quot;</span>.to_string()],
+            <span class="macro">vec!</span>[<span class="string">"a"</span>.to_string()],
             <span class="macro">vec!</span>[
-                <span class="macro">vec!</span>[PartitionBound::Value(<span class="string">&quot;hz&quot;</span>.into())],
-                <span class="macro">vec!</span>[PartitionBound::Value(<span class="string">&quot;sh&quot;</span>.into())],
+                <span class="macro">vec!</span>[PartitionBound::Value(<span class="string">"hz"</span>.into())],
+                <span class="macro">vec!</span>[PartitionBound::Value(<span class="string">"sh"</span>.into())],
                 <span class="macro">vec!</span>[PartitionBound::MaxValue],
             ],
             <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>],
         );
         <span class="macro">assert_matches!</span>(
-            rule.find_region(<span class="kw-2">&amp;</span>[<span class="string">&quot;foo&quot;</span>.into(), <span class="number">1000_i32</span>.into()]),
+            rule.find_region(<span class="kw-2">&amp;</span>[<span class="string">"foo"</span>.into(), <span class="number">1000_i32</span>.into()]),
             <span class="prelude-val">Err</span>(error::Error::RegionKeysSize {
                 expect: <span class="number">1</span>,
                 actual: <span class="number">2</span>,
                 ..
             })
         );
-        <span class="macro">assert_matches!</span>(rule.find_region(<span class="kw-2">&amp;</span>[<span class="string">&quot;foo&quot;</span>.into()]), <span class="prelude-val">Ok</span>(<span class="number">1</span>));
-        <span class="macro">assert_matches!</span>(rule.find_region(<span class="kw-2">&amp;</span>[<span class="string">&quot;bar&quot;</span>.into()]), <span class="prelude-val">Ok</span>(<span class="number">1</span>));
-        <span class="macro">assert_matches!</span>(rule.find_region(<span class="kw-2">&amp;</span>[<span class="string">&quot;hz&quot;</span>.into()]), <span class="prelude-val">Ok</span>(<span class="number">2</span>));
-        <span class="macro">assert_matches!</span>(rule.find_region(<span class="kw-2">&amp;</span>[<span class="string">&quot;hzz&quot;</span>.into()]), <span class="prelude-val">Ok</span>(<span class="number">2</span>));
-        <span class="macro">assert_matches!</span>(rule.find_region(<span class="kw-2">&amp;</span>[<span class="string">&quot;sh&quot;</span>.into()]), <span class="prelude-val">Ok</span>(<span class="number">3</span>));
-        <span class="macro">assert_matches!</span>(rule.find_region(<span class="kw-2">&amp;</span>[<span class="string">&quot;zzzz&quot;</span>.into()]), <span class="prelude-val">Ok</span>(<span class="number">3</span>));
+        <span class="macro">assert_matches!</span>(rule.find_region(<span class="kw-2">&amp;</span>[<span class="string">"foo"</span>.into()]), <span class="prelude-val">Ok</span>(<span class="number">1</span>));
+        <span class="macro">assert_matches!</span>(rule.find_region(<span class="kw-2">&amp;</span>[<span class="string">"bar"</span>.into()]), <span class="prelude-val">Ok</span>(<span class="number">1</span>));
+        <span class="macro">assert_matches!</span>(rule.find_region(<span class="kw-2">&amp;</span>[<span class="string">"hz"</span>.into()]), <span class="prelude-val">Ok</span>(<span class="number">2</span>));
+        <span class="macro">assert_matches!</span>(rule.find_region(<span class="kw-2">&amp;</span>[<span class="string">"hzz"</span>.into()]), <span class="prelude-val">Ok</span>(<span class="number">2</span>));
+        <span class="macro">assert_matches!</span>(rule.find_region(<span class="kw-2">&amp;</span>[<span class="string">"sh"</span>.into()]), <span class="prelude-val">Ok</span>(<span class="number">3</span>));
+        <span class="macro">assert_matches!</span>(rule.find_region(<span class="kw-2">&amp;</span>[<span class="string">"zzzz"</span>.into()]), <span class="prelude-val">Ok</span>(<span class="number">3</span>));
 
         <span class="comment">// PARTITION BY RANGE COLUMNS(a, b) (
-        //   PARTITION r1 VALUES LESS THAN (&#39;hz&#39;, 10),
-        //   PARTITION r2 VALUES LESS THAN (&#39;hz&#39;, 20),
-        //   PARTITION r3 VALUES LESS THAN (&#39;sh&#39;, 50),
+        //   PARTITION r1 VALUES LESS THAN ('hz', 10),
+        //   PARTITION r2 VALUES LESS THAN ('hz', 20),
+        //   PARTITION r3 VALUES LESS THAN ('sh', 50),
         //   PARTITION r4 VALUES LESS THAN (MAXVALUE, MAXVALUE),
         // )
         </span><span class="kw">let </span>rule = RangeColumnsPartitionRule::new(
-            <span class="macro">vec!</span>[<span class="string">&quot;a&quot;</span>.to_string(), <span class="string">&quot;b&quot;</span>.to_string()],
+            <span class="macro">vec!</span>[<span class="string">"a"</span>.to_string(), <span class="string">"b"</span>.to_string()],
             <span class="macro">vec!</span>[
                 <span class="macro">vec!</span>[
-                    PartitionBound::Value(<span class="string">&quot;hz&quot;</span>.into()),
+                    PartitionBound::Value(<span class="string">"hz"</span>.into()),
                     PartitionBound::Value(<span class="number">10_i32</span>.into()),
                 ],
                 <span class="macro">vec!</span>[
-                    PartitionBound::Value(<span class="string">&quot;hz&quot;</span>.into()),
+                    PartitionBound::Value(<span class="string">"hz"</span>.into()),
                     PartitionBound::Value(<span class="number">20_i32</span>.into()),
                 ],
                 <span class="macro">vec!</span>[
-                    PartitionBound::Value(<span class="string">&quot;sh&quot;</span>.into()),
+                    PartitionBound::Value(<span class="string">"sh"</span>.into()),
                     PartitionBound::Value(<span class="number">50_i32</span>.into()),
                 ],
                 <span class="macro">vec!</span>[PartitionBound::MaxValue, PartitionBound::MaxValue],
@@ -810,24 +811,24 @@
             <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>],
         );
         <span class="macro">assert_matches!</span>(
-            rule.find_region(<span class="kw-2">&amp;</span>[<span class="string">&quot;foo&quot;</span>.into()]),
+            rule.find_region(<span class="kw-2">&amp;</span>[<span class="string">"foo"</span>.into()]),
             <span class="prelude-val">Err</span>(error::Error::RegionKeysSize {
                 expect: <span class="number">2</span>,
                 actual: <span class="number">1</span>,
                 ..
             })
         );
-        <span class="macro">assert_matches!</span>(rule.find_region(<span class="kw-2">&amp;</span>[<span class="string">&quot;foo&quot;</span>.into(), <span class="number">1_i32</span>.into()]), <span class="prelude-val">Ok</span>(<span class="number">1</span>));
-        <span class="macro">assert_matches!</span>(rule.find_region(<span class="kw-2">&amp;</span>[<span class="string">&quot;bar&quot;</span>.into(), <span class="number">11_i32</span>.into()]), <span class="prelude-val">Ok</span>(<span class="number">1</span>));
-        <span class="macro">assert_matches!</span>(rule.find_region(<span class="kw-2">&amp;</span>[<span class="string">&quot;hz&quot;</span>.into(), <span class="number">2_i32</span>.into()]), <span class="prelude-val">Ok</span>(<span class="number">1</span>));
-        <span class="macro">assert_matches!</span>(rule.find_region(<span class="kw-2">&amp;</span>[<span class="string">&quot;hz&quot;</span>.into(), <span class="number">12_i32</span>.into()]), <span class="prelude-val">Ok</span>(<span class="number">2</span>));
-        <span class="macro">assert_matches!</span>(rule.find_region(<span class="kw-2">&amp;</span>[<span class="string">&quot;hz&quot;</span>.into(), <span class="number">22_i32</span>.into()]), <span class="prelude-val">Ok</span>(<span class="number">3</span>));
-        <span class="macro">assert_matches!</span>(rule.find_region(<span class="kw-2">&amp;</span>[<span class="string">&quot;hz&quot;</span>.into(), <span class="number">999_i32</span>.into()]), <span class="prelude-val">Ok</span>(<span class="number">3</span>));
-        <span class="macro">assert_matches!</span>(rule.find_region(<span class="kw-2">&amp;</span>[<span class="string">&quot;hzz&quot;</span>.into(), <span class="number">1_i32</span>.into()]), <span class="prelude-val">Ok</span>(<span class="number">3</span>));
-        <span class="macro">assert_matches!</span>(rule.find_region(<span class="kw-2">&amp;</span>[<span class="string">&quot;hzz&quot;</span>.into(), <span class="number">999_i32</span>.into()]), <span class="prelude-val">Ok</span>(<span class="number">3</span>));
-        <span class="macro">assert_matches!</span>(rule.find_region(<span class="kw-2">&amp;</span>[<span class="string">&quot;sh&quot;</span>.into(), <span class="number">49_i32</span>.into()]), <span class="prelude-val">Ok</span>(<span class="number">3</span>));
-        <span class="macro">assert_matches!</span>(rule.find_region(<span class="kw-2">&amp;</span>[<span class="string">&quot;sh&quot;</span>.into(), <span class="number">50_i32</span>.into()]), <span class="prelude-val">Ok</span>(<span class="number">4</span>));
-        <span class="macro">assert_matches!</span>(rule.find_region(<span class="kw-2">&amp;</span>[<span class="string">&quot;zzz&quot;</span>.into(), <span class="number">1_i32</span>.into()]), <span class="prelude-val">Ok</span>(<span class="number">4</span>));
+        <span class="macro">assert_matches!</span>(rule.find_region(<span class="kw-2">&amp;</span>[<span class="string">"foo"</span>.into(), <span class="number">1_i32</span>.into()]), <span class="prelude-val">Ok</span>(<span class="number">1</span>));
+        <span class="macro">assert_matches!</span>(rule.find_region(<span class="kw-2">&amp;</span>[<span class="string">"bar"</span>.into(), <span class="number">11_i32</span>.into()]), <span class="prelude-val">Ok</span>(<span class="number">1</span>));
+        <span class="macro">assert_matches!</span>(rule.find_region(<span class="kw-2">&amp;</span>[<span class="string">"hz"</span>.into(), <span class="number">2_i32</span>.into()]), <span class="prelude-val">Ok</span>(<span class="number">1</span>));
+        <span class="macro">assert_matches!</span>(rule.find_region(<span class="kw-2">&amp;</span>[<span class="string">"hz"</span>.into(), <span class="number">12_i32</span>.into()]), <span class="prelude-val">Ok</span>(<span class="number">2</span>));
+        <span class="macro">assert_matches!</span>(rule.find_region(<span class="kw-2">&amp;</span>[<span class="string">"hz"</span>.into(), <span class="number">22_i32</span>.into()]), <span class="prelude-val">Ok</span>(<span class="number">3</span>));
+        <span class="macro">assert_matches!</span>(rule.find_region(<span class="kw-2">&amp;</span>[<span class="string">"hz"</span>.into(), <span class="number">999_i32</span>.into()]), <span class="prelude-val">Ok</span>(<span class="number">3</span>));
+        <span class="macro">assert_matches!</span>(rule.find_region(<span class="kw-2">&amp;</span>[<span class="string">"hzz"</span>.into(), <span class="number">1_i32</span>.into()]), <span class="prelude-val">Ok</span>(<span class="number">3</span>));
+        <span class="macro">assert_matches!</span>(rule.find_region(<span class="kw-2">&amp;</span>[<span class="string">"hzz"</span>.into(), <span class="number">999_i32</span>.into()]), <span class="prelude-val">Ok</span>(<span class="number">3</span>));
+        <span class="macro">assert_matches!</span>(rule.find_region(<span class="kw-2">&amp;</span>[<span class="string">"sh"</span>.into(), <span class="number">49_i32</span>.into()]), <span class="prelude-val">Ok</span>(<span class="number">3</span>));
+        <span class="macro">assert_matches!</span>(rule.find_region(<span class="kw-2">&amp;</span>[<span class="string">"sh"</span>.into(), <span class="number">50_i32</span>.into()]), <span class="prelude-val">Ok</span>(<span class="number">4</span>));
+        <span class="macro">assert_matches!</span>(rule.find_region(<span class="kw-2">&amp;</span>[<span class="string">"zzz"</span>.into(), <span class="number">1_i32</span>.into()]), <span class="prelude-val">Ok</span>(<span class="number">4</span>));
     }
 }
 </code></pre></div></section></main></body></html>

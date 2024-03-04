@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"constant":["MAX_PARALLEL_COMPACTION"],"struct":["CompactionOutput","CompactionTaskImpl"],"trait":["CompactionTask"]};

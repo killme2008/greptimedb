@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/partition/src/manager.rs`."><title>manager.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="partition" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../partition/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/partition/src/manager.rs`."><title>manager.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="partition" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -299,48 +300,16 @@
 <a href="#299" id="299">299</a>
 <a href="#300" id="300">300</a>
 <a href="#301" id="301">301</a>
-<a href="#302" id="302">302</a>
-<a href="#303" id="303">303</a>
-<a href="#304" id="304">304</a>
-<a href="#305" id="305">305</a>
-<a href="#306" id="306">306</a>
-<a href="#307" id="307">307</a>
-<a href="#308" id="308">308</a>
-<a href="#309" id="309">309</a>
-<a href="#310" id="310">310</a>
-<a href="#311" id="311">311</a>
-<a href="#312" id="312">312</a>
-<a href="#313" id="313">313</a>
-<a href="#314" id="314">314</a>
-<a href="#315" id="315">315</a>
-<a href="#316" id="316">316</a>
-<a href="#317" id="317">317</a>
-<a href="#318" id="318">318</a>
-<a href="#319" id="319">319</a>
-<a href="#320" id="320">320</a>
-<a href="#321" id="321">321</a>
-<a href="#322" id="322">322</a>
-<a href="#323" id="323">323</a>
-<a href="#324" id="324">324</a>
-<a href="#325" id="325">325</a>
-<a href="#326" id="326">326</a>
-<a href="#327" id="327">327</a>
-<a href="#328" id="328">328</a>
-<a href="#329" id="329">329</a>
-<a href="#330" id="330">330</a>
-<a href="#331" id="331">331</a>
-<a href="#332" id="332">332</a>
-<a href="#333" id="333">333</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -348,23 +317,24 @@
 </span><span class="kw">use </span>std::collections::{HashMap, HashSet};
 <span class="kw">use </span>std::sync::Arc;
 
+<span class="kw">use </span>api::v1::Rows;
+<span class="kw">use </span>common_meta::key::table_route::TableRouteManager;
+<span class="kw">use </span>common_meta::kv_backend::KvBackendRef;
 <span class="kw">use </span>common_meta::peer::Peer;
-<span class="kw">use </span>common_meta::rpc::router::TableRoute;
+<span class="kw">use </span>common_meta::rpc::router::RegionRoutes;
 <span class="kw">use </span>common_query::prelude::Expr;
 <span class="kw">use </span>datafusion_expr::{BinaryExpr, Expr <span class="kw">as </span>DfExpr, Operator};
 <span class="kw">use </span>datatypes::prelude::Value;
-<span class="kw">use </span>datatypes::schema::Schema;
 <span class="kw">use </span>snafu::{ensure, OptionExt, ResultExt};
 <span class="kw">use </span>store_api::storage::{RegionId, RegionNumber};
 <span class="kw">use </span>table::metadata::TableId;
-<span class="kw">use </span>table::requests::{DeleteRequest, InsertRequest};
 
 <span class="kw">use </span><span class="kw">crate</span>::columns::RangeColumnsPartitionRule;
 <span class="kw">use </span><span class="kw">crate</span>::error::{FindLeaderSnafu, <span class="prelude-ty">Result</span>};
+<span class="kw">use </span><span class="kw">crate</span>::metrics::METRIC_TABLE_ROUTE_GET;
 <span class="kw">use </span><span class="kw">crate</span>::partition::{PartitionBound, PartitionDef, PartitionExpr};
 <span class="kw">use </span><span class="kw">crate</span>::range::RangePartitionRule;
-<span class="kw">use </span><span class="kw">crate</span>::route::TableRoutes;
-<span class="kw">use </span><span class="kw">crate</span>::splitter::{DeleteRequestSplit, InsertRequestSplit, WriteSplitter};
+<span class="kw">use </span><span class="kw">crate</span>::splitter::RowSplitter;
 <span class="kw">use crate</span>::{error, PartitionRuleRef};
 
 <span class="attr">#[async_trait::async_trait]
@@ -381,7 +351,7 @@
 /// - values (in case of insertion)
 /// - filters (in case of select, deletion and update)
 </span><span class="kw">pub struct </span>PartitionRuleManager {
-    table_routes: Arc&lt;TableRoutes&gt;,
+    table_route_manager: TableRouteManager,
 }
 
 <span class="attr">#[derive(Debug)]
@@ -390,73 +360,44 @@
     <span class="kw">pub </span>partition: PartitionDef,
 }
 
-<span class="attr">#[async_trait::async_trait]
-</span><span class="kw">impl </span>TableRouteCacheInvalidator <span class="kw">for </span>PartitionRuleManager {
-    <span class="kw">async fn </span>invalidate_table_route(<span class="kw-2">&amp;</span><span class="self">self</span>, table: TableId) {
-        <span class="self">self</span>.table_routes.invalidate_table_route(table).<span class="kw">await
-    </span>}
-}
-
 <span class="kw">impl </span>PartitionRuleManager {
-    <span class="kw">pub fn </span>new(table_routes: Arc&lt;TableRoutes&gt;) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{ table_routes }
-    }
-
-    <span class="kw">pub fn </span>table_routes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>TableRoutes {
-        <span class="self">self</span>.table_routes.as_ref()
+    <span class="kw">pub fn </span>new(kv_backend: KvBackendRef) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            table_route_manager: TableRouteManager::new(kv_backend),
+        }
     }
 
     <span class="doccomment">/// Find table route of given table name.
-    </span><span class="kw">pub async fn </span>find_table_route(<span class="kw-2">&amp;</span><span class="self">self</span>, table: TableId) -&gt; <span class="prelude-ty">Result</span>&lt;Arc&lt;TableRoute&gt;&gt; {
-        <span class="self">self</span>.table_routes.get_route(table).<span class="kw">await
-    </span>}
+    </span><span class="kw">pub async fn </span>find_table_route(<span class="kw-2">&amp;</span><span class="self">self</span>, table_id: TableId) -&gt; <span class="prelude-ty">Result</span>&lt;RegionRoutes&gt; {
+        <span class="kw">let </span>_timer = METRIC_TABLE_ROUTE_GET.start_timer();
+        <span class="kw">let </span>route = <span class="self">self
+            </span>.table_route_manager
+            .get(table_id)
+            .<span class="kw">await
+            </span>.context(error::TableRouteManagerSnafu)<span class="question-mark">?
+            </span>.context(error::FindTableRoutesSnafu { table_id })<span class="question-mark">?
+            </span>.into_inner();
 
-    <span class="doccomment">/// Find datanodes of corresponding regions of given table.
-    </span><span class="kw">pub async fn </span>find_region_datanodes(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        table_id: TableId,
-        regions: Vec&lt;RegionNumber&gt;,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;HashMap&lt;Peer, Vec&lt;RegionNumber&gt;&gt;&gt; {
-        <span class="kw">let </span>route = <span class="self">self</span>.table_routes.get_route(table_id).<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="kw">let </span><span class="kw-2">mut </span>datanodes = HashMap::with_capacity(regions.len());
-        <span class="kw">for </span>region <span class="kw">in </span>regions.iter() {
-            <span class="kw">let </span>datanode = route
-                .find_region_leader(<span class="kw-2">*</span>region)
-                .context(error::FindDatanodeSnafu {
-                    table_id,
-                    region: <span class="kw-2">*</span>region,
-                })<span class="question-mark">?</span>;
-            datanodes
-                .entry(datanode.clone())
-                .or_insert_with(Vec::new)
-                .push(<span class="kw-2">*</span>region);
-        }
-        <span class="prelude-val">Ok</span>(datanodes)
-    }
-
-    <span class="doccomment">/// Find all leader peers of given table.
-    </span><span class="kw">pub async fn </span>find_table_region_leaders(<span class="kw-2">&amp;</span><span class="self">self</span>, table_id: TableId) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;Peer&gt;&gt; {
-        <span class="kw">let </span>route = <span class="self">self</span>.table_routes.get_route(table_id).<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="kw">let </span><span class="kw-2">mut </span>peers = Vec::with_capacity(route.region_routes.len());
-        <span class="kw">for </span>peer <span class="kw">in </span><span class="kw-2">&amp;</span>route.region_routes {
-            peers.push(peer.leader_peer.clone().with_context(|| FindLeaderSnafu {
-                region_id: peer.region.id,
-                table_id,
-            })<span class="question-mark">?</span>);
-        }
-
-        <span class="prelude-val">Ok</span>(peers)
+        <span class="prelude-val">Ok</span>(RegionRoutes(route.region_routes().clone()))
     }
 
     <span class="kw">pub async fn </span>find_table_partitions(<span class="kw-2">&amp;</span><span class="self">self</span>, table_id: TableId) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;PartitionInfo&gt;&gt; {
-        <span class="kw">let </span>route = <span class="self">self</span>.table_routes.get_route(table_id).<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>route = <span class="self">self
+            </span>.table_route_manager
+            .get(table_id)
+            .<span class="kw">await
+            </span>.context(error::TableRouteManagerSnafu)<span class="question-mark">?
+            </span>.context(error::FindTableRoutesSnafu { table_id })<span class="question-mark">?
+            </span>.into_inner();
+        <span class="kw">let </span>region_routes = route.region_routes();
+
         <span class="macro">ensure!</span>(
-            !route.region_routes.is_empty(),
+            !region_routes.is_empty(),
             error::FindTableRoutesSnafu { table_id }
         );
 
-        <span class="kw">let </span><span class="kw-2">mut </span>partitions = Vec::with_capacity(route.region_routes.len());
-        <span class="kw">for </span>r <span class="kw">in </span>route.region_routes.iter() {
+        <span class="kw">let </span><span class="kw-2">mut </span>partitions = Vec::with_capacity(region_routes.len());
+        <span class="kw">for </span>r <span class="kw">in </span>region_routes {
             <span class="kw">let </span>partition = r
                 .region
                 .partition
@@ -484,7 +425,7 @@
                 .all(|w| w[<span class="number">0</span>].partition.partition_columns() == w[<span class="number">1</span>].partition.partition_columns()),
             error::InvalidTableRouteDataSnafu {
                 table_id,
-                err_msg: <span class="string">&quot;partition columns of all regions are not the same&quot;
+                err_msg: <span class="string">"partition columns of all regions are not the same"
             </span>}
         );
 
@@ -505,7 +446,7 @@
         <span class="comment">// TODO(LFC): Serializing and deserializing partition rule is ugly, must find a much more elegant way.
         </span><span class="kw">let </span>partition_rule: PartitionRuleRef = <span class="kw">match </span>partition_columns.len() {
             <span class="number">1 </span>=&gt; {
-                <span class="comment">// Omit the last &quot;MAXVALUE&quot;.
+                <span class="comment">// Omit the last "MAXVALUE".
                 </span><span class="kw">let </span>bounds = partitions
                     .iter()
                     .filter_map(|info| <span class="kw">match </span><span class="kw-2">&amp;</span>info.partition.partition_bounds()[<span class="number">0</span>] {
@@ -546,7 +487,7 @@
                 <span class="kw">let </span>regions = find_regions0(partition_rule.clone(), filter)<span class="question-mark">?</span>;
 
                 <span class="comment">// When all filters are provided as a collection, it often implicitly states that
-                // &quot;all filters must be satisfied&quot;. So we join all the results here.
+                // "all filters must be satisfied". So we join all the results here.
                 </span>target.retain(|x| regions.contains(x));
 
                 <span class="comment">// Failed fast, empty collection join any is empty.
@@ -567,28 +508,24 @@
         <span class="prelude-val">Ok</span>(regions)
     }
 
-    <span class="doccomment">/// Split [InsertRequest] into [InsertRequestSplit] according to the partition rule
-    /// of given table.
-    </span><span class="kw">pub async fn </span>split_insert_request(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        table: TableId,
-        req: InsertRequest,
-        schema: <span class="kw-2">&amp;</span>Schema,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;InsertRequestSplit&gt; {
-        <span class="kw">let </span>partition_rule = <span class="self">self</span>.find_table_partition_rule(table).<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="kw">let </span>splitter = WriteSplitter::with_partition_rule(partition_rule);
-        splitter.split_insert(req, schema)
+    <span class="kw">pub async fn </span>find_region_leader(<span class="kw-2">&amp;</span><span class="self">self</span>, region_id: RegionId) -&gt; <span class="prelude-ty">Result</span>&lt;Peer&gt; {
+        <span class="kw">let </span>table_route = <span class="self">self</span>.find_table_route(region_id.table_id()).<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>peer = table_route
+            .find_region_leader(region_id.region_number())
+            .with_context(|| FindLeaderSnafu {
+                region_id,
+                table_id: region_id.table_id(),
+            })<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(peer.clone())
     }
 
-    <span class="kw">pub async fn </span>split_delete_request(
+    <span class="kw">pub async fn </span>split_rows(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        table: TableId,
-        req: DeleteRequest,
-        primary_key_column_names: Vec&lt;<span class="kw-2">&amp;</span>String&gt;,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;DeleteRequestSplit&gt; {
-        <span class="kw">let </span>partition_rule = <span class="self">self</span>.find_table_partition_rule(table).<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="kw">let </span>splitter = WriteSplitter::with_partition_rule(partition_rule);
-        splitter.split_delete(req, primary_key_column_names)
+        table_id: TableId,
+        rows: Rows,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;HashMap&lt;RegionNumber, Rows&gt;&gt; {
+        <span class="kw">let </span>partition_rule = <span class="self">self</span>.find_table_partition_rule(table_id).<span class="kw">await</span><span class="question-mark">?</span>;
+        RowSplitter::new(partition_rule).split(rows)
     }
 }
 

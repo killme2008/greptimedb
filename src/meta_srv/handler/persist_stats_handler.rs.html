@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/meta-srv/src/handler/persist_stats_handler.rs`."><title>persist_stats_handler.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="meta_srv" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../meta_srv/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/meta-srv/src/handler/persist_stats_handler.rs`."><title>persist_stats_handler.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="meta_srv" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -230,16 +231,17 @@
 <a href="#230" id="230">230</a>
 <a href="#231" id="231">231</a>
 <a href="#232" id="232">232</a>
+<a href="#233" id="233">233</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-// http://www.apache.org/licenses/LICENSE-2.0
+//     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -250,10 +252,11 @@
 <span class="kw">use </span>common_meta::rpc::store::PutRequest;
 <span class="kw">use </span>common_telemetry::warn;
 <span class="kw">use </span>dashmap::DashMap;
+<span class="kw">use </span>snafu::ResultExt;
 
-<span class="kw">use </span><span class="kw">crate</span>::error::Result;
+<span class="kw">use </span><span class="kw">crate</span>::error::{<span class="self">self</span>, <span class="prelude-ty">Result</span>};
 <span class="kw">use </span><span class="kw">crate</span>::handler::node_stat::Stat;
-<span class="kw">use </span><span class="kw">crate</span>::handler::{HeartbeatAccumulator, HeartbeatHandler};
+<span class="kw">use </span><span class="kw">crate</span>::handler::{HandleControl, HeartbeatAccumulator, HeartbeatHandler};
 <span class="kw">use </span><span class="kw">crate</span>::keys::{StatKey, StatValue};
 <span class="kw">use </span><span class="kw">crate</span>::metasrv::Context;
 
@@ -313,9 +316,9 @@
         _req: <span class="kw-2">&amp;</span>HeartbeatRequest,
         ctx: <span class="kw-2">&amp;mut </span>Context,
         acc: <span class="kw-2">&amp;mut </span>HeartbeatAccumulator,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;HandleControl&gt; {
         <span class="kw">let </span><span class="prelude-val">Some</span>(current_stat) = acc.stat.take() <span class="kw">else </span>{
-            <span class="kw">return </span><span class="prelude-val">Ok</span>(());
+            <span class="kw">return </span><span class="prelude-val">Ok</span>(HandleControl::Continue);
         };
 
         <span class="kw">let </span>key = current_stat.stat_key();
@@ -333,7 +336,7 @@
                     <span class="bool-val">true
                 </span>}
                 Ordering::Less =&gt; {
-                    <span class="macro">warn!</span>(<span class="string">&quot;Ignore stale heartbeat: {:?}&quot;</span>, current_stat);
+                    <span class="macro">warn!</span>(<span class="string">"Ignore stale heartbeat: {:?}"</span>, current_stat);
                     <span class="bool-val">false
                 </span>}
                 Ordering::Equal =&gt; <span class="bool-val">false</span>,
@@ -349,7 +352,7 @@
         epoch_stats.push(current_stat);
 
         <span class="kw">if </span>!refresh &amp;&amp; epoch_stats.len() &lt; MAX_CACHED_STATS_PER_KEY {
-            <span class="kw">return </span><span class="prelude-val">Ok</span>(());
+            <span class="kw">return </span><span class="prelude-val">Ok</span>(HandleControl::Continue);
         }
 
         <span class="kw">let </span>value: Vec&lt;u8&gt; = StatValue {
@@ -362,35 +365,38 @@
             ..Default::default()
         };
 
-        <span class="kw">let _ </span>= ctx.in_memory.put(put).<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let _ </span>= ctx
+            .in_memory
+            .put(put)
+            .<span class="kw">await
+            </span>.context(error::KvBackendSnafu)<span class="question-mark">?</span>;
 
-        <span class="prelude-val">Ok</span>(())
+        <span class="prelude-val">Ok</span>(HandleControl::Continue)
     }
 }
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
-    <span class="kw">use </span>std::sync::atomic::AtomicBool;
     <span class="kw">use </span>std::sync::Arc;
 
     <span class="kw">use </span>common_meta::key::TableMetadataManager;
+    <span class="kw">use </span>common_meta::kv_backend::memory::MemoryKvBackend;
+    <span class="kw">use </span>common_meta::sequence::SequenceBuilder;
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use </span><span class="kw">crate</span>::cluster::MetaPeerClientBuilder;
     <span class="kw">use </span><span class="kw">crate</span>::handler::{HeartbeatMailbox, Pushers};
     <span class="kw">use </span><span class="kw">crate</span>::keys::StatKey;
-    <span class="kw">use </span><span class="kw">crate</span>::sequence::Sequence;
-    <span class="kw">use </span><span class="kw">crate</span>::service::store::cached_kv::LeaderCachedKvStore;
-    <span class="kw">use </span><span class="kw">crate</span>::service::store::kv::KvBackendAdapter;
-    <span class="kw">use </span><span class="kw">crate</span>::service::store::memory::MemStore;
+    <span class="kw">use </span><span class="kw">crate</span>::service::store::cached_kv::LeaderCachedKvBackend;
 
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>test_handle_datanode_stats() {
-        <span class="kw">let </span>in_memory = Arc::new(MemStore::new());
-        <span class="kw">let </span>kv_store = Arc::new(MemStore::new());
-        <span class="kw">let </span>leader_cached_kv_store =
-            Arc::new(LeaderCachedKvStore::with_always_leader(kv_store.clone()));
-        <span class="kw">let </span>seq = Sequence::new(<span class="string">&quot;test_seq&quot;</span>, <span class="number">0</span>, <span class="number">10</span>, kv_store.clone());
+        <span class="kw">let </span>in_memory = Arc::new(MemoryKvBackend::new());
+        <span class="kw">let </span>kv_backend = Arc::new(MemoryKvBackend::new());
+        <span class="kw">let </span>leader_cached_kv_backend = Arc::new(LeaderCachedKvBackend::with_always_leader(
+            kv_backend.clone(),
+        ));
+        <span class="kw">let </span>seq = SequenceBuilder::new(<span class="string">"test_seq"</span>, kv_backend.clone()).build();
         <span class="kw">let </span>mailbox = HeartbeatMailbox::create(Pushers::default(), seq);
         <span class="kw">let </span>meta_peer_client = MetaPeerClientBuilder::default()
             .election(<span class="prelude-val">None</span>)
@@ -400,18 +406,15 @@
             <span class="comment">// Safety: all required fields set at initialization
             </span>.unwrap();
         <span class="kw">let </span>ctx = Context {
-            server_addr: <span class="string">&quot;127.0.0.1:0000&quot;</span>.to_string(),
+            server_addr: <span class="string">"127.0.0.1:0000"</span>.to_string(),
             in_memory,
-            kv_store: kv_store.clone(),
-            leader_cached_kv_store,
+            kv_backend: kv_backend.clone(),
+            leader_cached_kv_backend,
             meta_peer_client,
             mailbox,
             election: <span class="prelude-val">None</span>,
-            skip_all: Arc::new(AtomicBool::new(<span class="bool-val">false</span>)),
             is_infancy: <span class="bool-val">false</span>,
-            table_metadata_manager: Arc::new(TableMetadataManager::new(KvBackendAdapter::wrap(
-                kv_store.clone(),
-            ))),
+            table_metadata_manager: Arc::new(TableMetadataManager::new(kv_backend.clone())),
         };
 
         <span class="kw">let </span>handler = PersistStatsHandler::default();
@@ -421,7 +424,7 @@
             cluster_id: <span class="number">3</span>,
             node_id: <span class="number">101</span>,
         };
-        <span class="kw">let </span>key: Vec&lt;u8&gt; = key.try_into().unwrap();
+        <span class="kw">let </span>key: Vec&lt;u8&gt; = key.into();
         <span class="kw">let </span>res = ctx.in_memory.get(<span class="kw-2">&amp;</span>key).<span class="kw">await</span>.unwrap();
         <span class="kw">let </span>kv = res.unwrap();
         <span class="kw">let </span>key: StatKey = kv.key.clone().try_into().unwrap();
@@ -430,11 +433,11 @@
         <span class="kw">let </span>val: StatValue = kv.value.try_into().unwrap();
         <span class="comment">// first new stat must be set in kv store immediately
         </span><span class="macro">assert_eq!</span>(<span class="number">1</span>, val.stats.len());
-        <span class="macro">assert_eq!</span>(<span class="prelude-val">Some</span>(<span class="number">1</span>), val.stats[<span class="number">0</span>].region_num);
+        <span class="macro">assert_eq!</span>(<span class="number">1</span>, val.stats[<span class="number">0</span>].region_num);
 
         handle_request_many_times(ctx.clone(), <span class="kw-2">&amp;</span>handler, <span class="number">10</span>).<span class="kw">await</span>;
 
-        <span class="kw">let </span>key: Vec&lt;u8&gt; = key.try_into().unwrap();
+        <span class="kw">let </span>key: Vec&lt;u8&gt; = key.into();
         <span class="kw">let </span>res = ctx.in_memory.get(<span class="kw-2">&amp;</span>key).<span class="kw">await</span>.unwrap();
         <span class="kw">let </span>kv = res.unwrap();
         <span class="kw">let </span>val: StatValue = kv.value.try_into().unwrap();
@@ -453,7 +456,7 @@
                 stat: <span class="prelude-val">Some</span>(Stat {
                     cluster_id: <span class="number">3</span>,
                     id: <span class="number">101</span>,
-                    region_num: <span class="prelude-val">Some</span>(i <span class="kw">as _</span>),
+                    region_num: i <span class="kw">as _</span>,
                     ..Default::default()
                 }),
                 ..Default::default()

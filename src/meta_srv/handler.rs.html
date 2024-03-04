@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/meta-srv/src/handler.rs`."><title>handler.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="meta_srv" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../meta_srv/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/meta-srv/src/handler.rs`."><title>handler.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="meta_srv" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -499,42 +500,70 @@
 <a href="#499" id="499">499</a>
 <a href="#500" id="500">500</a>
 <a href="#501" id="501">501</a>
+<a href="#502" id="502">502</a>
+<a href="#503" id="503">503</a>
+<a href="#504" id="504">504</a>
+<a href="#505" id="505">505</a>
+<a href="#506" id="506">506</a>
+<a href="#507" id="507">507</a>
+<a href="#508" id="508">508</a>
+<a href="#509" id="509">509</a>
+<a href="#510" id="510">510</a>
+<a href="#511" id="511">511</a>
+<a href="#512" id="512">512</a>
+<a href="#513" id="513">513</a>
+<a href="#514" id="514">514</a>
+<a href="#515" id="515">515</a>
+<a href="#516" id="516">516</a>
+<a href="#517" id="517">517</a>
+<a href="#518" id="518">518</a>
+<a href="#519" id="519">519</a>
+<a href="#520" id="520">520</a>
+<a href="#521" id="521">521</a>
+<a href="#522" id="522">522</a>
+<a href="#523" id="523">523</a>
+<a href="#524" id="524">524</a>
+<a href="#525" id="525">525</a>
+<a href="#526" id="526">526</a>
+<a href="#527" id="527">527</a>
+<a href="#528" id="528">528</a>
+<a href="#529" id="529">529</a>
+<a href="#530" id="530">530</a>
+<a href="#531" id="531">531</a>
+<a href="#532" id="532">532</a>
+<a href="#533" id="533">533</a>
+<a href="#534" id="534">534</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-</span><span class="kw">use </span>std::collections::BTreeMap;
+</span><span class="kw">use </span>std::collections::{BTreeMap, HashSet};
 <span class="kw">use </span>std::ops::Range;
 <span class="kw">use </span>std::sync::Arc;
-<span class="kw">use </span>std::time::Duration;
+<span class="kw">use </span>std::time::{Duration, Instant};
 
 <span class="kw">use </span>api::v1::meta::mailbox_message::Payload;
 <span class="kw">use </span>api::v1::meta::{
     HeartbeatRequest, HeartbeatResponse, MailboxMessage, RegionLease, RequestHeader,
     ResponseHeader, Role, PROTOCOL_VERSION,
 };
-<span class="kw">pub use </span>check_leader_handler::CheckLeaderHandler;
-<span class="kw">pub use </span>collect_stats_handler::CollectStatsHandler;
 <span class="kw">use </span>common_meta::instruction::{Instruction, InstructionReply};
-<span class="kw">use </span>common_telemetry::{debug, info, timer, warn};
+<span class="kw">use </span>common_meta::sequence::Sequence;
+<span class="kw">use </span>common_telemetry::{debug, info, warn};
 <span class="kw">use </span>dashmap::DashMap;
-<span class="kw">pub use </span>failure_handler::RegionFailureHandler;
-<span class="kw">pub use </span>keep_lease_handler::KeepLeaseHandler;
-<span class="kw">use </span>metrics::{decrement_gauge, increment_gauge};
-<span class="kw">pub use </span>on_leader_start_handler::OnLeaderStartHandler;
-<span class="kw">pub use </span>persist_stats_handler::PersistStatsHandler;
-<span class="kw">pub use </span>response_header_handler::ResponseHeaderHandler;
+<span class="kw">use </span>futures::future::join_all;
 <span class="kw">use </span>snafu::{OptionExt, ResultExt};
+<span class="kw">use </span>store_api::storage::RegionId;
 <span class="kw">use </span>tokio::sync::mpsc::Sender;
 <span class="kw">use </span>tokio::sync::{oneshot, Notify, RwLock};
 
@@ -542,31 +571,31 @@
 <span class="kw">use </span><span class="kw">crate</span>::error::{<span class="self">self</span>, DeserializeFromJsonSnafu, <span class="prelude-ty">Result</span>, UnexpectedInstructionReplySnafu};
 <span class="kw">use </span><span class="kw">crate</span>::metasrv::Context;
 <span class="kw">use </span><span class="kw">crate</span>::metrics::{METRIC_META_HANDLER_EXECUTE, METRIC_META_HEARTBEAT_CONNECTION_NUM};
-<span class="kw">use </span><span class="kw">crate</span>::sequence::Sequence;
 <span class="kw">use </span><span class="kw">crate</span>::service::mailbox::{
     BroadcastChannel, Channel, Mailbox, MailboxReceiver, MailboxRef, MessageId,
 };
 
-<span class="kw">mod </span>check_leader_handler;
-<span class="kw">mod </span>collect_stats_handler;
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod </span>failure_handler;
-<span class="kw">mod </span>keep_lease_handler;
+<span class="kw">pub mod </span>check_leader_handler;
+<span class="kw">pub mod </span>collect_stats_handler;
+<span class="kw">pub mod </span>failure_handler;
+<span class="kw">pub mod </span>filter_inactive_region_stats;
+<span class="kw">pub mod </span>keep_lease_handler;
 <span class="kw">pub mod </span>mailbox_handler;
 <span class="kw">pub mod </span>node_stat;
-<span class="kw">mod </span>on_leader_start_handler;
-<span class="kw">mod </span>persist_stats_handler;
+<span class="kw">pub mod </span>on_leader_start_handler;
+<span class="kw">pub mod </span>persist_stats_handler;
 <span class="kw">pub mod </span>publish_heartbeat_handler;
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod </span>region_lease_handler;
-<span class="kw">mod </span>response_header_handler;
+<span class="kw">pub mod </span>region_lease_handler;
+<span class="kw">pub mod </span>response_header_handler;
 
 <span class="attr">#[async_trait::async_trait]
 </span><span class="kw">pub trait </span>HeartbeatHandler: Send + Sync {
     <span class="kw">fn </span>is_acceptable(<span class="kw-2">&amp;</span><span class="self">self</span>, role: Role) -&gt; bool;
 
-    <span class="kw">fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str {
+    <span class="kw">fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str {
         <span class="kw">let </span>type_name = std::any::type_name::&lt;<span class="self">Self</span>&gt;();
         <span class="comment">// short name
-        </span>type_name.split(<span class="string">&quot;::&quot;</span>).last().unwrap_or(type_name)
+        </span>type_name.split(<span class="string">"::"</span>).last().unwrap_or(type_name)
     }
 
     <span class="kw">async fn </span>handle(
@@ -574,7 +603,16 @@
         req: <span class="kw-2">&amp;</span>HeartbeatRequest,
         ctx: <span class="kw-2">&amp;mut </span>Context,
         acc: <span class="kw-2">&amp;mut </span>HeartbeatAccumulator,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;;
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;HandleControl&gt;;
+}
+
+<span class="doccomment">/// HandleControl
+///
+/// Controls process of handling heartbeat request.
+</span><span class="attr">#[derive(PartialEq)]
+</span><span class="kw">pub enum </span>HandleControl {
+    Continue,
+    Done,
 }
 
 <span class="attr">#[derive(Debug, Default)]
@@ -582,7 +620,8 @@
     <span class="kw">pub </span>header: <span class="prelude-ty">Option</span>&lt;ResponseHeader&gt;,
     <span class="kw">pub </span>instructions: Vec&lt;Instruction&gt;,
     <span class="kw">pub </span>stat: <span class="prelude-ty">Option</span>&lt;Stat&gt;,
-    <span class="kw">pub </span>region_leases: Vec&lt;RegionLease&gt;,
+    <span class="kw">pub </span>inactive_region_ids: HashSet&lt;RegionId&gt;,
+    <span class="kw">pub </span>region_lease: <span class="prelude-ty">Option</span>&lt;RegionLease&gt;,
 }
 
 <span class="kw">impl </span>HeartbeatAccumulator {
@@ -655,17 +694,24 @@
             .range(range)
             .map(|(<span class="kw">_</span>, value)| value)
             .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
+        <span class="kw">let </span><span class="kw-2">mut </span>results = Vec::with_capacity(pushers.len());
+
         <span class="kw">for </span>pusher <span class="kw">in </span>pushers {
             <span class="kw">let </span><span class="kw-2">mut </span>mailbox_message = mailbox_message.clone();
             mailbox_message.id = <span class="number">0</span>; <span class="comment">// one-way message
-            </span>pusher
-                .push(HeartbeatResponse {
-                    header: <span class="prelude-val">Some</span>(pusher.header()),
-                    mailbox_message: <span class="prelude-val">Some</span>(mailbox_message),
-                    ..Default::default()
-                })
-                .<span class="kw">await</span><span class="question-mark">?</span>;
+
+            </span>results.push(pusher.push(HeartbeatResponse {
+                header: <span class="prelude-val">Some</span>(pusher.header()),
+                mailbox_message: <span class="prelude-val">Some</span>(mailbox_message),
+                ..Default::default()
+            }))
         }
+
+        <span class="comment">// Checks the error out of the loop.
+        </span><span class="kw">let _ </span>= join_all(results)
+            .<span class="kw">await
+            </span>.into_iter()
+            .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;&gt;()<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(())
     }
@@ -680,12 +726,12 @@
 }
 
 <span class="kw">struct </span>NameCachedHandler {
-    name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
+    name: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str,
     handler: Box&lt;<span class="kw">dyn </span>HeartbeatHandler&gt;,
 }
 
 <span class="kw">impl </span>NameCachedHandler {
-    <span class="kw">fn </span>new(handler: <span class="kw">impl </span>HeartbeatHandler + <span class="lifetime">&#39;static</span>) -&gt; <span class="self">Self </span>{
+    <span class="kw">fn </span>new(handler: <span class="kw">impl </span>HeartbeatHandler + <span class="lifetime">'static</span>) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span>name = handler.name();
         <span class="kw">let </span>handler = Box::new(handler);
         <span class="self">Self </span>{ name, handler }
@@ -706,22 +752,22 @@
         }
     }
 
-    <span class="kw">pub async fn </span>add_handler(<span class="kw-2">&amp;</span><span class="self">self</span>, handler: <span class="kw">impl </span>HeartbeatHandler + <span class="lifetime">&#39;static</span>) {
+    <span class="kw">pub async fn </span>add_handler(<span class="kw-2">&amp;</span><span class="self">self</span>, handler: <span class="kw">impl </span>HeartbeatHandler + <span class="lifetime">'static</span>) {
         <span class="kw">let </span><span class="kw-2">mut </span>handlers = <span class="self">self</span>.handlers.write().<span class="kw">await</span>;
         handlers.push(NameCachedHandler::new(handler));
     }
 
     <span class="kw">pub async fn </span>register(<span class="kw-2">&amp;</span><span class="self">self</span>, key: <span class="kw">impl </span>AsRef&lt;str&gt;, pusher: Pusher) {
         <span class="kw">let </span>key = key.as_ref();
-        <span class="macro">increment_gauge!</span>(METRIC_META_HEARTBEAT_CONNECTION_NUM, <span class="number">1.0</span>);
-        <span class="macro">info!</span>(<span class="string">&quot;Pusher register: {}&quot;</span>, key);
+        METRIC_META_HEARTBEAT_CONNECTION_NUM.inc();
+        <span class="macro">info!</span>(<span class="string">"Pusher register: {}"</span>, key);
         <span class="kw">let _ </span>= <span class="self">self</span>.pushers.insert(key.to_string(), pusher).<span class="kw">await</span>;
     }
 
     <span class="kw">pub async fn </span>unregister(<span class="kw-2">&amp;</span><span class="self">self</span>, key: <span class="kw">impl </span>AsRef&lt;str&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;Pusher&gt; {
         <span class="kw">let </span>key = key.as_ref();
-        <span class="macro">decrement_gauge!</span>(METRIC_META_HEARTBEAT_CONNECTION_NUM, <span class="number">1.0</span>);
-        <span class="macro">info!</span>(<span class="string">&quot;Pusher unregister: {}&quot;</span>, key);
+        METRIC_META_HEARTBEAT_CONNECTION_NUM.dec();
+        <span class="macro">info!</span>(<span class="string">"Pusher unregister: {}"</span>, key);
         <span class="self">self</span>.pushers.remove(key).<span class="kw">await
     </span>}
 
@@ -739,25 +785,28 @@
         <span class="kw">let </span>role = req
             .header
             .as_ref()
-            .and_then(|h| Role::from_i32(h.role))
+            .and_then(|h| Role::try_from(h.role).ok())
             .context(error::InvalidArgumentsSnafu {
-                err_msg: <span class="macro">format!</span>(<span class="string">&quot;invalid role: {:?}&quot;</span>, req.header),
+                err_msg: <span class="macro">format!</span>(<span class="string">"invalid role: {:?}"</span>, req.header),
             })<span class="question-mark">?</span>;
 
         <span class="kw">for </span>NameCachedHandler { name, handler } <span class="kw">in </span>handlers.iter() {
-            <span class="kw">if </span>ctx.is_skip_all() {
-                <span class="kw">break</span>;
+            <span class="kw">if </span>!handler.is_acceptable(role) {
+                <span class="kw">continue</span>;
             }
 
-            <span class="kw">if </span>handler.is_acceptable(role) {
-                <span class="kw">let </span>_timer = <span class="macro">timer!</span>(METRIC_META_HANDLER_EXECUTE, <span class="kw-2">&amp;</span>[(<span class="string">&quot;name&quot;</span>, <span class="kw-2">*</span>name)]);
-                handler.handle(<span class="kw-2">&amp;</span>req, <span class="kw-2">&amp;mut </span>ctx, <span class="kw-2">&amp;mut </span>acc).<span class="kw">await</span><span class="question-mark">?</span>;
+            <span class="kw">let </span>_timer = METRIC_META_HANDLER_EXECUTE
+                .with_label_values(<span class="kw-2">&amp;</span>[<span class="kw-2">*</span>name])
+                .start_timer();
+
+            <span class="kw">if </span>handler.handle(<span class="kw-2">&amp;</span>req, <span class="kw-2">&amp;mut </span>ctx, <span class="kw-2">&amp;mut </span>acc).<span class="kw">await</span><span class="question-mark">? </span>== HandleControl::Done {
+                <span class="kw">break</span>;
             }
         }
         <span class="kw">let </span>header = std::mem::take(<span class="kw-2">&amp;mut </span>acc.header);
         <span class="kw">let </span>res = HeartbeatResponse {
             header,
-            region_leases: acc.region_leases,
+            region_lease: acc.region_lease,
             ..Default::default()
         };
         <span class="prelude-val">Ok</span>(res)
@@ -768,7 +817,7 @@
     pushers: Pushers,
     sequence: Sequence,
     senders: DashMap&lt;MessageId, oneshot::Sender&lt;<span class="prelude-ty">Result</span>&lt;MailboxMessage&gt;&gt;&gt;,
-    timeouts: DashMap&lt;MessageId, Duration&gt;,
+    timeouts: DashMap&lt;MessageId, Instant&gt;,
     timeout_notify: Notify,
 }
 
@@ -779,7 +828,20 @@
                 .as_ref()
                 .with_context(|| UnexpectedInstructionReplySnafu {
                     mailbox_message: msg.to_string(),
-                    reason: <span class="macro">format!</span>(<span class="string">&quot;empty payload, msg: {msg:?}&quot;</span>),
+                    reason: <span class="macro">format!</span>(<span class="string">"empty payload, msg: {msg:?}"</span>),
+                })<span class="question-mark">?</span>;
+        serde_json::from_str(payload).context(DeserializeFromJsonSnafu { input: payload })
+    }
+
+    <span class="doccomment">/// Parses the [Instruction] from [MailboxMessage].
+    </span><span class="attr">#[cfg(test)]
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>json_instruction(msg: <span class="kw-2">&amp;</span>MailboxMessage) -&gt; <span class="prelude-ty">Result</span>&lt;Instruction&gt; {
+        <span class="kw">let </span>Payload::Json(payload) =
+            msg.payload
+                .as_ref()
+                .with_context(|| UnexpectedInstructionReplySnafu {
+                    mailbox_message: msg.to_string(),
+                    reason: <span class="macro">format!</span>(<span class="string">"empty payload, msg: {msg:?}"</span>),
                 })<span class="question-mark">?</span>;
         serde_json::from_str(payload).context(DeserializeFromJsonSnafu { input: payload })
     }
@@ -815,7 +877,7 @@
                 <span class="self">self</span>.timeout_notify.notified().<span class="kw">await</span>;
             }
 
-            <span class="kw">let </span>now = Duration::from_millis(common_time::util::current_time_millis() <span class="kw">as </span>u64);
+            <span class="kw">let </span>now = Instant::now();
             <span class="kw">let </span>timeout_ids = <span class="self">self
                 </span>.timeouts
                 .iter()
@@ -842,7 +904,11 @@
         <span class="comment">// In this implementation, we pre-occupy the message_id of 0,
         // and we use `message_id = 0` to mark a Message as a one-way call.
         </span><span class="kw">loop </span>{
-            <span class="kw">let </span>next = <span class="self">self</span>.sequence.next().<span class="kw">await</span><span class="question-mark">?</span>;
+            <span class="kw">let </span>next = <span class="self">self
+                </span>.sequence
+                .next()
+                .<span class="kw">await
+                </span>.context(error::NextSequenceSnafu)<span class="question-mark">?</span>;
             <span class="kw">if </span>next &gt; <span class="number">0 </span>{
                 <span class="kw">return </span><span class="prelude-val">Ok</span>(next);
             }
@@ -862,12 +928,11 @@
         msg.id = message_id;
 
         <span class="kw">let </span>pusher_id = ch.pusher_id();
-        <span class="macro">debug!</span>(<span class="string">&quot;Sending mailbox message {msg:?} to {pusher_id}&quot;</span>);
+        <span class="macro">debug!</span>(<span class="string">"Sending mailbox message {msg:?} to {pusher_id}"</span>);
 
         <span class="kw">let </span>(tx, rx) = oneshot::channel();
         <span class="kw">let _ </span>= <span class="self">self</span>.senders.insert(message_id, tx);
-        <span class="kw">let </span>deadline =
-            Duration::from_millis(common_time::util::current_time_millis() <span class="kw">as </span>u64) + timeout;
+        <span class="kw">let </span>deadline = Instant::now() + timeout;
         <span class="kw">let _ </span>= <span class="self">self</span>.timeouts.insert(message_id, deadline);
         <span class="self">self</span>.timeout_notify.notify_one();
 
@@ -881,7 +946,7 @@
     </span>}
 
     <span class="kw">async fn </span>on_recv(<span class="kw-2">&amp;</span><span class="self">self</span>, id: MessageId, maybe_msg: <span class="prelude-ty">Result</span>&lt;MailboxMessage&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="macro">debug!</span>(<span class="string">&quot;Received mailbox message {maybe_msg:?}&quot;</span>);
+        <span class="macro">debug!</span>(<span class="string">"Received mailbox message {maybe_msg:?}"</span>);
 
         <span class="kw">let _ </span>= <span class="self">self</span>.timeouts.remove(<span class="kw-2">&amp;</span>id);
 
@@ -889,7 +954,7 @@
             tx.send(maybe_msg)
                 .map_err(|<span class="kw">_</span>| error::MailboxClosedSnafu { id }.build())<span class="question-mark">?</span>;
         } <span class="kw">else if let </span><span class="prelude-val">Ok</span>(finally_msg) = maybe_msg {
-            <span class="macro">warn!</span>(<span class="string">&quot;The response arrived too late: {finally_msg:?}&quot;</span>);
+            <span class="macro">warn!</span>(<span class="string">"The response arrived too late: {finally_msg:?}"</span>);
         }
 
         <span class="prelude-val">Ok</span>(())
@@ -903,16 +968,18 @@
     <span class="kw">use </span>std::time::Duration;
 
     <span class="kw">use </span>api::v1::meta::{MailboxMessage, RequestHeader, Role, PROTOCOL_VERSION};
+    <span class="kw">use </span>common_meta::kv_backend::memory::MemoryKvBackend;
+    <span class="kw">use </span>common_meta::sequence::SequenceBuilder;
     <span class="kw">use </span>tokio::sync::mpsc;
 
+    <span class="kw">use </span><span class="kw">crate</span>::handler::check_leader_handler::CheckLeaderHandler;
+    <span class="kw">use </span><span class="kw">crate</span>::handler::collect_stats_handler::CollectStatsHandler;
     <span class="kw">use </span><span class="kw">crate</span>::handler::mailbox_handler::MailboxHandler;
-    <span class="kw">use </span><span class="kw">crate</span>::handler::{
-        CheckLeaderHandler, CollectStatsHandler, HeartbeatHandlerGroup, HeartbeatMailbox,
-        OnLeaderStartHandler, PersistStatsHandler, Pusher, ResponseHeaderHandler,
-    };
-    <span class="kw">use </span><span class="kw">crate</span>::sequence::Sequence;
+    <span class="kw">use </span><span class="kw">crate</span>::handler::on_leader_start_handler::OnLeaderStartHandler;
+    <span class="kw">use </span><span class="kw">crate</span>::handler::persist_stats_handler::PersistStatsHandler;
+    <span class="kw">use </span><span class="kw">crate</span>::handler::response_header_handler::ResponseHeaderHandler;
+    <span class="kw">use </span><span class="kw">crate</span>::handler::{HeartbeatHandlerGroup, HeartbeatMailbox, Pusher};
     <span class="kw">use </span><span class="kw">crate</span>::service::mailbox::{Channel, MailboxReceiver, MailboxRef};
-    <span class="kw">use </span><span class="kw">crate</span>::service::store::memory::MemStore;
 
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>test_mailbox() {
@@ -921,7 +988,7 @@
 
         <span class="kw">let </span>resp_msg = MailboxMessage {
             id,
-            subject: <span class="string">&quot;resp-test&quot;</span>.to_string(),
+            subject: <span class="string">"resp-test"</span>.to_string(),
             timestamp_millis: <span class="number">456</span>,
             ..Default::default()
         };
@@ -931,7 +998,7 @@
         <span class="kw">let </span>recv_msg = receiver.<span class="kw">await</span>.unwrap().unwrap();
         <span class="macro">assert_eq!</span>(recv_msg.id, id);
         <span class="macro">assert_eq!</span>(recv_msg.timestamp_millis, <span class="number">456</span>);
-        <span class="macro">assert_eq!</span>(recv_msg.subject, <span class="string">&quot;resp-test&quot;</span>.to_string());
+        <span class="macro">assert_eq!</span>(recv_msg.subject, <span class="string">"resp-test"</span>.to_string());
     }
 
     <span class="attr">#[tokio::test]
@@ -951,16 +1018,16 @@
         <span class="kw">let </span>pusher: Pusher = Pusher::new(pusher_tx, <span class="kw-2">&amp;</span>res_header);
         <span class="kw">let </span>handler_group = HeartbeatHandlerGroup::default();
         handler_group
-            .register(<span class="macro">format!</span>(<span class="string">&quot;{}-{}&quot;</span>, Role::Datanode <span class="kw">as </span>i32, datanode_id), pusher)
+            .register(<span class="macro">format!</span>(<span class="string">"{}-{}"</span>, Role::Datanode <span class="kw">as </span>i32, datanode_id), pusher)
             .<span class="kw">await</span>;
 
-        <span class="kw">let </span>kv_store = Arc::new(MemStore::new());
-        <span class="kw">let </span>seq = Sequence::new(<span class="string">&quot;test_seq&quot;</span>, <span class="number">0</span>, <span class="number">10</span>, kv_store);
+        <span class="kw">let </span>kv_backend = Arc::new(MemoryKvBackend::new());
+        <span class="kw">let </span>seq = SequenceBuilder::new(<span class="string">"test_seq"</span>, kv_backend).build();
         <span class="kw">let </span>mailbox = HeartbeatMailbox::create(handler_group.pushers(), seq);
 
         <span class="kw">let </span>msg = MailboxMessage {
             id: <span class="number">0</span>,
-            subject: <span class="string">&quot;req-test&quot;</span>.to_string(),
+            subject: <span class="string">"req-test"</span>.to_string(),
             timestamp_millis: <span class="number">123</span>,
             ..Default::default()
         };
@@ -974,7 +1041,7 @@
         <span class="kw">let </span>recv_obj = pusher_rx.recv().<span class="kw">await</span>.unwrap().unwrap();
         <span class="kw">let </span>message = recv_obj.mailbox_message.unwrap();
         <span class="macro">assert_eq!</span>(message.timestamp_millis, <span class="number">123</span>);
-        <span class="macro">assert_eq!</span>(message.subject, <span class="string">&quot;req-test&quot;</span>.to_string());
+        <span class="macro">assert_eq!</span>(message.subject, <span class="string">"req-test"</span>.to_string());
 
         (mailbox, receiver)
     }
@@ -992,12 +1059,12 @@
         <span class="kw">let </span>handlers = group.handlers.read().<span class="kw">await</span>;
 
         <span class="macro">assert_eq!</span>(<span class="number">6</span>, handlers.len());
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;ResponseHeaderHandler&quot;</span>, handlers[<span class="number">0</span>].handler.name());
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;CheckLeaderHandler&quot;</span>, handlers[<span class="number">1</span>].handler.name());
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;OnLeaderStartHandler&quot;</span>, handlers[<span class="number">2</span>].handler.name());
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;CollectStatsHandler&quot;</span>, handlers[<span class="number">3</span>].handler.name());
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;MailboxHandler&quot;</span>, handlers[<span class="number">4</span>].handler.name());
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;PersistStatsHandler&quot;</span>, handlers[<span class="number">5</span>].handler.name());
+        <span class="macro">assert_eq!</span>(<span class="string">"ResponseHeaderHandler"</span>, handlers[<span class="number">0</span>].handler.name());
+        <span class="macro">assert_eq!</span>(<span class="string">"CheckLeaderHandler"</span>, handlers[<span class="number">1</span>].handler.name());
+        <span class="macro">assert_eq!</span>(<span class="string">"OnLeaderStartHandler"</span>, handlers[<span class="number">2</span>].handler.name());
+        <span class="macro">assert_eq!</span>(<span class="string">"CollectStatsHandler"</span>, handlers[<span class="number">3</span>].handler.name());
+        <span class="macro">assert_eq!</span>(<span class="string">"MailboxHandler"</span>, handlers[<span class="number">4</span>].handler.name());
+        <span class="macro">assert_eq!</span>(<span class="string">"PersistStatsHandler"</span>, handlers[<span class="number">5</span>].handler.name());
     }
 }
 </code></pre></div></section></main></body></html>

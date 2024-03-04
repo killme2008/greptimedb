@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"constant":["MAX_VALUE"],"fn":["create_partitions_stmt","create_table_info","find_partition_columns","find_partition_entries","parse_partitions"],"mod":["deleter","inserter"],"struct":["DistInstance"]};

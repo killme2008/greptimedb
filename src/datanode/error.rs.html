@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/datanode/src/error.rs`."><title>error.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="datanode" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../datanode/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/datanode/src/error.rs`."><title>error.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="datanode" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -349,805 +350,280 @@
 <a href="#349" id="349">349</a>
 <a href="#350" id="350">350</a>
 <a href="#351" id="351">351</a>
-<a href="#352" id="352">352</a>
-<a href="#353" id="353">353</a>
-<a href="#354" id="354">354</a>
-<a href="#355" id="355">355</a>
-<a href="#356" id="356">356</a>
-<a href="#357" id="357">357</a>
-<a href="#358" id="358">358</a>
-<a href="#359" id="359">359</a>
-<a href="#360" id="360">360</a>
-<a href="#361" id="361">361</a>
-<a href="#362" id="362">362</a>
-<a href="#363" id="363">363</a>
-<a href="#364" id="364">364</a>
-<a href="#365" id="365">365</a>
-<a href="#366" id="366">366</a>
-<a href="#367" id="367">367</a>
-<a href="#368" id="368">368</a>
-<a href="#369" id="369">369</a>
-<a href="#370" id="370">370</a>
-<a href="#371" id="371">371</a>
-<a href="#372" id="372">372</a>
-<a href="#373" id="373">373</a>
-<a href="#374" id="374">374</a>
-<a href="#375" id="375">375</a>
-<a href="#376" id="376">376</a>
-<a href="#377" id="377">377</a>
-<a href="#378" id="378">378</a>
-<a href="#379" id="379">379</a>
-<a href="#380" id="380">380</a>
-<a href="#381" id="381">381</a>
-<a href="#382" id="382">382</a>
-<a href="#383" id="383">383</a>
-<a href="#384" id="384">384</a>
-<a href="#385" id="385">385</a>
-<a href="#386" id="386">386</a>
-<a href="#387" id="387">387</a>
-<a href="#388" id="388">388</a>
-<a href="#389" id="389">389</a>
-<a href="#390" id="390">390</a>
-<a href="#391" id="391">391</a>
-<a href="#392" id="392">392</a>
-<a href="#393" id="393">393</a>
-<a href="#394" id="394">394</a>
-<a href="#395" id="395">395</a>
-<a href="#396" id="396">396</a>
-<a href="#397" id="397">397</a>
-<a href="#398" id="398">398</a>
-<a href="#399" id="399">399</a>
-<a href="#400" id="400">400</a>
-<a href="#401" id="401">401</a>
-<a href="#402" id="402">402</a>
-<a href="#403" id="403">403</a>
-<a href="#404" id="404">404</a>
-<a href="#405" id="405">405</a>
-<a href="#406" id="406">406</a>
-<a href="#407" id="407">407</a>
-<a href="#408" id="408">408</a>
-<a href="#409" id="409">409</a>
-<a href="#410" id="410">410</a>
-<a href="#411" id="411">411</a>
-<a href="#412" id="412">412</a>
-<a href="#413" id="413">413</a>
-<a href="#414" id="414">414</a>
-<a href="#415" id="415">415</a>
-<a href="#416" id="416">416</a>
-<a href="#417" id="417">417</a>
-<a href="#418" id="418">418</a>
-<a href="#419" id="419">419</a>
-<a href="#420" id="420">420</a>
-<a href="#421" id="421">421</a>
-<a href="#422" id="422">422</a>
-<a href="#423" id="423">423</a>
-<a href="#424" id="424">424</a>
-<a href="#425" id="425">425</a>
-<a href="#426" id="426">426</a>
-<a href="#427" id="427">427</a>
-<a href="#428" id="428">428</a>
-<a href="#429" id="429">429</a>
-<a href="#430" id="430">430</a>
-<a href="#431" id="431">431</a>
-<a href="#432" id="432">432</a>
-<a href="#433" id="433">433</a>
-<a href="#434" id="434">434</a>
-<a href="#435" id="435">435</a>
-<a href="#436" id="436">436</a>
-<a href="#437" id="437">437</a>
-<a href="#438" id="438">438</a>
-<a href="#439" id="439">439</a>
-<a href="#440" id="440">440</a>
-<a href="#441" id="441">441</a>
-<a href="#442" id="442">442</a>
-<a href="#443" id="443">443</a>
-<a href="#444" id="444">444</a>
-<a href="#445" id="445">445</a>
-<a href="#446" id="446">446</a>
-<a href="#447" id="447">447</a>
-<a href="#448" id="448">448</a>
-<a href="#449" id="449">449</a>
-<a href="#450" id="450">450</a>
-<a href="#451" id="451">451</a>
-<a href="#452" id="452">452</a>
-<a href="#453" id="453">453</a>
-<a href="#454" id="454">454</a>
-<a href="#455" id="455">455</a>
-<a href="#456" id="456">456</a>
-<a href="#457" id="457">457</a>
-<a href="#458" id="458">458</a>
-<a href="#459" id="459">459</a>
-<a href="#460" id="460">460</a>
-<a href="#461" id="461">461</a>
-<a href="#462" id="462">462</a>
-<a href="#463" id="463">463</a>
-<a href="#464" id="464">464</a>
-<a href="#465" id="465">465</a>
-<a href="#466" id="466">466</a>
-<a href="#467" id="467">467</a>
-<a href="#468" id="468">468</a>
-<a href="#469" id="469">469</a>
-<a href="#470" id="470">470</a>
-<a href="#471" id="471">471</a>
-<a href="#472" id="472">472</a>
-<a href="#473" id="473">473</a>
-<a href="#474" id="474">474</a>
-<a href="#475" id="475">475</a>
-<a href="#476" id="476">476</a>
-<a href="#477" id="477">477</a>
-<a href="#478" id="478">478</a>
-<a href="#479" id="479">479</a>
-<a href="#480" id="480">480</a>
-<a href="#481" id="481">481</a>
-<a href="#482" id="482">482</a>
-<a href="#483" id="483">483</a>
-<a href="#484" id="484">484</a>
-<a href="#485" id="485">485</a>
-<a href="#486" id="486">486</a>
-<a href="#487" id="487">487</a>
-<a href="#488" id="488">488</a>
-<a href="#489" id="489">489</a>
-<a href="#490" id="490">490</a>
-<a href="#491" id="491">491</a>
-<a href="#492" id="492">492</a>
-<a href="#493" id="493">493</a>
-<a href="#494" id="494">494</a>
-<a href="#495" id="495">495</a>
-<a href="#496" id="496">496</a>
-<a href="#497" id="497">497</a>
-<a href="#498" id="498">498</a>
-<a href="#499" id="499">499</a>
-<a href="#500" id="500">500</a>
-<a href="#501" id="501">501</a>
-<a href="#502" id="502">502</a>
-<a href="#503" id="503">503</a>
-<a href="#504" id="504">504</a>
-<a href="#505" id="505">505</a>
-<a href="#506" id="506">506</a>
-<a href="#507" id="507">507</a>
-<a href="#508" id="508">508</a>
-<a href="#509" id="509">509</a>
-<a href="#510" id="510">510</a>
-<a href="#511" id="511">511</a>
-<a href="#512" id="512">512</a>
-<a href="#513" id="513">513</a>
-<a href="#514" id="514">514</a>
-<a href="#515" id="515">515</a>
-<a href="#516" id="516">516</a>
-<a href="#517" id="517">517</a>
-<a href="#518" id="518">518</a>
-<a href="#519" id="519">519</a>
-<a href="#520" id="520">520</a>
-<a href="#521" id="521">521</a>
-<a href="#522" id="522">522</a>
-<a href="#523" id="523">523</a>
-<a href="#524" id="524">524</a>
-<a href="#525" id="525">525</a>
-<a href="#526" id="526">526</a>
-<a href="#527" id="527">527</a>
-<a href="#528" id="528">528</a>
-<a href="#529" id="529">529</a>
-<a href="#530" id="530">530</a>
-<a href="#531" id="531">531</a>
-<a href="#532" id="532">532</a>
-<a href="#533" id="533">533</a>
-<a href="#534" id="534">534</a>
-<a href="#535" id="535">535</a>
-<a href="#536" id="536">536</a>
-<a href="#537" id="537">537</a>
-<a href="#538" id="538">538</a>
-<a href="#539" id="539">539</a>
-<a href="#540" id="540">540</a>
-<a href="#541" id="541">541</a>
-<a href="#542" id="542">542</a>
-<a href="#543" id="543">543</a>
-<a href="#544" id="544">544</a>
-<a href="#545" id="545">545</a>
-<a href="#546" id="546">546</a>
-<a href="#547" id="547">547</a>
-<a href="#548" id="548">548</a>
-<a href="#549" id="549">549</a>
-<a href="#550" id="550">550</a>
-<a href="#551" id="551">551</a>
-<a href="#552" id="552">552</a>
-<a href="#553" id="553">553</a>
-<a href="#554" id="554">554</a>
-<a href="#555" id="555">555</a>
-<a href="#556" id="556">556</a>
-<a href="#557" id="557">557</a>
-<a href="#558" id="558">558</a>
-<a href="#559" id="559">559</a>
-<a href="#560" id="560">560</a>
-<a href="#561" id="561">561</a>
-<a href="#562" id="562">562</a>
-<a href="#563" id="563">563</a>
-<a href="#564" id="564">564</a>
-<a href="#565" id="565">565</a>
-<a href="#566" id="566">566</a>
-<a href="#567" id="567">567</a>
-<a href="#568" id="568">568</a>
-<a href="#569" id="569">569</a>
-<a href="#570" id="570">570</a>
-<a href="#571" id="571">571</a>
-<a href="#572" id="572">572</a>
-<a href="#573" id="573">573</a>
-<a href="#574" id="574">574</a>
-<a href="#575" id="575">575</a>
-<a href="#576" id="576">576</a>
-<a href="#577" id="577">577</a>
-<a href="#578" id="578">578</a>
-<a href="#579" id="579">579</a>
-<a href="#580" id="580">580</a>
-<a href="#581" id="581">581</a>
-<a href="#582" id="582">582</a>
-<a href="#583" id="583">583</a>
-<a href="#584" id="584">584</a>
-<a href="#585" id="585">585</a>
-<a href="#586" id="586">586</a>
-<a href="#587" id="587">587</a>
-<a href="#588" id="588">588</a>
-<a href="#589" id="589">589</a>
-<a href="#590" id="590">590</a>
-<a href="#591" id="591">591</a>
-<a href="#592" id="592">592</a>
-<a href="#593" id="593">593</a>
-<a href="#594" id="594">594</a>
-<a href="#595" id="595">595</a>
-<a href="#596" id="596">596</a>
-<a href="#597" id="597">597</a>
-<a href="#598" id="598">598</a>
-<a href="#599" id="599">599</a>
-<a href="#600" id="600">600</a>
-<a href="#601" id="601">601</a>
-<a href="#602" id="602">602</a>
-<a href="#603" id="603">603</a>
-<a href="#604" id="604">604</a>
-<a href="#605" id="605">605</a>
-<a href="#606" id="606">606</a>
-<a href="#607" id="607">607</a>
-<a href="#608" id="608">608</a>
-<a href="#609" id="609">609</a>
-<a href="#610" id="610">610</a>
-<a href="#611" id="611">611</a>
-<a href="#612" id="612">612</a>
-<a href="#613" id="613">613</a>
-<a href="#614" id="614">614</a>
-<a href="#615" id="615">615</a>
-<a href="#616" id="616">616</a>
-<a href="#617" id="617">617</a>
-<a href="#618" id="618">618</a>
-<a href="#619" id="619">619</a>
-<a href="#620" id="620">620</a>
-<a href="#621" id="621">621</a>
-<a href="#622" id="622">622</a>
-<a href="#623" id="623">623</a>
-<a href="#624" id="624">624</a>
-<a href="#625" id="625">625</a>
-<a href="#626" id="626">626</a>
-<a href="#627" id="627">627</a>
-<a href="#628" id="628">628</a>
-<a href="#629" id="629">629</a>
-<a href="#630" id="630">630</a>
-<a href="#631" id="631">631</a>
-<a href="#632" id="632">632</a>
-<a href="#633" id="633">633</a>
-<a href="#634" id="634">634</a>
-<a href="#635" id="635">635</a>
-<a href="#636" id="636">636</a>
-<a href="#637" id="637">637</a>
-<a href="#638" id="638">638</a>
-<a href="#639" id="639">639</a>
-<a href="#640" id="640">640</a>
-<a href="#641" id="641">641</a>
-<a href="#642" id="642">642</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
 </span><span class="kw">use </span>std::any::Any;
+<span class="kw">use </span>std::sync::Arc;
 
 <span class="kw">use </span>common_error::ext::{BoxedError, ErrorExt};
 <span class="kw">use </span>common_error::status_code::StatusCode;
-<span class="kw">use </span>common_procedure::ProcedureId;
-<span class="kw">use </span>serde_json::error::Error <span class="kw">as </span>JsonError;
+<span class="kw">use </span>common_macro::stack_trace_debug;
+<span class="kw">use </span>servers::define_into_tonic_status;
 <span class="kw">use </span>snafu::{Location, Snafu};
-<span class="kw">use </span>store_api::storage::{RegionId, RegionNumber};
+<span class="kw">use </span>store_api::storage::RegionId;
 <span class="kw">use </span>table::error::Error <span class="kw">as </span>TableError;
 
 <span class="doccomment">/// Business error of datanode.
-</span><span class="attr">#[derive(Debug, Snafu)]
+</span><span class="attr">#[derive(Snafu)]
 #[snafu(visibility(<span class="kw">pub</span>))]
+#[stack_trace_debug]
 </span><span class="kw">pub enum </span>Error {
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to access catalog, source: {}&quot;</span>, source))]
-    </span>AccessCatalog {
+    <span class="attr">#[snafu(display(<span class="string">"Failed to execute async task"</span>))]
+    </span>AsyncTaskExecute {
         location: Location,
-        source: catalog::error::Error,
+        source: Arc&lt;Error&gt;,
     },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to deregister table: {}, source: {}&quot;</span>, table_name, source))]
-    </span>DeregisterTable {
-        table_name: String,
+    <span class="attr">#[snafu(display(<span class="string">"Failed to watch change"</span>))]
+    </span>WatchAsyncTaskChange {
         location: Location,
-        source: catalog::error::Error,
+        <span class="attr">#[snafu(source)]
+        </span>error: tokio::sync::watch::error::RecvError,
     },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to register table: {}, source: {}&quot;</span>, table_name, source))]
-    </span>RegisterTable {
-        table_name: String,
-        location: Location,
-        source: catalog::error::Error,
-    },
-
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to open table: {}, source: {}&quot;</span>, table_name, source))]
-    </span>OpenTable {
-        table_name: String,
-        location: Location,
-        source: TableError,
-    },
-
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to get table: {}, source: {}&quot;</span>, table_name, source))]
-    </span>GetTable {
-        table_name: String,
-        location: Location,
-        source: TableError,
-    },
-
-    <span class="attr">#[snafu(display(
-        <span class="string">&quot;Failed to close regions {:?} in table {}, source: {}&quot;</span>,
-        region_numbers,
-        table_name,
-        source
-    ))]
-    </span>CloseTable {
-        table_name: String,
-        region_numbers: Vec&lt;RegionNumber&gt;,
-        location: Location,
-        source: TableError,
-    },
-
-    <span class="attr">#[snafu(display(
-        <span class="string">&quot;Failed to check region {} in table: {}, source: {}&quot;</span>,
-        region_number,
-        table_name,
-        source
-    ))]
-    </span>CheckRegion {
-        table_name: String,
-        location: Location,
-        source: TableError,
-        region_number: RegionNumber,
-    },
-
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to handle heartbeat response, source: {}&quot;</span>, source))]
+    <span class="attr">#[snafu(display(<span class="string">"Failed to handle heartbeat response"</span>))]
     </span>HandleHeartbeatResponse {
         location: Location,
         source: common_meta::error::Error,
     },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to execute sql, source: {}&quot;</span>, source))]
-    </span>ExecuteSql {
+    <span class="attr">#[snafu(display(<span class="string">"Failed to get info from meta server"</span>))]
+    </span>GetMetadata {
         location: Location,
-        source: query::error::Error,
+        source: common_meta::error::Error,
     },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to plan statement, source: {}&quot;</span>, source))]
-    </span>PlanStatement {
-        location: Location,
-        source: query::error::Error,
-    },
-
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to execute statement, source: {}&quot;</span>, source))]
-    </span>ExecuteStatement {
-        location: Location,
-        source: query::error::Error,
-    },
-
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to execute logical plan, source: {}&quot;</span>, source))]
+    <span class="attr">#[snafu(display(<span class="string">"Failed to execute logical plan"</span>))]
     </span>ExecuteLogicalPlan {
         location: Location,
         source: query::error::Error,
     },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to decode logical plan, source: {}&quot;</span>, source))]
+    <span class="attr">#[snafu(display(<span class="string">"Failed to decode logical plan"</span>))]
     </span>DecodeLogicalPlan {
         location: Location,
         source: substrait::error::Error,
     },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Incorrect internal state: {}&quot;</span>, state))]
+    <span class="attr">#[snafu(display(<span class="string">"Incorrect internal state: {}"</span>, state))]
     </span>IncorrectInternalState { state: String, location: Location },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to create catalog list, source: {}&quot;</span>, source))]
-    </span>NewCatalog {
-        location: Location,
-        source: catalog::error::Error,
-    },
-
-    <span class="attr">#[snafu(display(<span class="string">&quot;Catalog not found: {}&quot;</span>, name))]
+    <span class="attr">#[snafu(display(<span class="string">"Catalog not found: {}"</span>, name))]
     </span>CatalogNotFound { name: String, location: Location },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Schema not found: {}&quot;</span>, name))]
+    <span class="attr">#[snafu(display(<span class="string">"Schema not found: {}"</span>, name))]
     </span>SchemaNotFound { name: String, location: Location },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to create table: {}, source: {}&quot;</span>, table_name, source))]
-    </span>CreateTable {
-        table_name: String,
-        location: Location,
-        source: TableError,
-    },
-
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to drop table {}, source: {}&quot;</span>, table_name, source))]
-    </span>DropTable {
-        table_name: String,
-        location: Location,
-        source: BoxedError,
-    },
-
-    <span class="attr">#[snafu(display(<span class="string">&quot;Table engine not found: {}, source: {}&quot;</span>, engine_name, source))]
-    </span>TableEngineNotFound {
-        engine_name: String,
-        location: Location,
-        source: table::error::Error,
-    },
-
-    <span class="attr">#[snafu(display(
-        <span class="string">&quot;Table engine procedure not found: {}, source: {}&quot;</span>,
-        engine_name,
-        source
-    ))]
-    </span>EngineProcedureNotFound {
-        engine_name: String,
-        location: Location,
-        source: table::error::Error,
-    },
-
-    <span class="attr">#[snafu(display(<span class="string">&quot;Table not found: {}&quot;</span>, table_name))]
-    </span>TableNotFound {
-        table_name: String,
-        location: Location,
-    },
-
-    <span class="attr">#[snafu(display(<span class="string">&quot;Column {} not found in table {}&quot;</span>, column_name, table_name))]
-    </span>ColumnNotFound {
-        column_name: String,
-        table_name: String,
-    },
-
-    <span class="attr">#[snafu(display(<span class="string">&quot;Missing timestamp column in request&quot;</span>))]
+    <span class="attr">#[snafu(display(<span class="string">"Missing timestamp column in request"</span>))]
     </span>MissingTimestampColumn { location: Location },
 
     <span class="attr">#[snafu(display(
-        <span class="string">&quot;Columns and values number mismatch, columns: {}, values: {}&quot;</span>,
+        <span class="string">"Columns and values number mismatch, columns: {}, values: {}"</span>,
         columns,
         values
     ))]
     </span>ColumnValuesNumberMismatch { columns: usize, values: usize },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to parse sql value, source: {}&quot;</span>, source))]
-    </span>ParseSqlValue {
-        location: Location,
-        source: sql::error::Error,
-    },
-
-    <span class="attr">#[snafu(display(<span class="string">&quot;Missing insert body, source: {source}&quot;</span>))]
-    </span>MissingInsertBody {
-        source: sql::error::Error,
-        location: Location,
-    },
-
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to insert value to table: {}, source: {}&quot;</span>, table_name, source))]
-    </span>Insert {
-        table_name: String,
-        location: Location,
-        source: TableError,
-    },
-
-    <span class="attr">#[snafu(display(
-        <span class="string">&quot;Failed to delete value from table: {}, source: {}&quot;</span>,
-        table_name,
-        source
-    ))]
+    <span class="attr">#[snafu(display(<span class="string">"Failed to delete value from table: {}"</span>, table_name))]
     </span>Delete {
         table_name: String,
         location: Location,
         source: TableError,
     },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to flush table: {}, source: {}&quot;</span>, table_name, source))]
-    </span>FlushTable {
-        table_name: String,
-        location: Location,
-        source: TableError,
-    },
-
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to start server, source: {}&quot;</span>, source))]
+    <span class="attr">#[snafu(display(<span class="string">"Failed to start server"</span>))]
     </span>StartServer {
         location: Location,
         source: servers::error::Error,
     },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to wait for GRPC serving, source: {}&quot;</span>, source))]
-    </span>WaitForGrpcServing {
-        source: servers::error::Error,
-        location: Location,
-    },
-
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to parse address {}, source: {}&quot;</span>, addr, source))]
+    <span class="attr">#[snafu(display(<span class="string">"Failed to parse address {}"</span>, addr))]
     </span>ParseAddr {
         addr: String,
-        source: std::net::AddrParseError,
+        <span class="attr">#[snafu(source)]
+        </span>error: std::net::AddrParseError,
     },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to create directory {}, source: {}&quot;</span>, dir, source))]
-    </span>CreateDir { dir: String, source: std::io::Error },
+    <span class="attr">#[snafu(display(<span class="string">"Failed to create directory {}"</span>, dir))]
+    </span>CreateDir {
+        dir: String,
+        <span class="attr">#[snafu(source)]
+        </span>error: std::io::Error,
+    },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to remove directory {}, source: {}&quot;</span>, dir, source))]
-    </span>RemoveDir { dir: String, source: std::io::Error },
+    <span class="attr">#[snafu(display(<span class="string">"Failed to remove directory {}"</span>, dir))]
+    </span>RemoveDir {
+        dir: String,
+        <span class="attr">#[snafu(source)]
+        </span>error: std::io::Error,
+    },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to open log store, source: {}&quot;</span>, source))]
+    <span class="attr">#[snafu(display(<span class="string">"Failed to open log store"</span>))]
     </span>OpenLogStore {
         location: Location,
         source: Box&lt;log_store::error::Error&gt;,
     },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to init backend, source: {}&quot;</span>, source))]
+    <span class="attr">#[snafu(display(<span class="string">"Failed to init backend"</span>))]
     </span>InitBackend {
-        source: object_store::Error,
+        <span class="attr">#[snafu(source)]
+        </span>error: object_store::Error,
         location: Location,
     },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Runtime resource error, source: {}&quot;</span>, source))]
+    <span class="attr">#[snafu(display(<span class="string">"Runtime resource error"</span>))]
     </span>RuntimeResource {
         location: Location,
         source: common_runtime::error::Error,
     },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Invalid SQL, error: {}&quot;</span>, msg))]
+    <span class="attr">#[snafu(display(<span class="string">"Expect KvBackend but not found"</span>))]
+    </span>MissingKvBackend { location: Location },
+
+    <span class="attr">#[snafu(display(<span class="string">"Invalid SQL, error: {}"</span>, msg))]
     </span>InvalidSql { msg: String },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Not support SQL, error: {}&quot;</span>, msg))]
+    <span class="attr">#[snafu(display(<span class="string">"Not support SQL, error: {}"</span>, msg))]
     </span>NotSupportSql { msg: String },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Specified timestamp key or primary key column not found: {}&quot;</span>, name))]
+    <span class="attr">#[snafu(display(<span class="string">"Specified timestamp key or primary key column not found: {}"</span>, name))]
     </span>KeyColumnNotFound { name: String, location: Location },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Illegal primary keys definition: {}&quot;</span>, msg))]
+    <span class="attr">#[snafu(display(<span class="string">"Illegal primary keys definition: {}"</span>, msg))]
     </span>IllegalPrimaryKeysDef { msg: String, location: Location },
 
-    <span class="attr">#[snafu(display(
-        <span class="string">&quot;Constraint in CREATE TABLE statement is not supported yet: {}&quot;</span>,
-        constraint
-    ))]
-    </span>ConstraintNotSupported {
-        constraint: String,
-        location: Location,
-    },
-
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to register a new schema, source: {}&quot;</span>, source))]
-    </span>RegisterSchema {
-        location: Location,
-        source: catalog::error::Error,
-    },
-
-    <span class="attr">#[snafu(display(<span class="string">&quot;Schema {} already exists&quot;</span>, name))]
+    <span class="attr">#[snafu(display(<span class="string">"Schema {} already exists"</span>, name))]
     </span>SchemaExists { name: String, location: Location },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to convert alter expr to request: {}&quot;</span>, source))]
-    </span>AlterExprToRequest {
-        location: Location,
-        source: common_grpc_expr::error::Error,
-    },
-
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to convert create expr to request: {}&quot;</span>, source))]
-    </span>CreateExprToRequest {
-        location: Location,
-        source: common_grpc_expr::error::Error,
-    },
-
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to convert delete expr to request: {}&quot;</span>, source))]
-    </span>DeleteExprToRequest {
-        location: Location,
-        source: common_grpc_expr::error::Error,
-    },
-
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to parse SQL, source: {}&quot;</span>, source))]
-    </span>ParseSql {
-        location: Location,
-        source: sql::error::Error,
-    },
-
-    <span class="attr">#[snafu(display(
-        <span class="string">&quot;Failed to parse string to timestamp, string: {}, source: {}&quot;</span>,
-        raw,
-        source
-    ))]
-    </span>ParseTimestamp {
-        raw: String,
-        location: Location,
-        source: common_time::error::Error,
-    },
-
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to prepare immutable table: {}&quot;</span>, source))]
-    </span>PrepareImmutableTable {
-        location: Location,
-        source: query::error::Error,
-    },
-
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to access catalog, source: {}&quot;</span>, source))]
+    <span class="attr">#[snafu(display(<span class="string">"Failed to access catalog"</span>))]
     </span>Catalog {
         location: Location,
         source: catalog::error::Error,
     },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to initialize meta client, source: {}&quot;</span>, source))]
+    <span class="attr">#[snafu(display(<span class="string">"Failed to initialize meta client"</span>))]
     </span>MetaClientInit {
         location: Location,
         source: meta_client::error::Error,
     },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to insert data, source: {}&quot;</span>, source))]
-    </span>InsertData {
-        location: Location,
-        source: common_grpc_expr::error::Error,
-    },
-
     <span class="attr">#[snafu(display(
-        <span class="string">&quot;Table id provider not found, cannot execute SQL directly on datanode in distributed mode&quot;
+        <span class="string">"Table id provider not found, cannot execute SQL directly on datanode in distributed mode"
     </span>))]
     </span>TableIdProviderNotFound { location: Location },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to bump table id, source: {}&quot;</span>, source))]
-    </span>BumpTableId {
-        location: Location,
-        source: table::error::Error,
-    },
-
-    <span class="attr">#[snafu(display(<span class="string">&quot;Missing node id option in distributed mode&quot;</span>))]
+    <span class="attr">#[snafu(display(<span class="string">"Missing node id in Datanode config"</span>))]
     </span>MissingNodeId { location: Location },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Missing node id option in distributed mode&quot;</span>))]
-    </span>MissingMetasrvOpts { location: Location },
-
-    <span class="attr">#[snafu(display(<span class="string">&quot;Missing required field: {}&quot;</span>, name))]
+    <span class="attr">#[snafu(display(<span class="string">"Missing required field: {}"</span>, name))]
     </span>MissingRequiredField { name: String, location: Location },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Cannot find requested database: {}-{}&quot;</span>, catalog, schema))]
+    <span class="attr">#[snafu(display(<span class="string">"Cannot find requested database: {}-{}"</span>, catalog, schema))]
     </span>DatabaseNotFound { catalog: String, schema: String },
 
     <span class="attr">#[snafu(display(
-        <span class="string">&quot;Failed to build default value, column: {}, source: {}&quot;</span>,
-        column,
-        source
-    ))]
-    </span>ColumnDefaultValue {
-        column: String,
-        location: Location,
-        source: datatypes::error::Error,
-    },
-
-    <span class="attr">#[snafu(display(
-        <span class="string">&quot;No valid default value can be built automatically, column: {}&quot;</span>,
+        <span class="string">"No valid default value can be built automatically, column: {}"</span>,
         column,
     ))]
     </span>ColumnNoneDefaultValue { column: String, location: Location },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Unrecognized table option: {}&quot;</span>, source))]
-    </span>UnrecognizedTableOption {
-        location: Location,
-        source: table::error::Error,
-    },
-
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to recover procedure, source: {}&quot;</span>, source))]
-    </span>RecoverProcedure {
-        location: Location,
-        source: common_procedure::error::Error,
-    },
-
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to submit procedure {}, source: {}&quot;</span>, procedure_id, source))]
-    </span>SubmitProcedure {
-        procedure_id: ProcedureId,
-        location: Location,
-        source: common_procedure::error::Error,
-    },
-
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to wait procedure {} done, source: {}&quot;</span>, procedure_id, source))]
-    </span>WaitProcedure {
-        procedure_id: ProcedureId,
-        location: Location,
-        source: common_procedure::error::Error,
-    },
-
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to close table engine, source: {}&quot;</span>, source))]
-    </span>CloseTableEngine {
-        location: Location,
-        source: BoxedError,
-    },
-
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to shutdown server, source: {}&quot;</span>, source))]
+    <span class="attr">#[snafu(display(<span class="string">"Failed to shutdown server"</span>))]
     </span>ShutdownServer {
         location: Location,
         source: servers::error::Error,
     },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to shutdown instance, source: {}&quot;</span>, source))]
+    <span class="attr">#[snafu(display(<span class="string">"Failed to shutdown instance"</span>))]
     </span>ShutdownInstance {
         location: Location,
         source: BoxedError,
     },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to encode object into json, source: {}&quot;</span>, source))]
-    </span>EncodeJson {
-        location: Location,
-        source: JsonError,
-    },
-
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to decode object from json, source: {}&quot;</span>, source))]
-    </span>DecodeJson {
-        location: Location,
-        source: JsonError,
-    },
-
-    <span class="attr">#[snafu(display(<span class="string">&quot;Payload not exist&quot;</span>))]
+    <span class="attr">#[snafu(display(<span class="string">"Payload not exist"</span>))]
     </span>PayloadNotExist { location: Location },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to start the procedure manager&quot;</span>))]
-    </span>StartProcedureManager {
-        source: common_procedure::error::Error,
-    },
-
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to stop the procedure manager&quot;</span>))]
-    </span>StopProcedureManager {
-        source: common_procedure::error::Error,
-    },
-
-    <span class="attr">#[snafu(display(<span class="string">&quot;Missing WAL dir config&quot;</span>))]
+    <span class="attr">#[snafu(display(<span class="string">"Missing WAL dir config"</span>))]
     </span>MissingWalDirConfig { location: Location },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Failed to join task, source: {}&quot;</span>, source))]
-    </span>JoinTask {
-        source: common_runtime::JoinError,
-        location: Location,
-    },
-
-    <span class="attr">#[snafu(display(<span class="string">&quot;Unexpected, violated: {}&quot;</span>, violated))]
+    <span class="attr">#[snafu(display(<span class="string">"Unexpected, violated: {}"</span>, violated))]
     </span>Unexpected {
         violated: String,
         location: Location,
     },
 
-    <span class="attr">#[snafu(display(
-        <span class="string">&quot;Failed to handle request for region {}, source: {}, location: {}&quot;</span>,
-        region_id,
-        source,
-        location
-    ))]
+    <span class="attr">#[snafu(display(<span class="string">"Failed to handle request for region {}"</span>, region_id))]
     </span>HandleRegionRequest {
         region_id: RegionId,
         location: Location,
         source: BoxedError,
     },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;RegionId {} not found, location: {}&quot;</span>, region_id, location))]
+    <span class="attr">#[snafu(display(<span class="string">"RegionId {} not found"</span>, region_id))]
     </span>RegionNotFound {
         region_id: RegionId,
         location: Location,
     },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Region engine {} is not registered, location: {}&quot;</span>, name, location))]
+    <span class="attr">#[snafu(display(<span class="string">"Region {} not ready"</span>, region_id))]
+    </span>RegionNotReady {
+        region_id: RegionId,
+        location: Location,
+    },
+
+    <span class="attr">#[snafu(display(<span class="string">"Region {} is busy"</span>, region_id))]
+    </span>RegionBusy {
+        region_id: RegionId,
+        location: Location,
+    },
+
+    <span class="attr">#[snafu(display(<span class="string">"Region engine {} is not registered"</span>, name))]
     </span>RegionEngineNotFound { name: String, location: Location },
 
-    <span class="attr">#[snafu(display(<span class="string">&quot;Unsupported gRPC request, kind: {}, location: {}&quot;</span>, kind, location))]
+    <span class="attr">#[snafu(display(<span class="string">"Unsupported gRPC request, kind: {}"</span>, kind))]
     </span>UnsupportedGrpcRequest { kind: String, location: Location },
+
+    <span class="attr">#[snafu(display(<span class="string">"Unsupported output type, expected: {}"</span>, expected))]
+    </span>UnsupportedOutput {
+        expected: String,
+        location: Location,
+    },
+
+    <span class="attr">#[snafu(display(
+        <span class="string">"Failed to get metadata from engine {} for region_id {}"</span>,
+        engine,
+        region_id,
+    ))]
+    </span>GetRegionMetadata {
+        engine: String,
+        region_id: RegionId,
+        location: Location,
+        source: BoxedError,
+    },
+
+    <span class="attr">#[snafu(display(<span class="string">"Failed to build region requests"</span>))]
+    </span>BuildRegionRequests {
+        location: Location,
+        source: store_api::metadata::MetadataError,
+    },
+
+    <span class="attr">#[snafu(display(<span class="string">"Failed to stop region engine {}"</span>, name))]
+    </span>StopRegionEngine {
+        name: String,
+        location: Location,
+        source: BoxedError,
+    },
 }
 
 <span class="kw">pub type </span><span class="prelude-ty">Result</span>&lt;T&gt; = std::result::Result&lt;T, Error&gt;;
@@ -1156,33 +632,16 @@
     <span class="kw">fn </span>status_code(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; StatusCode {
         <span class="kw">use </span>Error::<span class="kw-2">*</span>;
         <span class="kw">match </span><span class="self">self </span>{
-            ExecuteSql { source, .. }
-            | PlanStatement { source, .. }
-            | ExecuteStatement { source, .. }
-            | ExecuteLogicalPlan { source, .. } =&gt; source.status_code(),
+            ExecuteLogicalPlan { source, .. } =&gt; source.status_code(),
 
-            HandleHeartbeatResponse { source, .. } =&gt; source.status_code(),
-
-            DecodeLogicalPlan { source, .. } =&gt; source.status_code(),
-            NewCatalog { source, .. } | RegisterSchema { source, .. } =&gt; source.status_code(),
-            CreateTable { source, .. } =&gt; source.status_code(),
-            DropTable { source, .. } =&gt; source.status_code(),
-            FlushTable { source, .. } =&gt; source.status_code(),
-
-            Insert { source, .. } =&gt; source.status_code(),
-            Delete { source, .. } =&gt; source.status_code(),
-            TableEngineNotFound { source, .. } | EngineProcedureNotFound { source, .. } =&gt; {
+            BuildRegionRequests { source, .. } =&gt; source.status_code(),
+            HandleHeartbeatResponse { source, .. } | GetMetadata { source, .. } =&gt; {
                 source.status_code()
             }
-            TableNotFound { .. } =&gt; StatusCode::TableNotFound,
-            ColumnNotFound { .. } =&gt; StatusCode::TableColumnNotFound,
 
-            ParseSqlValue { source, .. } | ParseSql { source, .. } =&gt; source.status_code(),
+            DecodeLogicalPlan { source, .. } =&gt; source.status_code(),
 
-            AlterExprToRequest { source, .. }
-            | CreateExprToRequest { source, .. }
-            | DeleteExprToRequest { source, .. }
-            | InsertData { source, .. } =&gt; source.status_code(),
+            Delete { source, .. } =&gt; source.status_code(),
 
             ColumnValuesNumberMismatch { .. }
             | InvalidSql { .. }
@@ -1192,28 +651,18 @@
             | MissingTimestampColumn { .. }
             | CatalogNotFound { .. }
             | SchemaNotFound { .. }
-            | ConstraintNotSupported { .. }
             | SchemaExists { .. }
-            | ParseTimestamp { .. }
             | DatabaseNotFound { .. }
             | MissingNodeId { .. }
-            | MissingMetasrvOpts { .. }
             | ColumnNoneDefaultValue { .. }
             | MissingWalDirConfig { .. }
-            | PrepareImmutableTable { .. } =&gt; StatusCode::InvalidArguments,
+            | MissingKvBackend { .. } =&gt; StatusCode::InvalidArguments,
 
-            EncodeJson { .. } | DecodeJson { .. } | PayloadNotExist { .. } | Unexpected { .. } =&gt; {
+            PayloadNotExist { .. } | Unexpected { .. } | WatchAsyncTaskChange { .. } =&gt; {
                 StatusCode::Unexpected
             }
 
-            AccessCatalog { source, .. }
-            | DeregisterTable { source, .. }
-            | RegisterTable { source, .. } =&gt; source.status_code(),
-
-            CheckRegion { source, .. }
-            | OpenTable { source, .. }
-            | CloseTable { source, .. }
-            | GetTable { source, .. } =&gt; source.status_code(),
+            AsyncTaskExecute { source, .. } =&gt; source.status_code(),
 
             <span class="comment">// TODO(yingwen): Further categorize http error.
             </span>ParseAddr { .. }
@@ -1222,16 +671,16 @@
             | Catalog { .. }
             | MissingRequiredField { .. }
             | IncorrectInternalState { .. }
-            | MissingInsertBody { .. }
             | ShutdownInstance { .. }
-            | CloseTableEngine { .. }
-            | JoinTask { .. }
-            | RegionNotFound { .. }
-            | RegionEngineNotFound { .. } =&gt; StatusCode::Internal,
+            | RegionEngineNotFound { .. }
+            | UnsupportedOutput { .. }
+            | GetRegionMetadata { .. } =&gt; StatusCode::Internal,
 
-            StartServer { source, .. }
-            | ShutdownServer { source, .. }
-            | WaitForGrpcServing { source, .. } =&gt; source.status_code(),
+            RegionNotFound { .. } =&gt; StatusCode::RegionNotFound,
+            RegionNotReady { .. } =&gt; StatusCode::RegionNotReady,
+            RegionBusy { .. } =&gt; StatusCode::RegionBusy,
+
+            StartServer { source, .. } | ShutdownServer { source, .. } =&gt; source.status_code(),
 
             InitBackend { .. } =&gt; StatusCode::StorageUnavailable,
 
@@ -1241,17 +690,8 @@
             TableIdProviderNotFound { .. } | UnsupportedGrpcRequest { .. } =&gt; {
                 StatusCode::Unsupported
             }
-            BumpTableId { source, .. } =&gt; source.status_code(),
-            ColumnDefaultValue { source, .. } =&gt; source.status_code(),
-            UnrecognizedTableOption { .. } =&gt; StatusCode::InvalidArguments,
-            RecoverProcedure { source, .. } | SubmitProcedure { source, .. } =&gt; {
-                source.status_code()
-            }
-            WaitProcedure { source, .. } =&gt; source.status_code(),
-            StartProcedureManager { source } | StopProcedureManager { source } =&gt; {
-                source.status_code()
-            }
             HandleRegionRequest { source, .. } =&gt; source.status_code(),
+            StopRegionEngine { source, .. } =&gt; source.status_code(),
         }
     }
 
@@ -1260,26 +700,5 @@
     </span>}
 }
 
-<span class="kw">impl </span>From&lt;Error&gt; <span class="kw">for </span>tonic::Status {
-    <span class="kw">fn </span>from(err: Error) -&gt; <span class="self">Self </span>{
-        tonic::Status::from_error(Box::new(err))
-    }
-}
-
-<span class="attr">#[cfg(test)]
-</span><span class="kw">mod </span>tests {
-    <span class="kw">use </span>std::str::FromStr;
-
-    <span class="kw">use </span>snafu::ResultExt;
-
-    <span class="kw">use super</span>::<span class="kw-2">*</span>;
-
-    <span class="attr">#[test]
-    </span><span class="kw">fn </span>test_parse_timestamp() {
-        <span class="kw">let </span>err = common_time::timestamp::Timestamp::from_str(<span class="string">&quot;test&quot;</span>)
-            .context(ParseTimestampSnafu { raw: <span class="string">&quot;test&quot; </span>})
-            .unwrap_err();
-        <span class="macro">assert_eq!</span>(StatusCode::InvalidArguments, err.status_code());
-    }
-}
+<span class="macro">define_into_tonic_status!</span>(Error);
 </code></pre></div></section></main></body></html>

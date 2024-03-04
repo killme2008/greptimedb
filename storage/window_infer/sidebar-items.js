@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"constant":["TIME_WINDOW_SIZE"],"fn":["align_time_spans_to_windows","duration_to_window_size"],"struct":["PlainWindowInference"],"trait":["WindowInfer"]};

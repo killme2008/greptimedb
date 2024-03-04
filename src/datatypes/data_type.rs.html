@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/datatypes/src/data_type.rs`."><title>data_type.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="datatypes" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../datatypes/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/datatypes/src/data_type.rs`."><title>data_type.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="datatypes" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -745,16 +746,120 @@
 <a href="#745" id="745">745</a>
 <a href="#746" id="746">746</a>
 <a href="#747" id="747">747</a>
+<a href="#748" id="748">748</a>
+<a href="#749" id="749">749</a>
+<a href="#750" id="750">750</a>
+<a href="#751" id="751">751</a>
+<a href="#752" id="752">752</a>
+<a href="#753" id="753">753</a>
+<a href="#754" id="754">754</a>
+<a href="#755" id="755">755</a>
+<a href="#756" id="756">756</a>
+<a href="#757" id="757">757</a>
+<a href="#758" id="758">758</a>
+<a href="#759" id="759">759</a>
+<a href="#760" id="760">760</a>
+<a href="#761" id="761">761</a>
+<a href="#762" id="762">762</a>
+<a href="#763" id="763">763</a>
+<a href="#764" id="764">764</a>
+<a href="#765" id="765">765</a>
+<a href="#766" id="766">766</a>
+<a href="#767" id="767">767</a>
+<a href="#768" id="768">768</a>
+<a href="#769" id="769">769</a>
+<a href="#770" id="770">770</a>
+<a href="#771" id="771">771</a>
+<a href="#772" id="772">772</a>
+<a href="#773" id="773">773</a>
+<a href="#774" id="774">774</a>
+<a href="#775" id="775">775</a>
+<a href="#776" id="776">776</a>
+<a href="#777" id="777">777</a>
+<a href="#778" id="778">778</a>
+<a href="#779" id="779">779</a>
+<a href="#780" id="780">780</a>
+<a href="#781" id="781">781</a>
+<a href="#782" id="782">782</a>
+<a href="#783" id="783">783</a>
+<a href="#784" id="784">784</a>
+<a href="#785" id="785">785</a>
+<a href="#786" id="786">786</a>
+<a href="#787" id="787">787</a>
+<a href="#788" id="788">788</a>
+<a href="#789" id="789">789</a>
+<a href="#790" id="790">790</a>
+<a href="#791" id="791">791</a>
+<a href="#792" id="792">792</a>
+<a href="#793" id="793">793</a>
+<a href="#794" id="794">794</a>
+<a href="#795" id="795">795</a>
+<a href="#796" id="796">796</a>
+<a href="#797" id="797">797</a>
+<a href="#798" id="798">798</a>
+<a href="#799" id="799">799</a>
+<a href="#800" id="800">800</a>
+<a href="#801" id="801">801</a>
+<a href="#802" id="802">802</a>
+<a href="#803" id="803">803</a>
+<a href="#804" id="804">804</a>
+<a href="#805" id="805">805</a>
+<a href="#806" id="806">806</a>
+<a href="#807" id="807">807</a>
+<a href="#808" id="808">808</a>
+<a href="#809" id="809">809</a>
+<a href="#810" id="810">810</a>
+<a href="#811" id="811">811</a>
+<a href="#812" id="812">812</a>
+<a href="#813" id="813">813</a>
+<a href="#814" id="814">814</a>
+<a href="#815" id="815">815</a>
+<a href="#816" id="816">816</a>
+<a href="#817" id="817">817</a>
+<a href="#818" id="818">818</a>
+<a href="#819" id="819">819</a>
+<a href="#820" id="820">820</a>
+<a href="#821" id="821">821</a>
+<a href="#822" id="822">822</a>
+<a href="#823" id="823">823</a>
+<a href="#824" id="824">824</a>
+<a href="#825" id="825">825</a>
+<a href="#826" id="826">826</a>
+<a href="#827" id="827">827</a>
+<a href="#828" id="828">828</a>
+<a href="#829" id="829">829</a>
+<a href="#830" id="830">830</a>
+<a href="#831" id="831">831</a>
+<a href="#832" id="832">832</a>
+<a href="#833" id="833">833</a>
+<a href="#834" id="834">834</a>
+<a href="#835" id="835">835</a>
+<a href="#836" id="836">836</a>
+<a href="#837" id="837">837</a>
+<a href="#838" id="838">838</a>
+<a href="#839" id="839">839</a>
+<a href="#840" id="840">840</a>
+<a href="#841" id="841">841</a>
+<a href="#842" id="842">842</a>
+<a href="#843" id="843">843</a>
+<a href="#844" id="844">844</a>
+<a href="#845" id="845">845</a>
+<a href="#846" id="846">846</a>
+<a href="#847" id="847">847</a>
+<a href="#848" id="848">848</a>
+<a href="#849" id="849">849</a>
+<a href="#850" id="850">850</a>
+<a href="#851" id="851">851</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -762,9 +867,12 @@
 </span><span class="kw">use </span>std::fmt;
 <span class="kw">use </span>std::sync::Arc;
 
+<span class="kw">use </span>arrow::compute::cast <span class="kw">as </span>arrow_array_cast;
 <span class="kw">use </span>arrow::datatypes::{
     DataType <span class="kw">as </span>ArrowDataType, IntervalUnit <span class="kw">as </span>ArrowIntervalUnit, TimeUnit <span class="kw">as </span>ArrowTimeUnit,
 };
+<span class="kw">use </span>arrow_schema::DECIMAL_DEFAULT_SCALE;
+<span class="kw">use </span>common_decimal::decimal128::DECIMAL128_MAX_PRECISION;
 <span class="kw">use </span>common_time::interval::IntervalUnit;
 <span class="kw">use </span>common_time::timestamp::TimeUnit;
 <span class="kw">use </span>paste::paste;
@@ -773,11 +881,13 @@
 <span class="kw">use </span><span class="kw">crate</span>::error::{<span class="self">self</span>, Error, <span class="prelude-ty">Result</span>};
 <span class="kw">use </span><span class="kw">crate</span>::type_id::LogicalTypeId;
 <span class="kw">use </span><span class="kw">crate</span>::types::{
-    BinaryType, BooleanType, DateTimeType, DateType, DictionaryType, Float32Type, Float64Type,
-    Int16Type, Int32Type, Int64Type, Int8Type, IntervalDayTimeType, IntervalMonthDayNanoType,
-    IntervalType, IntervalYearMonthType, ListType, NullType, StringType, TimeMillisecondType,
-    TimeType, TimestampMicrosecondType, TimestampMillisecondType, TimestampNanosecondType,
-    TimestampSecondType, TimestampType, UInt16Type, UInt32Type, UInt64Type, UInt8Type,
+    BinaryType, BooleanType, DateTimeType, DateType, Decimal128Type, DictionaryType,
+    DurationMicrosecondType, DurationMillisecondType, DurationNanosecondType, DurationSecondType,
+    DurationType, Float32Type, Float64Type, Int16Type, Int32Type, Int64Type, Int8Type,
+    IntervalDayTimeType, IntervalMonthDayNanoType, IntervalType, IntervalYearMonthType, ListType,
+    NullType, StringType, TimeMillisecondType, TimeType, TimestampMicrosecondType,
+    TimestampMillisecondType, TimestampNanosecondType, TimestampSecondType, TimestampType,
+    UInt16Type, UInt32Type, UInt64Type, UInt8Type,
 };
 <span class="kw">use </span><span class="kw">crate</span>::value::Value;
 <span class="kw">use </span><span class="kw">crate</span>::vectors::MutableVector;
@@ -800,6 +910,9 @@
     Float32(Float32Type),
     Float64(Float64Type),
 
+    <span class="comment">// Decimal128 type:
+    </span>Decimal128(Decimal128Type),
+
     <span class="comment">// String types:
     </span>Binary(BinaryType),
     String(StringType),
@@ -810,7 +923,10 @@
     Timestamp(TimestampType),
     Time(TimeType),
 
-    <span class="comment">// Interval types:
+    <span class="comment">// Duration type:
+    </span>Duration(DurationType),
+
+    <span class="comment">// Interval type:
     </span>Interval(IntervalType),
 
     <span class="comment">// Compound types:
@@ -819,29 +935,50 @@
 }
 
 <span class="kw">impl </span>fmt::Display <span class="kw">for </span>ConcreteDataType {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; fmt::Result {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; fmt::Result {
         <span class="kw">match </span><span class="self">self </span>{
-            ConcreteDataType::Null(<span class="kw">_</span>) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Null&quot;</span>),
-            ConcreteDataType::Boolean(<span class="kw">_</span>) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Boolean&quot;</span>),
-            ConcreteDataType::Int8(<span class="kw">_</span>) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Int8&quot;</span>),
-            ConcreteDataType::Int16(<span class="kw">_</span>) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Int16&quot;</span>),
-            ConcreteDataType::Int32(<span class="kw">_</span>) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Int32&quot;</span>),
-            ConcreteDataType::Int64(<span class="kw">_</span>) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Int64&quot;</span>),
-            ConcreteDataType::UInt8(<span class="kw">_</span>) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;UInt8&quot;</span>),
-            ConcreteDataType::UInt16(<span class="kw">_</span>) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;UInt16&quot;</span>),
-            ConcreteDataType::UInt32(<span class="kw">_</span>) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;UInt32&quot;</span>),
-            ConcreteDataType::UInt64(<span class="kw">_</span>) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;UInt64&quot;</span>),
-            ConcreteDataType::Float32(<span class="kw">_</span>) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Float32&quot;</span>),
-            ConcreteDataType::Float64(<span class="kw">_</span>) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Float64&quot;</span>),
-            ConcreteDataType::Binary(<span class="kw">_</span>) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Binary&quot;</span>),
-            ConcreteDataType::String(<span class="kw">_</span>) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;String&quot;</span>),
-            ConcreteDataType::Date(<span class="kw">_</span>) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Date&quot;</span>),
-            ConcreteDataType::DateTime(<span class="kw">_</span>) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;DateTime&quot;</span>),
-            ConcreteDataType::Timestamp(<span class="kw">_</span>) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Timestamp&quot;</span>),
-            ConcreteDataType::Time(<span class="kw">_</span>) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Time&quot;</span>),
-            ConcreteDataType::List(<span class="kw">_</span>) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;List&quot;</span>),
-            ConcreteDataType::Dictionary(<span class="kw">_</span>) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Dictionary&quot;</span>),
-            ConcreteDataType::Interval(<span class="kw">_</span>) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Interval&quot;</span>),
+            ConcreteDataType::Null(v) =&gt; <span class="macro">write!</span>(f, <span class="string">"{}"</span>, v.name()),
+            ConcreteDataType::Boolean(v) =&gt; <span class="macro">write!</span>(f, <span class="string">"{}"</span>, v.name()),
+            ConcreteDataType::Int8(v) =&gt; <span class="macro">write!</span>(f, <span class="string">"{}"</span>, v.name()),
+            ConcreteDataType::Int16(v) =&gt; <span class="macro">write!</span>(f, <span class="string">"{}"</span>, v.name()),
+            ConcreteDataType::Int32(v) =&gt; <span class="macro">write!</span>(f, <span class="string">"{}"</span>, v.name()),
+            ConcreteDataType::Int64(v) =&gt; <span class="macro">write!</span>(f, <span class="string">"{}"</span>, v.name()),
+            ConcreteDataType::UInt8(v) =&gt; <span class="macro">write!</span>(f, <span class="string">"{}"</span>, v.name()),
+            ConcreteDataType::UInt16(v) =&gt; <span class="macro">write!</span>(f, <span class="string">"{}"</span>, v.name()),
+            ConcreteDataType::UInt32(v) =&gt; <span class="macro">write!</span>(f, <span class="string">"{}"</span>, v.name()),
+            ConcreteDataType::UInt64(v) =&gt; <span class="macro">write!</span>(f, <span class="string">"{}"</span>, v.name()),
+            ConcreteDataType::Float32(v) =&gt; <span class="macro">write!</span>(f, <span class="string">"{}"</span>, v.name()),
+            ConcreteDataType::Float64(v) =&gt; <span class="macro">write!</span>(f, <span class="string">"{}"</span>, v.name()),
+            ConcreteDataType::Binary(v) =&gt; <span class="macro">write!</span>(f, <span class="string">"{}"</span>, v.name()),
+            ConcreteDataType::String(v) =&gt; <span class="macro">write!</span>(f, <span class="string">"{}"</span>, v.name()),
+            ConcreteDataType::Date(v) =&gt; <span class="macro">write!</span>(f, <span class="string">"{}"</span>, v.name()),
+            ConcreteDataType::DateTime(v) =&gt; <span class="macro">write!</span>(f, <span class="string">"{}"</span>, v.name()),
+            ConcreteDataType::Timestamp(t) =&gt; <span class="kw">match </span>t {
+                TimestampType::Second(v) =&gt; <span class="macro">write!</span>(f, <span class="string">"{}"</span>, v.name()),
+                TimestampType::Millisecond(v) =&gt; <span class="macro">write!</span>(f, <span class="string">"{}"</span>, v.name()),
+                TimestampType::Microsecond(v) =&gt; <span class="macro">write!</span>(f, <span class="string">"{}"</span>, v.name()),
+                TimestampType::Nanosecond(v) =&gt; <span class="macro">write!</span>(f, <span class="string">"{}"</span>, v.name()),
+            },
+            ConcreteDataType::Time(t) =&gt; <span class="kw">match </span>t {
+                TimeType::Second(v) =&gt; <span class="macro">write!</span>(f, <span class="string">"{}"</span>, v.name()),
+                TimeType::Millisecond(v) =&gt; <span class="macro">write!</span>(f, <span class="string">"{}"</span>, v.name()),
+                TimeType::Microsecond(v) =&gt; <span class="macro">write!</span>(f, <span class="string">"{}"</span>, v.name()),
+                TimeType::Nanosecond(v) =&gt; <span class="macro">write!</span>(f, <span class="string">"{}"</span>, v.name()),
+            },
+            ConcreteDataType::Interval(i) =&gt; <span class="kw">match </span>i {
+                IntervalType::YearMonth(v) =&gt; <span class="macro">write!</span>(f, <span class="string">"{}"</span>, v.name()),
+                IntervalType::DayTime(v) =&gt; <span class="macro">write!</span>(f, <span class="string">"{}"</span>, v.name()),
+                IntervalType::MonthDayNano(v) =&gt; <span class="macro">write!</span>(f, <span class="string">"{}"</span>, v.name()),
+            },
+            ConcreteDataType::Duration(d) =&gt; <span class="kw">match </span>d {
+                DurationType::Second(v) =&gt; <span class="macro">write!</span>(f, <span class="string">"{}"</span>, v.name()),
+                DurationType::Millisecond(v) =&gt; <span class="macro">write!</span>(f, <span class="string">"{}"</span>, v.name()),
+                DurationType::Microsecond(v) =&gt; <span class="macro">write!</span>(f, <span class="string">"{}"</span>, v.name()),
+                DurationType::Nanosecond(v) =&gt; <span class="macro">write!</span>(f, <span class="string">"{}"</span>, v.name()),
+            },
+            ConcreteDataType::Decimal128(v) =&gt; <span class="macro">write!</span>(f, <span class="string">"{}"</span>, v.name()),
+            ConcreteDataType::List(v) =&gt; <span class="macro">write!</span>(f, <span class="string">"{}"</span>, v.name()),
+            ConcreteDataType::Dictionary(v) =&gt; <span class="macro">write!</span>(f, <span class="string">"{}"</span>, v.name()),
         }
     }
 }
@@ -860,6 +997,10 @@
         <span class="macro">matches!</span>(<span class="self">self</span>, ConcreteDataType::Boolean(<span class="kw">_</span>))
     }
 
+    <span class="kw">pub fn </span>is_string(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="macro">matches!</span>(<span class="self">self</span>, ConcreteDataType::String(<span class="kw">_</span>))
+    }
+
     <span class="kw">pub fn </span>is_stringifiable(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="macro">matches!</span>(
             <span class="self">self</span>,
@@ -869,6 +1010,8 @@
                 | ConcreteDataType::Timestamp(<span class="kw">_</span>)
                 | ConcreteDataType::Time(<span class="kw">_</span>)
                 | ConcreteDataType::Interval(<span class="kw">_</span>)
+                | ConcreteDataType::Duration(<span class="kw">_</span>)
+                | ConcreteDataType::Decimal128(<span class="kw">_</span>)
         )
     }
 
@@ -884,6 +1027,8 @@
                 | ConcreteDataType::Timestamp(<span class="kw">_</span>)
                 | ConcreteDataType::Time(<span class="kw">_</span>)
                 | ConcreteDataType::Interval(<span class="kw">_</span>)
+                | ConcreteDataType::Duration(<span class="kw">_</span>)
+                | ConcreteDataType::Decimal128(<span class="kw">_</span>)
         )
     }
 
@@ -895,6 +1040,30 @@
                 | ConcreteDataType::UInt32(<span class="kw">_</span>)
                 | ConcreteDataType::UInt64(<span class="kw">_</span>)
         )
+    }
+
+    <span class="kw">pub fn </span>is_numeric(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="macro">matches!</span>(
+            <span class="self">self</span>,
+            ConcreteDataType::Int8(<span class="kw">_</span>)
+                | ConcreteDataType::Int16(<span class="kw">_</span>)
+                | ConcreteDataType::Int32(<span class="kw">_</span>)
+                | ConcreteDataType::Int64(<span class="kw">_</span>)
+                | ConcreteDataType::UInt8(<span class="kw">_</span>)
+                | ConcreteDataType::UInt16(<span class="kw">_</span>)
+                | ConcreteDataType::UInt32(<span class="kw">_</span>)
+                | ConcreteDataType::UInt64(<span class="kw">_</span>)
+                | ConcreteDataType::Float32(<span class="kw">_</span>)
+                | ConcreteDataType::Float64(<span class="kw">_</span>)
+        )
+    }
+
+    <span class="kw">pub fn </span>is_timestamp(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="macro">matches!</span>(<span class="self">self</span>, ConcreteDataType::Timestamp(<span class="kw">_</span>))
+    }
+
+    <span class="kw">pub fn </span>is_decimal(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="macro">matches!</span>(<span class="self">self</span>, ConcreteDataType::Decimal128(<span class="kw">_</span>))
     }
 
     <span class="kw">pub fn </span>numerics() -&gt; Vec&lt;ConcreteDataType&gt; {
@@ -917,7 +1086,7 @@
     /// # Panics
     /// Panic if given arrow data type is not supported.
     </span><span class="kw">pub fn </span>from_arrow_type(dt: <span class="kw-2">&amp;</span>ArrowDataType) -&gt; <span class="self">Self </span>{
-        ConcreteDataType::try_from(dt).expect(<span class="string">&quot;Unimplemented type&quot;</span>)
+        ConcreteDataType::try_from(dt).expect(<span class="string">"Unimplemented type"</span>)
     }
 
     <span class="kw">pub fn </span>is_null(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
@@ -935,9 +1104,6 @@
     <span class="doccomment">/// Try to cast data type as a [`TimestampType`].
     </span><span class="kw">pub fn </span>as_timestamp(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;TimestampType&gt; {
         <span class="kw">match </span><span class="self">self </span>{
-            ConcreteDataType::Int64(<span class="kw">_</span>) =&gt; {
-                <span class="prelude-val">Some</span>(TimestampType::Millisecond(TimestampMillisecondType))
-            }
             ConcreteDataType::Timestamp(t) =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">*</span>t),
             <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
         }
@@ -948,6 +1114,27 @@
         <span class="kw">match </span><span class="self">self </span>{
             ConcreteDataType::Int64(<span class="kw">_</span>) =&gt; <span class="prelude-val">Some</span>(TimeType::Millisecond(TimeMillisecondType)),
             ConcreteDataType::Time(t) =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">*</span>t),
+            <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
+        }
+    }
+
+    <span class="kw">pub fn </span>as_decimal128(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Decimal128Type&gt; {
+        <span class="kw">match </span><span class="self">self </span>{
+            ConcreteDataType::Decimal128(d) =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">*</span>d),
+            <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
+        }
+    }
+
+    <span class="doccomment">/// Checks if the data type can cast to another data type.
+    </span><span class="kw">pub fn </span>can_arrow_type_cast_to(<span class="kw-2">&amp;</span><span class="self">self</span>, to_type: <span class="kw-2">&amp;</span>ConcreteDataType) -&gt; bool {
+        <span class="kw">let </span>array = arrow_array::new_empty_array(<span class="kw-2">&amp;</span><span class="self">self</span>.as_arrow_type());
+        arrow_array_cast(array.as_ref(), <span class="kw-2">&amp;</span>to_type.as_arrow_type()).is_ok()
+    }
+
+    <span class="doccomment">/// Try to cast data type as a [`DurationType`].
+    </span><span class="kw">pub fn </span>as_duration(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;DurationType&gt; {
+        <span class="kw">match </span><span class="self">self </span>{
+            ConcreteDataType::Duration(d) =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">*</span>d),
             <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
         }
     }
@@ -992,6 +1179,12 @@
             }
             ArrowDataType::Time32(u) =&gt; ConcreteDataType::Time(TimeType::from_unit(u.into())),
             ArrowDataType::Time64(u) =&gt; ConcreteDataType::Time(TimeType::from_unit(u.into())),
+            ArrowDataType::Duration(u) =&gt; {
+                ConcreteDataType::Duration(DurationType::from_unit(u.into()))
+            }
+            ArrowDataType::Decimal128(precision, scale) =&gt; {
+                ConcreteDataType::decimal128_datatype(<span class="kw-2">*</span>precision, <span class="kw-2">*</span>scale)
+            }
             <span class="kw">_ </span>=&gt; {
                 <span class="kw">return </span>error::UnsupportedArrowTypeSnafu {
                     arrow_type: dt.clone(),
@@ -1065,15 +1258,38 @@
         <span class="self">Self</span>::time_datatype(TimeUnit::Nanosecond)
     }
 
-    <span class="kw">pub fn </span>interval_month_day_nano_datatype() -&gt; <span class="self">Self </span>{
+    <span class="doccomment">/// Creates a [Duration(DurationSecondType)] datatype.
+    </span><span class="kw">pub fn </span>duration_second_datatype() -&gt; <span class="self">Self </span>{
+        ConcreteDataType::Duration(DurationType::Second(DurationSecondType))
+    }
+
+    <span class="doccomment">/// Creates a [Duration(DurationMillisecondType)] datatype.
+    </span><span class="kw">pub fn </span>duration_millisecond_datatype() -&gt; <span class="self">Self </span>{
+        ConcreteDataType::Duration(DurationType::Millisecond(DurationMillisecondType))
+    }
+
+    <span class="doccomment">/// Creates a [Duration(DurationMicrosecondType)] datatype.
+    </span><span class="kw">pub fn </span>duration_microsecond_datatype() -&gt; <span class="self">Self </span>{
+        ConcreteDataType::Duration(DurationType::Microsecond(DurationMicrosecondType))
+    }
+
+    <span class="doccomment">/// Creates a [Duration(DurationNanosecondType)] datatype.
+    </span><span class="kw">pub fn </span>duration_nanosecond_datatype() -&gt; <span class="self">Self </span>{
+        ConcreteDataType::Duration(DurationType::Nanosecond(DurationNanosecondType))
+    }
+
+    <span class="doccomment">/// Creates a [Interval(IntervalMonthDayNanoType)] datatype.
+    </span><span class="kw">pub fn </span>interval_month_day_nano_datatype() -&gt; <span class="self">Self </span>{
         ConcreteDataType::Interval(IntervalType::MonthDayNano(IntervalMonthDayNanoType))
     }
 
-    <span class="kw">pub fn </span>interval_year_month_datatype() -&gt; <span class="self">Self </span>{
+    <span class="doccomment">/// Creates a [Interval(IntervalYearMonthType)] datatype.
+    </span><span class="kw">pub fn </span>interval_year_month_datatype() -&gt; <span class="self">Self </span>{
         ConcreteDataType::Interval(IntervalType::YearMonth(IntervalYearMonthType))
     }
 
-    <span class="kw">pub fn </span>interval_day_time_datatype() -&gt; <span class="self">Self </span>{
+    <span class="doccomment">/// Creates a [Interval(IntervalDayTimeType)] datatype.
+    </span><span class="kw">pub fn </span>interval_day_time_datatype() -&gt; <span class="self">Self </span>{
         ConcreteDataType::Interval(IntervalType::DayTime(IntervalDayTimeType))
     }
 
@@ -1093,6 +1309,15 @@
             ArrowTimeUnit::Millisecond =&gt; <span class="self">Self</span>::timestamp_millisecond_datatype(),
             ArrowTimeUnit::Microsecond =&gt; <span class="self">Self</span>::timestamp_microsecond_datatype(),
             ArrowTimeUnit::Nanosecond =&gt; <span class="self">Self</span>::timestamp_nanosecond_datatype(),
+        }
+    }
+
+    <span class="kw">pub fn </span>duration_datatype(unit: TimeUnit) -&gt; <span class="self">Self </span>{
+        <span class="kw">match </span>unit {
+            TimeUnit::Second =&gt; <span class="self">Self</span>::duration_second_datatype(),
+            TimeUnit::Millisecond =&gt; <span class="self">Self</span>::duration_millisecond_datatype(),
+            TimeUnit::Microsecond =&gt; <span class="self">Self</span>::duration_microsecond_datatype(),
+            TimeUnit::Nanosecond =&gt; <span class="self">Self</span>::duration_nanosecond_datatype(),
         }
     }
 
@@ -1122,13 +1347,21 @@
     ) -&gt; ConcreteDataType {
         ConcreteDataType::Dictionary(DictionaryType::new(key_type, value_type))
     }
+
+    <span class="kw">pub fn </span>decimal128_datatype(precision: u8, scale: i8) -&gt; ConcreteDataType {
+        ConcreteDataType::Decimal128(Decimal128Type::new(precision, scale))
+    }
+
+    <span class="kw">pub fn </span>decimal128_default_datatype() -&gt; ConcreteDataType {
+        <span class="self">Self</span>::decimal128_datatype(DECIMAL128_MAX_PRECISION, DECIMAL_DEFAULT_SCALE)
+    }
 }
 
 <span class="doccomment">/// Data type abstraction.
 </span><span class="attr">#[enum_dispatch::enum_dispatch]
 </span><span class="kw">pub trait </span>DataType: std::fmt::Debug + Send + Sync {
     <span class="doccomment">/// Name of this data type.
-    </span><span class="kw">fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str;
+    </span><span class="kw">fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String;
 
     <span class="doccomment">/// Returns id of the Logical data type.
     </span><span class="kw">fn </span>logical_type_id(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; LogicalTypeId;
@@ -1142,9 +1375,9 @@
     <span class="doccomment">/// Creates a mutable vector with given `capacity` of this type.
     </span><span class="kw">fn </span>create_mutable_vector(<span class="kw-2">&amp;</span><span class="self">self</span>, capacity: usize) -&gt; Box&lt;<span class="kw">dyn </span>MutableVector&gt;;
 
-    <span class="doccomment">/// Returns true if the data type is compatible with timestamp type so we can
-    /// use it as a timestamp.
-    </span><span class="kw">fn </span>is_timestamp_compatible(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool;
+    <span class="doccomment">/// Casts the value to specific DataType.
+    /// Return None if cast failed.
+    </span><span class="kw">fn </span>try_cast(<span class="kw-2">&amp;</span><span class="self">self</span>, from: Value) -&gt; <span class="prelude-ty">Option</span>&lt;Value&gt;;
 }
 
 <span class="kw">pub type </span>DataTypeRef = Arc&lt;<span class="kw">dyn </span>DataType&gt;;
@@ -1159,7 +1392,7 @@
     </span><span class="kw">fn </span>test_concrete_type_as_datatype_trait() {
         <span class="kw">let </span>concrete_type = ConcreteDataType::boolean_datatype();
 
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;Boolean&quot;</span>, concrete_type.name());
+        <span class="macro">assert_eq!</span>(<span class="string">"Boolean"</span>, concrete_type.to_string());
         <span class="macro">assert_eq!</span>(Value::Boolean(<span class="bool-val">false</span>), concrete_type.default_value());
         <span class="macro">assert_eq!</span>(LogicalTypeId::Boolean, concrete_type.logical_type_id());
         <span class="macro">assert_eq!</span>(ArrowDataType::Boolean, concrete_type.as_arrow_type());
@@ -1229,7 +1462,7 @@
         ));
         <span class="macro">assert_eq!</span>(
             ConcreteDataType::from_arrow_type(<span class="kw-2">&amp;</span>ArrowDataType::List(Arc::new(Field::new(
-                <span class="string">&quot;item&quot;</span>,
+                <span class="string">"item"</span>,
                 ArrowDataType::Int32,
                 <span class="bool-val">true</span>,
             )))),
@@ -1262,37 +1495,6 @@
     }
 
     <span class="attr">#[test]
-    </span><span class="kw">fn </span>test_is_timestamp_compatible() {
-        <span class="macro">assert!</span>(ConcreteDataType::timestamp_datatype(TimeUnit::Second).is_timestamp_compatible());
-        <span class="macro">assert!</span>(
-            ConcreteDataType::timestamp_datatype(TimeUnit::Millisecond).is_timestamp_compatible()
-        );
-        <span class="macro">assert!</span>(
-            ConcreteDataType::timestamp_datatype(TimeUnit::Microsecond).is_timestamp_compatible()
-        );
-        <span class="macro">assert!</span>(
-            ConcreteDataType::timestamp_datatype(TimeUnit::Nanosecond).is_timestamp_compatible()
-        );
-        <span class="macro">assert!</span>(ConcreteDataType::timestamp_second_datatype().is_timestamp_compatible());
-        <span class="macro">assert!</span>(ConcreteDataType::timestamp_millisecond_datatype().is_timestamp_compatible());
-        <span class="macro">assert!</span>(ConcreteDataType::timestamp_microsecond_datatype().is_timestamp_compatible());
-        <span class="macro">assert!</span>(ConcreteDataType::timestamp_nanosecond_datatype().is_timestamp_compatible());
-        <span class="macro">assert!</span>(ConcreteDataType::int64_datatype().is_timestamp_compatible());
-        <span class="macro">assert!</span>(!ConcreteDataType::null_datatype().is_timestamp_compatible());
-        <span class="macro">assert!</span>(!ConcreteDataType::binary_datatype().is_timestamp_compatible());
-        <span class="macro">assert!</span>(!ConcreteDataType::boolean_datatype().is_timestamp_compatible());
-        <span class="macro">assert!</span>(!ConcreteDataType::date_datatype().is_timestamp_compatible());
-        <span class="macro">assert!</span>(!ConcreteDataType::datetime_datatype().is_timestamp_compatible());
-        <span class="macro">assert!</span>(!ConcreteDataType::string_datatype().is_timestamp_compatible());
-        <span class="macro">assert!</span>(!ConcreteDataType::int32_datatype().is_timestamp_compatible());
-        <span class="macro">assert!</span>(!ConcreteDataType::uint64_datatype().is_timestamp_compatible());
-        <span class="macro">assert!</span>(!ConcreteDataType::time_second_datatype().is_timestamp_compatible());
-        <span class="macro">assert!</span>(!ConcreteDataType::time_millisecond_datatype().is_timestamp_compatible());
-        <span class="macro">assert!</span>(!ConcreteDataType::time_microsecond_datatype().is_timestamp_compatible());
-        <span class="macro">assert!</span>(!ConcreteDataType::time_nanosecond_datatype().is_timestamp_compatible());
-    }
-
-    <span class="attr">#[test]
     </span><span class="kw">fn </span>test_is_null() {
         <span class="macro">assert!</span>(ConcreteDataType::null_datatype().is_null());
         <span class="macro">assert!</span>(!ConcreteDataType::int32_datatype().is_null());
@@ -1310,6 +1512,14 @@
         <span class="macro">assert!</span>(!ConcreteDataType::int32_datatype().is_boolean());
         <span class="macro">assert!</span>(!ConcreteDataType::float32_datatype().is_boolean());
         <span class="macro">assert!</span>(ConcreteDataType::boolean_datatype().is_boolean());
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_is_decimal() {
+        <span class="macro">assert!</span>(!ConcreteDataType::int32_datatype().is_decimal());
+        <span class="macro">assert!</span>(!ConcreteDataType::float32_datatype().is_decimal());
+        <span class="macro">assert!</span>(ConcreteDataType::decimal128_datatype(<span class="number">10</span>, <span class="number">2</span>).is_decimal());
+        <span class="macro">assert!</span>(ConcreteDataType::decimal128_datatype(<span class="number">18</span>, <span class="number">6</span>).is_decimal());
     }
 
     <span class="attr">#[test]
@@ -1331,6 +1541,12 @@
         <span class="macro">assert!</span>(ConcreteDataType::interval_year_month_datatype().is_stringifiable());
         <span class="macro">assert!</span>(ConcreteDataType::interval_day_time_datatype().is_stringifiable());
         <span class="macro">assert!</span>(ConcreteDataType::interval_month_day_nano_datatype().is_stringifiable());
+
+        <span class="macro">assert!</span>(ConcreteDataType::duration_second_datatype().is_stringifiable());
+        <span class="macro">assert!</span>(ConcreteDataType::duration_millisecond_datatype().is_stringifiable());
+        <span class="macro">assert!</span>(ConcreteDataType::duration_microsecond_datatype().is_stringifiable());
+        <span class="macro">assert!</span>(ConcreteDataType::duration_nanosecond_datatype().is_stringifiable());
+        <span class="macro">assert!</span>(ConcreteDataType::decimal128_datatype(<span class="number">10</span>, <span class="number">2</span>).is_stringifiable());
     }
 
     <span class="attr">#[test]
@@ -1352,6 +1568,10 @@
         <span class="macro">assert!</span>(ConcreteDataType::interval_year_month_datatype().is_signed());
         <span class="macro">assert!</span>(ConcreteDataType::interval_day_time_datatype().is_signed());
         <span class="macro">assert!</span>(ConcreteDataType::interval_month_day_nano_datatype().is_signed());
+        <span class="macro">assert!</span>(ConcreteDataType::duration_second_datatype().is_signed());
+        <span class="macro">assert!</span>(ConcreteDataType::duration_millisecond_datatype().is_signed());
+        <span class="macro">assert!</span>(ConcreteDataType::duration_microsecond_datatype().is_signed());
+        <span class="macro">assert!</span>(ConcreteDataType::duration_nanosecond_datatype().is_signed());
 
         <span class="macro">assert!</span>(!ConcreteDataType::uint8_datatype().is_signed());
         <span class="macro">assert!</span>(!ConcreteDataType::uint16_datatype().is_signed());
@@ -1360,6 +1580,8 @@
 
         <span class="macro">assert!</span>(!ConcreteDataType::float32_datatype().is_signed());
         <span class="macro">assert!</span>(!ConcreteDataType::float64_datatype().is_signed());
+
+        <span class="macro">assert!</span>(ConcreteDataType::decimal128_datatype(<span class="number">10</span>, <span class="number">2</span>).is_signed());
     }
 
     <span class="attr">#[test]
@@ -1381,6 +1603,11 @@
         <span class="macro">assert!</span>(!ConcreteDataType::interval_year_month_datatype().is_unsigned());
         <span class="macro">assert!</span>(!ConcreteDataType::interval_day_time_datatype().is_unsigned());
         <span class="macro">assert!</span>(!ConcreteDataType::interval_month_day_nano_datatype().is_unsigned());
+        <span class="macro">assert!</span>(!ConcreteDataType::duration_second_datatype().is_unsigned());
+        <span class="macro">assert!</span>(!ConcreteDataType::duration_millisecond_datatype().is_unsigned());
+        <span class="macro">assert!</span>(!ConcreteDataType::duration_microsecond_datatype().is_unsigned());
+        <span class="macro">assert!</span>(!ConcreteDataType::duration_nanosecond_datatype().is_unsigned());
+        <span class="macro">assert!</span>(!ConcreteDataType::decimal128_datatype(<span class="number">10</span>, <span class="number">2</span>).is_unsigned());
 
         <span class="macro">assert!</span>(ConcreteDataType::uint8_datatype().is_unsigned());
         <span class="macro">assert!</span>(ConcreteDataType::uint16_datatype().is_unsigned());
@@ -1409,87 +1636,69 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_display_concrete_data_type() {
+        <span class="macro">assert_eq!</span>(ConcreteDataType::null_datatype().to_string(), <span class="string">"Null"</span>);
+        <span class="macro">assert_eq!</span>(ConcreteDataType::boolean_datatype().to_string(), <span class="string">"Boolean"</span>);
+        <span class="macro">assert_eq!</span>(ConcreteDataType::binary_datatype().to_string(), <span class="string">"Binary"</span>);
+        <span class="macro">assert_eq!</span>(ConcreteDataType::int8_datatype().to_string(), <span class="string">"Int8"</span>);
+        <span class="macro">assert_eq!</span>(ConcreteDataType::int16_datatype().to_string(), <span class="string">"Int16"</span>);
+        <span class="macro">assert_eq!</span>(ConcreteDataType::int32_datatype().to_string(), <span class="string">"Int32"</span>);
+        <span class="macro">assert_eq!</span>(ConcreteDataType::int64_datatype().to_string(), <span class="string">"Int64"</span>);
+        <span class="macro">assert_eq!</span>(ConcreteDataType::uint8_datatype().to_string(), <span class="string">"UInt8"</span>);
+        <span class="macro">assert_eq!</span>(ConcreteDataType::uint16_datatype().to_string(), <span class="string">"UInt16"</span>);
+        <span class="macro">assert_eq!</span>(ConcreteDataType::uint32_datatype().to_string(), <span class="string">"UInt32"</span>);
+        <span class="macro">assert_eq!</span>(ConcreteDataType::uint64_datatype().to_string(), <span class="string">"UInt64"</span>);
+        <span class="macro">assert_eq!</span>(ConcreteDataType::float32_datatype().to_string(), <span class="string">"Float32"</span>);
+        <span class="macro">assert_eq!</span>(ConcreteDataType::float64_datatype().to_string(), <span class="string">"Float64"</span>);
+        <span class="macro">assert_eq!</span>(ConcreteDataType::string_datatype().to_string(), <span class="string">"String"</span>);
+        <span class="macro">assert_eq!</span>(ConcreteDataType::date_datatype().to_string(), <span class="string">"Date"</span>);
         <span class="macro">assert_eq!</span>(
-            ConcreteDataType::from_arrow_type(<span class="kw-2">&amp;</span>ArrowDataType::Null).to_string(),
-            <span class="string">&quot;Null&quot;
+            ConcreteDataType::timestamp_millisecond_datatype().to_string(),
+            <span class="string">"TimestampMillisecond"
         </span>);
         <span class="macro">assert_eq!</span>(
-            ConcreteDataType::from_arrow_type(<span class="kw-2">&amp;</span>ArrowDataType::Boolean).to_string(),
-            <span class="string">&quot;Boolean&quot;
+            ConcreteDataType::time_millisecond_datatype().to_string(),
+            <span class="string">"TimeMillisecond"
         </span>);
         <span class="macro">assert_eq!</span>(
-            ConcreteDataType::from_arrow_type(<span class="kw-2">&amp;</span>ArrowDataType::Binary).to_string(),
-            <span class="string">&quot;Binary&quot;
+            ConcreteDataType::interval_month_day_nano_datatype().to_string(),
+            <span class="string">"IntervalMonthDayNano"
         </span>);
         <span class="macro">assert_eq!</span>(
-            ConcreteDataType::from_arrow_type(<span class="kw-2">&amp;</span>ArrowDataType::LargeBinary).to_string(),
-            <span class="string">&quot;Binary&quot;
+            ConcreteDataType::duration_second_datatype().to_string(),
+            <span class="string">"DurationSecond"
         </span>);
         <span class="macro">assert_eq!</span>(
-            ConcreteDataType::from_arrow_type(<span class="kw-2">&amp;</span>ArrowDataType::Int8).to_string(),
-            <span class="string">&quot;Int8&quot;
+            ConcreteDataType::decimal128_datatype(<span class="number">10</span>, <span class="number">2</span>).to_string(),
+            <span class="string">"Decimal(10, 2)"
+        </span>);
+        <span class="comment">// Nested types
+        </span><span class="macro">assert_eq!</span>(
+            ConcreteDataType::list_datatype(ConcreteDataType::int32_datatype()).to_string(),
+            <span class="string">"List&lt;Int32&gt;"
         </span>);
         <span class="macro">assert_eq!</span>(
-            ConcreteDataType::from_arrow_type(<span class="kw-2">&amp;</span>ArrowDataType::Int16).to_string(),
-            <span class="string">&quot;Int16&quot;
-        </span>);
-        <span class="macro">assert_eq!</span>(
-            ConcreteDataType::from_arrow_type(<span class="kw-2">&amp;</span>ArrowDataType::Int32).to_string(),
-            <span class="string">&quot;Int32&quot;
-        </span>);
-        <span class="macro">assert_eq!</span>(
-            ConcreteDataType::from_arrow_type(<span class="kw-2">&amp;</span>ArrowDataType::Int64).to_string(),
-            <span class="string">&quot;Int64&quot;
-        </span>);
-        <span class="macro">assert_eq!</span>(
-            ConcreteDataType::from_arrow_type(<span class="kw-2">&amp;</span>ArrowDataType::UInt8).to_string(),
-            <span class="string">&quot;UInt8&quot;
-        </span>);
-        <span class="macro">assert_eq!</span>(
-            ConcreteDataType::from_arrow_type(<span class="kw-2">&amp;</span>ArrowDataType::UInt16).to_string(),
-            <span class="string">&quot;UInt16&quot;
-        </span>);
-        <span class="macro">assert_eq!</span>(
-            ConcreteDataType::from_arrow_type(<span class="kw-2">&amp;</span>ArrowDataType::UInt32).to_string(),
-            <span class="string">&quot;UInt32&quot;
-        </span>);
-        <span class="macro">assert_eq!</span>(
-            ConcreteDataType::from_arrow_type(<span class="kw-2">&amp;</span>ArrowDataType::UInt64).to_string(),
-            <span class="string">&quot;UInt64&quot;
-        </span>);
-        <span class="macro">assert_eq!</span>(
-            ConcreteDataType::from_arrow_type(<span class="kw-2">&amp;</span>ArrowDataType::Float32).to_string(),
-            <span class="string">&quot;Float32&quot;
-        </span>);
-        <span class="macro">assert_eq!</span>(
-            ConcreteDataType::from_arrow_type(<span class="kw-2">&amp;</span>ArrowDataType::Float64).to_string(),
-            <span class="string">&quot;Float64&quot;
-        </span>);
-        <span class="macro">assert_eq!</span>(
-            ConcreteDataType::from_arrow_type(<span class="kw-2">&amp;</span>ArrowDataType::Utf8).to_string(),
-            <span class="string">&quot;String&quot;
-        </span>);
-        <span class="macro">assert_eq!</span>(
-            ConcreteDataType::from_arrow_type(<span class="kw-2">&amp;</span>ArrowDataType::List(Arc::new(Field::new(
-                <span class="string">&quot;item&quot;</span>,
-                ArrowDataType::Int32,
-                <span class="bool-val">true</span>,
-            ))))
+            ConcreteDataType::list_datatype(ConcreteDataType::Dictionary(DictionaryType::new(
+                ConcreteDataType::int32_datatype(),
+                ConcreteDataType::string_datatype()
+            )))
             .to_string(),
-            <span class="string">&quot;List&quot;
+            <span class="string">"List&lt;Dictionary&lt;Int32, String&gt;&gt;"
         </span>);
         <span class="macro">assert_eq!</span>(
-            ConcreteDataType::from_arrow_type(<span class="kw-2">&amp;</span>ArrowDataType::Date32).to_string(),
-            <span class="string">&quot;Date&quot;
-        </span>);
-        <span class="macro">assert_eq!</span>(ConcreteDataType::time_second_datatype().to_string(), <span class="string">&quot;Time&quot;</span>);
-        <span class="macro">assert_eq!</span>(
-            ConcreteDataType::from_arrow_type(<span class="kw-2">&amp;</span>ArrowDataType::Interval(
-                arrow_schema::IntervalUnit::MonthDayNano,
+            ConcreteDataType::list_datatype(ConcreteDataType::list_datatype(
+                ConcreteDataType::list_datatype(ConcreteDataType::int32_datatype())
             ))
             .to_string(),
-            <span class="string">&quot;Interval&quot;
-        </span>)
+            <span class="string">"List&lt;List&lt;List&lt;Int32&gt;&gt;&gt;"
+        </span>);
+        <span class="macro">assert_eq!</span>(
+            ConcreteDataType::dictionary_datatype(
+                ConcreteDataType::int32_datatype(),
+                ConcreteDataType::string_datatype()
+            )
+            .to_string(),
+            <span class="string">"Dictionary&lt;Int32, String&gt;"
+        </span>);
     }
 }
 </code></pre></div></section></main></body></html>

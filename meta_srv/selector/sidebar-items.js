@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["SelectorType"],"mod":["lease_based","load_based"],"trait":["Selector"],"type":["Namespace"]};
+window.SIDEBAR_ITEMS = {"enum":["SelectorType"],"mod":["common","lease_based","load_based","weight_compute","weighted_choose"],"struct":["SelectorOptions"],"trait":["Selector"],"type":["Namespace"]};

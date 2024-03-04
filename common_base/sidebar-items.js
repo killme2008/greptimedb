@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["bit_vec","buffer","bytes","paths","readable_size"],"struct":["Plugins"]};
+window.SIDEBAR_ITEMS = {"mod":["bit_vec","buffer","bytes","readable_size"],"struct":["Plugins"]};

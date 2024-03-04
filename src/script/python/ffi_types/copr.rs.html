@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/script/src/python/ffi_types/copr.rs`."><title>copr.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="script" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../script/index.html"><img class="rust-logo" src="../../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/script/src/python/ffi_types/copr.rs`."><title>copr.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="script" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -518,14 +519,14 @@
 <a href="#518" id="518">518</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -544,7 +545,7 @@
 <span class="kw">use </span>datatypes::vectors::{Helper, VectorRef};
 <span class="comment">// use crate::python::builtins::greptime_builtin;
 </span><span class="kw">use </span>parse::DecoratorArgs;
-<span class="attr">#[cfg(feature = <span class="string">&quot;pyo3_backend&quot;</span>)]
+<span class="attr">#[cfg(feature = <span class="string">"pyo3_backend"</span>)]
 </span><span class="kw">use </span>pyo3::pyclass <span class="kw">as </span>pyo3class;
 <span class="kw">use </span>query::parser::QueryLanguageParser;
 <span class="kw">use </span>query::QueryEngine;
@@ -560,7 +561,7 @@
 <span class="kw">use </span><span class="kw">super</span>::py_recordbatch::PyRecordBatch;
 <span class="kw">use </span><span class="kw">crate</span>::python::error::{ensure, ArrowSnafu, OtherSnafu, <span class="prelude-ty">Result</span>, TypeCastSnafu};
 <span class="kw">use </span><span class="kw">crate</span>::python::ffi_types::PyVector;
-<span class="attr">#[cfg(feature = <span class="string">&quot;pyo3_backend&quot;</span>)]
+<span class="attr">#[cfg(feature = <span class="string">"pyo3_backend"</span>)]
 </span><span class="kw">use </span><span class="kw">crate</span>::python::pyo3::pyo3_exec_parsed;
 <span class="kw">use </span><span class="kw">crate</span>::python::rspython::rspy_exec_parsed;
 
@@ -590,18 +591,18 @@
 </span><span class="kw">pub struct </span>Coprocessor {
     <span class="kw">pub </span>name: String,
     <span class="kw">pub </span>deco_args: DecoratorArgs,
-    <span class="doccomment">/// get from python function args&#39; annotation, first is type, second is is_nullable
+    <span class="doccomment">/// get from python function args' annotation, first is type, second is is_nullable
     </span><span class="kw">pub </span>arg_types: Vec&lt;<span class="prelude-ty">Option</span>&lt;AnnotationInfo&gt;&gt;,
-    <span class="doccomment">/// get from python function returns&#39; annotation, first is type, second is is_nullable
+    <span class="doccomment">/// get from python function returns' annotation, first is type, second is is_nullable
     </span><span class="kw">pub </span>return_types: Vec&lt;<span class="prelude-ty">Option</span>&lt;AnnotationInfo&gt;&gt;,
-    <span class="doccomment">/// kwargs in coprocessor function&#39;s signature
+    <span class="doccomment">/// kwargs in coprocessor function's signature
     </span><span class="kw">pub </span>kwarg: <span class="prelude-ty">Option</span>&lt;String&gt;,
     <span class="doccomment">/// store its corresponding script, also skip serde when in `cfg(test)` to reduce work in compare
     </span><span class="attr">#[cfg_attr(test, serde(skip))]
     </span><span class="kw">pub </span>script: String,
     <span class="comment">// We must use option here, because we use `serde` to deserialize coprocessor
     // from ron file and `Deserialize` requires Coprocessor implementing `Default` trait,
-    // but CodeObject doesn&#39;t.
+    // but CodeObject doesn't.
     </span><span class="attr">#[cfg_attr(test, serde(skip))]
     </span><span class="kw">pub </span>code_obj: <span class="prelude-ty">Option</span>&lt;CodeObject&gt;,
     <span class="attr">#[cfg_attr(test, serde(skip))]
@@ -628,8 +629,8 @@
 }
 
 <span class="kw">impl </span>std::fmt::Debug <span class="kw">for </span>QueryEngineWeakRef {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
-        f.debug_tuple(<span class="string">&quot;QueryEngineWeakRef&quot;</span>)
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; std::fmt::Result {
+        f.debug_tuple(<span class="string">"QueryEngineWeakRef"</span>)
             .field(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.upgrade().map(|f| f.name().to_string()))
             .finish()
     }
@@ -658,7 +659,7 @@
             cols.len() == names.len() &amp;&amp; names.len() == anno.len(),
             OtherSnafu {
                 reason: <span class="macro">format!</span>(
-                    <span class="string">&quot;Unmatched length for cols({}), names({}) and annotation({})&quot;</span>,
+                    <span class="string">"Unmatched length for cols({}), names({}) and annotation({})"</span>,
                     cols.len(),
                     names.len(),
                     anno.len()
@@ -704,7 +705,7 @@
             cols.len() == return_types.len(),
             OtherSnafu {
                 reason: <span class="macro">format!</span>(
-                    <span class="string">&quot;The number of return Vector is wrong, expect {}, found {}&quot;</span>,
+                    <span class="string">"The number of return Vector is wrong, expect {}, found {}"</span>,
                     return_types.len(),
                     cols.len()
                 )
@@ -737,15 +738,15 @@
         .iter()
         .map(|name| {
             <span class="kw">let </span>vector = rb.column_by_name(name).with_context(|| OtherSnafu {
-                reason: <span class="macro">format!</span>(<span class="string">&quot;Can&#39;t find field name {name} in all columns in {rb:?}&quot;</span>),
+                reason: <span class="macro">format!</span>(<span class="string">"Can't find field name {name} in all columns in {rb:?}"</span>),
             })<span class="question-mark">?</span>;
             <span class="prelude-val">Ok</span>(PyVector::from(vector.clone()))
         })
         .collect()
 }
 
-<span class="doccomment">/// match between arguments&#39; real type and annotation types
-/// if type anno is `vector[_]` then use real type(from RecordBatch&#39;s schema)
+<span class="doccomment">/// match between arguments' real type and annotation types
+/// if type anno is `vector[_]` then use real type(from RecordBatch's schema)
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>check_args_anno_real_type(
     arg_names: <span class="kw-2">&amp;</span>[String],
     args: <span class="kw-2">&amp;</span>[PyVector],
@@ -755,7 +756,7 @@
     <span class="macro">ensure!</span>(
         arg_names.len() == args.len(),
         OtherSnafu {
-            reason: <span class="macro">format!</span>(<span class="string">&quot;arg_names:{arg_names:?} and args{args:?}&#39;s length is different&quot;</span>)
+            reason: <span class="macro">format!</span>(<span class="string">"arg_names:{arg_names:?} and args{args:?}'s length is different"</span>)
         }
     );
     <span class="kw">for </span>(idx, arg) <span class="kw">in </span>args.iter().enumerate() {
@@ -764,7 +765,7 @@
         <span class="kw">let </span>arg_name = arg_names[idx].clone();
         <span class="kw">let </span>col_idx = rb.schema.column_index_by_name(<span class="kw-2">&amp;</span>arg_name).ok_or_else(|| {
             OtherSnafu {
-                reason: <span class="macro">format!</span>(<span class="string">&quot;Can&#39;t find column by name {arg_name}&quot;</span>),
+                reason: <span class="macro">format!</span>(<span class="string">"Can't find column by name {arg_name}"</span>),
             }
             .build()
         })<span class="question-mark">?</span>;
@@ -777,8 +778,8 @@
                 .unwrap_or(<span class="bool-val">true</span>),
             OtherSnafu {
                 reason: <span class="macro">format!</span>(
-                    <span class="string">&quot;column {}&#39;s Type annotation is {:?}, but actual type is {:?} with nullable=={}&quot;</span>,
-                    <span class="comment">// It&#39;s safe to unwrap here, we already ensure the args and types number is the same when parsing
+                    <span class="string">"column {}'s Type annotation is {:?}, but actual type is {:?} with nullable=={}"</span>,
+                    <span class="comment">// It's safe to unwrap here, we already ensure the args and types number is the same when parsing
                     </span>copr.deco_args.arg_names.as_ref().unwrap()[idx],
                     anno_ty,
                     real_ty,
@@ -805,16 +806,16 @@
 /// use datatypes::schema::{ColumnSchema, Schema};
 /// use datatypes::vectors::{Float32Vector, Float64Vector};
 /// use common_function::scalars::python::exec_coprocessor;
-/// let python_source = r#&quot;
-/// @copr(args=[&quot;cpu&quot;, &quot;mem&quot;], returns=[&quot;perf&quot;, &quot;what&quot;])
+/// let python_source = r#"
+/// @copr(args=["cpu", "mem"], returns=["perf", "what"])
 /// def a(cpu, mem):
 ///     return cpu + mem, cpu - mem
-/// &quot;#;
+/// "#;
 /// let cpu_array = Float32Vector::from_slice([0.9f32, 0.8, 0.7, 0.6]);
 /// let mem_array = Float64Vector::from_slice([0.1f64, 0.2, 0.3, 0.4]);
 /// let schema = Arc::new(Schema::new(vec![
-///  ColumnSchema::new(&quot;cpu&quot;, ConcreteDataType::float32_datatype(), false),
-///  ColumnSchema::new(&quot;mem&quot;, ConcreteDataType::float64_datatype(), false),
+///  ColumnSchema::new("cpu", ConcreteDataType::float32_datatype(), false),
+///  ColumnSchema::new("mem", ConcreteDataType::float64_datatype(), false),
 /// ]));
 /// let rb =
 /// RecordBatch::new(schema, vec![Arc::new(cpu_array), Arc::new(mem_array)]).unwrap();
@@ -827,14 +828,14 @@
 ///
 /// Currently support types are `u8`, `u16`, `u32`, `u64`, `i8`, `i16`, `i32`, `i64` and `f16`, `f32`, `f64`
 ///
-/// use `f64 | None` to mark if returning column is nullable like in [`RecordBatch`]&#39;s schema&#39;s [`ColumnSchema`]&#39;s is_nullable
+/// use `f64 | None` to mark if returning column is nullable like in [`RecordBatch`]'s schema's [`ColumnSchema`]'s is_nullable
 ///
 /// you can also use single underscore `_` to let coprocessor infer what type it is, so `_` and `_ | None` are both valid in type annotation.
 /// Note: using `_` means not nullable column, using `_ | None` means nullable column
 ///
 /// a example (of python script) given below:
 /// ```python
-/// @copr(args=[&quot;cpu&quot;, &quot;mem&quot;], returns=[&quot;perf&quot;, &quot;minus&quot;, &quot;mul&quot;, &quot;div&quot;])
+/// @copr(args=["cpu", "mem"], returns=["perf", "minus", "mul", "div"])
 /// def a(cpu: vector[f32], mem: vector[f64])-&gt;(vector[f64|None], vector[f64], vector[_], vector[_ | None]):
 ///     return cpu + mem, cpu - mem, cpu * mem, cpu / mem
 /// ```
@@ -844,15 +845,15 @@
 /// which create a constant array(with same value)(currently support int, float and bool) as column on return
 </span><span class="attr">#[cfg(test)]
 </span><span class="kw">pub fn </span>exec_coprocessor(script: <span class="kw-2">&amp;</span>str, rb: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;RecordBatch&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;RecordBatch&gt; {
-    <span class="comment">// 1. parse the script and check if it&#39;s only a function with `@coprocessor` decorator, and get `args` and `returns`,
+    <span class="comment">// 1. parse the script and check if it's only a function with `@coprocessor` decorator, and get `args` and `returns`,
     // 2. also check for exist of `args` in `rb`, if not found, return error
     // cache the result of parse_copr
     </span><span class="kw">let </span>copr = parse::parse_and_compile_copr(script, <span class="prelude-val">None</span>)<span class="question-mark">?</span>;
     exec_parsed(<span class="kw-2">&amp;</span>copr, rb, <span class="kw-2">&amp;</span>HashMap::new())
 }
 
-<span class="attr">#[cfg_attr(feature = <span class="string">&quot;pyo3_backend&quot;</span>, pyo3class(name = <span class="string">&quot;query_engine&quot;</span>))]
-#[rspyclass(module = <span class="bool-val">false</span>, name = <span class="string">&quot;query_engine&quot;</span>)]
+<span class="attr">#[cfg_attr(feature = <span class="string">"pyo3_backend"</span>, pyo3class(name = <span class="string">"query_engine"</span>))]
+#[rspyclass(module = <span class="bool-val">false</span>, name = <span class="string">"query_engine"</span>)]
 #[derive(Debug, PyPayload, Clone)]
 </span><span class="kw">pub struct </span>PyQueryEngine {
     inner: QueryEngineWeakRef,
@@ -871,12 +872,12 @@
                     rbs.schema().arrow_schema(),
                     rbs.iter().map(|r| r.df_record_batch()),
                 )
-                .map_err(|e| <span class="macro">format!</span>(<span class="string">&quot;Concat batches failed for query {sql}: {e}&quot;</span>))<span class="question-mark">?</span>;
+                .map_err(|e| <span class="macro">format!</span>(<span class="string">"Concat batches failed for query {sql}: {e}"</span>))<span class="question-mark">?</span>;
 
                 RecordBatch::try_from_df_record_batch(rbs.schema(), rb)
-                    .map_err(|e| <span class="macro">format!</span>(<span class="string">&quot;Convert datafusion record batch to record batch failed for query {sql}: {e}&quot;</span>))
+                    .map_err(|e| <span class="macro">format!</span>(<span class="string">"Convert datafusion record batch to record batch failed for query {sql}: {e}"</span>))
             }
-            Either::AffectedRows(<span class="kw">_</span>) =&gt; <span class="prelude-val">Err</span>(<span class="macro">format!</span>(<span class="string">&quot;Expect actual results from query {sql}&quot;</span>)),
+            Either::AffectedRows(<span class="kw">_</span>) =&gt; <span class="prelude-val">Err</span>(<span class="macro">format!</span>(<span class="string">"Expect actual results from query {sql}"</span>)),
         }
     }
 }
@@ -921,14 +922,14 @@
                 })<span class="question-mark">?</span>;
                 <span class="prelude-val">Ok</span>(res)
             } <span class="kw">else </span>{
-                <span class="prelude-val">Err</span>(<span class="string">&quot;Query Engine is already dropped&quot;</span>.to_string())
+                <span class="prelude-val">Err</span>(<span class="string">"Query Engine is already dropped"</span>.to_string())
             }
         });
         thread_handle
             .join()
-            .map_err(|e| <span class="macro">format!</span>(<span class="string">&quot;Dedicated thread for sql query panic: {e:?}&quot;</span>))<span class="question-mark">?
+            .map_err(|e| <span class="macro">format!</span>(<span class="string">"Dedicated thread for sql query panic: {e:?}"</span>))<span class="question-mark">?
     </span>}
-    <span class="comment">// TODO(discord9): find a better way to call sql query api, now we don&#39;t if we are in async context or not
+    <span class="comment">// TODO(discord9): find a better way to call sql query api, now we don't if we are in async context or not
     </span><span class="doccomment">/// - return sql query results in `PyRecordBatch`,  or
     /// - a empty `PyDict` if query results is empty
     /// - or number of AffectedRows
@@ -943,11 +944,11 @@
                         rbs.iter().map(|rb| rb.df_record_batch()),
                     )
                     .map_err(|e| {
-                        vm.new_runtime_error(<span class="macro">format!</span>(<span class="string">&quot;Failed to concat batches: {e:#?}&quot;</span>))
+                        vm.new_runtime_error(<span class="macro">format!</span>(<span class="string">"Failed to concat batches: {e:#?}"</span>))
                     })<span class="question-mark">?</span>;
                     <span class="kw">let </span>rb =
                         RecordBatch::try_from_df_record_batch(rbs.schema(), rb).map_err(|e| {
-                            vm.new_runtime_error(<span class="macro">format!</span>(<span class="string">&quot;Failed to cast recordbatch: {e:#?}&quot;</span>))
+                            vm.new_runtime_error(<span class="macro">format!</span>(<span class="string">"Failed to cast recordbatch: {e:#?}"</span>))
                         })<span class="question-mark">?</span>;
                     <span class="kw">let </span>rb = PyRecordBatch::new(rb);
 
@@ -967,14 +968,14 @@
     <span class="kw">match </span>copr.backend {
         BackendType::RustPython =&gt; rspy_exec_parsed(copr, rb, params),
         BackendType::CPython =&gt; {
-            <span class="attr">#[cfg(feature = <span class="string">&quot;pyo3_backend&quot;</span>)]
+            <span class="attr">#[cfg(feature = <span class="string">"pyo3_backend"</span>)]
             </span>{
                 pyo3_exec_parsed(copr, rb, params)
             }
-            <span class="attr">#[cfg(not(feature = <span class="string">&quot;pyo3_backend&quot;</span>))]
+            <span class="attr">#[cfg(not(feature = <span class="string">"pyo3_backend"</span>))]
             </span>{
                 OtherSnafu {
-                    reason: <span class="string">&quot;`pyo3` feature is disabled, therefore can&#39;t run scripts in cpython&quot;
+                    reason: <span class="string">"`pyo3` feature is disabled, therefore can't run scripts in cpython"
                         </span>.to_string(),
                 }
                 .fail()
@@ -1008,28 +1009,28 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_parse_copr() {
-        <span class="kw">let </span>script = <span class="string">r#&quot;
+        <span class="kw">let </span>script = <span class="string">r#"
 def add(a, b):
     return a + b
 
-@copr(args=[&quot;a&quot;, &quot;b&quot;, &quot;c&quot;], returns = [&quot;r&quot;], sql=&quot;select number as a,number as b,number as c from numbers limit 100&quot;)
+@copr(args=["a", "b", "c"], returns = ["r"], sql="select number as a,number as b,number as c from numbers limit 100")
 def test(a, b, c, **params):
     import greptime as g
     return ( a + b ) / g.sqrt(c)
-&quot;#</span>;
+"#</span>;
 
         <span class="kw">let </span>copr = parse_and_compile_copr(script, <span class="prelude-val">None</span>).unwrap();
-        <span class="macro">assert_eq!</span>(copr.name, <span class="string">&quot;test&quot;</span>);
+        <span class="macro">assert_eq!</span>(copr.name, <span class="string">"test"</span>);
         <span class="kw">let </span>deco_args = copr.deco_args.clone();
         <span class="macro">assert_eq!</span>(
             deco_args.sql.unwrap(),
-            <span class="string">&quot;select number as a,number as b,number as c from numbers limit 100&quot;
+            <span class="string">"select number as a,number as b,number as c from numbers limit 100"
         </span>);
-        <span class="macro">assert_eq!</span>(deco_args.ret_names, <span class="macro">vec!</span>[<span class="string">&quot;r&quot;</span>]);
-        <span class="macro">assert_eq!</span>(deco_args.arg_names.unwrap(), <span class="macro">vec!</span>[<span class="string">&quot;a&quot;</span>, <span class="string">&quot;b&quot;</span>, <span class="string">&quot;c&quot;</span>]);
+        <span class="macro">assert_eq!</span>(deco_args.ret_names, <span class="macro">vec!</span>[<span class="string">"r"</span>]);
+        <span class="macro">assert_eq!</span>(deco_args.arg_names.unwrap(), <span class="macro">vec!</span>[<span class="string">"a"</span>, <span class="string">"b"</span>, <span class="string">"c"</span>]);
         <span class="macro">assert_eq!</span>(copr.arg_types, <span class="macro">vec!</span>[<span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>]);
         <span class="macro">assert_eq!</span>(copr.return_types, <span class="macro">vec!</span>[<span class="prelude-val">None</span>]);
-        <span class="macro">assert_eq!</span>(copr.kwarg, <span class="prelude-val">Some</span>(<span class="string">&quot;params&quot;</span>.to_string()));
+        <span class="macro">assert_eq!</span>(copr.kwarg, <span class="prelude-val">Some</span>(<span class="string">"params"</span>.to_string()));
         <span class="macro">assert_eq!</span>(copr.script, script);
         <span class="kw">let _ </span>= copr.code_obj.unwrap();
     }

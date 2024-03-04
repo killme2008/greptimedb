@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/promql/src/extension_plan/range_manipulate.rs`."><title>range_manipulate.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="promql" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../promql/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/promql/src/extension_plan/range_manipulate.rs`."><title>range_manipulate.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="promql" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -653,14 +654,14 @@
 <a href="#653" id="653">653</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -698,8 +699,8 @@
 
 <span class="doccomment">/// Time series manipulator for range function.
 ///
-/// This plan will &quot;fold&quot; time index and value columns into [RangeArray]s, and truncate
-/// other columns to the same length with the &quot;folded&quot; [RangeArray] column.
+/// This plan will "fold" time index and value columns into [RangeArray]s, and truncate
+/// other columns to the same length with the "folded" [RangeArray] column.
 ///
 /// To pass runtime information to the execution plan (or the range function), This plan
 /// will add those extra columns:
@@ -742,16 +743,16 @@
         })
     }
 
-    <span class="kw">pub const fn </span>name() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str {
-        <span class="string">&quot;RangeManipulate&quot;
+    <span class="kw">pub const fn </span>name() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str {
+        <span class="string">"RangeManipulate"
     </span>}
 
     <span class="kw">pub fn </span>build_timestamp_range_name(time_index: <span class="kw-2">&amp;</span>str) -&gt; String {
-        <span class="macro">format!</span>(<span class="string">&quot;{time_index}_range&quot;</span>)
+        <span class="macro">format!</span>(<span class="string">"{time_index}_range"</span>)
     }
 
     <span class="kw">pub fn </span>internal_range_end_col_name() -&gt; String {
-        <span class="string">&quot;__internal_range_end&quot;</span>.to_string()
+        <span class="string">"__internal_range_end"</span>.to_string()
     }
 
     <span class="kw">fn </span>range_timestamp_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
@@ -866,7 +867,7 @@
     <span class="kw">fn </span>fmt_for_explain(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter) -&gt; std::fmt::Result {
         <span class="macro">write!</span>(
             f,
-            <span class="string">&quot;PromRangeManipulate: req range=[{}..{}], interval=[{}], eval range=[{}], time index=[{}], values={:?}&quot;</span>,
+            <span class="string">"PromRangeManipulate: req range=[{}..{}], interval=[{}], eval range=[{}], time index=[{}], values={:?}"</span>,
             <span class="self">self</span>.start, <span class="self">self</span>.end, <span class="self">self</span>.interval, <span class="self">self</span>.range, <span class="self">self</span>.time_index, <span class="self">self</span>.field_columns
         )
     }
@@ -957,7 +958,7 @@
         <span class="kw">let </span>schema = input.schema();
         <span class="kw">let </span>time_index = schema
             .column_with_name(<span class="kw-2">&amp;</span><span class="self">self</span>.time_index_column)
-            .unwrap_or_else(|| <span class="macro">panic!</span>(<span class="string">&quot;time index column {} not found&quot;</span>, <span class="self">self</span>.time_index_column))
+            .unwrap_or_else(|| <span class="macro">panic!</span>(<span class="string">"time index column {} not found"</span>, <span class="self">self</span>.time_index_column))
             .<span class="number">0</span>;
         <span class="kw">let </span>field_columns = <span class="self">self
             </span>.field_columns
@@ -965,7 +966,7 @@
             .map(|value_col| {
                 schema
                     .column_with_name(value_col)
-                    .unwrap_or_else(|| <span class="macro">panic!</span>(<span class="string">&quot;value column {value_col} not found&quot;</span>,))
+                    .unwrap_or_else(|| <span class="macro">panic!</span>(<span class="string">"value column {value_col} not found"</span>,))
                     .<span class="number">0
             </span>})
             .collect();
@@ -1012,7 +1013,7 @@
             DisplayFormatType::Default | DisplayFormatType::Verbose =&gt; {
                 <span class="macro">write!</span>(
                     f,
-                    <span class="string">&quot;PromRangeManipulateExec: req range=[{}..{}], interval=[{}], eval range=[{}], time index=[{}]&quot;</span>,
+                    <span class="string">"PromRangeManipulateExec: req range=[{}..{}], interval=[{}], eval range=[{}], time index=[{}]"</span>,
                    <span class="self">self</span>.start, <span class="self">self</span>.end, <span class="self">self</span>.interval, <span class="self">self</span>.range, <span class="self">self</span>.time_index_column
                 )
             }
@@ -1042,7 +1043,7 @@
 <span class="kw">impl </span>Stream <span class="kw">for </span>RangeManipulateStream {
     <span class="kw">type </span>Item = DataFusionResult&lt;RecordBatch&gt;;
 
-    <span class="kw">fn </span>poll_next(<span class="kw-2">mut </span><span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; Poll&lt;<span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt;&gt; {
+    <span class="kw">fn </span>poll_next(<span class="kw-2">mut </span><span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">'_</span>&gt;) -&gt; Poll&lt;<span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt;&gt; {
         <span class="kw">let </span>poll = <span class="kw">loop </span>{
             <span class="kw">match </span><span class="self">self</span>.input.poll_next_unpin(cx) {
                 Poll::Ready(<span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(batch))) =&gt; {
@@ -1064,8 +1065,8 @@
 
 <span class="kw">impl </span>RangeManipulateStream {
     <span class="comment">// Prometheus: https://github.com/prometheus/prometheus/blob/e934d0f01158a1d55fa0ebb035346b195fcc1260/promql/engine.go#L1113-L1198
-    // But they are not exactly the same, because we don&#39;t eager-evaluate on the data in this plan.
-    // And the generated timestamp is not aligned to the step. It&#39;s expected to do later.
+    // But they are not exactly the same, because we don't eager-evaluate on the data in this plan.
+    // And the generated timestamp is not aligned to the step. It's expected to do later.
     </span><span class="kw">pub fn </span>manipulate(<span class="kw-2">&amp;</span><span class="self">self</span>, input: RecordBatch) -&gt; DataFusionResult&lt;<span class="prelude-ty">Option</span>&lt;RecordBatch&gt;&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>other_columns = (<span class="number">0</span>..input.columns().len()).collect::&lt;HashSet&lt;<span class="kw">_</span>&gt;&gt;();
         <span class="comment">// calculate the range
@@ -1159,14 +1160,14 @@
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
-    <span class="kw">const </span>TIME_INDEX_COLUMN: <span class="kw-2">&amp;</span>str = <span class="string">&quot;timestamp&quot;</span>;
+    <span class="kw">const </span>TIME_INDEX_COLUMN: <span class="kw-2">&amp;</span>str = <span class="string">"timestamp"</span>;
 
     <span class="kw">fn </span>prepare_test_data() -&gt; MemoryExec {
         <span class="kw">let </span>schema = Arc::new(Schema::new(<span class="macro">vec!</span>[
             Field::new(TIME_INDEX_COLUMN, TimestampMillisecondType::DATA_TYPE, <span class="bool-val">true</span>),
-            Field::new(<span class="string">&quot;value_1&quot;</span>, DataType::Float64, <span class="bool-val">true</span>),
-            Field::new(<span class="string">&quot;value_2&quot;</span>, DataType::Float64, <span class="bool-val">true</span>),
-            Field::new(<span class="string">&quot;path&quot;</span>, DataType::Utf8, <span class="bool-val">true</span>),
+            Field::new(<span class="string">"value_1"</span>, DataType::Float64, <span class="bool-val">true</span>),
+            Field::new(<span class="string">"value_2"</span>, DataType::Float64, <span class="bool-val">true</span>),
+            Field::new(<span class="string">"path"</span>, DataType::Utf8, <span class="bool-val">true</span>),
         ]));
         <span class="kw">let </span>timestamp_column = Arc::new(TimestampMillisecondArray::from(<span class="macro">vec!</span>[
             <span class="number">0</span>, <span class="number">30_000</span>, <span class="number">60_000</span>, <span class="number">90_000</span>, <span class="number">120_000</span>, <span class="comment">// every 30s
@@ -1174,7 +1175,7 @@
             </span><span class="number">241_000</span>, <span class="number">271_000</span>, <span class="number">291_000</span>, <span class="comment">// others
         </span>])) <span class="kw">as _</span>;
         <span class="kw">let </span>field_column: ArrayRef = Arc::new(Float64Array::from(<span class="macro">vec!</span>[<span class="number">1.0</span>; <span class="number">10</span>])) <span class="kw">as _</span>;
-        <span class="kw">let </span>path_column = Arc::new(StringArray::from(<span class="macro">vec!</span>[<span class="string">&quot;foo&quot;</span>; <span class="number">10</span>])) <span class="kw">as _</span>;
+        <span class="kw">let </span>path_column = Arc::new(StringArray::from(<span class="macro">vec!</span>[<span class="string">"foo"</span>; <span class="number">10</span>])) <span class="kw">as _</span>;
         <span class="kw">let </span>data = RecordBatch::try_new(
             schema.clone(),
             <span class="macro">vec!</span>[
@@ -1198,7 +1199,7 @@
     ) {
         <span class="kw">let </span>memory_exec = Arc::new(prepare_test_data());
         <span class="kw">let </span>time_index = TIME_INDEX_COLUMN.to_string();
-        <span class="kw">let </span>field_columns = <span class="macro">vec!</span>[<span class="string">&quot;value_1&quot;</span>.to_string(), <span class="string">&quot;value_2&quot;</span>.to_string()];
+        <span class="kw">let </span>field_columns = <span class="macro">vec!</span>[<span class="string">"value_1"</span>.to_string(), <span class="string">"value_2"</span>.to_string()];
         <span class="kw">let </span>manipulate_output_schema = SchemaRef::new(
             RangeManipulate::calculate_output_schema(
                 <span class="kw-2">&amp;</span>memory_exec.schema().to_dfschema_ref().unwrap(),
@@ -1239,14 +1240,14 @@
                                 .downcast_ref::&lt;DictionaryArray&lt;Int64Type&gt;&gt;()
                                 .unwrap()
                                 .clone();
-                            <span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, RangeArray::try_new(dict_array).unwrap())
+                            <span class="macro">format!</span>(<span class="string">"{:?}"</span>, RangeArray::try_new(dict_array).unwrap())
                         } <span class="kw">else </span>{
-                            <span class="macro">format!</span>(<span class="string">&quot;{array:?}&quot;</span>)
+                            <span class="macro">format!</span>(<span class="string">"{array:?}"</span>)
                         }
                     })
-                    .reduce(|lhs, rhs| lhs + <span class="string">&quot;\n&quot; </span>+ <span class="kw-2">&amp;</span>rhs)
+                    .reduce(|lhs, rhs| lhs + <span class="string">"\n" </span>+ <span class="kw-2">&amp;</span>rhs)
             })
-            .reduce(|lhs, rhs| lhs + <span class="string">&quot;\n\n&quot; </span>+ <span class="kw-2">&amp;</span>rhs)
+            .reduce(|lhs, rhs| lhs + <span class="string">"\n\n" </span>+ <span class="kw-2">&amp;</span>rhs)
             .unwrap();
 
         <span class="macro">assert_eq!</span>(result_literal, expected);
@@ -1255,7 +1256,7 @@
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>interval_30s_range_90s() {
         <span class="kw">let </span>expected = String::from(
-            <span class="string">&quot;PrimitiveArray&lt;Timestamp(Millisecond, None)&gt;\n[\n  \
+            <span class="string">"PrimitiveArray&lt;Timestamp(Millisecond, None)&gt;\n[\n  \
                 1970-01-01T00:00:00,\n  \
                 1970-01-01T00:00:30,\n  \
                 1970-01-01T00:01:00,\n  \
@@ -1273,11 +1274,11 @@
             }\nRangeArray { \
                 base array: PrimitiveArray&lt;Float64&gt;\n[\n  1.0,\n  1.0,\n  1.0,\n  1.0,\n  1.0,\n  1.0,\n  1.0,\n  1.0,\n  1.0,\n  1.0,\n], \
                 ranges: [Some(0..1), Some(0..2), Some(0..3), Some(0..4), Some(1..5), Some(2..5), Some(3..6), Some(4..6), Some(5..7), Some(5..8), Some(6..10)] \
-            }\nStringArray\n[\n  \&quot;foo\&quot;,\n  \&quot;foo\&quot;,\n  \&quot;foo\&quot;,\n  \&quot;foo\&quot;,\n  \&quot;foo\&quot;,\n  \&quot;foo\&quot;,\n  \&quot;foo\&quot;,\n  \&quot;foo\&quot;,\n  \&quot;foo\&quot;,\n  \&quot;foo\&quot;,\n  \&quot;foo\&quot;,\n]\n\
+            }\nStringArray\n[\n  \"foo\",\n  \"foo\",\n  \"foo\",\n  \"foo\",\n  \"foo\",\n  \"foo\",\n  \"foo\",\n  \"foo\",\n  \"foo\",\n  \"foo\",\n  \"foo\",\n]\n\
             RangeArray { \
                 base array: PrimitiveArray&lt;Timestamp(Millisecond, None)&gt;\n[\n  1970-01-01T00:00:00,\n  1970-01-01T00:00:30,\n  1970-01-01T00:01:00,\n  1970-01-01T00:01:30,\n  1970-01-01T00:02:00,\n  1970-01-01T00:03:00,\n  1970-01-01T00:04:00,\n  1970-01-01T00:04:01,\n  1970-01-01T00:04:31,\n  1970-01-01T00:04:51,\n], \
                 ranges: [Some(0..1), Some(0..2), Some(0..3), Some(0..4), Some(1..5), Some(2..5), Some(3..6), Some(4..6), Some(5..7), Some(5..8), Some(6..10)] \
-            }&quot;</span>,
+            }"</span>,
 );
         do_normalize_test(<span class="number">0</span>, <span class="number">310_000</span>, <span class="number">30_000</span>, <span class="number">90_000</span>, expected).<span class="kw">await</span>;
     }
@@ -1285,7 +1286,7 @@
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>small_empty_range() {
         <span class="kw">let </span>expected = String::from(
-        <span class="string">&quot;PrimitiveArray&lt;Timestamp(Millisecond, None)&gt;\n[\n  \
+        <span class="string">"PrimitiveArray&lt;Timestamp(Millisecond, None)&gt;\n[\n  \
             1970-01-01T00:00:00.001,\n  \
             1970-01-01T00:00:03.001,\n  \
             1970-01-01T00:00:06.001,\n  \
@@ -1296,11 +1297,11 @@
         }\nRangeArray { \
             base array: PrimitiveArray&lt;Float64&gt;\n[\n  1.0,\n  1.0,\n  1.0,\n  1.0,\n  1.0,\n  1.0,\n  1.0,\n  1.0,\n  1.0,\n  1.0,\n], \
             ranges: [Some(0..1), Some(0..0), Some(0..0), Some(0..0)] \
-        }\nStringArray\n[\n  \&quot;foo\&quot;,\n  \&quot;foo\&quot;,\n  \&quot;foo\&quot;,\n  \&quot;foo\&quot;,\n]\n\
+        }\nStringArray\n[\n  \"foo\",\n  \"foo\",\n  \"foo\",\n  \"foo\",\n]\n\
         RangeArray { \
             base array: PrimitiveArray&lt;Timestamp(Millisecond, None)&gt;\n[\n  1970-01-01T00:00:00,\n  1970-01-01T00:00:30,\n  1970-01-01T00:01:00,\n  1970-01-01T00:01:30,\n  1970-01-01T00:02:00,\n  1970-01-01T00:03:00,\n  1970-01-01T00:04:00,\n  1970-01-01T00:04:01,\n  1970-01-01T00:04:31,\n  1970-01-01T00:04:51,\n], \
             ranges: [Some(0..1), Some(0..0), Some(0..0), Some(0..0)] \
-        }&quot;</span>);
+        }"</span>);
         do_normalize_test(<span class="number">1</span>, <span class="number">10_001</span>, <span class="number">3_000</span>, <span class="number">1_000</span>, expected).<span class="kw">await</span>;
     }
 }

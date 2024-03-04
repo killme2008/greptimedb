@@ -1,0 +1,3 @@
+(function() {var implementors = {
+"operator":[["impl <a class=\"trait\" href=\"query/table_mutation/trait.TableMutationHandler.html\" title=\"trait query::table_mutation::TableMutationHandler\">TableMutationHandler</a> for <a class=\"struct\" href=\"operator/table/struct.TableMutationOperator.html\" title=\"struct operator::table::TableMutationOperator\">TableMutationOperator</a>"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

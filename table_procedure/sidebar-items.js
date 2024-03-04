@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["register_procedure_loaders"],"mod":["alter","create","drop","error","truncate"],"struct":["AlterTableProcedure","CreateTableProcedure","DropTableProcedure","TruncateTableProcedure"]};

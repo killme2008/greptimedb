@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/meta-client/src/client/store.rs`."><title>store.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="meta_client" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../meta_client/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/meta-client/src/client/store.rs`."><title>store.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="meta_client" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -293,14 +294,14 @@
 <a href="#293" id="293">293</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -312,10 +313,10 @@
 <span class="kw">use </span>api::v1::meta::{
     BatchDeleteRequest, BatchDeleteResponse, BatchGetRequest, BatchGetResponse, BatchPutRequest,
     BatchPutResponse, CompareAndPutRequest, CompareAndPutResponse, DeleteRangeRequest,
-    DeleteRangeResponse, MoveValueRequest, MoveValueResponse, PutRequest, PutResponse,
-    RangeRequest, RangeResponse, Role,
+    DeleteRangeResponse, PutRequest, PutResponse, RangeRequest, RangeResponse, Role,
 };
 <span class="kw">use </span>common_grpc::channel_manager::ChannelManager;
+<span class="kw">use </span>common_telemetry::tracing_context::TracingContext;
 <span class="kw">use </span>snafu::{ensure, OptionExt, ResultExt};
 <span class="kw">use </span>tokio::sync::RwLock;
 <span class="kw">use </span>tonic::transport::Channel;
@@ -392,11 +393,6 @@
         <span class="kw">let </span>inner = <span class="self">self</span>.inner.read().<span class="kw">await</span>;
         inner.delete_range(req).<span class="kw">await
     </span>}
-
-    <span class="kw">pub async fn </span>move_value(<span class="kw-2">&amp;</span><span class="self">self</span>, req: MoveValueRequest) -&gt; <span class="prelude-ty">Result</span>&lt;MoveValueResponse&gt; {
-        <span class="kw">let </span>inner = <span class="self">self</span>.inner.read().<span class="kw">await</span>;
-        inner.move_value(req).<span class="kw">await
-    </span>}
 }
 
 <span class="attr">#[derive(Debug)]
@@ -416,7 +412,7 @@
         <span class="macro">ensure!</span>(
             !<span class="self">self</span>.is_started(),
             error::IllegalGrpcClientStateSnafu {
-                err_msg: <span class="string">&quot;Store client already started&quot;</span>,
+                err_msg: <span class="string">"Store client already started"</span>,
             }
         );
 
@@ -433,50 +429,61 @@
 
     <span class="kw">async fn </span>range(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>req: RangeRequest) -&gt; <span class="prelude-ty">Result</span>&lt;RangeResponse&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.random_client()<span class="question-mark">?</span>;
-        req.set_header(<span class="self">self</span>.id, <span class="self">self</span>.role);
-        <span class="kw">let </span>res = client.range(req).<span class="kw">await</span>.context(error::TonicStatusSnafu)<span class="question-mark">?</span>;
+        req.set_header(
+            <span class="self">self</span>.id,
+            <span class="self">self</span>.role,
+            TracingContext::from_current_span().to_w3c(),
+        );
+        <span class="kw">let </span>res = client.range(req).<span class="kw">await</span>.map_err(error::Error::from)<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(res.into_inner())
     }
 
     <span class="kw">async fn </span>put(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>req: PutRequest) -&gt; <span class="prelude-ty">Result</span>&lt;PutResponse&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.random_client()<span class="question-mark">?</span>;
-        req.set_header(<span class="self">self</span>.id, <span class="self">self</span>.role);
-        <span class="kw">let </span>res = client.put(req).<span class="kw">await</span>.context(error::TonicStatusSnafu)<span class="question-mark">?</span>;
+        req.set_header(
+            <span class="self">self</span>.id,
+            <span class="self">self</span>.role,
+            TracingContext::from_current_span().to_w3c(),
+        );
+        <span class="kw">let </span>res = client.put(req).<span class="kw">await</span>.map_err(error::Error::from)<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(res.into_inner())
     }
 
     <span class="kw">async fn </span>batch_get(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>req: BatchGetRequest) -&gt; <span class="prelude-ty">Result</span>&lt;BatchGetResponse&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.random_client()<span class="question-mark">?</span>;
-        req.set_header(<span class="self">self</span>.id, <span class="self">self</span>.role);
+        req.set_header(
+            <span class="self">self</span>.id,
+            <span class="self">self</span>.role,
+            TracingContext::from_current_span().to_w3c(),
+        );
 
-        <span class="kw">let </span>res = client
-            .batch_get(req)
-            .<span class="kw">await
-            </span>.context(error::TonicStatusSnafu)<span class="question-mark">?</span>;
+        <span class="kw">let </span>res = client.batch_get(req).<span class="kw">await</span>.map_err(error::Error::from)<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(res.into_inner())
     }
 
     <span class="kw">async fn </span>batch_put(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>req: BatchPutRequest) -&gt; <span class="prelude-ty">Result</span>&lt;BatchPutResponse&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.random_client()<span class="question-mark">?</span>;
-        req.set_header(<span class="self">self</span>.id, <span class="self">self</span>.role);
-        <span class="kw">let </span>res = client
-            .batch_put(req)
-            .<span class="kw">await
-            </span>.context(error::TonicStatusSnafu)<span class="question-mark">?</span>;
+        req.set_header(
+            <span class="self">self</span>.id,
+            <span class="self">self</span>.role,
+            TracingContext::from_current_span().to_w3c(),
+        );
+        <span class="kw">let </span>res = client.batch_put(req).<span class="kw">await</span>.map_err(error::Error::from)<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(res.into_inner())
     }
 
     <span class="kw">async fn </span>batch_delete(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>req: BatchDeleteRequest) -&gt; <span class="prelude-ty">Result</span>&lt;BatchDeleteResponse&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.random_client()<span class="question-mark">?</span>;
-        req.set_header(<span class="self">self</span>.id, <span class="self">self</span>.role);
-        <span class="kw">let </span>res = client
-            .batch_delete(req)
-            .<span class="kw">await
-            </span>.context(error::TonicStatusSnafu)<span class="question-mark">?</span>;
+        req.set_header(
+            <span class="self">self</span>.id,
+            <span class="self">self</span>.role,
+            TracingContext::from_current_span().to_w3c(),
+        );
+        <span class="kw">let </span>res = client.batch_delete(req).<span class="kw">await</span>.map_err(error::Error::from)<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(res.into_inner())
     }
@@ -486,33 +493,27 @@
         <span class="kw-2">mut </span>req: CompareAndPutRequest,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;CompareAndPutResponse&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.random_client()<span class="question-mark">?</span>;
-        req.set_header(<span class="self">self</span>.id, <span class="self">self</span>.role);
+        req.set_header(
+            <span class="self">self</span>.id,
+            <span class="self">self</span>.role,
+            TracingContext::from_current_span().to_w3c(),
+        );
         <span class="kw">let </span>res = client
             .compare_and_put(req)
             .<span class="kw">await
-            </span>.context(error::TonicStatusSnafu)<span class="question-mark">?</span>;
+            </span>.map_err(error::Error::from)<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(res.into_inner())
     }
 
     <span class="kw">async fn </span>delete_range(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>req: DeleteRangeRequest) -&gt; <span class="prelude-ty">Result</span>&lt;DeleteRangeResponse&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.random_client()<span class="question-mark">?</span>;
-        req.set_header(<span class="self">self</span>.id, <span class="self">self</span>.role);
-        <span class="kw">let </span>res = client
-            .delete_range(req)
-            .<span class="kw">await
-            </span>.context(error::TonicStatusSnafu)<span class="question-mark">?</span>;
-
-        <span class="prelude-val">Ok</span>(res.into_inner())
-    }
-
-    <span class="kw">async fn </span>move_value(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>req: MoveValueRequest) -&gt; <span class="prelude-ty">Result</span>&lt;MoveValueResponse&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>client = <span class="self">self</span>.random_client()<span class="question-mark">?</span>;
-        req.set_header(<span class="self">self</span>.id, <span class="self">self</span>.role);
-        <span class="kw">let </span>res = client
-            .move_value(req)
-            .<span class="kw">await
-            </span>.context(error::TonicStatusSnafu)<span class="question-mark">?</span>;
+        req.set_header(
+            <span class="self">self</span>.id,
+            <span class="self">self</span>.role,
+            TracingContext::from_current_span().to_w3c(),
+        );
+        <span class="kw">let </span>res = client.delete_range(req).<span class="kw">await</span>.map_err(error::Error::from)<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(res.into_inner())
     }
@@ -521,7 +522,7 @@
         <span class="kw">let </span>len = <span class="self">self</span>.peers.len();
         <span class="kw">let </span>peer = lb::random_get(len, |i| <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.peers[i])).context(
             error::IllegalGrpcClientStateSnafu {
-                err_msg: <span class="string">&quot;Empty peers, store client may not start yet&quot;</span>,
+                err_msg: <span class="string">"Empty peers, store client may not start yet"</span>,
             },
         )<span class="question-mark">?</span>;
 
@@ -552,7 +553,7 @@
         <span class="kw">let </span><span class="kw-2">mut </span>client = Client::new((<span class="number">0</span>, <span class="number">0</span>), Role::Frontend, ChannelManager::default());
         <span class="macro">assert!</span>(!client.is_started().<span class="kw">await</span>);
         client
-            .start(<span class="kw-2">&amp;</span>[<span class="string">&quot;127.0.0.1:1000&quot;</span>, <span class="string">&quot;127.0.0.1:1001&quot;</span>])
+            .start(<span class="kw-2">&amp;</span>[<span class="string">"127.0.0.1:1000"</span>, <span class="string">"127.0.0.1:1001"</span>])
             .<span class="kw">await
             </span>.unwrap();
         <span class="macro">assert!</span>(client.is_started().<span class="kw">await</span>);
@@ -562,11 +563,11 @@
     </span><span class="kw">async fn </span>test_already_start() {
         <span class="kw">let </span><span class="kw-2">mut </span>client = Client::new((<span class="number">0</span>, <span class="number">0</span>), Role::Frontend, ChannelManager::default());
         client
-            .start(<span class="kw-2">&amp;</span>[<span class="string">&quot;127.0.0.1:1000&quot;</span>, <span class="string">&quot;127.0.0.1:1001&quot;</span>])
+            .start(<span class="kw-2">&amp;</span>[<span class="string">"127.0.0.1:1000"</span>, <span class="string">"127.0.0.1:1001"</span>])
             .<span class="kw">await
             </span>.unwrap();
         <span class="macro">assert!</span>(client.is_started().<span class="kw">await</span>);
-        <span class="kw">let </span>res = client.start(<span class="kw-2">&amp;</span>[<span class="string">&quot;127.0.0.1:1002&quot;</span>]).<span class="kw">await</span>;
+        <span class="kw">let </span>res = client.start(<span class="kw-2">&amp;</span>[<span class="string">"127.0.0.1:1002"</span>]).<span class="kw">await</span>;
         <span class="macro">assert!</span>(res.is_err());
         <span class="macro">assert!</span>(<span class="macro">matches!</span>(
             res.err(),
@@ -578,7 +579,7 @@
     </span><span class="kw">async fn </span>test_start_with_duplicate_peers() {
         <span class="kw">let </span><span class="kw-2">mut </span>client = Client::new((<span class="number">0</span>, <span class="number">0</span>), Role::Frontend, ChannelManager::default());
         client
-            .start(<span class="kw-2">&amp;</span>[<span class="string">&quot;127.0.0.1:1000&quot;</span>, <span class="string">&quot;127.0.0.1:1000&quot;</span>, <span class="string">&quot;127.0.0.1:1000&quot;</span>])
+            .start(<span class="kw-2">&amp;</span>[<span class="string">"127.0.0.1:1000"</span>, <span class="string">"127.0.0.1:1000"</span>, <span class="string">"127.0.0.1:1000"</span>])
             .<span class="kw">await
             </span>.unwrap();
         <span class="macro">assert_eq!</span>(<span class="number">1</span>, client.inner.write().<span class="kw">await</span>.peers.len());

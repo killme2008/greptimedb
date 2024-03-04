@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"constant":["DEFAULT_PLACEHOLDER_VALUE"],"fn":["add_row_to_vector","replace_default"]};

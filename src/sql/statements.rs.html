@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/sql/src/statements.rs`."><title>statements.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="sql" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../sql/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/sql/src/statements.rs`."><title>statements.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="sql" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -815,16 +816,158 @@
 <a href="#815" id="815">815</a>
 <a href="#816" id="816">816</a>
 <a href="#817" id="817">817</a>
+<a href="#818" id="818">818</a>
+<a href="#819" id="819">819</a>
+<a href="#820" id="820">820</a>
+<a href="#821" id="821">821</a>
+<a href="#822" id="822">822</a>
+<a href="#823" id="823">823</a>
+<a href="#824" id="824">824</a>
+<a href="#825" id="825">825</a>
+<a href="#826" id="826">826</a>
+<a href="#827" id="827">827</a>
+<a href="#828" id="828">828</a>
+<a href="#829" id="829">829</a>
+<a href="#830" id="830">830</a>
+<a href="#831" id="831">831</a>
+<a href="#832" id="832">832</a>
+<a href="#833" id="833">833</a>
+<a href="#834" id="834">834</a>
+<a href="#835" id="835">835</a>
+<a href="#836" id="836">836</a>
+<a href="#837" id="837">837</a>
+<a href="#838" id="838">838</a>
+<a href="#839" id="839">839</a>
+<a href="#840" id="840">840</a>
+<a href="#841" id="841">841</a>
+<a href="#842" id="842">842</a>
+<a href="#843" id="843">843</a>
+<a href="#844" id="844">844</a>
+<a href="#845" id="845">845</a>
+<a href="#846" id="846">846</a>
+<a href="#847" id="847">847</a>
+<a href="#848" id="848">848</a>
+<a href="#849" id="849">849</a>
+<a href="#850" id="850">850</a>
+<a href="#851" id="851">851</a>
+<a href="#852" id="852">852</a>
+<a href="#853" id="853">853</a>
+<a href="#854" id="854">854</a>
+<a href="#855" id="855">855</a>
+<a href="#856" id="856">856</a>
+<a href="#857" id="857">857</a>
+<a href="#858" id="858">858</a>
+<a href="#859" id="859">859</a>
+<a href="#860" id="860">860</a>
+<a href="#861" id="861">861</a>
+<a href="#862" id="862">862</a>
+<a href="#863" id="863">863</a>
+<a href="#864" id="864">864</a>
+<a href="#865" id="865">865</a>
+<a href="#866" id="866">866</a>
+<a href="#867" id="867">867</a>
+<a href="#868" id="868">868</a>
+<a href="#869" id="869">869</a>
+<a href="#870" id="870">870</a>
+<a href="#871" id="871">871</a>
+<a href="#872" id="872">872</a>
+<a href="#873" id="873">873</a>
+<a href="#874" id="874">874</a>
+<a href="#875" id="875">875</a>
+<a href="#876" id="876">876</a>
+<a href="#877" id="877">877</a>
+<a href="#878" id="878">878</a>
+<a href="#879" id="879">879</a>
+<a href="#880" id="880">880</a>
+<a href="#881" id="881">881</a>
+<a href="#882" id="882">882</a>
+<a href="#883" id="883">883</a>
+<a href="#884" id="884">884</a>
+<a href="#885" id="885">885</a>
+<a href="#886" id="886">886</a>
+<a href="#887" id="887">887</a>
+<a href="#888" id="888">888</a>
+<a href="#889" id="889">889</a>
+<a href="#890" id="890">890</a>
+<a href="#891" id="891">891</a>
+<a href="#892" id="892">892</a>
+<a href="#893" id="893">893</a>
+<a href="#894" id="894">894</a>
+<a href="#895" id="895">895</a>
+<a href="#896" id="896">896</a>
+<a href="#897" id="897">897</a>
+<a href="#898" id="898">898</a>
+<a href="#899" id="899">899</a>
+<a href="#900" id="900">900</a>
+<a href="#901" id="901">901</a>
+<a href="#902" id="902">902</a>
+<a href="#903" id="903">903</a>
+<a href="#904" id="904">904</a>
+<a href="#905" id="905">905</a>
+<a href="#906" id="906">906</a>
+<a href="#907" id="907">907</a>
+<a href="#908" id="908">908</a>
+<a href="#909" id="909">909</a>
+<a href="#910" id="910">910</a>
+<a href="#911" id="911">911</a>
+<a href="#912" id="912">912</a>
+<a href="#913" id="913">913</a>
+<a href="#914" id="914">914</a>
+<a href="#915" id="915">915</a>
+<a href="#916" id="916">916</a>
+<a href="#917" id="917">917</a>
+<a href="#918" id="918">918</a>
+<a href="#919" id="919">919</a>
+<a href="#920" id="920">920</a>
+<a href="#921" id="921">921</a>
+<a href="#922" id="922">922</a>
+<a href="#923" id="923">923</a>
+<a href="#924" id="924">924</a>
+<a href="#925" id="925">925</a>
+<a href="#926" id="926">926</a>
+<a href="#927" id="927">927</a>
+<a href="#928" id="928">928</a>
+<a href="#929" id="929">929</a>
+<a href="#930" id="930">930</a>
+<a href="#931" id="931">931</a>
+<a href="#932" id="932">932</a>
+<a href="#933" id="933">933</a>
+<a href="#934" id="934">934</a>
+<a href="#935" id="935">935</a>
+<a href="#936" id="936">936</a>
+<a href="#937" id="937">937</a>
+<a href="#938" id="938">938</a>
+<a href="#939" id="939">939</a>
+<a href="#940" id="940">940</a>
+<a href="#941" id="941">941</a>
+<a href="#942" id="942">942</a>
+<a href="#943" id="943">943</a>
+<a href="#944" id="944">944</a>
+<a href="#945" id="945">945</a>
+<a href="#946" id="946">946</a>
+<a href="#947" id="947">947</a>
+<a href="#948" id="948">948</a>
+<a href="#949" id="949">949</a>
+<a href="#950" id="950">950</a>
+<a href="#951" id="951">951</a>
+<a href="#952" id="952">952</a>
+<a href="#953" id="953">953</a>
+<a href="#954" id="954">954</a>
+<a href="#955" id="955">955</a>
+<a href="#956" id="956">956</a>
+<a href="#957" id="957">957</a>
+<a href="#958" id="958">958</a>
+<a href="#959" id="959">959</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -837,25 +980,31 @@
 <span class="kw">pub mod </span>drop;
 <span class="kw">pub mod </span>explain;
 <span class="kw">pub mod </span>insert;
+<span class="kw">mod </span>option_map;
 <span class="kw">pub mod </span>query;
 <span class="kw">pub mod </span>show;
 <span class="kw">pub mod </span>statement;
 <span class="kw">pub mod </span>tql;
+<span class="kw">mod </span>transform;
 <span class="kw">pub mod </span>truncate;
 
 <span class="kw">use </span>std::str::FromStr;
 
 <span class="kw">use </span>api::helper::ColumnDataTypeWrapper;
-<span class="kw">use </span>api::v1::add_column::location::LocationType;
-<span class="kw">use </span>api::v1::add_column::Location;
+<span class="kw">use </span>api::v1::add_column_location::LocationType;
+<span class="kw">use </span>api::v1::{AddColumnLocation <span class="kw">as </span>Location, SemanticType};
 <span class="kw">use </span>common_base::bytes::Bytes;
 <span class="kw">use </span>common_query::AddColumnLocation;
 <span class="kw">use </span>common_time::Timestamp;
 <span class="kw">use </span>datatypes::prelude::ConcreteDataType;
+<span class="kw">use </span>datatypes::schema::constraint::{CURRENT_TIMESTAMP, CURRENT_TIMESTAMP_FN};
 <span class="kw">use </span>datatypes::schema::{ColumnDefaultConstraint, ColumnSchema, COMMENT_KEY};
-<span class="kw">use </span>datatypes::types::TimestampType;
-<span class="kw">use </span>datatypes::value::Value;
+<span class="kw">use </span>datatypes::types::{cast, TimestampType};
+<span class="kw">use </span>datatypes::value::{OrderedF32, OrderedF64, Value};
+<span class="kw">pub use </span>option_map::OptionMap;
 <span class="kw">use </span>snafu::{ensure, OptionExt, ResultExt};
+<span class="kw">use </span>sqlparser::ast::ExactNumberInfo;
+<span class="kw">pub use </span>transform::{get_data_type_by_alias_name, transform_statements};
 
 <span class="kw">use </span><span class="kw">crate</span>::ast::{
     ColumnDef, ColumnOption, ColumnOptionDef, DataType <span class="kw">as </span>SqlDataType, Expr, TimezoneInfo,
@@ -863,7 +1012,7 @@
 };
 <span class="kw">use </span><span class="kw">crate</span>::error::{
     <span class="self">self</span>, ColumnTypeMismatchSnafu, ConvertSqlValueSnafu, ConvertToGrpcDataTypeSnafu,
-    ConvertValueSnafu, InvalidSqlValueSnafu, ParseSqlValueSnafu, <span class="prelude-ty">Result</span>,
+    ConvertValueSnafu, InvalidCastSnafu, InvalidSqlValueSnafu, ParseSqlValueSnafu, <span class="prelude-ty">Result</span>,
     SerializeColumnDefaultConstraintSnafu, TimestampOverflowSnafu, UnsupportedDefaultValueSnafu,
 };
 
@@ -888,7 +1037,7 @@
                 <span class="prelude-val">Ok</span>(Value::Date(date))
             } <span class="kw">else </span>{
                 ParseSqlValueSnafu {
-                    msg: <span class="macro">format!</span>(<span class="string">&quot;Failed to parse {s} to Date value&quot;</span>),
+                    msg: <span class="macro">format!</span>(<span class="string">"Failed to parse {s} to Date value"</span>),
                 }
                 .fail()
             }
@@ -898,7 +1047,7 @@
                 <span class="prelude-val">Ok</span>(Value::DateTime(datetime))
             } <span class="kw">else </span>{
                 ParseSqlValueSnafu {
-                    msg: <span class="macro">format!</span>(<span class="string">&quot;Failed to parse {s} to DateTime value&quot;</span>),
+                    msg: <span class="macro">format!</span>(<span class="string">"Failed to parse {s} to DateTime value"</span>),
                 }
                 .fail()
             }
@@ -913,7 +1062,17 @@
                 )<span class="question-mark">?</span>))
             } <span class="kw">else </span>{
                 ParseSqlValueSnafu {
-                    msg: <span class="macro">format!</span>(<span class="string">&quot;Failed to parse {s} to Timestamp value&quot;</span>),
+                    msg: <span class="macro">format!</span>(<span class="string">"Failed to parse {s} to Timestamp value"</span>),
+                }
+                .fail()
+            }
+        }
+        ConcreteDataType::Decimal128(<span class="kw">_</span>) =&gt; {
+            <span class="kw">if let </span><span class="prelude-val">Ok</span>(val) = common_decimal::Decimal128::from_str(<span class="kw-2">&amp;</span>s) {
+                <span class="prelude-val">Ok</span>(Value::Decimal128(val))
+            } <span class="kw">else </span>{
+                ParseSqlValueSnafu {
+                    msg: <span class="macro">format!</span>(<span class="string">"Fail to parse number {s} to Decimal128 value"</span>),
                 }
                 .fail()
             }
@@ -929,54 +1088,71 @@
         <span class="prelude-val">Ok</span>(b) =&gt; <span class="prelude-val">Ok</span>(Value::Binary(Bytes::from(b))),
         <span class="prelude-val">Err</span>(hex::FromHexError::InvalidHexCharacter { c, index }) =&gt; ParseSqlValueSnafu {
             msg: <span class="macro">format!</span>(
-                <span class="string">&quot;Fail to parse hex string to Byte: invalid character {c:?} at position {index}&quot;
+                <span class="string">"Fail to parse hex string to Byte: invalid character {c:?} at position {index}"
             </span>),
         }
         .fail(),
         <span class="prelude-val">Err</span>(hex::FromHexError::OddLength) =&gt; ParseSqlValueSnafu {
-            msg: <span class="string">&quot;Fail to parse hex string to Byte: odd number of digits&quot;</span>.to_string(),
+            msg: <span class="string">"Fail to parse hex string to Byte: odd number of digits"</span>.to_string(),
         }
         .fail(),
         <span class="prelude-val">Err</span>(e) =&gt; ParseSqlValueSnafu {
-            msg: <span class="macro">format!</span>(<span class="string">&quot;Fail to parse hex string to Byte {s}, {e:?}&quot;</span>),
+            msg: <span class="macro">format!</span>(<span class="string">"Fail to parse hex string to Byte {s}, {e:?}"</span>),
         }
         .fail(),
     }
 }
 
 <span class="macro">macro_rules! </span>parse_number_to_value {
-    (<span class="macro-nonterminal">$data_type</span>: expr, <span class="macro-nonterminal">$n</span>: ident,  $((<span class="macro-nonterminal">$Type</span>: ident, <span class="macro-nonterminal">$PrimitiveType</span>: ident)), +) =&gt; {
+    (<span class="macro-nonterminal">$data_type</span>: expr, <span class="macro-nonterminal">$n</span>: ident,  $((<span class="macro-nonterminal">$Type</span>: ident, <span class="macro-nonterminal">$PrimitiveType</span>: ident, <span class="macro-nonterminal">$Target</span>: ident)), +) =&gt; {
         <span class="kw">match </span><span class="macro-nonterminal">$data_type </span>{
             $(
                 ConcreteDataType::<span class="macro-nonterminal">$Type</span>(<span class="kw">_</span>) =&gt; {
                     <span class="kw">let </span>n  = parse_sql_number::&lt;<span class="macro-nonterminal">$PrimitiveType</span>&gt;(<span class="macro-nonterminal">$n</span>)<span class="question-mark">?</span>;
-                    <span class="prelude-val">Ok</span>(Value::from(n))
+                    <span class="prelude-val">Ok</span>(Value::<span class="macro-nonterminal">$Type</span>(<span class="macro-nonterminal">$Target::from</span>(n)))
                 },
             )+
-                <span class="kw">_ </span>=&gt; ParseSqlValueSnafu {
-                    msg: <span class="macro">format!</span>(<span class="string">&quot;Fail to parse number {}, invalid column type: {:?}&quot;</span>,
-                                 <span class="macro-nonterminal">$n</span>, <span class="macro-nonterminal">$data_type
-                    </span>)}.fail(),
+            ConcreteDataType::Timestamp(t) =&gt; {
+                <span class="kw">let </span>n  = parse_sql_number::&lt;i64&gt;(<span class="macro-nonterminal">$n</span>)<span class="question-mark">?</span>;
+                <span class="prelude-val">Ok</span>(Value::Timestamp(Timestamp::new(n, t.unit())))
+            },
+            <span class="comment">// TODO(QuenKar): This could need to be optimized
+            // if this from_str function is slow,
+            // we can implement parse decimal string with precision and scale manually.
+            </span>ConcreteDataType::Decimal128(<span class="kw">_</span>) =&gt; {
+                <span class="kw">if let </span><span class="prelude-val">Ok</span>(val) = common_decimal::Decimal128::from_str(<span class="macro-nonterminal">$n</span>) {
+                    <span class="prelude-val">Ok</span>(Value::Decimal128(val))
+                } <span class="kw">else </span>{
+                    ParseSqlValueSnafu {
+                        msg: <span class="macro">format!</span>(<span class="string">"Fail to parse number {}, invalid column type: {:?}"</span>,
+                                        <span class="macro-nonterminal">$n</span>, <span class="macro-nonterminal">$data_type</span>)
+                    }.fail()
+                }
+            }
+
+            <span class="kw">_ </span>=&gt; ParseSqlValueSnafu {
+                msg: <span class="macro">format!</span>(<span class="string">"Fail to parse number {}, invalid column type: {:?}"</span>,
+                                <span class="macro-nonterminal">$n</span>, <span class="macro-nonterminal">$data_type
+                </span>)}.fail(),
         }
     }
 }
 
-<span class="doccomment">/// Convert a sql value into datatype&#39;s value
+<span class="doccomment">/// Convert a sql value into datatype's value
 </span><span class="kw">pub fn </span>sql_number_to_value(data_type: <span class="kw-2">&amp;</span>ConcreteDataType, n: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;Value&gt; {
     <span class="macro">parse_number_to_value!</span>(
         data_type,
         n,
-        (UInt8, u8),
-        (UInt16, u16),
-        (UInt32, u32),
-        (UInt64, u64),
-        (Int8, i8),
-        (Int16, i16),
-        (Int32, i32),
-        (Int64, i64),
-        (Float64, f64),
-        (Float32, f32),
-        (Timestamp, i64)
+        (UInt8, u8, u8),
+        (UInt16, u16, u16),
+        (UInt32, u32, u32),
+        (UInt64, u64, u64),
+        (Int8, i8, i8),
+        (Int16, i16, i16),
+        (Int32, i32, i32),
+        (Int64, i64, i64),
+        (Float64, f64, OrderedF64),
+        (Float32, f32, OrderedF32)
     )
     <span class="comment">// TODO(hl): also Date/DateTime
 </span>}
@@ -988,7 +1164,7 @@
     <span class="kw">match </span>n.parse::&lt;R&gt;() {
         <span class="prelude-val">Ok</span>(n) =&gt; <span class="prelude-val">Ok</span>(n),
         <span class="prelude-val">Err</span>(e) =&gt; ParseSqlValueSnafu {
-            msg: <span class="macro">format!</span>(<span class="string">&quot;Fail to parse number {n}, {e:?}&quot;</span>),
+            msg: <span class="macro">format!</span>(<span class="string">"Fail to parse number {n}, {e:?}"</span>),
         }
         .fail(),
     }
@@ -999,7 +1175,7 @@
     data_type: <span class="kw-2">&amp;</span>ConcreteDataType,
     sql_val: <span class="kw-2">&amp;</span>SqlValue,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;Value&gt; {
-    <span class="prelude-val">Ok</span>(<span class="kw">match </span>sql_val {
+    <span class="kw">let </span>value = <span class="kw">match </span>sql_val {
         SqlValue::Number(n, <span class="kw">_</span>) =&gt; sql_number_to_value(data_type, n)<span class="question-mark">?</span>,
         SqlValue::Null =&gt; Value::Null,
         SqlValue::Boolean(b) =&gt; {
@@ -1028,7 +1204,15 @@
             }
             .fail()
         }
-    })
+    };
+    <span class="kw">if </span>value.data_type() != <span class="kw-2">*</span>data_type {
+        cast(value, data_type).with_context(|<span class="kw">_</span>| InvalidCastSnafu {
+            sql_value: sql_val.clone(),
+            datatype: data_type,
+        })
+    } <span class="kw">else </span>{
+        <span class="prelude-val">Ok</span>(value)
+    }
 }
 
 <span class="kw">pub fn </span>value_to_sql_value(val: <span class="kw-2">&amp;</span>Value) -&gt; <span class="prelude-ty">Result</span>&lt;SqlValue&gt; {
@@ -1068,8 +1252,13 @@
                 ColumnDefaultConstraint::Value(sql_value_to_value(column_name, data_type, v)<span class="question-mark">?</span>)
             }
             ColumnOption::Default(Expr::Function(func)) =&gt; {
+                <span class="kw">let </span><span class="kw-2">mut </span>func = <span class="macro">format!</span>(<span class="string">"{func}"</span>).to_lowercase();
+                <span class="comment">// normalize CURRENT_TIMESTAMP to CURRENT_TIMESTAMP()
+                </span><span class="kw">if </span>func == CURRENT_TIMESTAMP {
+                    func = CURRENT_TIMESTAMP_FN.to_string();
+                }
                 <span class="comment">// Always use lowercase for function expression
-                </span>ColumnDefaultConstraint::Function(<span class="macro">format!</span>(<span class="string">&quot;{func}&quot;</span>).to_lowercase())
+                </span>ColumnDefaultConstraint::Function(func.to_lowercase())
             }
             ColumnOption::Default(expr) =&gt; {
                 <span class="kw">return </span>UnsupportedDefaultValueSnafu {
@@ -1085,6 +1274,17 @@
     } <span class="kw">else </span>{
         <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
     }
+}
+
+<span class="doccomment">/// Return true when the `ColumnDef` options contain primary key
+</span><span class="kw">pub fn </span>has_primary_key_option(column_def: <span class="kw-2">&amp;</span>ColumnDef) -&gt; bool {
+    column_def
+        .options
+        .iter()
+        .any(|options| <span class="kw">match </span>options.option {
+            ColumnOption::Unique { is_primary } =&gt; is_primary,
+            <span class="kw">_ </span>=&gt; <span class="bool-val">false</span>,
+        })
 }
 
 <span class="comment">// TODO(yingwen): Make column nullable by default, and checks invalid case like
@@ -1138,15 +1338,30 @@
         </span>.map(ColumnDefaultConstraint::try_into) <span class="comment">// serialize default constraint to bytes
         </span>.transpose()
         .context(SerializeColumnDefaultConstraintSnafu)<span class="question-mark">?</span>;
-
-    <span class="kw">let </span>data_type = ColumnDataTypeWrapper::try_from(data_type)
+    <span class="comment">// convert ConcreteDataType to grpc ColumnDataTypeWrapper
+    </span><span class="kw">let </span>(datatype, datatype_ext) = ColumnDataTypeWrapper::try_from(data_type.clone())
         .context(ConvertToGrpcDataTypeSnafu)<span class="question-mark">?
-        </span>.datatype() <span class="kw">as </span>i32;
+        </span>.to_parts();
+
+    <span class="kw">let </span>is_primary_key = col
+        .options
+        .iter()
+        .any(|o| <span class="macro">matches!</span>(o.option, ColumnOption::Unique { is_primary: <span class="bool-val">true </span>}));
+
+    <span class="kw">let </span>semantic_type = <span class="kw">if </span>is_primary_key {
+        SemanticType::Tag
+    } <span class="kw">else </span>{
+        SemanticType::Field
+    };
+
     <span class="prelude-val">Ok</span>(api::v1::ColumnDef {
         name,
-        datatype: data_type,
+        data_type: datatype <span class="kw">as </span>i32,
         is_nullable,
         default_constraint: default_constraint.unwrap_or_default(),
+        semantic_type: semantic_type <span class="kw">as _</span>,
+        comment: String::new(),
+        datatype_extension: datatype_ext,
     })
 }
 
@@ -1160,8 +1375,10 @@
         }
         SqlDataType::SmallInt(<span class="kw">_</span>) =&gt; <span class="prelude-val">Ok</span>(ConcreteDataType::int16_datatype()),
         SqlDataType::UnsignedSmallInt(<span class="kw">_</span>) =&gt; <span class="prelude-val">Ok</span>(ConcreteDataType::uint16_datatype()),
-        SqlDataType::TinyInt(<span class="kw">_</span>) =&gt; <span class="prelude-val">Ok</span>(ConcreteDataType::int8_datatype()),
-        SqlDataType::UnsignedTinyInt(<span class="kw">_</span>) =&gt; <span class="prelude-val">Ok</span>(ConcreteDataType::uint8_datatype()),
+        SqlDataType::TinyInt(<span class="kw">_</span>) | SqlDataType::Int8(<span class="kw">_</span>) =&gt; <span class="prelude-val">Ok</span>(ConcreteDataType::int8_datatype()),
+        SqlDataType::UnsignedTinyInt(<span class="kw">_</span>) | SqlDataType::UnsignedInt8(<span class="kw">_</span>) =&gt; {
+            <span class="prelude-val">Ok</span>(ConcreteDataType::uint8_datatype())
+        }
         SqlDataType::Char(<span class="kw">_</span>)
         | SqlDataType::Varchar(<span class="kw">_</span>)
         | SqlDataType::Text
@@ -1170,9 +1387,10 @@
         SqlDataType::Double =&gt; <span class="prelude-val">Ok</span>(ConcreteDataType::float64_datatype()),
         SqlDataType::Boolean =&gt; <span class="prelude-val">Ok</span>(ConcreteDataType::boolean_datatype()),
         SqlDataType::Date =&gt; <span class="prelude-val">Ok</span>(ConcreteDataType::date_datatype()),
-        SqlDataType::Blob(<span class="kw">_</span>) | SqlDataType::Bytea | SqlDataType::Varbinary(<span class="kw">_</span>) =&gt; {
-            <span class="prelude-val">Ok</span>(ConcreteDataType::binary_datatype())
-        }
+        SqlDataType::Binary(<span class="kw">_</span>)
+        | SqlDataType::Blob(<span class="kw">_</span>)
+        | SqlDataType::Bytea
+        | SqlDataType::Varbinary(<span class="kw">_</span>) =&gt; <span class="prelude-val">Ok</span>(ConcreteDataType::binary_datatype()),
         SqlDataType::Datetime(<span class="kw">_</span>) =&gt; <span class="prelude-val">Ok</span>(ConcreteDataType::datetime_datatype()),
         SqlDataType::Timestamp(precision, <span class="kw">_</span>) =&gt; <span class="prelude-val">Ok</span>(precision
             .as_ref()
@@ -1187,6 +1405,15 @@
             </span>.map(|t| ConcreteDataType::timestamp_datatype(t.unit()))
             .unwrap_or(ConcreteDataType::timestamp_millisecond_datatype())),
         SqlDataType::Interval =&gt; <span class="prelude-val">Ok</span>(ConcreteDataType::interval_month_day_nano_datatype()),
+        SqlDataType::Decimal(exact_info) =&gt; <span class="kw">match </span>exact_info {
+            ExactNumberInfo::None =&gt; <span class="prelude-val">Ok</span>(ConcreteDataType::decimal128_default_datatype()),
+            <span class="comment">// refer to https://dev.mysql.com/doc/refman/8.0/en/fixed-point-types.html
+            // In standard SQL, the syntax DECIMAL(M) is equivalent to DECIMAL(M,0).
+            </span>ExactNumberInfo::Precision(p) =&gt; <span class="prelude-val">Ok</span>(ConcreteDataType::decimal128_datatype(<span class="kw-2">*</span>p <span class="kw">as </span>u8, <span class="number">0</span>)),
+            ExactNumberInfo::PrecisionAndScale(p, s) =&gt; {
+                <span class="prelude-val">Ok</span>(ConcreteDataType::decimal128_datatype(<span class="kw-2">*</span>p <span class="kw">as </span>u8, <span class="kw-2">*</span>s <span class="kw">as </span>i8))
+            }
+        },
         <span class="kw">_ </span>=&gt; error::SqlTypeNotSupportedSnafu {
             t: data_type.clone(),
         }
@@ -1218,25 +1445,31 @@
             <span class="prelude-val">Some</span>(time_type.precision()),
             TimezoneInfo::None,
         )),
+        ConcreteDataType::Interval(<span class="kw">_</span>) =&gt; <span class="prelude-val">Ok</span>(SqlDataType::Interval),
         ConcreteDataType::Binary(<span class="kw">_</span>) =&gt; <span class="prelude-val">Ok</span>(SqlDataType::Varbinary(<span class="prelude-val">None</span>)),
-        ConcreteDataType::Null(<span class="kw">_</span>) | ConcreteDataType::List(<span class="kw">_</span>) | ConcreteDataType::Dictionary(<span class="kw">_</span>) =&gt; {
+        ConcreteDataType::Decimal128(d) =&gt; <span class="prelude-val">Ok</span>(SqlDataType::Decimal(
+            ExactNumberInfo::PrecisionAndScale(d.precision() <span class="kw">as </span>u64, d.scale() <span class="kw">as </span>u64),
+        )),
+        ConcreteDataType::Duration(<span class="kw">_</span>)
+        | ConcreteDataType::Null(<span class="kw">_</span>)
+        | ConcreteDataType::List(<span class="kw">_</span>)
+        | ConcreteDataType::Dictionary(<span class="kw">_</span>) =&gt; {
             <span class="macro">unreachable!</span>()
         }
-        ConcreteDataType::Interval(<span class="kw">_</span>) =&gt; <span class="prelude-val">Ok</span>(SqlDataType::Interval),
     }
 }
 
 <span class="kw">pub fn </span>sql_location_to_grpc_add_column_location(
     location: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;AddColumnLocation&gt;,
-) -&gt; <span class="prelude-ty">Option</span>&lt;api::v1::add_column::Location&gt; {
+) -&gt; <span class="prelude-ty">Option</span>&lt;Location&gt; {
     <span class="kw">match </span>location {
         <span class="prelude-val">Some</span>(AddColumnLocation::First) =&gt; <span class="prelude-val">Some</span>(Location {
             location_type: LocationType::First.into(),
-            after_cloumn_name: <span class="string">&quot;&quot;</span>.to_string(),
+            after_column_name: <span class="string">""</span>.to_string(),
         }),
         <span class="prelude-val">Some</span>(AddColumnLocation::After { column_name }) =&gt; <span class="prelude-val">Some</span>(Location {
             location_type: LocationType::After.into(),
-            after_cloumn_name: column_name.to_string(),
+            after_column_name: column_name.to_string(),
         }),
         <span class="prelude-val">None </span>=&gt; <span class="prelude-val">None</span>,
     }
@@ -1248,6 +1481,7 @@
 
     <span class="kw">use </span>api::v1::ColumnDataType;
     <span class="kw">use </span>common_time::timestamp::TimeUnit;
+    <span class="kw">use </span>common_time::timezone::set_default_timezone;
     <span class="kw">use </span>datatypes::types::BooleanType;
     <span class="kw">use </span>datatypes::value::OrderedFloat;
 
@@ -1327,14 +1561,28 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_sql_number_to_value() {
-        <span class="kw">let </span>v = sql_number_to_value(<span class="kw-2">&amp;</span>ConcreteDataType::float64_datatype(), <span class="string">&quot;3.0&quot;</span>).unwrap();
+        <span class="kw">let </span>v = sql_number_to_value(<span class="kw-2">&amp;</span>ConcreteDataType::float64_datatype(), <span class="string">"3.0"</span>).unwrap();
         <span class="macro">assert_eq!</span>(Value::Float64(OrderedFloat(<span class="number">3.0</span>)), v);
 
-        <span class="kw">let </span>v = sql_number_to_value(<span class="kw-2">&amp;</span>ConcreteDataType::int32_datatype(), <span class="string">&quot;999&quot;</span>).unwrap();
+        <span class="kw">let </span>v = sql_number_to_value(<span class="kw-2">&amp;</span>ConcreteDataType::int32_datatype(), <span class="string">"999"</span>).unwrap();
         <span class="macro">assert_eq!</span>(Value::Int32(<span class="number">999</span>), v);
 
-        <span class="kw">let </span>v = sql_number_to_value(<span class="kw-2">&amp;</span>ConcreteDataType::string_datatype(), <span class="string">&quot;999&quot;</span>);
-        <span class="macro">assert!</span>(v.is_err(), <span class="string">&quot;parse value error is: {v:?}&quot;</span>);
+        <span class="kw">let </span>v = sql_number_to_value(
+            <span class="kw-2">&amp;</span>ConcreteDataType::timestamp_nanosecond_datatype(),
+            <span class="string">"1073741821"</span>,
+        )
+        .unwrap();
+        <span class="macro">assert_eq!</span>(Value::Timestamp(Timestamp::new_nanosecond(<span class="number">1073741821</span>)), v);
+
+        <span class="kw">let </span>v = sql_number_to_value(
+            <span class="kw-2">&amp;</span>ConcreteDataType::timestamp_millisecond_datatype(),
+            <span class="string">"999999"</span>,
+        )
+        .unwrap();
+        <span class="macro">assert_eq!</span>(Value::Timestamp(Timestamp::new_millisecond(<span class="number">999999</span>)), v);
+
+        <span class="kw">let </span>v = sql_number_to_value(<span class="kw-2">&amp;</span>ConcreteDataType::string_datatype(), <span class="string">"999"</span>);
+        <span class="macro">assert!</span>(v.is_err(), <span class="string">"parse value error is: {v:?}"</span>);
     }
 
     <span class="attr">#[test]
@@ -1342,66 +1590,66 @@
         <span class="kw">let </span>sql_val = SqlValue::Null;
         <span class="macro">assert_eq!</span>(
             Value::Null,
-            sql_value_to_value(<span class="string">&quot;a&quot;</span>, <span class="kw-2">&amp;</span>ConcreteDataType::float64_datatype(), <span class="kw-2">&amp;</span>sql_val).unwrap()
+            sql_value_to_value(<span class="string">"a"</span>, <span class="kw-2">&amp;</span>ConcreteDataType::float64_datatype(), <span class="kw-2">&amp;</span>sql_val).unwrap()
         );
 
         <span class="kw">let </span>sql_val = SqlValue::Boolean(<span class="bool-val">true</span>);
         <span class="macro">assert_eq!</span>(
             Value::Boolean(<span class="bool-val">true</span>),
-            sql_value_to_value(<span class="string">&quot;a&quot;</span>, <span class="kw-2">&amp;</span>ConcreteDataType::boolean_datatype(), <span class="kw-2">&amp;</span>sql_val).unwrap()
+            sql_value_to_value(<span class="string">"a"</span>, <span class="kw-2">&amp;</span>ConcreteDataType::boolean_datatype(), <span class="kw-2">&amp;</span>sql_val).unwrap()
         );
 
-        <span class="kw">let </span>sql_val = SqlValue::Number(<span class="string">&quot;3.0&quot;</span>.to_string(), <span class="bool-val">false</span>);
+        <span class="kw">let </span>sql_val = SqlValue::Number(<span class="string">"3.0"</span>.to_string(), <span class="bool-val">false</span>);
         <span class="macro">assert_eq!</span>(
             Value::Float64(OrderedFloat(<span class="number">3.0</span>)),
-            sql_value_to_value(<span class="string">&quot;a&quot;</span>, <span class="kw-2">&amp;</span>ConcreteDataType::float64_datatype(), <span class="kw-2">&amp;</span>sql_val).unwrap()
+            sql_value_to_value(<span class="string">"a"</span>, <span class="kw-2">&amp;</span>ConcreteDataType::float64_datatype(), <span class="kw-2">&amp;</span>sql_val).unwrap()
         );
 
-        <span class="kw">let </span>sql_val = SqlValue::Number(<span class="string">&quot;3.0&quot;</span>.to_string(), <span class="bool-val">false</span>);
-        <span class="kw">let </span>v = sql_value_to_value(<span class="string">&quot;a&quot;</span>, <span class="kw-2">&amp;</span>ConcreteDataType::boolean_datatype(), <span class="kw-2">&amp;</span>sql_val);
+        <span class="kw">let </span>sql_val = SqlValue::Number(<span class="string">"3.0"</span>.to_string(), <span class="bool-val">false</span>);
+        <span class="kw">let </span>v = sql_value_to_value(<span class="string">"a"</span>, <span class="kw-2">&amp;</span>ConcreteDataType::boolean_datatype(), <span class="kw-2">&amp;</span>sql_val);
         <span class="macro">assert!</span>(v.is_err());
-        <span class="macro">assert!</span>(<span class="macro">format!</span>(<span class="string">&quot;{v:?}&quot;</span>)
-            .contains(<span class="string">&quot;Fail to parse number 3.0, invalid column type: Boolean(BooleanType)&quot;</span>));
+        <span class="macro">assert!</span>(<span class="macro">format!</span>(<span class="string">"{v:?}"</span>)
+            .contains(<span class="string">"Fail to parse number 3.0, invalid column type: Boolean(BooleanType)"</span>));
 
         <span class="kw">let </span>sql_val = SqlValue::Boolean(<span class="bool-val">true</span>);
-        <span class="kw">let </span>v = sql_value_to_value(<span class="string">&quot;a&quot;</span>, <span class="kw-2">&amp;</span>ConcreteDataType::float64_datatype(), <span class="kw-2">&amp;</span>sql_val);
+        <span class="kw">let </span>v = sql_value_to_value(<span class="string">"a"</span>, <span class="kw-2">&amp;</span>ConcreteDataType::float64_datatype(), <span class="kw-2">&amp;</span>sql_val);
         <span class="macro">assert!</span>(v.is_err());
         <span class="macro">assert!</span>(
-            <span class="macro">format!</span>(<span class="string">&quot;{v:?}&quot;</span>).contains(
-                <span class="string">&quot;column_name: \&quot;a\&quot;, expect: Float64(Float64Type), actual: Boolean(BooleanType)&quot;
+            <span class="macro">format!</span>(<span class="string">"{v:?}"</span>).contains(
+                <span class="string">"Column a expect type: Float64(Float64Type), actual: Boolean(BooleanType))"
             </span>),
-            <span class="string">&quot;v is {v:?}&quot;</span>,
+            <span class="string">"v is {v:?}"</span>,
         );
 
-        <span class="kw">let </span>sql_val = SqlValue::HexStringLiteral(<span class="string">&quot;48656c6c6f20776f726c6421&quot;</span>.to_string());
-        <span class="kw">let </span>v = sql_value_to_value(<span class="string">&quot;a&quot;</span>, <span class="kw-2">&amp;</span>ConcreteDataType::binary_datatype(), <span class="kw-2">&amp;</span>sql_val).unwrap();
-        <span class="macro">assert_eq!</span>(Value::Binary(Bytes::from(<span class="string">b&quot;Hello world!&quot;</span>.as_slice())), v);
+        <span class="kw">let </span>sql_val = SqlValue::HexStringLiteral(<span class="string">"48656c6c6f20776f726c6421"</span>.to_string());
+        <span class="kw">let </span>v = sql_value_to_value(<span class="string">"a"</span>, <span class="kw-2">&amp;</span>ConcreteDataType::binary_datatype(), <span class="kw-2">&amp;</span>sql_val).unwrap();
+        <span class="macro">assert_eq!</span>(Value::Binary(Bytes::from(<span class="string">b"Hello world!"</span>.as_slice())), v);
 
-        <span class="kw">let </span>sql_val = SqlValue::HexStringLiteral(<span class="string">&quot;9AF&quot;</span>.to_string());
-        <span class="kw">let </span>v = sql_value_to_value(<span class="string">&quot;a&quot;</span>, <span class="kw-2">&amp;</span>ConcreteDataType::binary_datatype(), <span class="kw-2">&amp;</span>sql_val);
+        <span class="kw">let </span>sql_val = SqlValue::HexStringLiteral(<span class="string">"9AF"</span>.to_string());
+        <span class="kw">let </span>v = sql_value_to_value(<span class="string">"a"</span>, <span class="kw-2">&amp;</span>ConcreteDataType::binary_datatype(), <span class="kw-2">&amp;</span>sql_val);
         <span class="macro">assert!</span>(v.is_err());
         <span class="macro">assert!</span>(
-            <span class="macro">format!</span>(<span class="string">&quot;{v:?}&quot;</span>).contains(<span class="string">&quot;odd number of digits&quot;</span>),
-            <span class="string">&quot;v is {v:?}&quot;
+            <span class="macro">format!</span>(<span class="string">"{v:?}"</span>).contains(<span class="string">"odd number of digits"</span>),
+            <span class="string">"v is {v:?}"
         </span>);
 
-        <span class="kw">let </span>sql_val = SqlValue::HexStringLiteral(<span class="string">&quot;AG&quot;</span>.to_string());
-        <span class="kw">let </span>v = sql_value_to_value(<span class="string">&quot;a&quot;</span>, <span class="kw-2">&amp;</span>ConcreteDataType::binary_datatype(), <span class="kw-2">&amp;</span>sql_val);
+        <span class="kw">let </span>sql_val = SqlValue::HexStringLiteral(<span class="string">"AG"</span>.to_string());
+        <span class="kw">let </span>v = sql_value_to_value(<span class="string">"a"</span>, <span class="kw-2">&amp;</span>ConcreteDataType::binary_datatype(), <span class="kw-2">&amp;</span>sql_val);
         <span class="macro">assert!</span>(v.is_err());
-        <span class="macro">assert!</span>(<span class="macro">format!</span>(<span class="string">&quot;{v:?}&quot;</span>).contains(<span class="string">&quot;invalid character&quot;</span>), <span class="string">&quot;v is {v:?}&quot;</span>,);
+        <span class="macro">assert!</span>(<span class="macro">format!</span>(<span class="string">"{v:?}"</span>).contains(<span class="string">"invalid character"</span>), <span class="string">"v is {v:?}"</span>,);
     }
 
     <span class="attr">#[test]
     </span><span class="kw">pub fn </span>test_parse_date_literal() {
         <span class="kw">let </span>value = sql_value_to_value(
-            <span class="string">&quot;date&quot;</span>,
+            <span class="string">"date"</span>,
             <span class="kw-2">&amp;</span>ConcreteDataType::date_datatype(),
-            <span class="kw-2">&amp;</span>SqlValue::DoubleQuotedString(<span class="string">&quot;2022-02-22&quot;</span>.to_string()),
+            <span class="kw-2">&amp;</span>SqlValue::DoubleQuotedString(<span class="string">"2022-02-22"</span>.to_string()),
         )
         .unwrap();
         <span class="macro">assert_eq!</span>(ConcreteDataType::date_datatype(), value.data_type());
         <span class="kw">if let </span>Value::Date(d) = value {
-            <span class="macro">assert_eq!</span>(<span class="string">&quot;2022-02-22&quot;</span>, d.to_string());
+            <span class="macro">assert_eq!</span>(<span class="string">"2022-02-22"</span>, d.to_string());
         } <span class="kw">else </span>{
             <span class="macro">unreachable!</span>()
         }
@@ -1409,16 +1657,16 @@
 
     <span class="attr">#[test]
     </span><span class="kw">pub fn </span>test_parse_datetime_literal() {
-        std::env::set_var(<span class="string">&quot;TZ&quot;</span>, <span class="string">&quot;Asia/Shanghai&quot;</span>);
+        set_default_timezone(<span class="prelude-val">Some</span>(<span class="string">"Asia/Shanghai"</span>)).unwrap();
         <span class="kw">let </span>value = sql_value_to_value(
-            <span class="string">&quot;datetime_col&quot;</span>,
+            <span class="string">"datetime_col"</span>,
             <span class="kw-2">&amp;</span>ConcreteDataType::datetime_datatype(),
-            <span class="kw-2">&amp;</span>SqlValue::DoubleQuotedString(<span class="string">&quot;2022-02-22 00:01:03+0800&quot;</span>.to_string()),
+            <span class="kw-2">&amp;</span>SqlValue::DoubleQuotedString(<span class="string">"2022-02-22 00:01:03+0800"</span>.to_string()),
         )
         .unwrap();
         <span class="macro">assert_eq!</span>(ConcreteDataType::datetime_datatype(), value.data_type());
         <span class="kw">if let </span>Value::DateTime(d) = value {
-            <span class="macro">assert_eq!</span>(<span class="string">&quot;2022-02-22 00:01:03+0800&quot;</span>, d.to_string());
+            <span class="macro">assert_eq!</span>(<span class="string">"2022-02-22 00:01:03+0800"</span>, d.to_string());
         } <span class="kw">else </span>{
             <span class="macro">unreachable!</span>()
         }
@@ -1427,9 +1675,9 @@
     <span class="attr">#[test]
     </span><span class="kw">pub fn </span>test_parse_illegal_datetime_literal() {
         <span class="macro">assert!</span>(sql_value_to_value(
-            <span class="string">&quot;datetime_col&quot;</span>,
+            <span class="string">"datetime_col"</span>,
             <span class="kw-2">&amp;</span>ConcreteDataType::datetime_datatype(),
-            <span class="kw-2">&amp;</span>SqlValue::DoubleQuotedString(<span class="string">&quot;2022-02-22 00:01:61&quot;</span>.to_string()),
+            <span class="kw-2">&amp;</span>SqlValue::DoubleQuotedString(<span class="string">"2022-02-22 00:01:61"</span>.to_string()),
         )
         .is_err());
     }
@@ -1437,8 +1685,8 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_parse_timestamp_literal() {
         <span class="kw">match </span>parse_string_to_value(
-            <span class="string">&quot;timestamp_col&quot;</span>,
-            <span class="string">&quot;2022-02-22T00:01:01+08:00&quot;</span>.to_string(),
+            <span class="string">"timestamp_col"</span>,
+            <span class="string">"2022-02-22T00:01:01+08:00"</span>.to_string(),
             <span class="kw-2">&amp;</span>ConcreteDataType::timestamp_millisecond_datatype(),
         )
         .unwrap()
@@ -1453,8 +1701,8 @@
         }
 
         <span class="kw">match </span>parse_string_to_value(
-            <span class="string">&quot;timestamp_col&quot;</span>,
-            <span class="string">&quot;2022-02-22T00:01:01+08:00&quot;</span>.to_string(),
+            <span class="string">"timestamp_col"</span>,
+            <span class="string">"2022-02-22T00:01:01+08:00"</span>.to_string(),
             <span class="kw-2">&amp;</span>ConcreteDataType::timestamp_datatype(TimeUnit::Second),
         )
         .unwrap()
@@ -1469,8 +1717,8 @@
         }
 
         <span class="kw">match </span>parse_string_to_value(
-            <span class="string">&quot;timestamp_col&quot;</span>,
-            <span class="string">&quot;2022-02-22T00:01:01+08:00&quot;</span>.to_string(),
+            <span class="string">"timestamp_col"</span>,
+            <span class="string">"2022-02-22T00:01:01+08:00"</span>.to_string(),
             <span class="kw-2">&amp;</span>ConcreteDataType::timestamp_datatype(TimeUnit::Microsecond),
         )
         .unwrap()
@@ -1485,8 +1733,8 @@
         }
 
         <span class="kw">match </span>parse_string_to_value(
-            <span class="string">&quot;timestamp_col&quot;</span>,
-            <span class="string">&quot;2022-02-22T00:01:01+08:00&quot;</span>.to_string(),
+            <span class="string">"timestamp_col"</span>,
+            <span class="string">"2022-02-22T00:01:01+08:00"</span>.to_string(),
             <span class="kw-2">&amp;</span>ConcreteDataType::timestamp_datatype(TimeUnit::Nanosecond),
         )
         .unwrap()
@@ -1501,8 +1749,8 @@
         }
 
         <span class="macro">assert!</span>(parse_string_to_value(
-            <span class="string">&quot;timestamp_col&quot;</span>,
-            <span class="string">&quot;2022-02-22T00:01:01+08&quot;</span>.to_string(),
+            <span class="string">"timestamp_col"</span>,
+            <span class="string">"2022-02-22T00:01:01+08"</span>.to_string(),
             <span class="kw-2">&amp;</span>ConcreteDataType::timestamp_datatype(TimeUnit::Nanosecond),
         )
         .is_err());
@@ -1524,7 +1772,7 @@
         ];
 
         <span class="kw">let </span>constraint =
-            parse_column_default_constraint(<span class="string">&quot;coll&quot;</span>, <span class="kw-2">&amp;</span>ConcreteDataType::Boolean(BooleanType), <span class="kw-2">&amp;</span>opts)
+            parse_column_default_constraint(<span class="string">"coll"</span>, <span class="kw-2">&amp;</span>ConcreteDataType::Boolean(BooleanType), <span class="kw-2">&amp;</span>opts)
                 .unwrap();
 
         <span class="macro">assert_matches!</span>(
@@ -1537,7 +1785,7 @@
     </span><span class="kw">pub fn </span>test_sql_column_def_to_grpc_column_def() {
         <span class="comment">// test basic
         </span><span class="kw">let </span>column_def = ColumnDef {
-            name: <span class="string">&quot;col&quot;</span>.into(),
+            name: <span class="string">"col"</span>.into(),
             data_type: SqlDataType::Double,
             collation: <span class="prelude-val">None</span>,
             options: <span class="macro">vec!</span>[],
@@ -1545,14 +1793,15 @@
 
         <span class="kw">let </span>grpc_column_def = sql_column_def_to_grpc_column_def(<span class="kw-2">&amp;</span>column_def).unwrap();
 
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;col&quot;</span>, grpc_column_def.name);
+        <span class="macro">assert_eq!</span>(<span class="string">"col"</span>, grpc_column_def.name);
         <span class="macro">assert!</span>(grpc_column_def.is_nullable); <span class="comment">// nullable when options are empty
-        </span><span class="macro">assert_eq!</span>(ColumnDataType::Float64 <span class="kw">as </span>i32, grpc_column_def.datatype);
+        </span><span class="macro">assert_eq!</span>(ColumnDataType::Float64 <span class="kw">as </span>i32, grpc_column_def.data_type);
         <span class="macro">assert!</span>(grpc_column_def.default_constraint.is_empty());
+        <span class="macro">assert_eq!</span>(grpc_column_def.semantic_type, SemanticType::Field <span class="kw">as </span>i32);
 
         <span class="comment">// test not null
         </span><span class="kw">let </span>column_def = ColumnDef {
-            name: <span class="string">&quot;col&quot;</span>.into(),
+            name: <span class="string">"col"</span>.into(),
             data_type: SqlDataType::Double,
             collation: <span class="prelude-val">None</span>,
             options: <span class="macro">vec!</span>[ColumnOptionDef {
@@ -1563,12 +1812,48 @@
 
         <span class="kw">let </span>grpc_column_def = sql_column_def_to_grpc_column_def(<span class="kw-2">&amp;</span>column_def).unwrap();
         <span class="macro">assert!</span>(!grpc_column_def.is_nullable);
+
+        <span class="comment">// test primary key
+        </span><span class="kw">let </span>column_def = ColumnDef {
+            name: <span class="string">"col"</span>.into(),
+            data_type: SqlDataType::Double,
+            collation: <span class="prelude-val">None</span>,
+            options: <span class="macro">vec!</span>[ColumnOptionDef {
+                name: <span class="prelude-val">None</span>,
+                option: ColumnOption::Unique { is_primary: <span class="bool-val">true </span>},
+            }],
+        };
+
+        <span class="kw">let </span>grpc_column_def = sql_column_def_to_grpc_column_def(<span class="kw-2">&amp;</span>column_def).unwrap();
+        <span class="macro">assert_eq!</span>(grpc_column_def.semantic_type, SemanticType::Tag <span class="kw">as </span>i32);
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">pub fn </span>test_has_primary_key_option() {
+        <span class="kw">let </span>column_def = ColumnDef {
+            name: <span class="string">"col"</span>.into(),
+            data_type: SqlDataType::Double,
+            collation: <span class="prelude-val">None</span>,
+            options: <span class="macro">vec!</span>[],
+        };
+        <span class="macro">assert!</span>(!has_primary_key_option(<span class="kw-2">&amp;</span>column_def));
+
+        <span class="kw">let </span>column_def = ColumnDef {
+            name: <span class="string">"col"</span>.into(),
+            data_type: SqlDataType::Double,
+            collation: <span class="prelude-val">None</span>,
+            options: <span class="macro">vec!</span>[ColumnOptionDef {
+                name: <span class="prelude-val">None</span>,
+                option: ColumnOption::Unique { is_primary: <span class="bool-val">true </span>},
+            }],
+        };
+        <span class="macro">assert!</span>(has_primary_key_option(<span class="kw-2">&amp;</span>column_def));
     }
 
     <span class="attr">#[test]
     </span><span class="kw">pub fn </span>test_column_def_to_schema() {
         <span class="kw">let </span>column_def = ColumnDef {
-            name: <span class="string">&quot;col&quot;</span>.into(),
+            name: <span class="string">"col"</span>.into(),
             data_type: SqlDataType::Double,
             collation: <span class="prelude-val">None</span>,
             options: <span class="macro">vec!</span>[],
@@ -1576,7 +1861,7 @@
 
         <span class="kw">let </span>column_schema = column_def_to_schema(<span class="kw-2">&amp;</span>column_def, <span class="bool-val">false</span>).unwrap();
 
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;col&quot;</span>, column_schema.name);
+        <span class="macro">assert_eq!</span>(<span class="string">"col"</span>, column_schema.name);
         <span class="macro">assert_eq!</span>(
             ConcreteDataType::float64_datatype(),
             column_schema.data_type
@@ -1586,7 +1871,7 @@
 
         <span class="kw">let </span>column_schema = column_def_to_schema(<span class="kw-2">&amp;</span>column_def, <span class="bool-val">true</span>).unwrap();
 
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;col&quot;</span>, column_schema.name);
+        <span class="macro">assert_eq!</span>(<span class="string">"col"</span>, column_schema.name);
         <span class="macro">assert_eq!</span>(
             ConcreteDataType::float64_datatype(),
             column_schema.data_type
@@ -1595,7 +1880,7 @@
         <span class="macro">assert!</span>(column_schema.is_time_index());
 
         <span class="kw">let </span>column_def = ColumnDef {
-            name: <span class="string">&quot;col2&quot;</span>.into(),
+            name: <span class="string">"col2"</span>.into(),
             data_type: SqlDataType::String,
             collation: <span class="prelude-val">None</span>,
             options: <span class="macro">vec!</span>[
@@ -1605,29 +1890,29 @@
                 },
                 ColumnOptionDef {
                     name: <span class="prelude-val">None</span>,
-                    option: ColumnOption::Comment(<span class="string">&quot;test comment&quot;</span>.to_string()),
+                    option: ColumnOption::Comment(<span class="string">"test comment"</span>.to_string()),
                 },
             ],
         };
 
         <span class="kw">let </span>column_schema = column_def_to_schema(<span class="kw-2">&amp;</span>column_def, <span class="bool-val">false</span>).unwrap();
 
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;col2&quot;</span>, column_schema.name);
+        <span class="macro">assert_eq!</span>(<span class="string">"col2"</span>, column_schema.name);
         <span class="macro">assert_eq!</span>(ConcreteDataType::string_datatype(), column_schema.data_type);
         <span class="macro">assert!</span>(!column_schema.is_nullable());
         <span class="macro">assert!</span>(!column_schema.is_time_index());
         <span class="macro">assert_eq!</span>(
             column_schema.metadata().get(COMMENT_KEY),
-            <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="string">&quot;test comment&quot;</span>.to_string())
+            <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="string">"test comment"</span>.to_string())
         );
     }
 
     <span class="attr">#[test]
     </span><span class="kw">pub fn </span>test_parse_placeholder_value() {
         <span class="macro">assert!</span>(sql_value_to_value(
-            <span class="string">&quot;test&quot;</span>,
+            <span class="string">"test"</span>,
             <span class="kw-2">&amp;</span>ConcreteDataType::string_datatype(),
-            <span class="kw-2">&amp;</span>SqlValue::Placeholder(<span class="string">&quot;default&quot;</span>.into())
+            <span class="kw-2">&amp;</span>SqlValue::Placeholder(<span class="string">"default"</span>.into())
         )
         .is_err());
     }

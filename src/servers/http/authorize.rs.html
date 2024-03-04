@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/servers/src/http/authorize.rs`."><title>authorize.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="servers" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0-nightly (f3623871c 2023-08-06)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../servers/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/servers/src/http/authorize.rs`."><title>authorize.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="servers" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -440,175 +441,137 @@
 <a href="#440" id="440">440</a>
 <a href="#441" id="441">441</a>
 <a href="#442" id="442">442</a>
-<a href="#443" id="443">443</a>
-<a href="#444" id="444">444</a>
-<a href="#445" id="445">445</a>
-<a href="#446" id="446">446</a>
-<a href="#447" id="447">447</a>
-<a href="#448" id="448">448</a>
-<a href="#449" id="449">449</a>
-<a href="#450" id="450">450</a>
-<a href="#451" id="451">451</a>
-<a href="#452" id="452">452</a>
-<a href="#453" id="453">453</a>
-<a href="#454" id="454">454</a>
-<a href="#455" id="455">455</a>
-<a href="#456" id="456">456</a>
-<a href="#457" id="457">457</a>
-<a href="#458" id="458">458</a>
-<a href="#459" id="459">459</a>
-<a href="#460" id="460">460</a>
-<a href="#461" id="461">461</a>
-<a href="#462" id="462">462</a>
-<a href="#463" id="463">463</a>
-<a href="#464" id="464">464</a>
-<a href="#465" id="465">465</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
-// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-</span><span class="kw">use </span>std::marker::PhantomData;
-
-<span class="kw">use </span>::auth::UserProviderRef;
+</span><span class="kw">use </span>::auth::UserProviderRef;
+<span class="kw">use </span>axum::extract::State;
 <span class="kw">use </span>axum::http::{<span class="self">self</span>, Request, StatusCode};
-<span class="kw">use </span>axum::response::Response;
+<span class="kw">use </span>axum::middleware::Next;
+<span class="kw">use </span>axum::response::{IntoResponse, Response};
+<span class="kw">use </span>axum::Json;
+<span class="kw">use </span>base64::prelude::BASE64_STANDARD;
+<span class="kw">use </span>base64::Engine;
+<span class="kw">use </span>common_catalog::consts::DEFAULT_SCHEMA_NAME;
 <span class="kw">use </span>common_catalog::parse_catalog_and_schema_from_db_string;
 <span class="kw">use </span>common_error::ext::ErrorExt;
 <span class="kw">use </span>common_telemetry::warn;
-<span class="kw">use </span>futures::future::BoxFuture;
 <span class="kw">use </span>headers::Header;
-<span class="kw">use </span>http_body::Body;
-<span class="kw">use </span>metrics::increment_counter;
 <span class="kw">use </span>secrecy::SecretString;
+<span class="kw">use </span>session::context::QueryContext;
 <span class="kw">use </span>snafu::{ensure, OptionExt, ResultExt};
-<span class="kw">use </span>tower_http::auth::AsyncAuthorizeRequest;
 
 <span class="kw">use </span><span class="kw">super</span>::header::GreptimeDbName;
-<span class="kw">use </span><span class="kw">super</span>::PUBLIC_APIS;
+<span class="kw">use super</span>::{JsonResponse, ResponseFormat, PUBLIC_APIS};
 <span class="kw">use </span><span class="kw">crate</span>::error::{
     <span class="self">self</span>, InvalidAuthorizationHeaderSnafu, InvalidParameterSnafu, InvisibleASCIISnafu,
-    NotFoundInfluxAuthSnafu, <span class="prelude-ty">Result</span>, UnsupportedAuthSchemeSnafu,
+    NotFoundInfluxAuthSnafu, <span class="prelude-ty">Result</span>, UnsupportedAuthSchemeSnafu, UrlDecodeSnafu,
 };
 <span class="kw">use </span><span class="kw">crate</span>::http::HTTP_API_PREFIX;
 
-<span class="kw">pub struct </span>HttpAuth&lt;RespBody&gt; {
+<span class="doccomment">/// AuthState is a holder state for [`UserProviderRef`]
+/// during [`check_http_auth`] function in axum's middleware
+</span><span class="attr">#[derive(Clone)]
+</span><span class="kw">pub struct </span>AuthState {
     user_provider: <span class="prelude-ty">Option</span>&lt;UserProviderRef&gt;,
-    _ty: PhantomData&lt;RespBody&gt;,
 }
 
-<span class="kw">impl</span>&lt;RespBody&gt; HttpAuth&lt;RespBody&gt; {
+<span class="kw">impl </span>AuthState {
     <span class="kw">pub fn </span>new(user_provider: <span class="prelude-ty">Option</span>&lt;UserProviderRef&gt;) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
-            user_provider,
-            _ty: PhantomData,
+        <span class="self">Self </span>{ user_provider }
+    }
+}
+
+<span class="kw">pub async fn </span>inner_auth&lt;B&gt;(
+    user_provider: <span class="prelude-ty">Option</span>&lt;UserProviderRef&gt;,
+    <span class="kw-2">mut </span>req: Request&lt;B&gt;,
+) -&gt; std::result::Result&lt;Request&lt;B&gt;, Response&gt; {
+    <span class="comment">// 1. prepare
+    </span><span class="kw">let </span>(catalog, schema) = extract_catalog_and_schema(<span class="kw-2">&amp;</span>req);
+    <span class="kw">let </span>query_ctx = QueryContext::with(catalog, schema);
+    <span class="kw">let </span>need_auth = need_auth(<span class="kw-2">&amp;</span>req);
+    <span class="kw">let </span>is_influxdb = req.uri().path().contains(<span class="string">"influxdb"</span>);
+
+    <span class="comment">// 2. check if auth is needed
+    </span><span class="kw">let </span>user_provider = <span class="kw">if let </span><span class="prelude-val">Some</span>(user_provider) = user_provider.filter(|<span class="kw">_</span>| need_auth) {
+        user_provider
+    } <span class="kw">else </span>{
+        query_ctx.set_current_user(<span class="prelude-val">Some</span>(auth::userinfo_by_name(<span class="prelude-val">None</span>)));
+        <span class="kw">let _ </span>= req.extensions_mut().insert(query_ctx);
+        <span class="kw">return </span><span class="prelude-val">Ok</span>(req);
+    };
+
+    <span class="comment">// 3. get username and pwd
+    </span><span class="kw">let </span>(username, password) = <span class="kw">match </span>extract_username_and_password(is_influxdb, <span class="kw-2">&amp;</span>req) {
+        <span class="prelude-val">Ok</span>((username, password)) =&gt; (username, password),
+        <span class="prelude-val">Err</span>(e) =&gt; {
+            <span class="macro">warn!</span>(<span class="string">"extract username and password failed: {}"</span>, e);
+            <span class="kw">crate</span>::metrics::METRIC_AUTH_FAILURE
+                .with_label_values(<span class="kw-2">&amp;</span>[e.status_code().as_ref()])
+                .inc();
+            <span class="kw">return </span><span class="prelude-val">Err</span>(err_response(is_influxdb, e).into_response());
+        }
+    };
+
+    <span class="comment">// 4. auth
+    </span><span class="kw">match </span>user_provider
+        .auth(
+            auth::Identity::UserId(<span class="kw-2">&amp;</span>username, <span class="prelude-val">None</span>),
+            auth::Password::PlainText(password),
+            catalog,
+            schema,
+        )
+        .<span class="kw">await
+    </span>{
+        <span class="prelude-val">Ok</span>(userinfo) =&gt; {
+            query_ctx.set_current_user(<span class="prelude-val">Some</span>(userinfo));
+            <span class="kw">let _ </span>= req.extensions_mut().insert(query_ctx);
+            <span class="prelude-val">Ok</span>(req)
+        }
+        <span class="prelude-val">Err</span>(e) =&gt; {
+            <span class="macro">warn!</span>(<span class="string">"authenticate failed: {}"</span>, e);
+            <span class="kw">crate</span>::metrics::METRIC_AUTH_FAILURE
+                .with_label_values(<span class="kw-2">&amp;</span>[e.status_code().as_ref()])
+                .inc();
+            <span class="prelude-val">Err</span>(err_response(is_influxdb, e).into_response())
         }
     }
 }
 
-<span class="kw">impl</span>&lt;RespBody&gt; Clone <span class="kw">for </span>HttpAuth&lt;RespBody&gt; {
-    <span class="kw">fn </span>clone(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
-            user_provider: <span class="self">self</span>.user_provider.clone(),
-            _ty: PhantomData,
-        }
+<span class="kw">pub async fn </span>check_http_auth&lt;B&gt;(
+    State(auth_state): State&lt;AuthState&gt;,
+    req: Request&lt;B&gt;,
+    next: Next&lt;B&gt;,
+) -&gt; Response {
+    <span class="kw">match </span>inner_auth(auth_state.user_provider, req).<span class="kw">await </span>{
+        <span class="prelude-val">Ok</span>(req) =&gt; next.run(req).<span class="kw">await</span>,
+        <span class="prelude-val">Err</span>(resp) =&gt; resp,
     }
 }
 
-<span class="kw">impl</span>&lt;B, RespBody&gt; AsyncAuthorizeRequest&lt;B&gt; <span class="kw">for </span>HttpAuth&lt;RespBody&gt;
-<span class="kw">where
-    </span>B: Send + Sync + <span class="lifetime">&#39;static</span>,
-    RespBody: Body + Default,
-{
-    <span class="kw">type </span>RequestBody = B;
-    <span class="kw">type </span>ResponseBody = RespBody;
-    <span class="kw">type </span>Future = BoxFuture&lt;<span class="lifetime">&#39;static</span>, std::result::Result&lt;Request&lt;B&gt;, Response&lt;<span class="self">Self</span>::ResponseBody&gt;&gt;&gt;;
+<span class="kw">fn </span>err_response(is_influxdb: bool, err: <span class="kw">impl </span>ErrorExt) -&gt; <span class="kw">impl </span>IntoResponse {
+    <span class="kw">let </span>format = <span class="kw">if </span>is_influxdb {
+        ResponseFormat::InfluxdbV1
+    } <span class="kw">else </span>{
+        ResponseFormat::GreptimedbV1
+    };
 
-    <span class="kw">fn </span>authorize(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw-2">mut </span>request: Request&lt;B&gt;) -&gt; <span class="self">Self</span>::Future {
-        <span class="kw">let </span>user_provider = <span class="self">self</span>.user_provider.clone();
-        Box::pin(<span class="kw">async move </span>{
-            <span class="kw">let </span>need_auth = need_auth(<span class="kw-2">&amp;</span>request);
-
-            <span class="kw">let </span>user_provider = <span class="kw">if let </span><span class="prelude-val">Some</span>(user_provider) = user_provider.filter(|<span class="kw">_</span>| need_auth) {
-                user_provider
-            } <span class="kw">else </span>{
-                <span class="kw">let _ </span>= request
-                    .extensions_mut()
-                    .insert(auth::userinfo_by_name(<span class="prelude-val">None</span>));
-                <span class="kw">return </span><span class="prelude-val">Ok</span>(request);
-            };
-
-            <span class="kw">let </span>(username, password) = <span class="kw">match </span>extract_username_and_password(<span class="kw-2">&amp;</span>request) {
-                <span class="prelude-val">Ok</span>((username, password)) =&gt; (username, password),
-                <span class="prelude-val">Err</span>(e) =&gt; {
-                    <span class="macro">warn!</span>(<span class="string">&quot;extract username and password failed: {}&quot;</span>, e);
-                    <span class="macro">increment_counter!</span>(
-                        <span class="kw">crate</span>::metrics::METRIC_AUTH_FAILURE,
-                        <span class="kw-2">&amp;</span>[(
-                            <span class="kw">crate</span>::metrics::METRIC_CODE_LABEL,
-                            <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, e.status_code())
-                        )]
-                    );
-                    <span class="kw">return </span><span class="prelude-val">Err</span>(unauthorized_resp());
-                }
-            };
-
-            <span class="kw">let </span>(catalog, schema) = <span class="kw">match </span>extract_catalog_and_schema(<span class="kw-2">&amp;</span>request) {
-                <span class="prelude-val">Ok</span>((catalog, schema)) =&gt; (catalog, schema),
-                <span class="prelude-val">Err</span>(e) =&gt; {
-                    <span class="macro">warn!</span>(<span class="string">&quot;extract catalog and schema failed: {}&quot;</span>, e);
-                    <span class="macro">increment_counter!</span>(
-                        <span class="kw">crate</span>::metrics::METRIC_AUTH_FAILURE,
-                        <span class="kw-2">&amp;</span>[(
-                            <span class="kw">crate</span>::metrics::METRIC_CODE_LABEL,
-                            <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, e.status_code())
-                        )]
-                    );
-                    <span class="kw">return </span><span class="prelude-val">Err</span>(unauthorized_resp());
-                }
-            };
-
-            <span class="kw">match </span>user_provider
-                .auth(
-                    ::auth::Identity::UserId(username.as_str(), <span class="prelude-val">None</span>),
-                    ::auth::Password::PlainText(password),
-                    catalog,
-                    schema,
-                )
-                .<span class="kw">await
-            </span>{
-                <span class="prelude-val">Ok</span>(userinfo) =&gt; {
-                    <span class="kw">let _ </span>= request.extensions_mut().insert(userinfo);
-                    <span class="prelude-val">Ok</span>(request)
-                }
-                <span class="prelude-val">Err</span>(e) =&gt; {
-                    <span class="macro">warn!</span>(<span class="string">&quot;authenticate failed: {}&quot;</span>, e);
-                    <span class="macro">increment_counter!</span>(
-                        <span class="kw">crate</span>::metrics::METRIC_AUTH_FAILURE,
-                        <span class="kw-2">&amp;</span>[(
-                            <span class="kw">crate</span>::metrics::METRIC_CODE_LABEL,
-                            <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, e.status_code())
-                        )]
-                    );
-                    <span class="prelude-val">Err</span>(unauthorized_resp())
-                }
-            }
-        })
-    }
+    <span class="kw">let </span>body = JsonResponse::with_error(err, format);
+    (StatusCode::UNAUTHORIZED, Json(body))
 }
 
-<span class="kw">fn </span>extract_catalog_and_schema&lt;B: Send + Sync + <span class="lifetime">&#39;static</span>&gt;(
-    request: <span class="kw-2">&amp;</span>Request&lt;B&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;(<span class="kw-2">&amp;</span>str, <span class="kw-2">&amp;</span>str)&gt; {
+<span class="kw">fn </span>extract_catalog_and_schema&lt;B&gt;(request: <span class="kw-2">&amp;</span>Request&lt;B&gt;) -&gt; (<span class="kw-2">&amp;</span>str, <span class="kw-2">&amp;</span>str) {
     <span class="comment">// parse database from header
     </span><span class="kw">let </span>dbname = request
         .headers()
@@ -619,31 +582,27 @@
             <span class="kw">let </span>query = request.uri().query().unwrap_or_default();
             extract_db_from_query(query)
         })
-        .context(InvalidParameterSnafu {
-            reason: <span class="string">&quot;`db` must be provided in query string&quot;</span>,
-        })<span class="question-mark">?</span>;
+        .unwrap_or(DEFAULT_SCHEMA_NAME);
 
-    <span class="prelude-val">Ok</span>(parse_catalog_and_schema_from_db_string(dbname))
+    parse_catalog_and_schema_from_db_string(dbname)
 }
 
-<span class="kw">fn </span>get_influxdb_credentials&lt;B: Send + Sync + <span class="lifetime">&#39;static</span>&gt;(
-    request: <span class="kw-2">&amp;</span>Request&lt;B&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;(Username, Password)&gt;&gt; {
+<span class="kw">fn </span>get_influxdb_credentials&lt;B&gt;(request: <span class="kw-2">&amp;</span>Request&lt;B&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;(Username, Password)&gt;&gt; {
     <span class="comment">// compat with influxdb v2 and v1
     </span><span class="kw">if let </span><span class="prelude-val">Some</span>(header) = request.headers().get(http::header::AUTHORIZATION) {
         <span class="comment">// try v2 first
         </span><span class="kw">let </span>(auth_scheme, credential) = header
             .to_str()
             .context(InvisibleASCIISnafu)<span class="question-mark">?
-            </span>.split_once(<span class="string">&#39; &#39;</span>)
+            </span>.split_once(<span class="string">' '</span>)
             .context(InvalidAuthorizationHeaderSnafu)<span class="question-mark">?</span>;
         <span class="macro">ensure!</span>(
-            auth_scheme.to_lowercase() == <span class="string">&quot;token&quot;</span>,
+            auth_scheme.to_lowercase() == <span class="string">"token"</span>,
             UnsupportedAuthSchemeSnafu { name: auth_scheme }
         );
 
         <span class="kw">let </span>(username, password) = credential
-            .split_once(<span class="string">&#39;:&#39;</span>)
+            .split_once(<span class="string">':'</span>)
             .context(InvalidAuthorizationHeaderSnafu)<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>((username.to_string(), password.to_string().into())))
@@ -653,13 +612,15 @@
             <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>);
         };
 
-        <span class="kw">match </span>extract_influxdb_user_from_query(query_str) {
+        <span class="kw">let </span>query_str = urlencoding::decode(query_str).context(UrlDecodeSnafu)<span class="question-mark">?</span>;
+
+        <span class="kw">match </span>extract_influxdb_user_from_query(<span class="kw-2">&amp;</span>query_str) {
             (<span class="prelude-val">None</span>, <span class="prelude-val">None</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>),
             (<span class="prelude-val">Some</span>(username), <span class="prelude-val">Some</span>(password)) =&gt; {
                 <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>((username.to_string(), password.to_string().into())))
             }
             <span class="kw">_ </span>=&gt; InvalidParameterSnafu {
-                reason: <span class="string">&quot;influxdb auth: username and password must be provided together&quot;
+                reason: <span class="string">"influxdb auth: username and password must be provided together"
                     </span>.to_string(),
             }
             .fail(),
@@ -667,10 +628,11 @@
     }
 }
 
-<span class="kw">fn </span>extract_username_and_password&lt;B: Send + Sync + <span class="lifetime">&#39;static</span>&gt;(
+<span class="kw">fn </span>extract_username_and_password&lt;B&gt;(
+    is_influxdb: bool,
     request: <span class="kw-2">&amp;</span>Request&lt;B&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;(Username, Password)&gt; {
-    <span class="prelude-val">Ok</span>(<span class="kw">if </span>request.uri().path().contains(<span class="string">&quot;influxdb&quot;</span>) {
+    <span class="prelude-val">Ok</span>(<span class="kw">if </span>is_influxdb {
         <span class="comment">// compatible with influxdb auth
         </span>get_influxdb_credentials(request)<span class="question-mark">?</span>.context(NotFoundInfluxAuthSnafu)<span class="question-mark">?
     </span>} <span class="kw">else </span>{
@@ -680,15 +642,6 @@
             AuthScheme::Basic(username, password) =&gt; (username, password),
         }
     })
-}
-
-<span class="kw">fn </span>unauthorized_resp&lt;RespBody&gt;() -&gt; Response&lt;RespBody&gt;
-<span class="kw">where
-    </span>RespBody: Body + Default,
-{
-    <span class="kw">let </span><span class="kw-2">mut </span>res = Response::new(RespBody::default());
-    <span class="kw-2">*</span>res.status_mut() = StatusCode::UNAUTHORIZED;
-    res
 }
 
 <span class="attr">#[derive(Debug)]
@@ -704,22 +657,22 @@
 
     <span class="kw">fn </span>try_from(value: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
         <span class="kw">let </span>(scheme, encoded_credentials) = value
-            .split_once(<span class="string">&#39; &#39;</span>)
+            .split_once(<span class="string">' '</span>)
             .context(InvalidAuthorizationHeaderSnafu)<span class="question-mark">?</span>;
         <span class="macro">ensure!</span>(
-            !encoded_credentials.contains(<span class="string">&#39; &#39;</span>),
+            !encoded_credentials.contains(<span class="string">' '</span>),
             InvalidAuthorizationHeaderSnafu
         );
 
         <span class="kw">match </span>scheme.to_lowercase().as_str() {
-            <span class="string">&quot;basic&quot; </span>=&gt; decode_basic(encoded_credentials)
+            <span class="string">"basic" </span>=&gt; decode_basic(encoded_credentials)
                 .map(|(username, password)| AuthScheme::Basic(username, password)),
             other =&gt; UnsupportedAuthSchemeSnafu { name: other }.fail(),
         }
     }
 }
 
-<span class="kw">type </span>Credential&lt;<span class="lifetime">&#39;a</span>&gt; = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str;
+<span class="kw">type </span>Credential&lt;<span class="lifetime">'a</span>&gt; = <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str;
 
 <span class="kw">fn </span>auth_header&lt;B&gt;(req: <span class="kw-2">&amp;</span>Request&lt;B&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;AuthScheme&gt; {
     <span class="kw">let </span>auth_header = req
@@ -733,10 +686,12 @@
 }
 
 <span class="kw">fn </span>decode_basic(credential: Credential) -&gt; <span class="prelude-ty">Result</span>&lt;(Username, Password)&gt; {
-    <span class="kw">let </span>decoded = base64::decode(credential).context(error::InvalidBase64ValueSnafu)<span class="question-mark">?</span>;
+    <span class="kw">let </span>decoded = BASE64_STANDARD
+        .decode(credential)
+        .context(error::InvalidBase64ValueSnafu)<span class="question-mark">?</span>;
     <span class="kw">let </span>as_utf8 = String::from_utf8(decoded).context(error::InvalidUtf8ValueSnafu)<span class="question-mark">?</span>;
 
-    <span class="kw">if let </span><span class="prelude-val">Some</span>((user_id, password)) = as_utf8.split_once(<span class="string">&#39;:&#39;</span>) {
+    <span class="kw">if let </span><span class="prelude-val">Some</span>((user_id, password)) = as_utf8.split_once(<span class="string">':'</span>) {
         <span class="kw">return </span><span class="prelude-val">Ok</span>((user_id.to_string(), password.to_string().into()));
     }
 
@@ -756,8 +711,8 @@
 }
 
 <span class="kw">fn </span>extract_db_from_query(query: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt; {
-    <span class="kw">for </span>pair <span class="kw">in </span>query.split(<span class="string">&#39;&amp;&#39;</span>) {
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(db) = pair.strip_prefix(<span class="string">&quot;db=&quot;</span>) {
+    <span class="kw">for </span>pair <span class="kw">in </span>query.split(<span class="string">'&amp;'</span>) {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(db) = pair.strip_prefix(<span class="string">"db="</span>) {
             <span class="kw">return if </span>db.is_empty() { <span class="prelude-val">None </span>} <span class="kw">else </span>{ <span class="prelude-val">Some</span>(db) };
         }
     }
@@ -768,10 +723,10 @@
     <span class="kw">let </span><span class="kw-2">mut </span>username = <span class="prelude-val">None</span>;
     <span class="kw">let </span><span class="kw-2">mut </span>password = <span class="prelude-val">None</span>;
 
-    <span class="kw">for </span>pair <span class="kw">in </span>query.split(<span class="string">&#39;&amp;&#39;</span>) {
-        <span class="kw">if </span>pair.starts_with(<span class="string">&quot;u=&quot;</span>) &amp;&amp; pair.len() &gt; <span class="number">2 </span>{
+    <span class="kw">for </span>pair <span class="kw">in </span>query.split(<span class="string">'&amp;'</span>) {
+        <span class="kw">if </span>pair.starts_with(<span class="string">"u="</span>) &amp;&amp; pair.len() &gt; <span class="number">2 </span>{
             username = <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>pair[<span class="number">2</span>..]);
-        } <span class="kw">else if </span>pair.starts_with(<span class="string">&quot;p=&quot;</span>) &amp;&amp; pair.len() &gt; <span class="number">2 </span>{
+        } <span class="kw">else if </span>pair.starts_with(<span class="string">"p="</span>) &amp;&amp; pair.len() &gt; <span class="number">2 </span>{
             password = <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>pair[<span class="number">2</span>..]);
         }
     }
@@ -789,21 +744,21 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_need_auth() {
         <span class="kw">let </span>req = Request::builder()
-            .uri(<span class="string">&quot;http://127.0.0.1/v1/influxdb/ping&quot;</span>)
+            .uri(<span class="string">"http://127.0.0.1/v1/influxdb/ping"</span>)
             .body(())
             .unwrap();
 
         <span class="macro">assert!</span>(!need_auth(<span class="kw-2">&amp;</span>req));
 
         <span class="kw">let </span>req = Request::builder()
-            .uri(<span class="string">&quot;http://127.0.0.1/v1/influxdb/health&quot;</span>)
+            .uri(<span class="string">"http://127.0.0.1/v1/influxdb/health"</span>)
             .body(())
             .unwrap();
 
         <span class="macro">assert!</span>(!need_auth(<span class="kw-2">&amp;</span>req));
 
         <span class="kw">let </span>req = Request::builder()
-            .uri(<span class="string">&quot;http://127.0.0.1/v1/influxdb/write&quot;</span>)
+            .uri(<span class="string">"http://127.0.0.1/v1/influxdb/write"</span>)
             .body(())
             .unwrap();
 
@@ -812,48 +767,48 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_decode_basic() {
-        <span class="comment">// base64encode(&quot;username:password&quot;) == &quot;dXNlcm5hbWU6cGFzc3dvcmQ=&quot;
-        </span><span class="kw">let </span>credential = <span class="string">&quot;dXNlcm5hbWU6cGFzc3dvcmQ=&quot;</span>;
+        <span class="comment">// base64encode("username:password") == "dXNlcm5hbWU6cGFzc3dvcmQ="
+        </span><span class="kw">let </span>credential = <span class="string">"dXNlcm5hbWU6cGFzc3dvcmQ="</span>;
         <span class="kw">let </span>(username, pwd) = decode_basic(credential).unwrap();
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;username&quot;</span>, username);
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;password&quot;</span>, pwd.expose_secret());
+        <span class="macro">assert_eq!</span>(<span class="string">"username"</span>, username);
+        <span class="macro">assert_eq!</span>(<span class="string">"password"</span>, pwd.expose_secret());
 
-        <span class="kw">let </span>wrong_credential = <span class="string">&quot;dXNlcm5hbWU6cG Fzc3dvcmQ=&quot;</span>;
+        <span class="kw">let </span>wrong_credential = <span class="string">"dXNlcm5hbWU6cG Fzc3dvcmQ="</span>;
         <span class="kw">let </span>result = decode_basic(wrong_credential);
         <span class="macro">assert_matches!</span>(result.err(), <span class="prelude-val">Some</span>(error::Error::InvalidBase64Value { .. }));
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_try_into_auth_scheme() {
-        <span class="kw">let </span>auth_scheme_str = <span class="string">&quot;basic&quot;</span>;
+        <span class="kw">let </span>auth_scheme_str = <span class="string">"basic"</span>;
         <span class="kw">let </span>re: <span class="prelude-ty">Result</span>&lt;AuthScheme&gt; = auth_scheme_str.try_into();
         <span class="macro">assert!</span>(re.is_err());
 
-        <span class="kw">let </span>auth_scheme_str = <span class="string">&quot;basic dGVzdDp0ZXN0&quot;</span>;
+        <span class="kw">let </span>auth_scheme_str = <span class="string">"basic dGVzdDp0ZXN0"</span>;
         <span class="kw">let </span>scheme: AuthScheme = auth_scheme_str.try_into().unwrap();
-        <span class="macro">assert_matches!</span>(scheme, AuthScheme::Basic(username, pwd) <span class="kw">if </span>username == <span class="string">&quot;test&quot; </span>&amp;&amp; pwd.expose_secret() == <span class="string">&quot;test&quot;</span>);
+        <span class="macro">assert_matches!</span>(scheme, AuthScheme::Basic(username, pwd) <span class="kw">if </span>username == <span class="string">"test" </span>&amp;&amp; pwd.expose_secret() == <span class="string">"test"</span>);
 
-        <span class="kw">let </span>unsupported = <span class="string">&quot;digest&quot;</span>;
+        <span class="kw">let </span>unsupported = <span class="string">"digest"</span>;
         <span class="kw">let </span>auth_scheme: <span class="prelude-ty">Result</span>&lt;AuthScheme&gt; = unsupported.try_into();
         <span class="macro">assert!</span>(auth_scheme.is_err());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_auth_header() {
-        <span class="comment">// base64encode(&quot;username:password&quot;) == &quot;dXNlcm5hbWU6cGFzc3dvcmQ=&quot;
-        </span><span class="kw">let </span>req = mock_http_request(<span class="prelude-val">Some</span>(<span class="string">&quot;Basic dXNlcm5hbWU6cGFzc3dvcmQ=&quot;</span>), <span class="prelude-val">None</span>).unwrap();
+        <span class="comment">// base64encode("username:password") == "dXNlcm5hbWU6cGFzc3dvcmQ="
+        </span><span class="kw">let </span>req = mock_http_request(<span class="prelude-val">Some</span>(<span class="string">"Basic dXNlcm5hbWU6cGFzc3dvcmQ="</span>), <span class="prelude-val">None</span>).unwrap();
 
         <span class="kw">let </span>auth_scheme = auth_header(<span class="kw-2">&amp;</span>req).unwrap();
-        <span class="macro">assert_matches!</span>(auth_scheme, AuthScheme::Basic(username, pwd) <span class="kw">if </span>username == <span class="string">&quot;username&quot; </span>&amp;&amp; pwd.expose_secret() == <span class="string">&quot;password&quot;</span>);
+        <span class="macro">assert_matches!</span>(auth_scheme, AuthScheme::Basic(username, pwd) <span class="kw">if </span>username == <span class="string">"username" </span>&amp;&amp; pwd.expose_secret() == <span class="string">"password"</span>);
 
-        <span class="kw">let </span>wrong_req = mock_http_request(<span class="prelude-val">Some</span>(<span class="string">&quot;Basic dXNlcm5hbWU6 cGFzc3dvcmQ=&quot;</span>), <span class="prelude-val">None</span>).unwrap();
+        <span class="kw">let </span>wrong_req = mock_http_request(<span class="prelude-val">Some</span>(<span class="string">"Basic dXNlcm5hbWU6 cGFzc3dvcmQ="</span>), <span class="prelude-val">None</span>).unwrap();
         <span class="kw">let </span>res = auth_header(<span class="kw-2">&amp;</span>wrong_req);
         <span class="macro">assert_matches!</span>(
             res.err(),
             <span class="prelude-val">Some</span>(error::Error::InvalidAuthorizationHeader { .. })
         );
 
-        <span class="kw">let </span>wrong_req = mock_http_request(<span class="prelude-val">Some</span>(<span class="string">&quot;Digest dXNlcm5hbWU6cGFzc3dvcmQ=&quot;</span>), <span class="prelude-val">None</span>).unwrap();
+        <span class="kw">let </span>wrong_req = mock_http_request(<span class="prelude-val">Some</span>(<span class="string">"Digest dXNlcm5hbWU6cGFzc3dvcmQ="</span>), <span class="prelude-val">None</span>).unwrap();
         <span class="kw">let </span>res = auth_header(<span class="kw-2">&amp;</span>wrong_req);
         <span class="macro">assert_matches!</span>(res.err(), <span class="prelude-val">Some</span>(error::Error::UnsupportedAuthScheme { .. }));
     }
@@ -861,7 +816,7 @@
     <span class="kw">fn </span>mock_http_request(auth_header: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;, uri: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Request&lt;()&gt;&gt; {
         <span class="kw">let </span>http_api_version = <span class="kw">crate</span>::http::HTTP_API_VERSION;
         <span class="kw">let </span><span class="kw-2">mut </span>req = Request::builder()
-            .uri(uri.unwrap_or(<span class="macro">format!</span>(<span class="string">&quot;http://localhost/{http_api_version}/sql&quot;</span>).as_str()));
+            .uri(uri.unwrap_or(<span class="macro">format!</span>(<span class="string">"http://localhost/{http_api_version}/sql"</span>).as_str()));
         <span class="kw">if let </span><span class="prelude-val">Some</span>(auth_header) = auth_header {
             req = req.header(http::header::AUTHORIZATION, auth_header);
         }
@@ -873,58 +828,58 @@
     </span><span class="kw">fn </span>test_db_name_header() {
         <span class="kw">let </span>http_api_version = <span class="kw">crate</span>::http::HTTP_API_VERSION;
         <span class="kw">let </span>req = Request::builder()
-            .uri(<span class="macro">format!</span>(<span class="string">&quot;http://localhost/{http_api_version}/sql&quot;</span>).as_str())
-            .header(GreptimeDbName::name(), <span class="string">&quot;greptime-tomcat&quot;</span>)
+            .uri(<span class="macro">format!</span>(<span class="string">"http://localhost/{http_api_version}/sql"</span>).as_str())
+            .header(GreptimeDbName::name(), <span class="string">"greptime-tomcat"</span>)
             .body(())
             .unwrap();
 
-        <span class="kw">let </span>db = extract_catalog_and_schema(<span class="kw-2">&amp;</span>req).unwrap();
-        <span class="macro">assert_eq!</span>(db, (<span class="string">&quot;greptime&quot;</span>, <span class="string">&quot;tomcat&quot;</span>));
+        <span class="kw">let </span>db = extract_catalog_and_schema(<span class="kw-2">&amp;</span>req);
+        <span class="macro">assert_eq!</span>(db, (<span class="string">"greptime"</span>, <span class="string">"tomcat"</span>));
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_extract_db() {
-        <span class="macro">assert_matches!</span>(extract_db_from_query(<span class="string">&quot;&quot;</span>), <span class="prelude-val">None</span>);
-        <span class="macro">assert_matches!</span>(extract_db_from_query(<span class="string">&quot;&amp;&quot;</span>), <span class="prelude-val">None</span>);
-        <span class="macro">assert_matches!</span>(extract_db_from_query(<span class="string">&quot;db=&quot;</span>), <span class="prelude-val">None</span>);
-        <span class="macro">assert_matches!</span>(extract_db_from_query(<span class="string">&quot;db=foo&quot;</span>), <span class="prelude-val">Some</span>(<span class="string">&quot;foo&quot;</span>));
-        <span class="macro">assert_matches!</span>(extract_db_from_query(<span class="string">&quot;name=bar&quot;</span>), <span class="prelude-val">None</span>);
-        <span class="macro">assert_matches!</span>(extract_db_from_query(<span class="string">&quot;db=&amp;name=bar&quot;</span>), <span class="prelude-val">None</span>);
-        <span class="macro">assert_matches!</span>(extract_db_from_query(<span class="string">&quot;db=foo&amp;name=bar&quot;</span>), <span class="prelude-val">Some</span>(<span class="string">&quot;foo&quot;</span>));
-        <span class="macro">assert_matches!</span>(extract_db_from_query(<span class="string">&quot;name=bar&amp;db=&quot;</span>), <span class="prelude-val">None</span>);
-        <span class="macro">assert_matches!</span>(extract_db_from_query(<span class="string">&quot;name=bar&amp;db=foo&quot;</span>), <span class="prelude-val">Some</span>(<span class="string">&quot;foo&quot;</span>));
-        <span class="macro">assert_matches!</span>(extract_db_from_query(<span class="string">&quot;name=bar&amp;db=&amp;name=bar&quot;</span>), <span class="prelude-val">None</span>);
+        <span class="macro">assert_matches!</span>(extract_db_from_query(<span class="string">""</span>), <span class="prelude-val">None</span>);
+        <span class="macro">assert_matches!</span>(extract_db_from_query(<span class="string">"&amp;"</span>), <span class="prelude-val">None</span>);
+        <span class="macro">assert_matches!</span>(extract_db_from_query(<span class="string">"db="</span>), <span class="prelude-val">None</span>);
+        <span class="macro">assert_matches!</span>(extract_db_from_query(<span class="string">"db=foo"</span>), <span class="prelude-val">Some</span>(<span class="string">"foo"</span>));
+        <span class="macro">assert_matches!</span>(extract_db_from_query(<span class="string">"name=bar"</span>), <span class="prelude-val">None</span>);
+        <span class="macro">assert_matches!</span>(extract_db_from_query(<span class="string">"db=&amp;name=bar"</span>), <span class="prelude-val">None</span>);
+        <span class="macro">assert_matches!</span>(extract_db_from_query(<span class="string">"db=foo&amp;name=bar"</span>), <span class="prelude-val">Some</span>(<span class="string">"foo"</span>));
+        <span class="macro">assert_matches!</span>(extract_db_from_query(<span class="string">"name=bar&amp;db="</span>), <span class="prelude-val">None</span>);
+        <span class="macro">assert_matches!</span>(extract_db_from_query(<span class="string">"name=bar&amp;db=foo"</span>), <span class="prelude-val">Some</span>(<span class="string">"foo"</span>));
+        <span class="macro">assert_matches!</span>(extract_db_from_query(<span class="string">"name=bar&amp;db=&amp;name=bar"</span>), <span class="prelude-val">None</span>);
         <span class="macro">assert_matches!</span>(
-            extract_db_from_query(<span class="string">&quot;name=bar&amp;db=foo&amp;name=bar&quot;</span>),
-            <span class="prelude-val">Some</span>(<span class="string">&quot;foo&quot;</span>)
+            extract_db_from_query(<span class="string">"name=bar&amp;db=foo&amp;name=bar"</span>),
+            <span class="prelude-val">Some</span>(<span class="string">"foo"</span>)
         );
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_extract_user() {
-        <span class="macro">assert_matches!</span>(extract_influxdb_user_from_query(<span class="string">&quot;&quot;</span>), (<span class="prelude-val">None</span>, <span class="prelude-val">None</span>));
-        <span class="macro">assert_matches!</span>(extract_influxdb_user_from_query(<span class="string">&quot;u=&quot;</span>), (<span class="prelude-val">None</span>, <span class="prelude-val">None</span>));
+        <span class="macro">assert_matches!</span>(extract_influxdb_user_from_query(<span class="string">""</span>), (<span class="prelude-val">None</span>, <span class="prelude-val">None</span>));
+        <span class="macro">assert_matches!</span>(extract_influxdb_user_from_query(<span class="string">"u="</span>), (<span class="prelude-val">None</span>, <span class="prelude-val">None</span>));
         <span class="macro">assert_matches!</span>(
-            extract_influxdb_user_from_query(<span class="string">&quot;u=123&quot;</span>),
-            (<span class="prelude-val">Some</span>(<span class="string">&quot;123&quot;</span>), <span class="prelude-val">None</span>)
+            extract_influxdb_user_from_query(<span class="string">"u=123"</span>),
+            (<span class="prelude-val">Some</span>(<span class="string">"123"</span>), <span class="prelude-val">None</span>)
         );
         <span class="macro">assert_matches!</span>(
-            extract_influxdb_user_from_query(<span class="string">&quot;u=123&amp;p=&quot;</span>),
-            (<span class="prelude-val">Some</span>(<span class="string">&quot;123&quot;</span>), <span class="prelude-val">None</span>)
+            extract_influxdb_user_from_query(<span class="string">"u=123&amp;p="</span>),
+            (<span class="prelude-val">Some</span>(<span class="string">"123"</span>), <span class="prelude-val">None</span>)
         );
         <span class="macro">assert_matches!</span>(
-            extract_influxdb_user_from_query(<span class="string">&quot;u=123&amp;p=4&quot;</span>),
-            (<span class="prelude-val">Some</span>(<span class="string">&quot;123&quot;</span>), <span class="prelude-val">Some</span>(<span class="string">&quot;4&quot;</span>))
+            extract_influxdb_user_from_query(<span class="string">"u=123&amp;p=4"</span>),
+            (<span class="prelude-val">Some</span>(<span class="string">"123"</span>), <span class="prelude-val">Some</span>(<span class="string">"4"</span>))
         );
-        <span class="macro">assert_matches!</span>(extract_influxdb_user_from_query(<span class="string">&quot;p=&quot;</span>), (<span class="prelude-val">None</span>, <span class="prelude-val">None</span>));
-        <span class="macro">assert_matches!</span>(extract_influxdb_user_from_query(<span class="string">&quot;p=4&quot;</span>), (<span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="string">&quot;4&quot;</span>)));
+        <span class="macro">assert_matches!</span>(extract_influxdb_user_from_query(<span class="string">"p="</span>), (<span class="prelude-val">None</span>, <span class="prelude-val">None</span>));
+        <span class="macro">assert_matches!</span>(extract_influxdb_user_from_query(<span class="string">"p=4"</span>), (<span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="string">"4"</span>)));
         <span class="macro">assert_matches!</span>(
-            extract_influxdb_user_from_query(<span class="string">&quot;p=4&amp;u=&quot;</span>),
-            (<span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="string">&quot;4&quot;</span>))
+            extract_influxdb_user_from_query(<span class="string">"p=4&amp;u="</span>),
+            (<span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="string">"4"</span>))
         );
         <span class="macro">assert_matches!</span>(
-            extract_influxdb_user_from_query(<span class="string">&quot;p=4&amp;u=123&quot;</span>),
-            (<span class="prelude-val">Some</span>(<span class="string">&quot;123&quot;</span>), <span class="prelude-val">Some</span>(<span class="string">&quot;4&quot;</span>))
+            extract_influxdb_user_from_query(<span class="string">"p=4&amp;u=123"</span>),
+            (<span class="prelude-val">Some</span>(<span class="string">"123"</span>), <span class="prelude-val">Some</span>(<span class="string">"4"</span>))
         );
     }
 }
