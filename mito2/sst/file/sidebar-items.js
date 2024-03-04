@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["MAX_LEVEL"],"struct":["FileHandle","FileHandleInner","FileId","FileMeta","ParseIdError","ParseIdSnafu"],"type":["FileTimeRange","Level"]};
+window.SIDEBAR_ITEMS = {"constant":["MAX_LEVEL"],"enum":["IndexType"],"struct":["FileHandle","FileHandleInner","FileId","FileMeta","ParseIdError","ParseIdSnafu"],"type":["FileTimeRange","Level"]};

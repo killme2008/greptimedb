@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["one_of_sigs2"]};
+window.SIDEBAR_ITEMS = {"fn":["cast_u64","one_of_sigs2"]};

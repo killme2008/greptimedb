@@ -63,6 +63,44 @@
 <a href="#62" id="62">62</a>
 <a href="#63" id="63">63</a>
 <a href="#64" id="64">64</a>
+<a href="#65" id="65">65</a>
+<a href="#66" id="66">66</a>
+<a href="#67" id="67">67</a>
+<a href="#68" id="68">68</a>
+<a href="#69" id="69">69</a>
+<a href="#70" id="70">70</a>
+<a href="#71" id="71">71</a>
+<a href="#72" id="72">72</a>
+<a href="#73" id="73">73</a>
+<a href="#74" id="74">74</a>
+<a href="#75" id="75">75</a>
+<a href="#76" id="76">76</a>
+<a href="#77" id="77">77</a>
+<a href="#78" id="78">78</a>
+<a href="#79" id="79">79</a>
+<a href="#80" id="80">80</a>
+<a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
+<a href="#91" id="91">91</a>
+<a href="#92" id="92">92</a>
+<a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -79,27 +117,59 @@
 
 </span><span class="kw">use </span>std::collections::HashMap;
 
-<span class="kw">use </span>common_meta::util;
+<span class="kw">use </span>common_meta::kv_backend::KvBackend;
+<span class="kw">use </span>common_meta::peer::Peer;
+<span class="kw">use </span>common_meta::{util, ClusterId};
 <span class="kw">use </span>common_time::util <span class="kw">as </span>time_util;
 
 <span class="kw">use </span><span class="kw">crate</span>::cluster::MetaPeerClientRef;
 <span class="kw">use </span><span class="kw">crate</span>::error::Result;
 <span class="kw">use </span><span class="kw">crate</span>::keys::{LeaseKey, LeaseValue, DN_LEASE_PREFIX};
 
+<span class="kw">fn </span>build_lease_filter(lease_secs: u64) -&gt; <span class="kw">impl </span>Fn(<span class="kw-2">&amp;</span>LeaseKey, <span class="kw-2">&amp;</span>LeaseValue) -&gt; bool {
+    <span class="kw">move </span>|<span class="kw">_</span>: <span class="kw-2">&amp;</span>LeaseKey, v: <span class="kw-2">&amp;</span>LeaseValue| {
+        ((time_util::current_time_millis() - v.timestamp_millis) <span class="kw">as </span>u64) &lt; lease_secs * <span class="number">1000
+    </span>}
+}
+
+<span class="kw">pub async fn </span>lookup_alive_datanode_peer(
+    cluster_id: ClusterId,
+    datanode_id: u64,
+    meta_peer_client: <span class="kw-2">&amp;</span>MetaPeerClientRef,
+    lease_secs: u64,
+) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;Peer&gt;&gt; {
+    <span class="kw">let </span>lease_filter = build_lease_filter(lease_secs);
+    <span class="kw">let </span>lease_key = LeaseKey {
+        cluster_id,
+        node_id: datanode_id,
+    };
+    <span class="kw">let </span>lease_key_bytes: Vec&lt;u8&gt; = lease_key.clone().try_into()<span class="question-mark">?</span>;
+    <span class="kw">let </span><span class="prelude-val">Some</span>(kv) = meta_peer_client.get(<span class="kw-2">&amp;</span>lease_key_bytes).<span class="kw">await</span><span class="question-mark">? </span><span class="kw">else </span>{
+        <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>);
+    };
+    <span class="kw">let </span>lease_value: LeaseValue = kv.value.try_into()<span class="question-mark">?</span>;
+    <span class="kw">if </span>lease_filter(<span class="kw-2">&amp;</span>lease_key, <span class="kw-2">&amp;</span>lease_value) {
+        <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(Peer {
+            id: lease_key.node_id,
+            addr: lease_value.node_addr,
+        }))
+    } <span class="kw">else </span>{
+        <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
+    }
+}
+
 <span class="kw">pub async fn </span>alive_datanodes(
-    cluster_id: u64,
+    cluster_id: ClusterId,
     meta_peer_client: <span class="kw-2">&amp;</span>MetaPeerClientRef,
     lease_secs: u64,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;HashMap&lt;LeaseKey, LeaseValue&gt;&gt; {
-    <span class="kw">let </span>lease_filter = |<span class="kw">_</span>: <span class="kw-2">&amp;</span>LeaseKey, v: <span class="kw-2">&amp;</span>LeaseValue| {
-        ((time_util::current_time_millis() - v.timestamp_millis) <span class="kw">as </span>u64) &lt; lease_secs * <span class="number">1000
-    </span>};
+    <span class="kw">let </span>lease_filter = build_lease_filter(lease_secs);
 
     filter_datanodes(cluster_id, meta_peer_client, lease_filter).<span class="kw">await
 </span>}
 
 <span class="kw">pub async fn </span>filter_datanodes&lt;P&gt;(
-    cluster_id: u64,
+    cluster_id: ClusterId,
     meta_peer_client: <span class="kw-2">&amp;</span>MetaPeerClientRef,
     predicate: P,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;HashMap&lt;LeaseKey, LeaseValue&gt;&gt;
@@ -109,7 +179,13 @@
     <span class="kw">let </span>key = get_lease_prefix(cluster_id);
     <span class="kw">let </span>range_end = util::get_prefix_end_key(<span class="kw-2">&amp;</span>key);
 
-    <span class="kw">let </span>kvs = meta_peer_client.range(key, range_end, <span class="bool-val">false</span>).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">let </span>range_req = common_meta::rpc::store::RangeRequest {
+        key,
+        range_end,
+        keys_only: <span class="bool-val">false</span>,
+        ..Default::default()
+    };
+    <span class="kw">let </span>kvs = meta_peer_client.range(range_req).<span class="kw">await</span><span class="question-mark">?</span>.kvs;
     <span class="kw">let </span><span class="kw-2">mut </span>lease_kvs = HashMap::new();
     <span class="kw">for </span>kv <span class="kw">in </span>kvs {
         <span class="kw">let </span>lease_key: LeaseKey = kv.key.try_into()<span class="question-mark">?</span>;

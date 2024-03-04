@@ -194,6 +194,19 @@
 <a href="#193" id="193">193</a>
 <a href="#194" id="194">194</a>
 <a href="#195" id="195">195</a>
+<a href="#196" id="196">196</a>
+<a href="#197" id="197">197</a>
+<a href="#198" id="198">198</a>
+<a href="#199" id="199">199</a>
+<a href="#200" id="200">200</a>
+<a href="#201" id="201">201</a>
+<a href="#202" id="202">202</a>
+<a href="#203" id="203">203</a>
+<a href="#204" id="204">204</a>
+<a href="#205" id="205">205</a>
+<a href="#206" id="206">206</a>
+<a href="#207" id="207">207</a>
+<a href="#208" id="208">208</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -212,22 +225,23 @@
 <span class="kw">use </span>api::v1::region::InsertRequests <span class="kw">as </span>RegionInsertRequests;
 <span class="kw">use </span>api::v1::{ColumnSchema <span class="kw">as </span>GrpcColumnSchema, Row, Rows, Value <span class="kw">as </span>GrpcValue};
 <span class="kw">use </span>catalog::CatalogManager;
+<span class="kw">use </span>common_time::Timezone;
 <span class="kw">use </span>datatypes::schema::{ColumnSchema, SchemaRef};
 <span class="kw">use </span>partition::manager::PartitionRuleManager;
-<span class="kw">use </span>session::context::QueryContext;
+<span class="kw">use </span>session::context::{QueryContext, QueryContextRef};
 <span class="kw">use </span>snafu::{ensure, OptionExt, ResultExt};
 <span class="kw">use </span>sql::statements;
 <span class="kw">use </span>sql::statements::insert::Insert;
 <span class="kw">use </span>sqlparser::ast::{ObjectName, Value <span class="kw">as </span>SqlValue};
 <span class="kw">use </span>table::TableRef;
 
-<span class="kw">use </span><span class="kw">super</span>::semantic_type;
 <span class="kw">use </span><span class="kw">crate</span>::error::{
     CatalogSnafu, ColumnDataTypeSnafu, ColumnDefaultValueSnafu, ColumnNoneDefaultValueSnafu,
     ColumnNotFoundSnafu, InvalidSqlSnafu, MissingInsertBodySnafu, ParseSqlSnafu, <span class="prelude-ty">Result</span>,
     TableNotFoundSnafu,
 };
 <span class="kw">use </span><span class="kw">crate</span>::req_convert::common::partitioner::Partitioner;
+<span class="kw">use </span><span class="kw">crate</span>::req_convert::insert::semantic_type;
 
 <span class="kw">const </span>DEFAULT_PLACEHOLDER_VALUE: <span class="kw-2">&amp;</span>str = <span class="string">"default"</span>;
 
@@ -250,7 +264,11 @@
         }
     }
 
-    <span class="kw">pub async fn </span>convert(<span class="kw-2">&amp;</span><span class="self">self</span>, stmt: <span class="kw-2">&amp;</span>Insert) -&gt; <span class="prelude-ty">Result</span>&lt;RegionInsertRequests&gt; {
+    <span class="kw">pub async fn </span>convert(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        stmt: <span class="kw-2">&amp;</span>Insert,
+        query_ctx: <span class="kw-2">&amp;</span>QueryContextRef,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;RegionInsertRequests&gt; {
         <span class="kw">let </span>(catalog, schema, table_name) = <span class="self">self</span>.get_full_name(stmt.table_name())<span class="question-mark">?</span>;
         <span class="kw">let </span>table = <span class="self">self</span>.get_table(<span class="kw-2">&amp;</span>catalog, <span class="kw-2">&amp;</span>schema, <span class="kw-2">&amp;</span>table_name).<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="kw">let </span>table_schema = table.schema();
@@ -306,7 +324,11 @@
             schema.push(grpc_column_schema);
 
             <span class="kw">for </span>(sql_row, grpc_row) <span class="kw">in </span>sql_rows.iter().zip(rows.iter_mut()) {
-                <span class="kw">let </span>value = sql_value_to_grpc_value(column_schema, <span class="kw-2">&amp;</span>sql_row[i])<span class="question-mark">?</span>;
+                <span class="kw">let </span>value = sql_value_to_grpc_value(
+                    column_schema,
+                    <span class="kw-2">&amp;</span>sql_row[i],
+                    <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>query_ctx.timezone()),
+                )<span class="question-mark">?</span>;
                 grpc_row.values.push(value);
             }
         }
@@ -365,7 +387,11 @@
     }
 }
 
-<span class="kw">fn </span>sql_value_to_grpc_value(column_schema: <span class="kw-2">&amp;</span>ColumnSchema, sql_val: <span class="kw-2">&amp;</span>SqlValue) -&gt; <span class="prelude-ty">Result</span>&lt;GrpcValue&gt; {
+<span class="kw">fn </span>sql_value_to_grpc_value(
+    column_schema: <span class="kw-2">&amp;</span>ColumnSchema,
+    sql_val: <span class="kw-2">&amp;</span>SqlValue,
+    timezone: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>Timezone&gt;,
+) -&gt; <span class="prelude-ty">Result</span>&lt;GrpcValue&gt; {
     <span class="kw">let </span>column = <span class="kw-2">&amp;</span>column_schema.name;
     <span class="kw">let </span>value = <span class="kw">if </span>replace_default(sql_val) {
         <span class="kw">let </span>default_value = column_schema
@@ -378,7 +404,7 @@
             column: column.clone(),
         })<span class="question-mark">?
     </span>} <span class="kw">else </span>{
-        statements::sql_value_to_value(column, <span class="kw-2">&amp;</span>column_schema.data_type, sql_val)
+        statements::sql_value_to_value(column, <span class="kw-2">&amp;</span>column_schema.data_type, sql_val, timezone)
             .context(ParseSqlSnafu)<span class="question-mark">?
     </span>};
 

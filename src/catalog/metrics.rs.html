@@ -34,6 +34,8 @@
 <a href="#33" id="33">33</a>
 <a href="#34" id="34">34</a>
 <a href="#35" id="35">35</a>
+<a href="#36" id="36">36</a>
+<a href="#37" id="37">37</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -55,18 +57,20 @@
 
 <span class="macro">lazy_static! </span>{
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_CATALOG_MANAGER_CATALOG_COUNT: IntGauge =
-        <span class="macro">register_int_gauge!</span>(<span class="string">"catalog_catalog_count"</span>, <span class="string">"catalog catalog count"</span>).unwrap();
+        <span class="macro">register_int_gauge!</span>(<span class="string">"greptime_catalog_catalog_count"</span>, <span class="string">"catalog catalog count"</span>).unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_CATALOG_MANAGER_SCHEMA_COUNT: IntGauge =
-        <span class="macro">register_int_gauge!</span>(<span class="string">"catalog_schema_count"</span>, <span class="string">"catalog schema count"</span>).unwrap();
+        <span class="macro">register_int_gauge!</span>(<span class="string">"greptime_catalog_schema_count"</span>, <span class="string">"catalog schema count"</span>).unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_CATALOG_MANAGER_TABLE_COUNT: IntGaugeVec = <span class="macro">register_int_gauge_vec!</span>(
-        <span class="string">"catalog_table_count"</span>,
+        <span class="string">"greptime_catalog_table_count"</span>,
         <span class="string">"catalog table count"</span>,
         <span class="kw-2">&amp;</span>[METRIC_DB_LABEL]
     )
     .unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_CATALOG_KV_REMOTE_GET: Histogram =
-        <span class="macro">register_histogram!</span>(<span class="string">"catalog_kv_get_remote"</span>, <span class="string">"catalog kv get remote"</span>).unwrap();
+        <span class="macro">register_histogram!</span>(<span class="string">"greptime_catalog_kv_get_remote"</span>, <span class="string">"catalog kv get remote"</span>).unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_CATALOG_KV_GET: Histogram =
-        <span class="macro">register_histogram!</span>(<span class="string">"catalog_kv_get"</span>, <span class="string">"catalog kv get"</span>).unwrap();
+        <span class="macro">register_histogram!</span>(<span class="string">"greptime_catalog_kv_get"</span>, <span class="string">"catalog kv get"</span>).unwrap();
+    <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_CATALOG_KV_BATCH_GET: Histogram =
+        <span class="macro">register_histogram!</span>(<span class="string">"greptime_catalog_kv_batch_get"</span>, <span class="string">"catalog kv batch get"</span>).unwrap();
 }
 </code></pre></div></section></main></body></html>

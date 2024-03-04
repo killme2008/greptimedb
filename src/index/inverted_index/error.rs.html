@@ -207,6 +207,14 @@
 <a href="#206" id="206">206</a>
 <a href="#207" id="207">207</a>
 <a href="#208" id="208">208</a>
+<a href="#209" id="209">209</a>
+<a href="#210" id="210">210</a>
+<a href="#211" id="211">211</a>
+<a href="#212" id="212">212</a>
+<a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
+<a href="#216" id="216">216</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -224,7 +232,7 @@
 </span><span class="kw">use </span>std::any::Any;
 <span class="kw">use </span>std::io::Error <span class="kw">as </span>IoError;
 
-<span class="kw">use </span>common_error::ext::ErrorExt;
+<span class="kw">use </span>common_error::ext::{BoxedError, ErrorExt};
 <span class="kw">use </span>common_error::status_code::StatusCode;
 <span class="kw">use </span>common_macro::stack_trace_debug;
 <span class="kw">use </span>snafu::{Location, Snafu};
@@ -322,7 +330,7 @@
     <span class="attr">#[snafu(display(<span class="string">"Failed to parse regex DFA"</span>))]
     </span>ParseDFA {
         <span class="attr">#[snafu(source)]
-        </span>error: regex_automata::Error,
+        </span>error: Box&lt;regex_automata::dfa::Error&gt;,
         location: Location,
     },
 
@@ -376,6 +384,12 @@
         total_row_count: usize,
         expected_row_count: usize,
     },
+
+    <span class="attr">#[snafu(display(<span class="string">"External error"</span>))]
+    </span>External {
+        source: BoxedError,
+        location: Location,
+    },
 }
 
 <span class="kw">impl </span>ErrorExt <span class="kw">for </span>Error {
@@ -406,6 +420,8 @@
             | FstInsert { .. }
             | InconsistentRowCount { .. }
             | IndexNotFound { .. } =&gt; StatusCode::InvalidArguments,
+
+            External { source, .. } =&gt; source.status_code(),
         }
     }
 

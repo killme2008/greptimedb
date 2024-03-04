@@ -353,6 +353,10 @@
 <a href="#352" id="352">352</a>
 <a href="#353" id="353">353</a>
 <a href="#354" id="354">354</a>
+<a href="#355" id="355">355</a>
+<a href="#356" id="356">356</a>
+<a href="#357" id="357">357</a>
+<a href="#358" id="358">358</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -522,7 +526,7 @@
     <span class="kw">use </span>sqlparser::dialect::GenericDialect;
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use </span><span class="kw">crate</span>::parser::ParserContext;
+    <span class="kw">use </span><span class="kw">crate</span>::parser::{ParseOptions, ParserContext};
     <span class="kw">use </span><span class="kw">crate</span>::statements::transform_statements;
 
     <span class="attr">#[test]
@@ -620,7 +624,9 @@
 
     <span class="kw">fn </span>test_timestamp_alias(alias: <span class="kw-2">&amp;</span>str, expected: <span class="kw-2">&amp;</span>str) {
         <span class="kw">let </span>sql = <span class="macro">format!</span>(<span class="string">"SELECT TIMESTAMP '2020-01-01 01:23:45.12345678'::{alias}"</span>);
-        <span class="kw">let </span><span class="kw-2">mut </span>stmts = ParserContext::create_with_dialect(<span class="kw-2">&amp;</span>sql, <span class="kw-2">&amp;</span>GenericDialect {}).unwrap();
+        <span class="kw">let </span><span class="kw-2">mut </span>stmts =
+            ParserContext::create_with_dialect(<span class="kw-2">&amp;</span>sql, <span class="kw-2">&amp;</span>GenericDialect {}, ParseOptions::default())
+                .unwrap();
         transform_statements(<span class="kw-2">&amp;mut </span>stmts).unwrap();
 
         <span class="kw">match </span><span class="kw-2">&amp;</span>stmts[<span class="number">0</span>] {
@@ -673,7 +679,9 @@ CREATE TABLE data_types (
   ts9 TimestampNanosecond DEFAULT CURRENT_TIMESTAMP TIME INDEX,
   PRIMARY KEY(s));"#</span>;
 
-        <span class="kw">let </span><span class="kw-2">mut </span>stmts = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GenericDialect {}).unwrap();
+        <span class="kw">let </span><span class="kw-2">mut </span>stmts =
+            ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GenericDialect {}, ParseOptions::default())
+                .unwrap();
         transform_statements(<span class="kw-2">&amp;mut </span>stmts).unwrap();
 
         <span class="kw">match </span><span class="kw-2">&amp;</span>stmts[<span class="number">0</span>] {

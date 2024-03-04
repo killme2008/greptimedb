@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["decode_remote_read_request","decode_remote_write_request","remote_read","remote_write"],"struct":["DatabaseQuery"]};
+window.SIDEBAR_ITEMS = {"constant":["PHYSICAL_TABLE_PARAM"],"fn":["decode_remote_read_request","decode_remote_write_request","remote_read","remote_write","route_write_without_metric_engine"],"struct":["DatabaseQuery"]};

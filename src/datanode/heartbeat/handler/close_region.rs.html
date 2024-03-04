@@ -53,6 +53,7 @@
 <a href="#52" id="52">52</a>
 <a href="#53" id="53">53</a>
 <a href="#54" id="54">54</a>
+<a href="#55" id="55">55</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -70,7 +71,7 @@
 </span><span class="kw">use </span>common_error::ext::ErrorExt;
 <span class="kw">use </span>common_meta::instruction::{InstructionReply, SimpleReply};
 <span class="kw">use </span>common_meta::RegionIdent;
-<span class="kw">use </span>common_telemetry::warn;
+<span class="kw">use </span>common_telemetry::{tracing, warn};
 <span class="kw">use </span>futures_util::future::BoxFuture;
 <span class="kw">use </span>store_api::region_request::{RegionCloseRequest, RegionRequest};
 
@@ -78,7 +79,8 @@
 <span class="kw">use </span><span class="kw">crate</span>::heartbeat::handler::HandlerContext;
 
 <span class="kw">impl </span>HandlerContext {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>handle_close_region_instruction(
+    <span class="attr">#[tracing::instrument(skip_all)]
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>handle_close_region_instruction(
         <span class="self">self</span>,
         region_ident: RegionIdent,
     ) -&gt; BoxFuture&lt;<span class="lifetime">'static</span>, InstructionReply&gt; {

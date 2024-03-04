@@ -806,6 +806,11 @@
 <a href="#805" id="805">805</a>
 <a href="#806" id="806">806</a>
 <a href="#807" id="807">807</a>
+<a href="#808" id="808">808</a>
+<a href="#809" id="809">809</a>
+<a href="#810" id="810">810</a>
+<a href="#811" id="811">811</a>
+<a href="#812" id="812">812</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -955,7 +960,7 @@
             )),
         });
         <span class="kw">let </span>output = query(instance, request).<span class="kw">await</span>;
-        <span class="kw">let </span>Output::Stream(stream) = output <span class="kw">else </span>{
+        <span class="kw">let </span>Output::Stream(stream, <span class="kw">_</span>) = output <span class="kw">else </span>{
             <span class="macro">unreachable!</span>()
         };
         <span class="kw">let </span>recordbatches = RecordBatches::try_collect(stream).<span class="kw">await</span>.unwrap();
@@ -994,6 +999,7 @@
     }
 
     <span class="attr">#[tokio::test(flavor = <span class="string">"multi_thread"</span>)]
+    #[ignore = <span class="string">"TODO(ruihang): WIP new partition rule"</span>]
     </span><span class="kw">async fn </span>test_distributed_insert_delete_and_query() {
         common_telemetry::init_default_ut_logging();
 
@@ -1192,7 +1198,7 @@ CREATE TABLE {table_name} (
             </span>))),
         });
         <span class="kw">let </span>output = query(instance, request.clone()).<span class="kw">await</span>;
-        <span class="kw">let </span>Output::Stream(stream) = output <span class="kw">else </span>{
+        <span class="kw">let </span>Output::Stream(stream, <span class="kw">_</span>) = output <span class="kw">else </span>{
             <span class="macro">unreachable!</span>()
         };
         <span class="kw">let </span>recordbatches = RecordBatches::try_collect(stream).<span class="kw">await</span>.unwrap();
@@ -1285,7 +1291,7 @@ CREATE TABLE {table_name} (
         <span class="macro">assert!</span>(<span class="macro">matches!</span>(output, Output::AffectedRows(<span class="number">6</span>)));
 
         <span class="kw">let </span>output = query(instance, request).<span class="kw">await</span>;
-        <span class="kw">let </span>Output::Stream(stream) = output <span class="kw">else </span>{
+        <span class="kw">let </span>Output::Stream(stream, <span class="kw">_</span>) = output <span class="kw">else </span>{
             <span class="macro">unreachable!</span>()
         };
         <span class="kw">let </span>recordbatches = RecordBatches::try_collect(stream).<span class="kw">await</span>.unwrap();
@@ -1323,22 +1329,26 @@ CREATE TABLE {table_name} (
         <span class="kw">let </span>table_route_value = instance
             .table_metadata_manager()
             .table_route_manager()
+            .table_route_storage()
             .get(table_id)
             .<span class="kw">await
             </span>.unwrap()
-            .unwrap()
-            .into_inner();
+            .unwrap();
 
-        <span class="kw">let </span>region_to_dn_map = region_distribution(table_route_value.region_routes())
-            .unwrap()
-            .iter()
-            .map(|(k, v)| (v[<span class="number">0</span>], <span class="kw-2">*</span>k))
-            .collect::&lt;HashMap&lt;u32, u64&gt;&gt;();
+        <span class="kw">let </span>region_to_dn_map = region_distribution(
+            table_route_value
+                .region_routes()
+                .expect(<span class="string">"physical table route"</span>),
+        )
+        .iter()
+        .map(|(k, v)| (v[<span class="number">0</span>], <span class="kw-2">*</span>k))
+        .collect::&lt;HashMap&lt;u32, u64&gt;&gt;();
         <span class="macro">assert!</span>(region_to_dn_map.len() &lt;= instance.datanodes().len());
 
-        <span class="kw">let </span>stmt = QueryLanguageParser::parse_sql(<span class="kw-2">&amp;</span><span class="macro">format!</span>(
-            <span class="string">"SELECT ts, a, b FROM {table_name} ORDER BY ts"
-        </span>))
+        <span class="kw">let </span>stmt = QueryLanguageParser::parse_sql(
+            <span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">"SELECT ts, a, b FROM {table_name} ORDER BY ts"</span>),
+            <span class="kw-2">&amp;</span>QueryContext::arc(),
+        )
         .unwrap();
         <span class="kw">let </span>LogicalPlan::DfPlan(plan) = instance
             .frontend()
@@ -1455,7 +1465,7 @@ CREATE TABLE {table_name} (
             )),
         });
         <span class="kw">let </span>output = query(instance, request.clone()).<span class="kw">await</span>;
-        <span class="kw">let </span>Output::Stream(stream) = output <span class="kw">else </span>{
+        <span class="kw">let </span>Output::Stream(stream, <span class="kw">_</span>) = output <span class="kw">else </span>{
             <span class="macro">unreachable!</span>()
         };
         <span class="kw">let </span>recordbatches = RecordBatches::try_collect(stream).<span class="kw">await</span>.unwrap();
@@ -1497,7 +1507,7 @@ CREATE TABLE {table_name} (
         <span class="macro">assert!</span>(<span class="macro">matches!</span>(output, Output::AffectedRows(<span class="number">2</span>)));
 
         <span class="kw">let </span>output = query(instance, request).<span class="kw">await</span>;
-        <span class="kw">let </span>Output::Stream(stream) = output <span class="kw">else </span>{
+        <span class="kw">let </span>Output::Stream(stream, <span class="kw">_</span>) = output <span class="kw">else </span>{
             <span class="macro">unreachable!</span>()
         };
         <span class="kw">let </span>recordbatches = RecordBatches::try_collect(stream).<span class="kw">await</span>.unwrap();
@@ -1595,7 +1605,7 @@ CREATE TABLE {table_name} (
             })),
         });
         <span class="kw">let </span>output = query(instance, request).<span class="kw">await</span>;
-        <span class="kw">let </span>Output::Stream(stream) = output <span class="kw">else </span>{
+        <span class="kw">let </span>Output::Stream(stream, <span class="kw">_</span>) = output <span class="kw">else </span>{
             <span class="macro">unreachable!</span>()
         };
         <span class="kw">let </span>recordbatches = RecordBatches::try_collect(stream).<span class="kw">await</span>.unwrap();

@@ -174,6 +174,41 @@
 <a href="#173" id="173">173</a>
 <a href="#174" id="174">174</a>
 <a href="#175" id="175">175</a>
+<a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
+<a href="#182" id="182">182</a>
+<a href="#183" id="183">183</a>
+<a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
+<a href="#186" id="186">186</a>
+<a href="#187" id="187">187</a>
+<a href="#188" id="188">188</a>
+<a href="#189" id="189">189</a>
+<a href="#190" id="190">190</a>
+<a href="#191" id="191">191</a>
+<a href="#192" id="192">192</a>
+<a href="#193" id="193">193</a>
+<a href="#194" id="194">194</a>
+<a href="#195" id="195">195</a>
+<a href="#196" id="196">196</a>
+<a href="#197" id="197">197</a>
+<a href="#198" id="198">198</a>
+<a href="#199" id="199">199</a>
+<a href="#200" id="200">200</a>
+<a href="#201" id="201">201</a>
+<a href="#202" id="202">202</a>
+<a href="#203" id="203">203</a>
+<a href="#204" id="204">204</a>
+<a href="#205" id="205">205</a>
+<a href="#206" id="206">206</a>
+<a href="#207" id="207">207</a>
+<a href="#208" id="208">208</a>
+<a href="#209" id="209">209</a>
+<a href="#210" id="210">210</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -190,9 +225,12 @@
 
 </span><span class="doccomment">//! Parquet writer.
 
-</span><span class="kw">use </span>common_datasource::file_format::parquet::BufferedWriter;
+</span><span class="kw">use </span>std::sync::Arc;
+
+<span class="kw">use </span>common_datasource::file_format::parquet::BufferedWriter;
 <span class="kw">use </span>common_telemetry::debug;
 <span class="kw">use </span>common_time::Timestamp;
+<span class="kw">use </span>futures::TryFutureExt;
 <span class="kw">use </span>object_store::ObjectStore;
 <span class="kw">use </span>parquet::basic::{Compression, Encoding, ZstdLevel};
 <span class="kw">use </span>parquet::file::metadata::KeyValue;
@@ -202,21 +240,22 @@
 <span class="kw">use </span>store_api::metadata::RegionMetadataRef;
 <span class="kw">use </span>store_api::storage::consts::SEQUENCE_COLUMN_NAME;
 
-<span class="kw">use </span><span class="kw">super</span>::helper::parse_parquet_metadata;
 <span class="kw">use </span><span class="kw">crate</span>::error::{InvalidMetadataSnafu, <span class="prelude-ty">Result</span>, WriteBufferSnafu};
 <span class="kw">use </span><span class="kw">crate</span>::read::{Batch, Source};
+<span class="kw">use </span><span class="kw">crate</span>::sst::index::Indexer;
 <span class="kw">use </span><span class="kw">crate</span>::sst::parquet::format::WriteFormat;
+<span class="kw">use </span><span class="kw">crate</span>::sst::parquet::helper::parse_parquet_metadata;
 <span class="kw">use </span><span class="kw">crate</span>::sst::parquet::{SstInfo, WriteOptions, PARQUET_METADATA_KEY};
+<span class="kw">use </span><span class="kw">crate</span>::sst::DEFAULT_WRITE_CONCURRENCY;
 
 <span class="doccomment">/// Parquet SST writer.
 </span><span class="kw">pub struct </span>ParquetWriter {
     <span class="doccomment">/// SST output file path.
     </span>file_path: String,
-    <span class="doccomment">/// Input data source.
-    </span>source: Source,
     <span class="doccomment">/// Region metadata of the source and the target SST.
     </span>metadata: RegionMetadataRef,
     object_store: ObjectStore,
+    indexer: Indexer,
 }
 
 <span class="kw">impl </span>ParquetWriter {
@@ -224,21 +263,25 @@
     </span><span class="kw">pub fn </span>new(
         file_path: String,
         metadata: RegionMetadataRef,
-        source: Source,
         object_store: ObjectStore,
+        indexer: Indexer,
     ) -&gt; ParquetWriter {
         ParquetWriter {
             file_path,
-            source,
             metadata,
             object_store,
+            indexer,
         }
     }
 
     <span class="doccomment">/// Iterates source and writes all rows to Parquet file.
     ///
     /// Returns the [SstInfo] if the SST is written.
-    </span><span class="kw">pub async fn </span>write_all(<span class="kw-2">&amp;mut </span><span class="self">self</span>, opts: <span class="kw-2">&amp;</span>WriteOptions) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;SstInfo&gt;&gt; {
+    </span><span class="kw">pub async fn </span>write_all(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        <span class="kw-2">mut </span>source: Source,
+        opts: <span class="kw-2">&amp;</span>WriteOptions,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;SstInfo&gt;&gt; {
         <span class="kw">let </span>json = <span class="self">self</span>.metadata.to_json().context(InvalidMetadataSnafu)<span class="question-mark">?</span>;
         <span class="kw">let </span>key_value_meta = KeyValue::new(PARQUET_METADATA_KEY.to_string(), json);
 
@@ -259,20 +302,27 @@
             write_format.arrow_schema(),
             <span class="prelude-val">Some</span>(writer_props),
             opts.write_buffer_size.as_bytes() <span class="kw">as </span>usize,
+            DEFAULT_WRITE_CONCURRENCY,
         )
         .<span class="kw">await
         </span>.context(WriteBufferSnafu)<span class="question-mark">?</span>;
 
         <span class="kw">let </span><span class="kw-2">mut </span>stats = SourceStats::default();
-        <span class="kw">while let </span><span class="prelude-val">Some</span>(batch) = <span class="self">self</span>.source.next_batch().<span class="kw">await</span><span class="question-mark">? </span>{
+        <span class="kw">while let </span><span class="prelude-val">Some</span>(batch) = write_next_batch(<span class="kw-2">&amp;mut </span>source, <span class="kw-2">&amp;</span>write_format, <span class="kw-2">&amp;mut </span>buffered_writer)
+            .or_else(|err| <span class="kw">async </span>{
+                <span class="comment">// abort index creation if error occurs.
+                </span><span class="self">self</span>.indexer.abort().<span class="kw">await</span>;
+                <span class="prelude-val">Err</span>(err)
+            })
+            .<span class="kw">await</span><span class="question-mark">?
+        </span>{
             stats.update(<span class="kw-2">&amp;</span>batch);
-            <span class="kw">let </span>arrow_batch = write_format.convert_batch(<span class="kw-2">&amp;</span>batch)<span class="question-mark">?</span>;
-
-            buffered_writer
-                .write(<span class="kw-2">&amp;</span>arrow_batch)
-                .<span class="kw">await
-                </span>.context(WriteBufferSnafu)<span class="question-mark">?</span>;
+            <span class="self">self</span>.indexer.update(<span class="kw-2">&amp;</span>batch).<span class="kw">await</span>;
         }
+
+        <span class="kw">let </span>index_size = <span class="self">self</span>.indexer.finish().<span class="kw">await</span>;
+        <span class="kw">let </span>inverted_index_available = index_size.is_some();
+        <span class="kw">let </span>index_file_size = index_size.unwrap_or(<span class="number">0</span>) <span class="kw">as </span>u64;
 
         <span class="kw">if </span>stats.num_rows == <span class="number">0 </span>{
             <span class="macro">debug!</span>(
@@ -297,7 +347,9 @@
             time_range,
             file_size,
             num_rows: stats.num_rows,
-            file_metadata: <span class="prelude-val">Some</span>(parquet_metadata),
+            file_metadata: <span class="prelude-val">Some</span>(Arc::new(parquet_metadata)),
+            inverted_index_available,
+            index_file_size,
         }))
     }
 
@@ -319,6 +371,24 @@
             .set_column_encoding(ts_col.clone(), Encoding::DELTA_BINARY_PACKED)
             .set_column_dictionary_enabled(ts_col, <span class="bool-val">false</span>)
     }
+}
+
+<span class="kw">async fn </span>write_next_batch(
+    source: <span class="kw-2">&amp;mut </span>Source,
+    write_format: <span class="kw-2">&amp;</span>WriteFormat,
+    buffered_writer: <span class="kw-2">&amp;mut </span>BufferedWriter,
+) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;Batch&gt;&gt; {
+    <span class="kw">let </span><span class="prelude-val">Some</span>(batch) = source.next_batch().<span class="kw">await</span><span class="question-mark">? </span><span class="kw">else </span>{
+        <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>);
+    };
+
+    <span class="kw">let </span>arrow_batch = write_format.convert_batch(<span class="kw-2">&amp;</span>batch)<span class="question-mark">?</span>;
+    buffered_writer
+        .write(<span class="kw-2">&amp;</span>arrow_batch)
+        .<span class="kw">await
+        </span>.context(WriteBufferSnafu)<span class="question-mark">?</span>;
+
+    <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(batch))
 }
 
 <span class="attr">#[derive(Default)]

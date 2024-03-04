@@ -274,7 +274,6 @@
 <a href="#273" id="273">273</a>
 <a href="#274" id="274">274</a>
 <a href="#275" id="275">275</a>
-<a href="#276" id="276">276</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -307,7 +306,7 @@
 <span class="kw">use </span>query::query_engine::DescribeResult;
 <span class="kw">use </span>session::Session;
 <span class="kw">use </span>sql::dialect::PostgreSqlDialect;
-<span class="kw">use </span>sql::parser::ParserContext;
+<span class="kw">use </span>sql::parser::{ParseOptions, ParserContext};
 
 <span class="kw">use </span><span class="kw">super</span>::types::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">super</span>::PostgresServerHandler;
@@ -330,7 +329,8 @@
         <span class="kw">let </span>_timer = <span class="kw">crate</span>::metrics::METRIC_POSTGRES_QUERY_TIMER
             .with_label_values(<span class="kw-2">&amp;</span>[<span class="kw">crate</span>::metrics::METRIC_POSTGRES_SIMPLE_QUERY, db.as_str()])
             .start_timer();
-        <span class="kw">let </span>outputs = <span class="self">self</span>.query_handler.do_query(query, query_ctx).<span class="kw">await</span>;
+        <span class="kw">let </span>outputs = <span class="self">self</span>.query_handler.do_query(query, query_ctx.clone()).<span class="kw">await</span>;
+        query_ctx.update_session(<span class="kw-2">&amp;</span><span class="self">self</span>.session);
 
         <span class="kw">let </span><span class="kw-2">mut </span>results = Vec::with_capacity(outputs.len());
 
@@ -348,11 +348,8 @@
     field_format: <span class="kw-2">&amp;</span>Format,
 ) -&gt; PgWireResult&lt;Response&lt;<span class="lifetime">'a</span>&gt;&gt; {
     <span class="kw">match </span>output {
-        <span class="prelude-val">Ok</span>(Output::AffectedRows(rows)) =&gt; <span class="prelude-val">Ok</span>(Response::Execution(Tag::new_for_execution(
-            <span class="string">"OK"</span>,
-            <span class="prelude-val">Some</span>(rows),
-        ))),
-        <span class="prelude-val">Ok</span>(Output::Stream(record_stream)) =&gt; {
+        <span class="prelude-val">Ok</span>(Output::AffectedRows(rows)) =&gt; <span class="prelude-val">Ok</span>(Response::Execution(Tag::new(<span class="string">"OK"</span>).with_rows(rows))),
+        <span class="prelude-val">Ok</span>(Output::Stream(record_stream, <span class="kw">_</span>)) =&gt; {
             <span class="kw">let </span>schema = record_stream.schema();
             recordbatches_to_query_response(record_stream, schema, field_format)
         }
@@ -429,8 +426,9 @@
     <span class="kw">async fn </span>parse_sql(<span class="kw-2">&amp;</span><span class="self">self</span>, sql: <span class="kw-2">&amp;</span>str, _types: <span class="kw-2">&amp;</span>[Type]) -&gt; PgWireResult&lt;<span class="self">Self</span>::Statement&gt; {
         <span class="kw">crate</span>::metrics::METRIC_POSTGRES_PREPARED_COUNT.inc();
         <span class="kw">let </span>query_ctx = <span class="self">self</span>.session.new_query_context();
-        <span class="kw">let </span><span class="kw-2">mut </span>stmts = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>PostgreSqlDialect {})
-            .map_err(|e| PgWireError::ApiError(Box::new(e)))<span class="question-mark">?</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>stmts =
+            ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>PostgreSqlDialect {}, ParseOptions::default())
+                .map_err(|e| PgWireError::ApiError(Box::new(e)))<span class="question-mark">?</span>;
         <span class="kw">if </span>stmts.len() != <span class="number">1 </span>{
             <span class="prelude-val">Err</span>(PgWireError::UserError(Box::new(ErrorInfo::new(
                 <span class="string">"ERROR"</span>.to_owned(),
@@ -488,7 +486,7 @@
             .with_label_values(<span class="kw-2">&amp;</span>[<span class="kw">crate</span>::metrics::METRIC_POSTGRES_EXTENDED_QUERY, db.as_str()])
             .start_timer();
 
-        <span class="kw">let </span>sql_plan = portal.statement().statement();
+        <span class="kw">let </span>sql_plan = <span class="kw-2">&amp;</span>portal.statement.statement;
 
         <span class="kw">let </span>output = <span class="kw">if let </span><span class="prelude-val">Some</span>(plan) = <span class="kw-2">&amp;</span>sql_plan.plan {
             <span class="kw">let </span>plan = plan
@@ -507,7 +505,7 @@
             <span class="self">self</span>.query_handler.do_query(<span class="kw-2">&amp;</span>sql, query_ctx).<span class="kw">await</span>.remove(<span class="number">0</span>)
         };
 
-        output_to_query_response(output, portal.result_column_format())
+        output_to_query_response(output, <span class="kw-2">&amp;</span>portal.result_column_format)
     }
 
     <span class="kw">async fn </span>do_describe&lt;C&gt;(
@@ -520,7 +518,7 @@
     {
         <span class="kw">let </span>(param_types, sql_plan, format) = <span class="kw">match </span>target {
             StatementOrPortal::Statement(stmt) =&gt; {
-                <span class="kw">let </span>sql_plan = stmt.statement();
+                <span class="kw">let </span>sql_plan = <span class="kw-2">&amp;</span>stmt.statement;
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(plan) = <span class="kw-2">&amp;</span>sql_plan.plan {
                     <span class="kw">let </span>param_types = plan
                         .get_param_types()
@@ -531,14 +529,14 @@
 
                     (<span class="prelude-val">Some</span>(types), sql_plan, <span class="kw-2">&amp;</span>Format::UnifiedBinary)
                 } <span class="kw">else </span>{
-                    <span class="kw">let </span>param_types = <span class="prelude-val">Some</span>(stmt.parameter_types().clone());
+                    <span class="kw">let </span>param_types = <span class="prelude-val">Some</span>(stmt.parameter_types.clone());
                     (param_types, sql_plan, <span class="kw-2">&amp;</span>Format::UnifiedBinary)
                 }
             }
             StatementOrPortal::Portal(portal) =&gt; (
                 <span class="prelude-val">None</span>,
-                portal.statement().statement(),
-                portal.result_column_format(),
+                <span class="kw-2">&amp;</span>portal.statement.statement,
+                <span class="kw-2">&amp;</span>portal.result_column_format,
             ),
         };
 

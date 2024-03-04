@@ -788,6 +788,81 @@
 <a href="#787" id="787">787</a>
 <a href="#788" id="788">788</a>
 <a href="#789" id="789">789</a>
+<a href="#790" id="790">790</a>
+<a href="#791" id="791">791</a>
+<a href="#792" id="792">792</a>
+<a href="#793" id="793">793</a>
+<a href="#794" id="794">794</a>
+<a href="#795" id="795">795</a>
+<a href="#796" id="796">796</a>
+<a href="#797" id="797">797</a>
+<a href="#798" id="798">798</a>
+<a href="#799" id="799">799</a>
+<a href="#800" id="800">800</a>
+<a href="#801" id="801">801</a>
+<a href="#802" id="802">802</a>
+<a href="#803" id="803">803</a>
+<a href="#804" id="804">804</a>
+<a href="#805" id="805">805</a>
+<a href="#806" id="806">806</a>
+<a href="#807" id="807">807</a>
+<a href="#808" id="808">808</a>
+<a href="#809" id="809">809</a>
+<a href="#810" id="810">810</a>
+<a href="#811" id="811">811</a>
+<a href="#812" id="812">812</a>
+<a href="#813" id="813">813</a>
+<a href="#814" id="814">814</a>
+<a href="#815" id="815">815</a>
+<a href="#816" id="816">816</a>
+<a href="#817" id="817">817</a>
+<a href="#818" id="818">818</a>
+<a href="#819" id="819">819</a>
+<a href="#820" id="820">820</a>
+<a href="#821" id="821">821</a>
+<a href="#822" id="822">822</a>
+<a href="#823" id="823">823</a>
+<a href="#824" id="824">824</a>
+<a href="#825" id="825">825</a>
+<a href="#826" id="826">826</a>
+<a href="#827" id="827">827</a>
+<a href="#828" id="828">828</a>
+<a href="#829" id="829">829</a>
+<a href="#830" id="830">830</a>
+<a href="#831" id="831">831</a>
+<a href="#832" id="832">832</a>
+<a href="#833" id="833">833</a>
+<a href="#834" id="834">834</a>
+<a href="#835" id="835">835</a>
+<a href="#836" id="836">836</a>
+<a href="#837" id="837">837</a>
+<a href="#838" id="838">838</a>
+<a href="#839" id="839">839</a>
+<a href="#840" id="840">840</a>
+<a href="#841" id="841">841</a>
+<a href="#842" id="842">842</a>
+<a href="#843" id="843">843</a>
+<a href="#844" id="844">844</a>
+<a href="#845" id="845">845</a>
+<a href="#846" id="846">846</a>
+<a href="#847" id="847">847</a>
+<a href="#848" id="848">848</a>
+<a href="#849" id="849">849</a>
+<a href="#850" id="850">850</a>
+<a href="#851" id="851">851</a>
+<a href="#852" id="852">852</a>
+<a href="#853" id="853">853</a>
+<a href="#854" id="854">854</a>
+<a href="#855" id="855">855</a>
+<a href="#856" id="856">856</a>
+<a href="#857" id="857">857</a>
+<a href="#858" id="858">858</a>
+<a href="#859" id="859">859</a>
+<a href="#860" id="860">860</a>
+<a href="#861" id="861">861</a>
+<a href="#862" id="862">862</a>
+<a href="#863" id="863">863</a>
+<a href="#864" id="864">864</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -806,8 +881,13 @@
 <span class="kw">use </span>std::fmt::{<span class="self">self</span>};
 
 <span class="kw">use </span>api::v1::add_column_location::LocationType;
-<span class="kw">use </span>api::v1::region::{alter_request, region_request, AlterRequest};
+<span class="kw">use </span>api::v1::region::{
+    alter_request, region_request, AlterRequest, AlterRequests, CloseRequest, CompactRequest,
+    CreateRequest, CreateRequests, DeleteRequests, DropRequest, DropRequests, FlushRequest,
+    InsertRequests, OpenRequest, TruncateRequest,
+};
 <span class="kw">use </span>api::v1::{<span class="self">self</span>, Rows, SemanticType};
+<span class="kw">pub use </span>common_base::AffectedRows;
 <span class="kw">use </span>snafu::{ensure, OptionExt};
 <span class="kw">use </span>strum::IntoStaticStr;
 
@@ -818,8 +898,6 @@
 };
 <span class="kw">use </span><span class="kw">crate</span>::path_utils::region_dir;
 <span class="kw">use </span><span class="kw">crate</span>::storage::{ColumnId, RegionId, ScanRequest};
-
-<span class="kw">pub type </span>AffectedRows = usize;
 
 <span class="attr">#[derive(Debug, IntoStaticStr)]
 </span><span class="kw">pub enum </span>RegionRequest {
@@ -859,82 +937,19 @@
     /// Inserts/Deletes request might become multiple requests. Others are one-to-one.
     </span><span class="kw">pub fn </span>try_from_request_body(body: region_request::Body) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;(RegionId, <span class="self">Self</span>)&gt;&gt; {
         <span class="kw">match </span>body {
-            region_request::Body::Inserts(inserts) =&gt; <span class="prelude-val">Ok</span>(inserts
-                .requests
-                .into_iter()
-                .filter_map(|r| {
-                    <span class="kw">let </span>region_id = r.region_id.into();
-                    r.rows
-                        .map(|rows| (region_id, <span class="self">Self</span>::Put(RegionPutRequest { rows })))
-                })
-                .collect()),
-            region_request::Body::Deletes(deletes) =&gt; <span class="prelude-val">Ok</span>(deletes
-                .requests
-                .into_iter()
-                .filter_map(|r| {
-                    <span class="kw">let </span>region_id = r.region_id.into();
-                    r.rows
-                        .map(|rows| (region_id, <span class="self">Self</span>::Delete(RegionDeleteRequest { rows })))
-                })
-                .collect()),
-            region_request::Body::Create(create) =&gt; {
-                <span class="kw">let </span>column_metadatas = create
-                    .column_defs
-                    .into_iter()
-                    .map(ColumnMetadata::try_from_column_def)
-                    .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;&gt;()<span class="question-mark">?</span>;
-                <span class="kw">let </span>region_id = create.region_id.into();
-                <span class="kw">let </span>region_dir = region_dir(<span class="kw-2">&amp;</span>create.path, region_id);
-                <span class="prelude-val">Ok</span>(<span class="macro">vec!</span>[(
-                    region_id,
-                    <span class="self">Self</span>::Create(RegionCreateRequest {
-                        engine: create.engine,
-                        column_metadatas,
-                        primary_key: create.primary_key,
-                        options: create.options,
-                        region_dir,
-                    }),
-                )])
-            }
-            region_request::Body::Drop(drop) =&gt; <span class="prelude-val">Ok</span>(<span class="macro">vec!</span>[(
-                drop.region_id.into(),
-                <span class="self">Self</span>::Drop(RegionDropRequest {}),
-            )]),
-            region_request::Body::Open(open) =&gt; {
-                <span class="kw">let </span>region_id = open.region_id.into();
-                <span class="kw">let </span>region_dir = region_dir(<span class="kw-2">&amp;</span>open.path, region_id);
-                <span class="prelude-val">Ok</span>(<span class="macro">vec!</span>[(
-                    region_id,
-                    <span class="self">Self</span>::Open(RegionOpenRequest {
-                        engine: open.engine,
-                        region_dir,
-                        options: open.options,
-                        skip_wal_replay: <span class="bool-val">false</span>,
-                    }),
-                )])
-            }
-            region_request::Body::Close(close) =&gt; <span class="prelude-val">Ok</span>(<span class="macro">vec!</span>[(
-                close.region_id.into(),
-                <span class="self">Self</span>::Close(RegionCloseRequest {}),
-            )]),
-            region_request::Body::Alter(alter) =&gt; <span class="prelude-val">Ok</span>(<span class="macro">vec!</span>[(
-                alter.region_id.into(),
-                <span class="self">Self</span>::Alter(RegionAlterRequest::try_from(alter)<span class="question-mark">?</span>),
-            )]),
-            region_request::Body::Flush(flush) =&gt; <span class="prelude-val">Ok</span>(<span class="macro">vec!</span>[(
-                flush.region_id.into(),
-                <span class="self">Self</span>::Flush(RegionFlushRequest {
-                    row_group_size: <span class="prelude-val">None</span>,
-                }),
-            )]),
-            region_request::Body::Compact(compact) =&gt; <span class="prelude-val">Ok</span>(<span class="macro">vec!</span>[(
-                compact.region_id.into(),
-                <span class="self">Self</span>::Compact(RegionCompactRequest {}),
-            )]),
-            region_request::Body::Truncate(truncate) =&gt; <span class="prelude-val">Ok</span>(<span class="macro">vec!</span>[(
-                truncate.region_id.into(),
-                <span class="self">Self</span>::Truncate(RegionTruncateRequest {}),
-            )]),
+            region_request::Body::Inserts(inserts) =&gt; make_region_puts(inserts),
+            region_request::Body::Deletes(deletes) =&gt; make_region_deletes(deletes),
+            region_request::Body::Create(create) =&gt; make_region_create(create),
+            region_request::Body::Drop(drop) =&gt; make_region_drop(drop),
+            region_request::Body::Open(open) =&gt; make_region_open(open),
+            region_request::Body::Close(close) =&gt; make_region_close(close),
+            region_request::Body::Alter(alter) =&gt; make_region_alter(alter),
+            region_request::Body::Flush(flush) =&gt; make_region_flush(flush),
+            region_request::Body::Compact(compact) =&gt; make_region_compact(compact),
+            region_request::Body::Truncate(truncate) =&gt; make_region_truncate(truncate),
+            region_request::Body::Creates(creates) =&gt; make_region_creates(creates),
+            region_request::Body::Drops(drops) =&gt; make_region_drops(drops),
+            region_request::Body::Alters(alters) =&gt; make_region_alters(alters),
         }
     }
 
@@ -942,6 +957,141 @@
     </span><span class="kw">pub fn </span>type_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str {
         <span class="self">self</span>.into()
     }
+}
+
+<span class="kw">fn </span>make_region_puts(inserts: InsertRequests) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;(RegionId, RegionRequest)&gt;&gt; {
+    <span class="kw">let </span>requests = inserts
+        .requests
+        .into_iter()
+        .filter_map(|r| {
+            <span class="kw">let </span>region_id = r.region_id.into();
+            r.rows
+                .map(|rows| (region_id, RegionRequest::Put(RegionPutRequest { rows })))
+        })
+        .collect();
+    <span class="prelude-val">Ok</span>(requests)
+}
+
+<span class="kw">fn </span>make_region_deletes(deletes: DeleteRequests) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;(RegionId, RegionRequest)&gt;&gt; {
+    <span class="kw">let </span>requests = deletes
+        .requests
+        .into_iter()
+        .filter_map(|r| {
+            <span class="kw">let </span>region_id = r.region_id.into();
+            r.rows.map(|rows| {
+                (
+                    region_id,
+                    RegionRequest::Delete(RegionDeleteRequest { rows }),
+                )
+            })
+        })
+        .collect();
+    <span class="prelude-val">Ok</span>(requests)
+}
+
+<span class="kw">fn </span>make_region_create(create: CreateRequest) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;(RegionId, RegionRequest)&gt;&gt; {
+    <span class="kw">let </span>column_metadatas = create
+        .column_defs
+        .into_iter()
+        .map(ColumnMetadata::try_from_column_def)
+        .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;&gt;()<span class="question-mark">?</span>;
+    <span class="kw">let </span>region_id = create.region_id.into();
+    <span class="kw">let </span>region_dir = region_dir(<span class="kw-2">&amp;</span>create.path, region_id);
+    <span class="prelude-val">Ok</span>(<span class="macro">vec!</span>[(
+        region_id,
+        RegionRequest::Create(RegionCreateRequest {
+            engine: create.engine,
+            column_metadatas,
+            primary_key: create.primary_key,
+            options: create.options,
+            region_dir,
+        }),
+    )])
+}
+
+<span class="kw">fn </span>make_region_creates(creates: CreateRequests) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;(RegionId, RegionRequest)&gt;&gt; {
+    <span class="kw">let </span><span class="kw-2">mut </span>requests = Vec::with_capacity(creates.requests.len());
+    <span class="kw">for </span>create <span class="kw">in </span>creates.requests {
+        requests.extend(make_region_create(create)<span class="question-mark">?</span>);
+    }
+    <span class="prelude-val">Ok</span>(requests)
+}
+
+<span class="kw">fn </span>make_region_drop(drop: DropRequest) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;(RegionId, RegionRequest)&gt;&gt; {
+    <span class="kw">let </span>region_id = drop.region_id.into();
+    <span class="prelude-val">Ok</span>(<span class="macro">vec!</span>[(region_id, RegionRequest::Drop(RegionDropRequest {}))])
+}
+
+<span class="kw">fn </span>make_region_drops(drops: DropRequests) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;(RegionId, RegionRequest)&gt;&gt; {
+    <span class="kw">let </span><span class="kw-2">mut </span>requests = Vec::with_capacity(drops.requests.len());
+    <span class="kw">for </span>drop <span class="kw">in </span>drops.requests {
+        requests.extend(make_region_drop(drop)<span class="question-mark">?</span>);
+    }
+    <span class="prelude-val">Ok</span>(requests)
+}
+
+<span class="kw">fn </span>make_region_open(open: OpenRequest) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;(RegionId, RegionRequest)&gt;&gt; {
+    <span class="kw">let </span>region_id = open.region_id.into();
+    <span class="kw">let </span>region_dir = region_dir(<span class="kw-2">&amp;</span>open.path, region_id);
+    <span class="prelude-val">Ok</span>(<span class="macro">vec!</span>[(
+        region_id,
+        RegionRequest::Open(RegionOpenRequest {
+            engine: open.engine,
+            region_dir,
+            options: open.options,
+            skip_wal_replay: <span class="bool-val">false</span>,
+        }),
+    )])
+}
+
+<span class="kw">fn </span>make_region_close(close: CloseRequest) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;(RegionId, RegionRequest)&gt;&gt; {
+    <span class="kw">let </span>region_id = close.region_id.into();
+    <span class="prelude-val">Ok</span>(<span class="macro">vec!</span>[(
+        region_id,
+        RegionRequest::Close(RegionCloseRequest {}),
+    )])
+}
+
+<span class="kw">fn </span>make_region_alter(alter: AlterRequest) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;(RegionId, RegionRequest)&gt;&gt; {
+    <span class="kw">let </span>region_id = alter.region_id.into();
+    <span class="prelude-val">Ok</span>(<span class="macro">vec!</span>[(
+        region_id,
+        RegionRequest::Alter(RegionAlterRequest::try_from(alter)<span class="question-mark">?</span>),
+    )])
+}
+
+<span class="kw">fn </span>make_region_alters(alters: AlterRequests) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;(RegionId, RegionRequest)&gt;&gt; {
+    <span class="kw">let </span><span class="kw-2">mut </span>requests = Vec::with_capacity(alters.requests.len());
+    <span class="kw">for </span>alter <span class="kw">in </span>alters.requests {
+        requests.extend(make_region_alter(alter)<span class="question-mark">?</span>);
+    }
+    <span class="prelude-val">Ok</span>(requests)
+}
+
+<span class="kw">fn </span>make_region_flush(flush: FlushRequest) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;(RegionId, RegionRequest)&gt;&gt; {
+    <span class="kw">let </span>region_id = flush.region_id.into();
+    <span class="prelude-val">Ok</span>(<span class="macro">vec!</span>[(
+        region_id,
+        RegionRequest::Flush(RegionFlushRequest {
+            row_group_size: <span class="prelude-val">None</span>,
+        }),
+    )])
+}
+
+<span class="kw">fn </span>make_region_compact(compact: CompactRequest) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;(RegionId, RegionRequest)&gt;&gt; {
+    <span class="kw">let </span>region_id = compact.region_id.into();
+    <span class="prelude-val">Ok</span>(<span class="macro">vec!</span>[(
+        region_id,
+        RegionRequest::Compact(RegionCompactRequest {}),
+    )])
+}
+
+<span class="kw">fn </span>make_region_truncate(truncate: TruncateRequest) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;(RegionId, RegionRequest)&gt;&gt; {
+    <span class="kw">let </span>region_id = truncate.region_id.into();
+    <span class="prelude-val">Ok</span>(<span class="macro">vec!</span>[(
+        region_id,
+        RegionRequest::Truncate(RegionTruncateRequest {}),
+    )])
 }
 
 <span class="doccomment">/// Request to put data into a region.
@@ -1291,14 +1441,14 @@
     </span><span class="kw">fn </span>test_from_proto_location() {
         <span class="kw">let </span>proto_location = v1::AddColumnLocation {
             location_type: LocationType::First <span class="kw">as </span>i32,
-            after_column_name: <span class="string">""</span>.to_string(),
+            after_column_name: String::default(),
         };
         <span class="kw">let </span>location = AddColumnLocation::try_from(proto_location).unwrap();
         <span class="macro">assert_eq!</span>(location, AddColumnLocation::First);
 
         <span class="kw">let </span>proto_location = v1::AddColumnLocation {
             location_type: <span class="number">10</span>,
-            after_column_name: <span class="string">""</span>.to_string(),
+            after_column_name: String::default(),
         };
         AddColumnLocation::try_from(proto_location).unwrap_err();
 
@@ -1352,7 +1502,7 @@
                     }),
                     location: <span class="prelude-val">Some</span>(v1::AddColumnLocation {
                         location_type: LocationType::First <span class="kw">as </span>i32,
-                        after_column_name: <span class="string">""</span>.to_string(),
+                        after_column_name: String::default(),
                     }),
                 }],
             })),

@@ -1218,6 +1218,9 @@
 <a href="#1217" id="1217">1217</a>
 <a href="#1218" id="1218">1218</a>
 <a href="#1219" id="1219">1219</a>
+<a href="#1220" id="1220">1220</a>
+<a href="#1221" id="1221">1221</a>
+<a href="#1222" id="1222">1222</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -1474,7 +1477,10 @@
             .map(|id| <span class="self">self</span>.column_by_id(<span class="kw-2">*</span>id).unwrap())
     }
 
-    <span class="doccomment">/// Returns all field columns.
+    <span class="doccomment">/// Returns all field columns before projection.
+    ///
+    /// **Use with caution**. On read path where might have projection, this method
+    /// can return columns that not present in data batch.
     </span><span class="kw">pub fn </span>field_columns(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>ColumnMetadata&gt; {
         <span class="self">self</span>.column_metadatas
             .iter()

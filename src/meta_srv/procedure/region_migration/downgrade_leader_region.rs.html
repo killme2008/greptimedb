@@ -499,6 +499,11 @@
 <a href="#498" id="498">498</a>
 <a href="#499" id="499">499</a>
 <a href="#500" id="500">500</a>
+<a href="#501" id="501">501</a>
+<a href="#502" id="502">502</a>
+<a href="#503" id="503">503</a>
+<a href="#504" id="504">504</a>
+<a href="#505" id="505">505</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -556,6 +561,7 @@
 #[typetag::serde]
 </span><span class="kw">impl </span>State <span class="kw">for </span>DowngradeLeaderRegion {
     <span class="kw">async fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Context) -&gt; <span class="prelude-ty">Result</span>&lt;(Box&lt;<span class="kw">dyn </span>State&gt;, Status)&gt; {
+        <span class="kw">let </span>replay_timeout = ctx.persistent_ctx.replay_timeout;
         <span class="comment">// Ensures the `leader_region_lease_deadline` must exist after recovering.
         </span>ctx.volatile_ctx
             .set_leader_region_lease_deadline(Duration::from_secs(REGION_LEASE_SECS));
@@ -570,7 +576,10 @@
         }
 
         <span class="prelude-val">Ok</span>((
-            Box::&lt;UpgradeCandidateRegion&gt;::default(),
+            Box::new(UpgradeCandidateRegion {
+                replay_timeout,
+                ..Default::default()
+            }),
             Status::executing(<span class="bool-val">false</span>),
         ))
     }
@@ -727,6 +736,7 @@
             to_peer: Peer::empty(<span class="number">2</span>),
             region_id: RegionId::new(<span class="number">1024</span>, <span class="number">1</span>),
             cluster_id: <span class="number">0</span>,
+            replay_timeout: Duration::from_millis(<span class="number">1000</span>),
         }
     }
 
@@ -870,7 +880,7 @@
 
         <span class="macro">assert_matches!</span>(err, Error::RetryLater { .. });
         <span class="macro">assert!</span>(err.is_retryable());
-        <span class="macro">assert!</span>(err.to_string().contains(<span class="string">"test mocked"</span>));
+        <span class="macro">assert!</span>(<span class="macro">format!</span>(<span class="string">"{err:?}"</span>).contains(<span class="string">"test mocked"</span>), <span class="string">"err: {err:?}"</span>,);
     }
 
     <span class="attr">#[tokio::test]

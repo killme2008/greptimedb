@@ -255,6 +255,31 @@
 <a href="#254" id="254">254</a>
 <a href="#255" id="255">255</a>
 <a href="#256" id="256">256</a>
+<a href="#257" id="257">257</a>
+<a href="#258" id="258">258</a>
+<a href="#259" id="259">259</a>
+<a href="#260" id="260">260</a>
+<a href="#261" id="261">261</a>
+<a href="#262" id="262">262</a>
+<a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -277,13 +302,14 @@
 <span class="kw">use </span>std::sync::Arc;
 
 <span class="kw">use </span>common_time::Timestamp;
-<span class="kw">use </span>object_store::util::join_path;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
+<span class="kw">use </span>smallvec::SmallVec;
 <span class="kw">use </span>snafu::{ResultExt, Snafu};
 <span class="kw">use </span>store_api::storage::RegionId;
 <span class="kw">use </span>uuid::Uuid;
 
 <span class="kw">use </span><span class="kw">crate</span>::sst::file_purger::{FilePurgerRef, PurgeRequest};
+<span class="kw">use </span><span class="kw">crate</span>::sst::location;
 
 <span class="doccomment">/// Type to store SST level.
 </span><span class="kw">pub type </span>Level = u8;
@@ -313,6 +339,11 @@
     <span class="doccomment">/// Append `.parquet` to file id to make a complete file name
     </span><span class="kw">pub fn </span>as_parquet(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
         <span class="macro">format!</span>(<span class="string">"{}{}"</span>, <span class="self">self</span>, <span class="string">".parquet"</span>)
+    }
+
+    <span class="doccomment">/// Append `.puffin` to file id to make a complete file name
+    </span><span class="kw">pub fn </span>as_puffin(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
+        <span class="macro">format!</span>(<span class="string">"{}{}"</span>, <span class="self">self</span>, <span class="string">".puffin"</span>)
     }
 }
 
@@ -347,6 +378,23 @@
     </span><span class="kw">pub </span>level: Level,
     <span class="doccomment">/// Size of the file.
     </span><span class="kw">pub </span>file_size: u64,
+    <span class="doccomment">/// Available indexes of the file.
+    </span><span class="kw">pub </span>available_indexes: SmallVec&lt;[IndexType; <span class="number">4</span>]&gt;,
+    <span class="doccomment">/// Size of the index file.
+    </span><span class="kw">pub </span>index_file_size: u64,
+}
+
+<span class="doccomment">/// Type of index.
+</span><span class="attr">#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
+</span><span class="kw">pub enum </span>IndexType {
+    <span class="doccomment">/// Inverted index.
+    </span>InvertedIndex,
+}
+
+<span class="kw">impl </span>FileMeta {
+    <span class="kw">pub fn </span>inverted_index_available(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="self">self</span>.available_indexes.contains(<span class="kw-2">&amp;</span>IndexType::InvertedIndex)
+    }
 }
 
 <span class="doccomment">/// Handle to a SST file.
@@ -388,7 +436,7 @@
 
     <span class="doccomment">/// Returns the complete file path of the file.
     </span><span class="kw">pub fn </span>file_path(<span class="kw-2">&amp;</span><span class="self">self</span>, file_dir: <span class="kw-2">&amp;</span>str) -&gt; String {
-        join_path(file_dir, <span class="kw-2">&amp;</span><span class="self">self</span>.file_id().as_parquet())
+        location::sst_file_path(file_dir, <span class="self">self</span>.file_id())
     }
 
     <span class="doccomment">/// Returns the time range of the file.
@@ -428,8 +476,7 @@
     <span class="kw">fn </span>drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
         <span class="kw">if </span><span class="self">self</span>.deleted.load(Ordering::Relaxed) {
             <span class="self">self</span>.file_purger.send_request(PurgeRequest {
-                region_id: <span class="self">self</span>.meta.region_id,
-                file_id: <span class="self">self</span>.meta.file_id,
+                file_meta: <span class="self">self</span>.meta.clone(),
             });
         }
     }
@@ -488,6 +535,8 @@
             time_range: FileTimeRange::default(),
             level,
             file_size: <span class="number">0</span>,
+            available_indexes: SmallVec::from_iter([IndexType::InvertedIndex]),
+            index_file_size: <span class="number">0</span>,
         }
     }
 
@@ -502,7 +551,8 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_deserialize_from_string() {
         <span class="kw">let </span>json_file_meta = <span class="string">"{\"region_id\":0,\"file_id\":\"bc5896ec-e4d8-4017-a80d-f2de73188d55\",\
-        \"time_range\":[{\"value\":0,\"unit\":\"Millisecond\"},{\"value\":0,\"unit\":\"Millisecond\"}],\"level\":0}"</span>;
+        \"time_range\":[{\"value\":0,\"unit\":\"Millisecond\"},{\"value\":0,\"unit\":\"Millisecond\"}],\
+        \"available_indexes\":[\"InvertedIndex\"],\"level\":0}"</span>;
         <span class="kw">let </span>file_meta = create_file_meta(
             FileId::from_str(<span class="string">"bc5896ec-e4d8-4017-a80d-f2de73188d55"</span>).unwrap(),
             <span class="number">0</span>,

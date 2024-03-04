@@ -263,6 +263,11 @@
 <a href="#262" id="262">262</a>
 <a href="#263" id="263">263</a>
 <a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -281,7 +286,9 @@
 <span class="kw">use </span>std::sync::Arc;
 <span class="kw">use </span>std::time::Instant;
 
-<span class="kw">use </span>catalog::kvbackend::{CachedMetaKvBackend, KvBackendCatalogManager};
+<span class="kw">use </span>catalog::kvbackend::{
+    CachedMetaKvBackend, CachedMetaKvBackendBuilder, KvBackendCatalogManager,
+};
 <span class="kw">use </span>client::{Client, Database, DEFAULT_CATALOG_NAME, DEFAULT_SCHEMA_NAME};
 <span class="kw">use </span>common_base::Plugins;
 <span class="kw">use </span>common_error::ext::ErrorExt;
@@ -422,19 +429,20 @@
         <span class="kw">let </span>start = Instant::now();
 
         <span class="kw">let </span>output = <span class="kw">if let </span><span class="prelude-val">Some</span>(query_engine) = <span class="kw-2">&amp;</span><span class="self">self</span>.query_engine {
-            <span class="kw">let </span>stmt = QueryLanguageParser::parse_sql(<span class="kw-2">&amp;</span>sql)
-                .with_context(|<span class="kw">_</span>| ParseSqlSnafu { sql: sql.clone() })<span class="question-mark">?</span>;
-
             <span class="kw">let </span>query_ctx = QueryContext::with(<span class="self">self</span>.database.catalog(), <span class="self">self</span>.database.schema());
+
+            <span class="kw">let </span>stmt = QueryLanguageParser::parse_sql(<span class="kw-2">&amp;</span>sql, <span class="kw-2">&amp;</span>query_ctx)
+                .with_context(|<span class="kw">_</span>| ParseSqlSnafu { sql: sql.clone() })<span class="question-mark">?</span>;
 
             <span class="kw">let </span>plan = query_engine
                 .planner()
-                .plan(stmt, query_ctx)
+                .plan(stmt, query_ctx.clone())
                 .<span class="kw">await
                 </span>.context(PlanStatementSnafu)<span class="question-mark">?</span>;
 
-            <span class="kw">let </span>LogicalPlan::DfPlan(plan) =
-                query_engine.optimize(<span class="kw-2">&amp;</span>plan).context(PlanStatementSnafu)<span class="question-mark">?</span>;
+            <span class="kw">let </span>LogicalPlan::DfPlan(plan) = query_engine
+                .optimize(<span class="kw-2">&amp;</span>query_engine.engine_context(query_ctx), <span class="kw-2">&amp;</span>plan)
+                .context(PlanStatementSnafu)<span class="question-mark">?</span>;
 
             <span class="kw">let </span>plan = DFLogicalSubstraitConvertor {}
                 .encode(<span class="kw-2">&amp;</span>plan)
@@ -447,7 +455,7 @@
         .context(RequestDatabaseSnafu { sql: <span class="kw-2">&amp;</span>sql })<span class="question-mark">?</span>;
 
         <span class="kw">let </span>either = <span class="kw">match </span>output {
-            Output::Stream(s) =&gt; {
+            Output::Stream(s, <span class="kw">_</span>) =&gt; {
                 <span class="kw">let </span>x = RecordBatches::try_collect(s)
                     .<span class="kw">await
                     </span>.context(CollectRecordBatchesSnafu)<span class="question-mark">?</span>;
@@ -512,13 +520,15 @@
         </span>.context(StartMetaClientSnafu)<span class="question-mark">?</span>;
     <span class="kw">let </span>meta_client = Arc::new(meta_client);
 
-    <span class="kw">let </span>cached_meta_backend = Arc::new(CachedMetaKvBackend::new(meta_client.clone()));
+    <span class="kw">let </span>cached_meta_backend =
+        Arc::new(CachedMetaKvBackendBuilder::new(meta_client.clone()).build());
 
     <span class="kw">let </span>catalog_list =
         KvBackendCatalogManager::new(cached_meta_backend.clone(), cached_meta_backend);
     <span class="kw">let </span>plugins: Plugins = Default::default();
     <span class="kw">let </span>state = Arc::new(QueryEngineState::new(
         catalog_list,
+        <span class="prelude-val">None</span>,
         <span class="prelude-val">None</span>,
         <span class="prelude-val">None</span>,
         <span class="bool-val">false</span>,

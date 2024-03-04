@@ -24,6 +24,20 @@
 <a href="#23" id="23">23</a>
 <a href="#24" id="24">24</a>
 <a href="#25" id="25">25</a>
+<a href="#26" id="26">26</a>
+<a href="#27" id="27">27</a>
+<a href="#28" id="28">28</a>
+<a href="#29" id="29">29</a>
+<a href="#30" id="30">30</a>
+<a href="#31" id="31">31</a>
+<a href="#32" id="32">32</a>
+<a href="#33" id="33">33</a>
+<a href="#34" id="34">34</a>
+<a href="#35" id="35">35</a>
+<a href="#36" id="36">36</a>
+<a href="#37" id="37">37</a>
+<a href="#38" id="38">38</a>
+<a href="#39" id="39">39</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -42,11 +56,25 @@
 <span class="kw">use </span>prometheus::<span class="kw-2">*</span>;
 
 <span class="macro">lazy_static! </span>{
-    <span class="kw">pub static </span><span class="kw-2">ref </span>DIST_CREATE_TABLE: Histogram =
-        <span class="macro">register_histogram!</span>(<span class="string">"table_operator_create_table"</span>, <span class="string">"table operator create table"</span>).unwrap();
-    <span class="kw">pub static </span><span class="kw-2">ref </span>DIST_INGEST_ROW_COUNT: IntCounter =
-        <span class="macro">register_int_counter!</span>(<span class="string">"table_operator_ingest_rows"</span>, <span class="string">"table operator ingest rows"</span>).unwrap();
-    <span class="kw">pub static </span><span class="kw-2">ref </span>DIST_DELETE_ROW_COUNT: IntCounter =
-        <span class="macro">register_int_counter!</span>(<span class="string">"table_operator_delete_rows"</span>, <span class="string">"table operator delete rows"</span>).unwrap();
+    <span class="kw">pub static </span><span class="kw-2">ref </span>DIST_CREATE_TABLE: Histogram = <span class="macro">register_histogram!</span>(
+        <span class="string">"greptime_table_operator_create_table"</span>,
+        <span class="string">"table operator create table"
+    </span>)
+    .unwrap();
+    <span class="kw">pub static </span><span class="kw-2">ref </span>DIST_CREATE_TABLES: Histogram = <span class="macro">register_histogram!</span>(
+        <span class="string">"greptime_table_operator_create_tables"</span>,
+        <span class="string">"table operator create table"
+    </span>)
+    .unwrap();
+    <span class="kw">pub static </span><span class="kw-2">ref </span>DIST_INGEST_ROW_COUNT: IntCounter = <span class="macro">register_int_counter!</span>(
+        <span class="string">"greptime_table_operator_ingest_rows"</span>,
+        <span class="string">"table operator ingest rows"
+    </span>)
+    .unwrap();
+    <span class="kw">pub static </span><span class="kw-2">ref </span>DIST_DELETE_ROW_COUNT: IntCounter = <span class="macro">register_int_counter!</span>(
+        <span class="string">"greptime_table_operator_delete_rows"</span>,
+        <span class="string">"table operator delete rows"
+    </span>)
+    .unwrap();
 }
 </code></pre></div></section></main></body></html>

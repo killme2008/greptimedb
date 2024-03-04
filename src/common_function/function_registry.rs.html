@@ -102,6 +102,15 @@
 <a href="#101" id="101">101</a>
 <a href="#102" id="102">102</a>
 <a href="#103" id="103">103</a>
+<a href="#104" id="104">104</a>
+<a href="#105" id="105">105</a>
+<a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -125,10 +134,12 @@
 <span class="kw">use </span><span class="kw">crate</span>::function::FunctionRef;
 <span class="kw">use </span><span class="kw">crate</span>::scalars::aggregate::{AggregateFunctionMetaRef, AggregateFunctions};
 <span class="kw">use </span><span class="kw">crate</span>::scalars::date::DateFunction;
+<span class="kw">use </span><span class="kw">crate</span>::scalars::expression::ExpressionFunction;
 <span class="kw">use </span><span class="kw">crate</span>::scalars::math::MathFunction;
 <span class="kw">use </span><span class="kw">crate</span>::scalars::numpy::NumpyFunction;
 <span class="kw">use </span><span class="kw">crate</span>::scalars::timestamp::TimestampFunction;
 <span class="kw">use </span><span class="kw">crate</span>::system::SystemFunction;
+<span class="kw">use </span><span class="kw">crate</span>::table::TableFunction;
 
 <span class="attr">#[derive(Default)]
 </span><span class="kw">pub struct </span>FunctionRegistry {
@@ -178,13 +189,20 @@
 <span class="kw">pub static </span>FUNCTION_REGISTRY: Lazy&lt;Arc&lt;FunctionRegistry&gt;&gt; = Lazy::new(|| {
     <span class="kw">let </span>function_registry = FunctionRegistry::default();
 
-    MathFunction::register(<span class="kw-2">&amp;</span>function_registry);
+    <span class="comment">// Utility functions
+    </span>MathFunction::register(<span class="kw-2">&amp;</span>function_registry);
     NumpyFunction::register(<span class="kw-2">&amp;</span>function_registry);
     TimestampFunction::register(<span class="kw-2">&amp;</span>function_registry);
     DateFunction::register(<span class="kw-2">&amp;</span>function_registry);
+    ExpressionFunction::register(<span class="kw-2">&amp;</span>function_registry);
 
-    AggregateFunctions::register(<span class="kw-2">&amp;</span>function_registry);
-    SystemFunction::register(<span class="kw-2">&amp;</span>function_registry);
+    <span class="comment">// Aggregate functions
+    </span>AggregateFunctions::register(<span class="kw-2">&amp;</span>function_registry);
+
+    <span class="comment">// System and administration functions
+    </span>SystemFunction::register(<span class="kw-2">&amp;</span>function_registry);
+    TableFunction::register(<span class="kw-2">&amp;</span>function_registry);
+
     Arc::new(function_registry)
 });
 

@@ -386,53 +386,6 @@
 <a href="#385" id="385">385</a>
 <a href="#386" id="386">386</a>
 <a href="#387" id="387">387</a>
-<a href="#388" id="388">388</a>
-<a href="#389" id="389">389</a>
-<a href="#390" id="390">390</a>
-<a href="#391" id="391">391</a>
-<a href="#392" id="392">392</a>
-<a href="#393" id="393">393</a>
-<a href="#394" id="394">394</a>
-<a href="#395" id="395">395</a>
-<a href="#396" id="396">396</a>
-<a href="#397" id="397">397</a>
-<a href="#398" id="398">398</a>
-<a href="#399" id="399">399</a>
-<a href="#400" id="400">400</a>
-<a href="#401" id="401">401</a>
-<a href="#402" id="402">402</a>
-<a href="#403" id="403">403</a>
-<a href="#404" id="404">404</a>
-<a href="#405" id="405">405</a>
-<a href="#406" id="406">406</a>
-<a href="#407" id="407">407</a>
-<a href="#408" id="408">408</a>
-<a href="#409" id="409">409</a>
-<a href="#410" id="410">410</a>
-<a href="#411" id="411">411</a>
-<a href="#412" id="412">412</a>
-<a href="#413" id="413">413</a>
-<a href="#414" id="414">414</a>
-<a href="#415" id="415">415</a>
-<a href="#416" id="416">416</a>
-<a href="#417" id="417">417</a>
-<a href="#418" id="418">418</a>
-<a href="#419" id="419">419</a>
-<a href="#420" id="420">420</a>
-<a href="#421" id="421">421</a>
-<a href="#422" id="422">422</a>
-<a href="#423" id="423">423</a>
-<a href="#424" id="424">424</a>
-<a href="#425" id="425">425</a>
-<a href="#426" id="426">426</a>
-<a href="#427" id="427">427</a>
-<a href="#428" id="428">428</a>
-<a href="#429" id="429">429</a>
-<a href="#430" id="430">430</a>
-<a href="#431" id="431">431</a>
-<a href="#432" id="432">432</a>
-<a href="#433" id="433">433</a>
-<a href="#434" id="434">434</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -464,8 +417,11 @@
 <span class="kw">use </span>parquet::format::PageLocation;
 <span class="kw">use </span>store_api::storage::RegionId;
 
+<span class="kw">use </span><span class="kw">crate</span>::cache::file_cache::{FileType, IndexKey};
 <span class="kw">use </span><span class="kw">crate</span>::cache::{CacheManagerRef, PageKey, PageValue};
+<span class="kw">use </span><span class="kw">crate</span>::metrics::READ_STAGE_ELAPSED;
 <span class="kw">use </span><span class="kw">crate</span>::sst::file::FileId;
+<span class="kw">use </span><span class="kw">crate</span>::sst::parquet::helper::fetch_byte_ranges;
 <span class="kw">use </span><span class="kw">crate</span>::sst::parquet::page_reader::CachedPageReader;
 
 <span class="doccomment">/// An in-memory collection of column chunks
@@ -535,7 +491,7 @@
             // `RowSelection`
             </span><span class="kw">let </span><span class="kw-2">mut </span>page_start_offsets: Vec&lt;Vec&lt;usize&gt;&gt; = <span class="macro">vec!</span>[];
 
-            <span class="kw">let </span>fetch_ranges: Vec&lt;<span class="kw">_</span>&gt; = <span class="self">self
+            <span class="kw">let </span>fetch_ranges = <span class="self">self
                 </span>.column_chunks
                 .iter()
                 .zip(<span class="self">self</span>.metadata.columns())
@@ -550,21 +506,25 @@
                     <span class="kw">let </span>(start, _len) = chunk_meta.byte_range();
                     <span class="kw">match </span>page_locations[idx].first() {
                         <span class="prelude-val">Some</span>(first) <span class="kw">if </span>first.offset <span class="kw">as </span>u64 != start =&gt; {
-                            ranges.push(start <span class="kw">as </span>usize..first.offset <span class="kw">as </span>usize);
+                            ranges.push(start..first.offset <span class="kw">as </span>u64);
                         }
                         <span class="kw">_ </span>=&gt; (),
                     }
 
-                    ranges.extend(selection.scan_ranges(<span class="kw-2">&amp;</span>page_locations[idx]));
-                    page_start_offsets.push(ranges.iter().map(|range| range.start).collect());
+                    ranges.extend(
+                        selection
+                            .scan_ranges(<span class="kw-2">&amp;</span>page_locations[idx])
+                            .iter()
+                            .map(|range| range.start <span class="kw">as </span>u64..range.end <span class="kw">as </span>u64),
+                    );
+                    page_start_offsets
+                        .push(ranges.iter().map(|range| range.start <span class="kw">as </span>usize).collect());
 
                     ranges
                 })
-                .collect();
-            <span class="kw">let </span><span class="kw-2">mut </span>chunk_data =
-                fetch_byte_ranges(<span class="self">self</span>.file_path, <span class="self">self</span>.object_store.clone(), fetch_ranges)
-                    .<span class="kw">await</span><span class="question-mark">?
-                    </span>.into_iter();
+                .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
+
+            <span class="kw">let </span><span class="kw-2">mut </span>chunk_data = <span class="self">self</span>.fetch_bytes(<span class="kw-2">&amp;</span>fetch_ranges).<span class="kw">await</span><span class="question-mark">?</span>.into_iter();
 
             <span class="kw">let </span><span class="kw-2">mut </span>page_start_offsets = page_start_offsets.into_iter();
 
@@ -589,7 +549,7 @@
             <span class="comment">// Now we only use cache in dense chunk data.
             </span><span class="self">self</span>.fetch_pages_from_cache(projection);
 
-            <span class="kw">let </span>fetch_ranges: Vec&lt;<span class="kw">_</span>&gt; = <span class="self">self
+            <span class="kw">let </span>fetch_ranges = <span class="self">self
                 </span>.column_chunks
                 .iter()
                 .zip(<span class="kw-2">&amp;</span><span class="self">self</span>.column_cached_pages)
@@ -601,19 +561,16 @@
                 .map(|(idx, (_chunk, _cached_pages))| {
                     <span class="kw">let </span>column = <span class="self">self</span>.metadata.column(idx);
                     <span class="kw">let </span>(start, length) = column.byte_range();
-                    start <span class="kw">as </span>usize..(start + length) <span class="kw">as </span>usize
+                    start..(start + length)
                 })
-                .collect();
+                .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
 
             <span class="kw">if </span>fetch_ranges.is_empty() {
                 <span class="comment">// Nothing to fetch.
                 </span><span class="kw">return </span><span class="prelude-val">Ok</span>(());
             }
 
-            <span class="kw">let </span><span class="kw-2">mut </span>chunk_data =
-                fetch_byte_ranges(<span class="self">self</span>.file_path, <span class="self">self</span>.object_store.clone(), fetch_ranges)
-                    .<span class="kw">await</span><span class="question-mark">?
-                    </span>.into_iter();
+            <span class="kw">let </span><span class="kw-2">mut </span>chunk_data = <span class="self">self</span>.fetch_bytes(<span class="kw-2">&amp;</span>fetch_ranges).<span class="kw">await</span><span class="question-mark">?</span>.into_iter();
 
             <span class="kw">for </span>(idx, (chunk, cached_pages)) <span class="kw">in </span><span class="self">self
                 </span>.column_chunks
@@ -655,6 +612,38 @@
                 }
             });
     }
+
+    <span class="doccomment">/// Try to fetch data from WriteCache,
+    /// if not in WriteCache, fetch data from object store directly.
+    </span><span class="kw">async fn </span>fetch_bytes(<span class="kw-2">&amp;</span><span class="self">self</span>, ranges: <span class="kw-2">&amp;</span>[Range&lt;u64&gt;]) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;Bytes&gt;&gt; {
+        <span class="kw">let </span>key = IndexKey::new(<span class="self">self</span>.region_id, <span class="self">self</span>.file_id, FileType::Parquet);
+        <span class="kw">match </span><span class="self">self</span>.fetch_ranges_from_write_cache(key, ranges).<span class="kw">await </span>{
+            <span class="prelude-val">Some</span>(data) =&gt; <span class="prelude-val">Ok</span>(data),
+            <span class="prelude-val">None </span>=&gt; {
+                <span class="comment">// Fetch data from object store.
+                </span><span class="kw">let </span>_timer = READ_STAGE_ELAPSED
+                    .with_label_values(<span class="kw-2">&amp;</span>[<span class="string">"cache_miss_read"</span>])
+                    .start_timer();
+                <span class="kw">let </span>data = fetch_byte_ranges(<span class="self">self</span>.file_path, <span class="self">self</span>.object_store.clone(), ranges)
+                    .<span class="kw">await
+                    </span>.map_err(|e| ParquetError::External(Box::new(e)))<span class="question-mark">?</span>;
+                <span class="prelude-val">Ok</span>(data)
+            }
+        }
+    }
+
+    <span class="doccomment">/// Fetches data from write cache.
+    /// Returns `None` if the data is not in the cache.
+    </span><span class="kw">async fn </span>fetch_ranges_from_write_cache(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        key: IndexKey,
+        ranges: <span class="kw-2">&amp;</span>[Range&lt;u64&gt;],
+    ) -&gt; <span class="prelude-ty">Option</span>&lt;Vec&lt;Bytes&gt;&gt; {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(cache) = <span class="self">self</span>.cache_manager.as_ref()<span class="question-mark">?</span>.write_cache() {
+            <span class="kw">return </span>cache.file_cache().read_ranges(key, ranges).<span class="kw">await</span>;
+        }
+        <span class="prelude-val">None
+    </span>}
 
     <span class="doccomment">/// Creates a page reader to read column at `i`.
     </span><span class="kw">fn </span>column_page_reader(<span class="kw-2">&amp;</span><span class="self">self</span>, i: usize) -&gt; <span class="prelude-ty">Result</span>&lt;Box&lt;<span class="kw">dyn </span>PageReader&gt;&gt; {
@@ -784,87 +773,4 @@
 }
 
 <span class="kw">impl </span>PageIterator <span class="kw">for </span>ColumnChunkIterator {}
-
-<span class="doccomment">/// Fetches data from object store.
-/// If the object store supports blocking, use sequence blocking read.
-/// Otherwise, use concurrent read.
-</span><span class="kw">async fn </span>fetch_byte_ranges(
-    file_path: <span class="kw-2">&amp;</span>str,
-    object_store: ObjectStore,
-    ranges: Vec&lt;Range&lt;usize&gt;&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;Bytes&gt;&gt; {
-    <span class="kw">let </span>ranges: Vec&lt;<span class="kw">_</span>&gt; = ranges
-        .iter()
-        .map(|range| range.start <span class="kw">as </span>u64..range.end <span class="kw">as </span>u64)
-        .collect();
-    <span class="kw">if </span>object_store.info().full_capability().blocking {
-        fetch_ranges_seq(file_path, object_store, ranges).<span class="kw">await
-    </span>} <span class="kw">else </span>{
-        fetch_ranges_concurrent(file_path, object_store, ranges).<span class="kw">await
-    </span>}
-}
-
-<span class="doccomment">/// Fetches data from object store sequentially
-</span><span class="kw">async fn </span>fetch_ranges_seq(
-    file_path: <span class="kw-2">&amp;</span>str,
-    object_store: ObjectStore,
-    ranges: Vec&lt;Range&lt;u64&gt;&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;Bytes&gt;&gt; {
-    <span class="kw">let </span>block_object_store = object_store.blocking();
-    <span class="kw">let </span>file_path = file_path.to_string();
-
-    <span class="kw">let </span>f = <span class="kw">move </span>|| -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;Bytes&gt;&gt; {
-        ranges
-            .into_iter()
-            .map(|range| {
-                <span class="kw">let </span>data = block_object_store
-                    .read_with(<span class="kw-2">&amp;</span>file_path)
-                    .range(range)
-                    .call()
-                    .map_err(|e| ParquetError::External(Box::new(e)))<span class="question-mark">?</span>;
-                <span class="prelude-val">Ok</span>::&lt;<span class="kw">_</span>, ParquetError&gt;(Bytes::from(data))
-            })
-            .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;&gt;()
-    };
-
-    maybe_spawn_blocking(f).<span class="kw">await
-</span>}
-
-<span class="doccomment">/// Fetches data from object store concurrently.
-</span><span class="kw">async fn </span>fetch_ranges_concurrent(
-    file_path: <span class="kw-2">&amp;</span>str,
-    object_store: ObjectStore,
-    ranges: Vec&lt;Range&lt;u64&gt;&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;Bytes&gt;&gt; {
-    <span class="comment">// TODO(QuenKar): may merge small ranges to a bigger range to optimize.
-    </span><span class="kw">let </span><span class="kw-2">mut </span>handles = Vec::with_capacity(ranges.len());
-    <span class="kw">for </span>range <span class="kw">in </span>ranges {
-        <span class="kw">let </span>future_read = object_store.read_with(file_path);
-        handles.push(<span class="kw">async move </span>{
-            <span class="kw">let </span>data = future_read
-                .range(range.start..range.end)
-                .<span class="kw">await
-                </span>.map_err(|e| ParquetError::External(Box::new(e)))<span class="question-mark">?</span>;
-            <span class="prelude-val">Ok</span>::&lt;<span class="kw">_</span>, ParquetError&gt;(Bytes::from(data))
-        });
-    }
-    <span class="kw">let </span>results = futures::future::try_join_all(handles).<span class="kw">await</span><span class="question-mark">?</span>;
-    <span class="prelude-val">Ok</span>(results)
-}
-
-<span class="comment">//  Port from https://github.com/apache/arrow-rs/blob/802ed428f87051fdca31180430ddb0ecb2f60e8b/object_store/src/util.rs#L74-L83
-</span><span class="doccomment">/// Takes a function and spawns it to a tokio blocking pool if available
-</span><span class="kw">pub async fn </span>maybe_spawn_blocking&lt;F, T&gt;(f: F) -&gt; <span class="prelude-ty">Result</span>&lt;T&gt;
-<span class="kw">where
-    </span>F: FnOnce() -&gt; <span class="prelude-ty">Result</span>&lt;T&gt; + Send + <span class="lifetime">'static</span>,
-    T: Send + <span class="lifetime">'static</span>,
-{
-    <span class="kw">match </span>tokio::runtime::Handle::try_current() {
-        <span class="prelude-val">Ok</span>(runtime) =&gt; runtime
-            .spawn_blocking(f)
-            .<span class="kw">await
-            </span>.map_err(|e| ParquetError::External(Box::new(e)))<span class="question-mark">?</span>,
-        <span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; f(),
-    }
-}
 </code></pre></div></section></main></body></html>

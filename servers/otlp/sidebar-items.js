@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["GREPTIME_COUNT","GREPTIME_TIMESTAMP","GREPTIME_VALUE"],"mod":["metrics","plugin","trace"]};
+window.SIDEBAR_ITEMS = {"mod":["metrics","plugin","trace"]};

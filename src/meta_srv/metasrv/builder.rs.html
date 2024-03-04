@@ -418,6 +418,24 @@
 <a href="#417" id="417">417</a>
 <a href="#418" id="418">418</a>
 <a href="#419" id="419">419</a>
+<a href="#420" id="420">420</a>
+<a href="#421" id="421">421</a>
+<a href="#422" id="422">422</a>
+<a href="#423" id="423">423</a>
+<a href="#424" id="424">424</a>
+<a href="#425" id="425">425</a>
+<a href="#426" id="426">426</a>
+<a href="#427" id="427">427</a>
+<a href="#428" id="428">428</a>
+<a href="#429" id="429">429</a>
+<a href="#430" id="430">430</a>
+<a href="#431" id="431">431</a>
+<a href="#432" id="432">432</a>
+<a href="#433" id="433">433</a>
+<a href="#434" id="434">434</a>
+<a href="#435" id="435">435</a>
+<a href="#436" id="436">436</a>
+<a href="#437" id="437">437</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -441,7 +459,7 @@
 <span class="kw">use </span>common_catalog::consts::MIN_USER_TABLE_ID;
 <span class="kw">use </span>common_grpc::channel_manager::ChannelConfig;
 <span class="kw">use </span>common_meta::datanode_manager::DatanodeManagerRef;
-<span class="kw">use </span>common_meta::ddl::TableMetadataAllocatorRef;
+<span class="kw">use </span>common_meta::ddl::table_meta::{TableMetadataAllocator, TableMetadataAllocatorRef};
 <span class="kw">use </span>common_meta::ddl_manager::{DdlManager, DdlManagerRef};
 <span class="kw">use </span>common_meta::distributed_time_constants;
 <span class="kw">use </span>common_meta::key::{TableMetadataManager, TableMetadataManagerRef};
@@ -450,7 +468,7 @@
 <span class="kw">use </span>common_meta::region_keeper::{MemoryRegionKeeper, MemoryRegionKeeperRef};
 <span class="kw">use </span>common_meta::sequence::SequenceBuilder;
 <span class="kw">use </span>common_meta::state_store::KvStateStore;
-<span class="kw">use </span>common_meta::wal::WalOptionsAllocator;
+<span class="kw">use </span>common_meta::wal_options_allocator::WalOptionsAllocator;
 <span class="kw">use </span>common_procedure::local::{LocalManager, ManagerConfig};
 <span class="kw">use </span>common_procedure::ProcedureManagerRef;
 <span class="kw">use </span>snafu::ResultExt;
@@ -477,12 +495,14 @@
     ElectionRef, MetaSrv, MetaSrvOptions, MetasrvInfo, SelectorContext, SelectorRef, TABLE_ID_SEQ,
 };
 <span class="kw">use </span><span class="kw">crate</span>::procedure::region_failover::RegionFailoverManager;
+<span class="kw">use </span><span class="kw">crate</span>::procedure::region_migration::manager::RegionMigrationManager;
+<span class="kw">use </span><span class="kw">crate</span>::procedure::region_migration::DefaultContextFactory;
 <span class="kw">use </span><span class="kw">crate</span>::pubsub::PublishRef;
 <span class="kw">use </span><span class="kw">crate</span>::selector::lease_based::LeaseBasedSelector;
 <span class="kw">use </span><span class="kw">crate</span>::service::mailbox::MailboxRef;
 <span class="kw">use </span><span class="kw">crate</span>::service::store::cached_kv::{CheckLeader, LeaderCachedKvBackend};
 <span class="kw">use </span><span class="kw">crate</span>::state::State;
-<span class="kw">use </span><span class="kw">crate</span>::table_meta_alloc::MetaSrvTableMetadataAllocator;
+<span class="kw">use </span><span class="kw">crate</span>::table_meta_alloc::MetasrvPeerAllocator;
 
 <span class="comment">// TODO(fys): try use derive_builder macro
 </span><span class="kw">pub struct </span>MetaSrvBuilder {
@@ -636,11 +656,15 @@
                     .step(<span class="number">10</span>)
                     .build(),
             );
-            Arc::new(MetaSrvTableMetadataAllocator::new(
+            <span class="kw">let </span>peer_allocator = Arc::new(MetasrvPeerAllocator::new(
                 selector_ctx.clone(),
                 selector.clone(),
-                sequence.clone(),
+            ));
+            Arc::new(TableMetadataAllocator::with_peer_allocator(
+                sequence,
                 wal_options_allocator.clone(),
+                table_metadata_manager.table_name_manager().clone(),
+                peer_allocator,
             ))
         });
 
@@ -652,9 +676,20 @@
             <span class="kw-2">&amp;</span>procedure_manager,
             <span class="kw-2">&amp;</span>mailbox,
             <span class="kw-2">&amp;</span>table_metadata_manager,
-            table_metadata_allocator,
+            <span class="kw-2">&amp;</span>table_metadata_allocator,
             <span class="kw-2">&amp;</span>opening_region_keeper,
         )<span class="question-mark">?</span>;
+
+        <span class="kw">let </span>region_migration_manager = Arc::new(RegionMigrationManager::new(
+            procedure_manager.clone(),
+            DefaultContextFactory::new(
+                table_metadata_manager.clone(),
+                opening_region_keeper.clone(),
+                mailbox.clone(),
+                options.server_addr.clone(),
+            ),
+        ));
+        region_migration_manager.try_start()<span class="question-mark">?</span>;
 
         <span class="kw">let </span>handler_group = <span class="kw">match </span>handler_group {
             <span class="prelude-val">Some</span>(handler_group) =&gt; handler_group,
@@ -732,7 +767,7 @@
             lock,
             procedure_manager,
             mailbox,
-            ddl_executor: ddl_manager,
+            procedure_executor: ddl_manager,
             wal_options_allocator,
             table_metadata_manager,
             greptimedb_telemetry_task: get_greptimedb_telemetry_task(
@@ -743,6 +778,7 @@
             .<span class="kw">await</span>,
             plugins: plugins.unwrap_or_else(Plugins::default),
             memory_region_keeper: opening_region_keeper,
+            region_migration_manager,
         })
     }
 }
@@ -788,7 +824,7 @@
     procedure_manager: <span class="kw-2">&amp;</span>ProcedureManagerRef,
     mailbox: <span class="kw-2">&amp;</span>MailboxRef,
     table_metadata_manager: <span class="kw-2">&amp;</span>TableMetadataManagerRef,
-    table_metadata_allocator: TableMetadataAllocatorRef,
+    table_metadata_allocator: <span class="kw-2">&amp;</span>TableMetadataAllocatorRef,
     memory_region_keeper: <span class="kw-2">&amp;</span>MemoryRegionKeeperRef,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;DdlManagerRef&gt; {
     <span class="kw">let </span>datanode_clients = datanode_clients.unwrap_or_else(|| {
@@ -815,7 +851,7 @@
             datanode_clients,
             cache_invalidator,
             table_metadata_manager.clone(),
-            table_metadata_allocator,
+            table_metadata_allocator.clone(),
             memory_region_keeper.clone(),
         )
         .context(error::InitDdlManagerSnafu)<span class="question-mark">?</span>,

@@ -31,6 +31,10 @@
 <a href="#30" id="30">30</a>
 <a href="#31" id="31">31</a>
 <a href="#32" id="32">32</a>
+<a href="#33" id="33">33</a>
+<a href="#34" id="34">34</a>
+<a href="#35" id="35">35</a>
+<a href="#36" id="36">36</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -52,6 +56,9 @@
 <span class="kw">mod </span>planner;
 <span class="kw">mod </span>range_manipulate;
 <span class="kw">mod </span>series_divide;
+<span class="attr">#[cfg(test)]
+</span><span class="kw">mod </span>test_util;
+<span class="kw">mod </span>union_distinct_on;
 
 <span class="kw">use </span>datafusion::arrow::datatypes::{ArrowPrimitiveType, TimestampMillisecondType};
 <span class="kw">pub use </span>empty_metric::{build_special_time_expr, EmptyMetric, EmptyMetricExec, EmptyMetricStream};
@@ -61,6 +68,7 @@
 <span class="kw">pub use </span>planner::PromExtensionPlanner;
 <span class="kw">pub use </span>range_manipulate::{RangeManipulate, RangeManipulateExec, RangeManipulateStream};
 <span class="kw">pub use </span>series_divide::{SeriesDivide, SeriesDivideExec, SeriesDivideStream};
+<span class="kw">pub use </span>union_distinct_on::{UnionDistinctOn, UnionDistinctOnExec, UnionDistinctOnStream};
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">type </span>Millisecond = &lt;TimestampMillisecondType <span class="kw">as </span>ArrowPrimitiveType&gt;::Native;
 </code></pre></div></section></main></body></html>

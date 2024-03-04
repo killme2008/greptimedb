@@ -386,6 +386,10 @@
 <a href="#385" id="385">385</a>
 <a href="#386" id="386">386</a>
 <a href="#387" id="387">387</a>
+<a href="#388" id="388">388</a>
+<a href="#389" id="389">389</a>
+<a href="#390" id="390">390</a>
+<a href="#391" id="391">391</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -531,8 +535,12 @@
         <span class="kw">let </span>stream = df_plan
             .execute(partition, context)
             .context(error::GeneralDataFusionSnafu)<span class="question-mark">?</span>;
-        <span class="kw">let </span>adapter = RecordBatchStreamAdapter::try_new_with_metrics(stream, baseline_metric)
-            .context(error::ConvertDfRecordBatchStreamSnafu)<span class="question-mark">?</span>;
+        <span class="kw">let </span>adapter = RecordBatchStreamAdapter::try_new_with_metrics_and_df_plan(
+            stream,
+            baseline_metric,
+            df_plan,
+        )
+        .context(error::ConvertDfRecordBatchStreamSnafu)<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(Box::pin(adapter))
     }

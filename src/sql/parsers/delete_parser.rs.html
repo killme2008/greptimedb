@@ -62,6 +62,10 @@
 <a href="#61" id="61">61</a>
 <a href="#62" id="62">62</a>
 <a href="#63" id="63">63</a>
+<a href="#64" id="64">64</a>
+<a href="#65" id="65">65</a>
+<a href="#66" id="66">66</a>
+<a href="#67" id="67">67</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -109,11 +113,14 @@
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use </span><span class="kw">crate</span>::dialect::GreptimeDbDialect;
+    <span class="kw">use </span><span class="kw">crate</span>::parser::ParseOptions;
 
     <span class="attr">#[test]
     </span><span class="kw">pub fn </span>test_parse_insert() {
         <span class="kw">let </span>sql = <span class="string">r"delete from my_table where k1 = xxx and k2 = xxx and timestamp = xxx;"</span>;
-        <span class="kw">let </span>result = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
+        <span class="kw">let </span>result =
+            ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}, ParseOptions::default())
+                .unwrap();
         <span class="macro">assert_eq!</span>(<span class="number">1</span>, result.len());
         <span class="macro">assert_matches!</span>(result[<span class="number">0</span>], Statement::Delete { .. })
     }
@@ -121,7 +128,8 @@
     <span class="attr">#[test]
     </span><span class="kw">pub fn </span>test_parse_invalid_insert() {
         <span class="kw">let </span>sql = <span class="string">r"delete my_table where "</span>; <span class="comment">// intentionally a bad sql
-        </span><span class="kw">let </span>result = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {});
+        </span><span class="kw">let </span>result =
+            ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}, ParseOptions::default());
         <span class="macro">assert!</span>(result.is_err(), <span class="string">"result is: {result:?}"</span>);
     }
 }

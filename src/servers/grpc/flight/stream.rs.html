@@ -180,6 +180,13 @@
 <a href="#179" id="179">179</a>
 <a href="#180" id="180">180</a>
 <a href="#181" id="181">181</a>
+<a href="#182" id="182">182</a>
+<a href="#183" id="183">183</a>
+<a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
+<a href="#186" id="186">186</a>
+<a href="#187" id="187">187</a>
+<a href="#188" id="188">188</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -200,7 +207,7 @@
 <span class="kw">use </span>arrow_flight::FlightData;
 <span class="kw">use </span>common_grpc::flight::{FlightEncoder, FlightMessage};
 <span class="kw">use </span>common_recordbatch::SendableRecordBatchStream;
-<span class="kw">use </span>common_telemetry::tracing::info_span;
+<span class="kw">use </span>common_telemetry::tracing::{info_span, Instrument};
 <span class="kw">use </span>common_telemetry::tracing_context::{FutureExt, TracingContext};
 <span class="kw">use </span>common_telemetry::warn;
 <span class="kw">use </span>futures::channel::mpsc;
@@ -248,7 +255,7 @@
             <span class="kw">return</span>;
         }
 
-        <span class="kw">while let </span><span class="prelude-val">Some</span>(batch_or_err) = recordbatches.next().<span class="kw">await </span>{
+        <span class="kw">while let </span><span class="prelude-val">Some</span>(batch_or_err) = recordbatches.next().in_current_span().<span class="kw">await </span>{
             <span class="kw">match </span>batch_or_err {
                 <span class="prelude-val">Ok</span>(recordbatch) =&gt; {
                     <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = tx.send(<span class="prelude-val">Ok</span>(FlightMessage::Recordbatch(recordbatch))).<span class="kw">await </span>{
@@ -264,6 +271,13 @@
                     <span class="kw">return</span>;
                 }
             }
+        }
+        <span class="comment">// make last package to pass metrics
+        </span><span class="kw">if let </span><span class="prelude-val">Some</span>(metrics_str) = recordbatches
+            .metrics()
+            .and_then(|m| serde_json::to_string(<span class="kw-2">&amp;</span>m).ok())
+        {
+            <span class="kw">let _ </span>= tx.send(<span class="prelude-val">Ok</span>(FlightMessage::Metrics(metrics_str))).<span class="kw">await</span>;
         }
     }
 }

@@ -1051,6 +1051,21 @@
 <a href="#1050" id="1050">1050</a>
 <a href="#1051" id="1051">1051</a>
 <a href="#1052" id="1052">1052</a>
+<a href="#1053" id="1053">1053</a>
+<a href="#1054" id="1054">1054</a>
+<a href="#1055" id="1055">1055</a>
+<a href="#1056" id="1056">1056</a>
+<a href="#1057" id="1057">1057</a>
+<a href="#1058" id="1058">1058</a>
+<a href="#1059" id="1059">1059</a>
+<a href="#1060" id="1060">1060</a>
+<a href="#1061" id="1061">1061</a>
+<a href="#1062" id="1062">1062</a>
+<a href="#1063" id="1063">1063</a>
+<a href="#1064" id="1064">1064</a>
+<a href="#1065" id="1065">1065</a>
+<a href="#1066" id="1066">1066</a>
+<a href="#1067" id="1067">1067</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -1072,8 +1087,10 @@
 <span class="kw">use </span>common_telemetry::logging;
 <span class="kw">use </span>tokio::time;
 
+<span class="kw">use </span><span class="kw">super</span>::rwlock::OwnedKeyRwLockGuard;
 <span class="kw">use </span><span class="kw">crate</span>::error::{<span class="self">self</span>, ProcedurePanicSnafu, <span class="prelude-ty">Result</span>};
 <span class="kw">use </span><span class="kw">crate</span>::local::{ManagerContext, ProcedureMeta, ProcedureMetaRef};
+<span class="kw">use </span><span class="kw">crate</span>::procedure::{Output, StringKey};
 <span class="kw">use </span><span class="kw">crate</span>::store::ProcedureStore;
 <span class="kw">use </span><span class="kw">crate</span>::ProcedureState::Retrying;
 <span class="kw">use crate</span>::{BoxedProcedure, Context, Error, ProcedureId, ProcedureState, ProcedureWithId, Status};
@@ -1109,6 +1126,7 @@
 </span><span class="kw">struct </span>ProcedureGuard {
     meta: ProcedureMetaRef,
     manager_ctx: Arc&lt;ManagerContext&gt;,
+    key_guards: Vec&lt;OwnedKeyRwLockGuard&gt;,
     finish: bool,
 }
 
@@ -1118,6 +1136,7 @@
         ProcedureGuard {
             meta,
             manager_ctx,
+            key_guards: <span class="macro">vec!</span>[],
             finish: <span class="bool-val">false</span>,
         }
     }
@@ -1148,10 +1167,15 @@
             <span class="self">self</span>.manager_ctx.notify_by_subprocedure(parent_id);
         }
 
-        <span class="comment">// Release lock in reverse order.
-        </span><span class="kw">for </span>key <span class="kw">in </span><span class="self">self</span>.meta.lock_key.keys_to_unlock() {
-            <span class="self">self</span>.manager_ctx.lock_map.release_lock(key, <span class="self">self</span>.meta.id);
+        <span class="comment">// Drops the key guards in the reverse order.
+        </span><span class="kw">while </span>!<span class="self">self</span>.key_guards.is_empty() {
+            <span class="self">self</span>.key_guards.pop();
         }
+
+        <span class="comment">// Clean the staled locks.
+        </span><span class="self">self</span>.manager_ctx
+            .key_lock
+            .clean_keys(<span class="self">self</span>.meta.lock_key.keys_to_lock().map(|k| k.as_string()));
     }
 }
 
@@ -1174,7 +1198,7 @@
     <span class="doccomment">/// Run the procedure.
     </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>run(<span class="kw-2">mut </span><span class="self">self</span>) {
         <span class="comment">// Ensure we can update the procedure state.
-        </span><span class="kw">let </span>guard = ProcedureGuard::new(<span class="self">self</span>.meta.clone(), <span class="self">self</span>.manager_ctx.clone());
+        </span><span class="kw">let </span><span class="kw-2">mut </span>guard = ProcedureGuard::new(<span class="self">self</span>.meta.clone(), <span class="self">self</span>.manager_ctx.clone());
 
         <span class="macro">logging::info!</span>(
             <span class="string">"Runner {}-{} starts"</span>,
@@ -1186,10 +1210,14 @@
         // recursive locking by adding a root procedure id to the meta.
         </span><span class="kw">for </span>key <span class="kw">in </span><span class="self">self</span>.meta.lock_key.keys_to_lock() {
             <span class="comment">// Acquire lock for each key.
-            </span><span class="self">self</span>.manager_ctx
-                .lock_map
-                .acquire_lock(key, <span class="self">self</span>.meta.clone())
-                .<span class="kw">await</span>;
+            </span><span class="kw">let </span>key_guard = <span class="kw">match </span>key {
+                StringKey::Share(key) =&gt; <span class="self">self</span>.manager_ctx.key_lock.read(key.clone()).<span class="kw">await</span>.into(),
+                StringKey::Exclusive(key) =&gt; {
+                    <span class="self">self</span>.manager_ctx.key_lock.write(key.clone()).<span class="kw">await</span>.into()
+                }
+            };
+
+            guard.key_guards.push(key_guard);
         }
 
         <span class="comment">// Execute the procedure. We need to release the lock whenever the the execution
@@ -1328,13 +1356,13 @@
                     Status::Suspended { subprocedures, .. } =&gt; {
                         <span class="self">self</span>.on_suspended(subprocedures).<span class="kw">await</span>;
                     }
-                    Status::Done =&gt; {
+                    Status::Done { output } =&gt; {
                         <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = <span class="self">self</span>.commit_procedure().<span class="kw">await </span>{
                             <span class="self">self</span>.meta.set_state(ProcedureState::retrying(Arc::new(e)));
                             <span class="kw">return </span>ExecResult::RetryLater;
                         }
 
-                        <span class="self">self</span>.done();
+                        <span class="self">self</span>.done(output);
                         <span class="kw">return </span>ExecResult::Done;
                     }
                 }
@@ -1521,7 +1549,7 @@
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">fn </span>done(<span class="kw-2">&amp;</span><span class="self">self</span>) {
+    <span class="kw">fn </span>done(<span class="kw-2">&amp;</span><span class="self">self</span>, output: <span class="prelude-ty">Option</span>&lt;Output&gt;) {
         <span class="comment">// TODO(yingwen): Add files to remove list.
         </span><span class="macro">logging::info!</span>(
             <span class="string">"Procedure {}-{} done"</span>,
@@ -1530,7 +1558,7 @@
         );
 
         <span class="comment">// Mark the state of this procedure to done.
-        </span><span class="self">self</span>.meta.set_state(ProcedureState::Done);
+        </span><span class="self">self</span>.meta.set_state(ProcedureState::Done { output });
     }
 }
 
@@ -1650,14 +1678,14 @@
                 <span class="kw">if </span>times == <span class="number">1 </span>{
                     <span class="prelude-val">Ok</span>(Status::Executing { persist })
                 } <span class="kw">else </span>{
-                    <span class="prelude-val">Ok</span>(Status::Done)
+                    <span class="prelude-val">Ok</span>(Status::done())
                 }
             }
             .boxed()
         };
         <span class="kw">let </span>normal = ProcedureAdapter {
             data: <span class="string">"normal"</span>.to_string(),
-            lock_key: LockKey::single(<span class="string">"catalog.schema.table"</span>),
+            lock_key: LockKey::single_exclusive(<span class="string">"catalog.schema.table"</span>),
             exec_fn,
         };
 
@@ -1718,7 +1746,7 @@
         };
         <span class="kw">let </span>suspend = ProcedureAdapter {
             data: <span class="string">"suspend"</span>.to_string(),
-            lock_key: LockKey::single(<span class="string">"catalog.schema.table"</span>),
+            lock_key: LockKey::single_exclusive(<span class="string">"catalog.schema.table"</span>),
             exec_fn,
         };
 
@@ -1743,14 +1771,14 @@
                     time::sleep(Duration::from_millis(<span class="number">200</span>)).<span class="kw">await</span>;
                     <span class="prelude-val">Ok</span>(Status::Executing { persist: <span class="bool-val">true </span>})
                 } <span class="kw">else </span>{
-                    <span class="prelude-val">Ok</span>(Status::Done)
+                    <span class="prelude-val">Ok</span>(Status::done())
                 }
             }
             .boxed()
         };
         <span class="kw">let </span>child = ProcedureAdapter {
             data: <span class="string">"child"</span>.to_string(),
-            lock_key: LockKey::new(keys.iter().map(|k| k.to_string())),
+            lock_key: LockKey::new_exclusive(keys.iter().map(|k| k.to_string())),
             exec_fn,
         };
 
@@ -1804,7 +1832,7 @@
                         }
                     }
                     <span class="kw">if </span>all_child_done {
-                        <span class="prelude-val">Ok</span>(Status::Done)
+                        <span class="prelude-val">Ok</span>(Status::done())
                     } <span class="kw">else </span>{
                         <span class="comment">// Return suspended to wait for notify.
                         </span><span class="prelude-val">Ok</span>(Status::Suspended {
@@ -1818,7 +1846,7 @@
         };
         <span class="kw">let </span>parent = ProcedureAdapter {
             data: <span class="string">"parent"</span>.to_string(),
-            lock_key: LockKey::single(<span class="string">"catalog.schema.table"</span>),
+            lock_key: LockKey::single_exclusive(<span class="string">"catalog.schema.table"</span>),
             exec_fn,
         };
 
@@ -1837,6 +1865,7 @@
         </span>runner.manager_ctx = manager_ctx.clone();
 
         runner.run().<span class="kw">await</span>;
+        <span class="macro">assert!</span>(manager_ctx.key_lock.is_empty());
 
         <span class="comment">// Check child procedures.
         </span><span class="kw">for </span>child_id <span class="kw">in </span>children_ids {
@@ -1863,7 +1892,7 @@
         <span class="kw">let </span>exec_fn = <span class="kw">move </span>|<span class="kw">_</span>| <span class="kw">async move </span>{ <span class="prelude-val">Ok</span>(Status::Executing { persist: <span class="bool-val">true </span>}) }.boxed();
         <span class="kw">let </span>normal = ProcedureAdapter {
             data: <span class="string">"normal"</span>.to_string(),
-            lock_key: LockKey::single(<span class="string">"catalog.schema.table"</span>),
+            lock_key: LockKey::single_exclusive(<span class="string">"catalog.schema.table"</span>),
             exec_fn,
         };
 
@@ -1904,7 +1933,7 @@
             |<span class="kw">_</span>| <span class="kw">async </span>{ <span class="prelude-val">Err</span>(Error::external(MockError::new(StatusCode::Unexpected))) }.boxed();
         <span class="kw">let </span>normal = ProcedureAdapter {
             data: <span class="string">"fail"</span>.to_string(),
-            lock_key: LockKey::single(<span class="string">"catalog.schema.table"</span>),
+            lock_key: LockKey::single_exclusive(<span class="string">"catalog.schema.table"</span>),
             exec_fn,
         };
 
@@ -1928,7 +1957,7 @@
             |<span class="kw">_</span>| <span class="kw">async </span>{ <span class="prelude-val">Err</span>(Error::external(MockError::new(StatusCode::Unexpected))) }.boxed();
         <span class="kw">let </span>fail = ProcedureAdapter {
             data: <span class="string">"fail"</span>.to_string(),
-            lock_key: LockKey::single(<span class="string">"catalog.schema.table"</span>),
+            lock_key: LockKey::single_exclusive(<span class="string">"catalog.schema.table"</span>),
             exec_fn,
         };
 
@@ -1962,7 +1991,7 @@
                 <span class="kw">if </span>times == <span class="number">1 </span>{
                     <span class="prelude-val">Err</span>(Error::retry_later(MockError::new(StatusCode::Unexpected)))
                 } <span class="kw">else </span>{
-                    <span class="prelude-val">Ok</span>(Status::Done)
+                    <span class="prelude-val">Ok</span>(Status::done())
                 }
             }
             .boxed()
@@ -1970,7 +1999,7 @@
 
         <span class="kw">let </span>retry_later = ProcedureAdapter {
             data: <span class="string">"retry_later"</span>.to_string(),
-            lock_key: LockKey::single(<span class="string">"catalog.schema.table"</span>),
+            lock_key: LockKey::single_exclusive(<span class="string">"catalog.schema.table"</span>),
             exec_fn,
         };
 
@@ -2005,7 +2034,7 @@
 
         <span class="kw">let </span>exceed_max_retry_later = ProcedureAdapter {
             data: <span class="string">"exceed_max_retry_later"</span>.to_string(),
-            lock_key: LockKey::single(<span class="string">"catalog.schema.table"</span>),
+            lock_key: LockKey::single_exclusive(<span class="string">"catalog.schema.table"</span>),
             exec_fn,
         };
 
@@ -2046,7 +2075,7 @@
                     };
                     <span class="kw">let </span>fail = ProcedureAdapter {
                         data: <span class="string">"fail"</span>.to_string(),
-                        lock_key: LockKey::single(<span class="string">"catalog.schema.table.region-0"</span>),
+                        lock_key: LockKey::single_exclusive(<span class="string">"catalog.schema.table.region-0"</span>),
                         exec_fn,
                     };
 
@@ -2080,7 +2109,7 @@
         };
         <span class="kw">let </span>parent = ProcedureAdapter {
             data: <span class="string">"parent"</span>.to_string(),
-            lock_key: LockKey::single(<span class="string">"catalog.schema.table"</span>),
+            lock_key: LockKey::single_exclusive(<span class="string">"catalog.schema.table"</span>),
             exec_fn,
         };
 
@@ -2095,10 +2124,11 @@
         <span class="comment">// Manually add this procedure to the manager ctx.
         </span><span class="macro">assert!</span>(manager_ctx.try_insert_procedure(meta.clone()));
         <span class="comment">// Replace the manager ctx.
-        </span>runner.manager_ctx = manager_ctx;
+        </span>runner.manager_ctx = manager_ctx.clone();
 
         <span class="comment">// Run the runner and execute the procedure.
         </span>runner.run().<span class="kw">await</span>;
+        <span class="macro">assert!</span>(manager_ctx.key_lock.is_empty());
         <span class="kw">let </span>err = meta.state().error().unwrap().output_msg();
         <span class="macro">assert!</span>(err.contains(<span class="string">"subprocedure failed"</span>), <span class="string">"{err}"</span>);
     }

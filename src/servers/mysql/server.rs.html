@@ -227,6 +227,10 @@
 <a href="#226" id="226">226</a>
 <a href="#227" id="227">227</a>
 <a href="#228" id="228">228</a>
+<a href="#229" id="229">229</a>
+<a href="#230" id="230">230</a>
+<a href="#231" id="231">231</a>
+<a href="#232" id="232">232</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -248,8 +252,7 @@
 <span class="kw">use </span>async_trait::async_trait;
 <span class="kw">use </span>auth::UserProviderRef;
 <span class="kw">use </span>common_runtime::Runtime;
-<span class="kw">use </span>common_telemetry::error;
-<span class="kw">use </span>common_telemetry::logging::{info, warn};
+<span class="kw">use </span>common_telemetry::{debug, error, warn};
 <span class="kw">use </span>futures::StreamExt;
 <span class="kw">use </span>opensrv_mysql::{
     plain_run_with_options, secure_run_with_options, AsyncMysqlIntermediary, IntermediaryOptions,
@@ -263,6 +266,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::mysql::handler::MysqlInstanceShim;
 <span class="kw">use </span><span class="kw">crate</span>::query_handler::sql::ServerSqlQueryHandlerRef;
 <span class="kw">use </span><span class="kw">crate</span>::server::{AbortableStream, BaseTcpServer, Server};
+<span class="kw">use </span><span class="kw">crate</span>::tls::ReloadableTlsServerConfig;
 
 <span class="comment">// Default size of ResultSet write buffer: 100KB
 </span><span class="kw">const </span>DEFAULT_RESULT_SET_WRITE_BUFFER_SIZE: usize = <span class="number">100 </span>* <span class="number">1024</span>;
@@ -298,7 +302,7 @@
 </span><span class="kw">pub struct </span>MysqlSpawnConfig {
     <span class="comment">// tls config
     </span>force_tls: bool,
-    tls: <span class="prelude-ty">Option</span>&lt;Arc&lt;ServerConfig&gt;&gt;,
+    tls: Arc&lt;ReloadableTlsServerConfig&gt;,
     <span class="comment">// other shim config
     </span>reject_no_database: bool,
 }
@@ -306,7 +310,7 @@
 <span class="kw">impl </span>MysqlSpawnConfig {
     <span class="kw">pub fn </span>new(
         force_tls: bool,
-        tls: <span class="prelude-ty">Option</span>&lt;Arc&lt;ServerConfig&gt;&gt;,
+        tls: Arc&lt;ReloadableTlsServerConfig&gt;,
         reject_no_database: bool,
     ) -&gt; MysqlSpawnConfig {
         MysqlSpawnConfig {
@@ -317,7 +321,7 @@
     }
 
     <span class="kw">fn </span>tls(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Arc&lt;ServerConfig&gt;&gt; {
-        <span class="self">self</span>.tls.clone()
+        <span class="self">self</span>.tls.get_server_config()
     }
 }
 
@@ -386,13 +390,17 @@
         spawn_ref: Arc&lt;MysqlSpawnRef&gt;,
         spawn_config: Arc&lt;MysqlSpawnConfig&gt;,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="macro">info!</span>(<span class="string">"MySQL connection coming from: {}"</span>, stream.peer_addr()<span class="question-mark">?</span>);
+        <span class="macro">debug!</span>(<span class="string">"MySQL connection coming from: {}"</span>, stream.peer_addr()<span class="question-mark">?</span>);
         <span class="kw">let </span>_handle = io_runtime.spawn(<span class="kw">async move </span>{
             <span class="kw">crate</span>::metrics::METRIC_MYSQL_CONNECTIONS.inc();
-            <span class="kw">if let </span><span class="prelude-val">Err</span>(e)  = <span class="self">Self</span>::do_handle(stream, spawn_ref, spawn_config).<span class="kw">await </span>{
-                <span class="comment">// TODO(LFC): Write this error to client as well, in MySQL text protocol.
-                // Looks like we have to expose opensrv-mysql's `PacketWriter`?
-                </span><span class="macro">warn!</span>(e; <span class="string">"Internal error occurred during query exec, server actively close the channel to let client try next time"</span>)
+            <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = <span class="self">Self</span>::do_handle(stream, spawn_ref, spawn_config).<span class="kw">await </span>{
+                <span class="kw">if let </span>Error::InternalIo { error } = <span class="kw-2">&amp;</span>e &amp;&amp; error.kind() == std::io::ErrorKind::ConnectionAborted {
+                    <span class="comment">// This is a client-side error, we don't need to log it.
+                </span>} <span class="kw">else </span>{
+                    <span class="comment">// TODO(LFC): Write this error to client as well, in MySQL text protocol.
+                    // Looks like we have to expose opensrv-mysql's `PacketWriter`?
+                    </span><span class="macro">warn!</span>(e; <span class="string">"Internal error occurred during query exec, server actively close the channel to let client try next time"</span>);
+                }
             }
             <span class="kw">crate</span>::metrics::METRIC_MYSQL_CONNECTIONS.dec();
         });

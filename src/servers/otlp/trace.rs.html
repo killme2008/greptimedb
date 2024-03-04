@@ -162,10 +162,10 @@
 </span><span class="kw">use </span>api::v1::value::ValueData;
 <span class="kw">use </span>api::v1::{ColumnDataType, RowInsertRequests};
 <span class="kw">use </span>common_grpc::writer::Precision;
+<span class="kw">use </span>common_query::prelude::{GREPTIME_TIMESTAMP, GREPTIME_VALUE};
 <span class="kw">use </span>opentelemetry_proto::tonic::collector::trace::v1::ExportTraceServiceRequest;
 
 <span class="kw">use </span><span class="self">self</span>::span::{parse_span, TraceSpan, TraceSpans};
-<span class="kw">use super</span>::{GREPTIME_TIMESTAMP, GREPTIME_VALUE};
 <span class="kw">use </span><span class="kw">crate</span>::error::Result;
 <span class="kw">use </span><span class="kw">crate</span>::row_writer::{<span class="self">self</span>, MultiTableData, TableData};
 

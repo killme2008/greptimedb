@@ -80,6 +80,8 @@
 <a href="#79" id="79">79</a>
 <a href="#80" id="80">80</a>
 <a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -137,6 +139,7 @@
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use </span><span class="kw">crate</span>::dialect::GreptimeDbDialect;
+    <span class="kw">use </span><span class="kw">crate</span>::parser::ParseOptions;
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_parse_function() {
@@ -146,10 +149,11 @@
     }
 
     <span class="kw">fn </span>assert_describe_table(sql: <span class="kw-2">&amp;</span>str) {
-        <span class="kw">let </span>stmt = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {})
-            .unwrap()
-            .pop()
-            .unwrap();
+        <span class="kw">let </span>stmt =
+            ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}, ParseOptions::default())
+                .unwrap()
+                .pop()
+                .unwrap();
         <span class="macro">assert!</span>(<span class="macro">matches!</span>(stmt, Statement::DescribeTable(<span class="kw">_</span>)))
     }
 

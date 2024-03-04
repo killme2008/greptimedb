@@ -113,6 +113,11 @@
 <a href="#112" id="112">112</a>
 <a href="#113" id="113">113</a>
 <a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
+<a href="#116" id="116">116</a>
+<a href="#117" id="117">117</a>
+<a href="#118" id="118">118</a>
+<a href="#119" id="119">119</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -204,7 +209,12 @@
 <span class="attr">#[async_trait]
 </span><span class="kw">pub trait </span>PromStoreProtocolHandler {
     <span class="doccomment">/// Handling prometheus remote write requests
-    </span><span class="kw">async fn </span>write(<span class="kw-2">&amp;</span><span class="self">self</span>, request: WriteRequest, ctx: QueryContextRef) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;;
+    </span><span class="kw">async fn </span>write(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        request: WriteRequest,
+        ctx: QueryContextRef,
+        with_metric_engine: bool,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;;
     <span class="doccomment">/// Handling prometheus remote read requests
     </span><span class="kw">async fn </span>read(<span class="kw-2">&amp;</span><span class="self">self</span>, request: ReadRequest, ctx: QueryContextRef) -&gt; <span class="prelude-ty">Result</span>&lt;PromStoreResponse&gt;;
     <span class="doccomment">/// Handling push gateway requests

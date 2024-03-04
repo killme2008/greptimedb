@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["EVAL","EVALUATE","EXPLAIN","TQL"]};
+window.SIDEBAR_ITEMS = {"constant":["EVAL","EVALUATE","EXPLAIN","TQL","VERBOSE"]};

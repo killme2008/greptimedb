@@ -430,6 +430,76 @@
 <a href="#429" id="429">429</a>
 <a href="#430" id="430">430</a>
 <a href="#431" id="431">431</a>
+<a href="#432" id="432">432</a>
+<a href="#433" id="433">433</a>
+<a href="#434" id="434">434</a>
+<a href="#435" id="435">435</a>
+<a href="#436" id="436">436</a>
+<a href="#437" id="437">437</a>
+<a href="#438" id="438">438</a>
+<a href="#439" id="439">439</a>
+<a href="#440" id="440">440</a>
+<a href="#441" id="441">441</a>
+<a href="#442" id="442">442</a>
+<a href="#443" id="443">443</a>
+<a href="#444" id="444">444</a>
+<a href="#445" id="445">445</a>
+<a href="#446" id="446">446</a>
+<a href="#447" id="447">447</a>
+<a href="#448" id="448">448</a>
+<a href="#449" id="449">449</a>
+<a href="#450" id="450">450</a>
+<a href="#451" id="451">451</a>
+<a href="#452" id="452">452</a>
+<a href="#453" id="453">453</a>
+<a href="#454" id="454">454</a>
+<a href="#455" id="455">455</a>
+<a href="#456" id="456">456</a>
+<a href="#457" id="457">457</a>
+<a href="#458" id="458">458</a>
+<a href="#459" id="459">459</a>
+<a href="#460" id="460">460</a>
+<a href="#461" id="461">461</a>
+<a href="#462" id="462">462</a>
+<a href="#463" id="463">463</a>
+<a href="#464" id="464">464</a>
+<a href="#465" id="465">465</a>
+<a href="#466" id="466">466</a>
+<a href="#467" id="467">467</a>
+<a href="#468" id="468">468</a>
+<a href="#469" id="469">469</a>
+<a href="#470" id="470">470</a>
+<a href="#471" id="471">471</a>
+<a href="#472" id="472">472</a>
+<a href="#473" id="473">473</a>
+<a href="#474" id="474">474</a>
+<a href="#475" id="475">475</a>
+<a href="#476" id="476">476</a>
+<a href="#477" id="477">477</a>
+<a href="#478" id="478">478</a>
+<a href="#479" id="479">479</a>
+<a href="#480" id="480">480</a>
+<a href="#481" id="481">481</a>
+<a href="#482" id="482">482</a>
+<a href="#483" id="483">483</a>
+<a href="#484" id="484">484</a>
+<a href="#485" id="485">485</a>
+<a href="#486" id="486">486</a>
+<a href="#487" id="487">487</a>
+<a href="#488" id="488">488</a>
+<a href="#489" id="489">489</a>
+<a href="#490" id="490">490</a>
+<a href="#491" id="491">491</a>
+<a href="#492" id="492">492</a>
+<a href="#493" id="493">493</a>
+<a href="#494" id="494">494</a>
+<a href="#495" id="495">495</a>
+<a href="#496" id="496">496</a>
+<a href="#497" id="497">497</a>
+<a href="#498" id="498">498</a>
+<a href="#499" id="499">499</a>
+<a href="#500" id="500">500</a>
+<a href="#501" id="501">501</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -446,10 +516,10 @@
 
 </span><span class="kw">use </span>std::str::Utf8Error;
 
-<span class="kw">use </span>common_config::wal::WalOptions;
 <span class="kw">use </span>common_error::ext::{BoxedError, ErrorExt};
 <span class="kw">use </span>common_error::status_code::StatusCode;
 <span class="kw">use </span>common_macro::stack_trace_debug;
+<span class="kw">use </span>common_wal::options::WalOptions;
 <span class="kw">use </span>serde_json::error::Error <span class="kw">as </span>JsonError;
 <span class="kw">use </span>snafu::{Location, Snafu};
 <span class="kw">use </span>store_api::storage::{RegionId, RegionNumber};
@@ -532,6 +602,23 @@
         source: common_procedure::Error,
     },
 
+    <span class="attr">#[snafu(display(<span class="string">"Failed to query procedure"</span>))]
+    </span>QueryProcedure {
+        location: Location,
+        source: common_procedure::Error,
+    },
+
+    <span class="attr">#[snafu(display(<span class="string">"Procedure not found: {pid}"</span>))]
+    </span>ProcedureNotFound { location: Location, pid: String },
+
+    <span class="attr">#[snafu(display(<span class="string">"Failed to parse procedure id: {key}"</span>))]
+    </span>ParseProcedureId {
+        location: Location,
+        key: String,
+        <span class="attr">#[snafu(source)]
+        </span>error: common_procedure::ParseIdError,
+    },
+
     <span class="attr">#[snafu(display(<span class="string">"Unsupported operation {}"</span>, operation))]
     </span>Unsupported {
         operation: String,
@@ -542,6 +629,15 @@
     </span>WaitProcedure {
         location: Location,
         source: common_procedure::Error,
+    },
+
+    <span class="attr">#[snafu(display(
+        <span class="string">"Failed to get procedure output, procedure id: {procedure_id}, error: {err_msg}"
+    </span>))]
+    </span>ProcedureOutput {
+        procedure_id: String,
+        err_msg: String,
+        location: Location,
     },
 
     <span class="attr">#[snafu(display(<span class="string">"Failed to convert RawTableInfo into TableInfo"</span>))]
@@ -746,8 +842,32 @@
         </span>error: rskafka::client::error::Error,
     },
 
+    <span class="attr">#[snafu(display(<span class="string">"Failed to resolve Kafka broker endpoint."</span>))]
+    </span>ResolveKafkaEndpoint { source: common_wal::error::Error },
+
     <span class="attr">#[snafu(display(<span class="string">"Failed to build a Kafka controller client"</span>))]
     </span>BuildKafkaCtrlClient {
+        location: Location,
+        <span class="attr">#[snafu(source)]
+        </span>error: rskafka::client::error::Error,
+    },
+
+    <span class="attr">#[snafu(display(
+        <span class="string">"Failed to build a Kafka partition client, topic: {}, partition: {}"</span>,
+        topic,
+        partition
+    ))]
+    </span>BuildKafkaPartitionClient {
+        topic: String,
+        partition: i32,
+        location: Location,
+        <span class="attr">#[snafu(source)]
+        </span>error: rskafka::client::error::Error,
+    },
+
+    <span class="attr">#[snafu(display(<span class="string">"Failed to produce records to Kafka, topic: {}"</span>, topic))]
+    </span>ProduceRecord {
+        topic: String,
         location: Location,
         <span class="attr">#[snafu(source)]
         </span>error: rskafka::client::error::Error,
@@ -762,6 +882,15 @@
 
     <span class="attr">#[snafu(display(<span class="string">"The topic pool is empty"</span>))]
     </span>EmptyTopicPool { location: Location },
+
+    <span class="attr">#[snafu(display(<span class="string">"Unexpected table route type: {}"</span>, err_msg))]
+    </span>UnexpectedLogicalRouteTable { location: Location, err_msg: String },
+
+    <span class="attr">#[snafu(display(<span class="string">"The tasks of create tables cannot be empty"</span>))]
+    </span>EmptyCreateTableTasks { location: Location },
+
+    <span class="attr">#[snafu(display(<span class="string">"Metadata corruption: {}"</span>, err_msg))]
+    </span>MetadataCorruption { err_msg: String, location: Location },
 }
 
 <span class="kw">pub type </span><span class="prelude-ty">Result</span>&lt;T&gt; = std::result::Result&lt;T, Error&gt;;
@@ -800,8 +929,14 @@
             | EncodeWalOptions { .. }
             | BuildKafkaClient { .. }
             | BuildKafkaCtrlClient { .. }
+            | BuildKafkaPartitionClient { .. }
+            | ResolveKafkaEndpoint { .. }
+            | ProduceRecord { .. }
             | CreateKafkaWalTopic { .. }
-            | EmptyTopicPool { .. } =&gt; StatusCode::Unexpected,
+            | EmptyTopicPool { .. }
+            | UnexpectedLogicalRouteTable { .. }
+            | ProcedureOutput { .. }
+            | MetadataCorruption { .. } =&gt; StatusCode::Unexpected,
 
             SendMessage { .. }
             | GetKvCache { .. }
@@ -811,14 +946,17 @@
             | RenameTable { .. }
             | Unsupported { .. } =&gt; StatusCode::Internal,
 
-            PrimaryKeyNotFound { .. } | EmptyKey { .. } | InvalidEngineType { .. } =&gt; {
-                StatusCode::InvalidArguments
-            }
+            ProcedureNotFound { .. }
+            | PrimaryKeyNotFound { .. }
+            | EmptyKey { .. }
+            | InvalidEngineType { .. } =&gt; StatusCode::InvalidArguments,
 
             TableNotFound { .. } =&gt; StatusCode::TableNotFound,
             TableAlreadyExists { .. } =&gt; StatusCode::TableAlreadyExists,
 
-            SubmitProcedure { source, .. } | WaitProcedure { source, .. } =&gt; source.status_code(),
+            SubmitProcedure { source, .. }
+            | QueryProcedure { source, .. }
+            | WaitProcedure { source, .. } =&gt; source.status_code(),
             RegisterProcedureLoader { source, .. } =&gt; source.status_code(),
             External { source, .. } =&gt; source.status_code(),
             OperateDatanode { source, .. } =&gt; source.status_code(),
@@ -827,7 +965,9 @@
             InvalidCatalogValue { source, .. } =&gt; source.status_code(),
             ConvertAlterTableRequest { source, .. } =&gt; source.status_code(),
 
-            InvalidNumTopics { .. } =&gt; StatusCode::InvalidArguments,
+            ParseProcedureId { .. } | InvalidNumTopics { .. } | EmptyCreateTableTasks { .. } =&gt; {
+                StatusCode::InvalidArguments
+            }
         }
     }
 

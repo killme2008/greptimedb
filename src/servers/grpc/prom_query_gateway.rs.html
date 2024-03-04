@@ -137,8 +137,6 @@
 <a href="#136" id="136">136</a>
 <a href="#137" id="137">137</a>
 <a href="#138" id="138">138</a>
-<a href="#139" id="139">139</a>
-<a href="#140" id="140">140</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -172,8 +170,9 @@
 <span class="kw">use </span>snafu::OptionExt;
 <span class="kw">use </span>tonic::{Request, Response};
 
+<span class="kw">use </span><span class="kw">super</span>::greptime_handler::create_query_context;
 <span class="kw">use </span><span class="kw">crate</span>::error::InvalidQuerySnafu;
-<span class="kw">use </span><span class="kw">crate</span>::grpc::greptime_handler::{auth, create_query_context};
+<span class="kw">use </span><span class="kw">crate</span>::grpc::greptime_handler::auth;
 <span class="kw">use </span><span class="kw">crate</span>::grpc::TonicResult;
 <span class="kw">use </span><span class="kw">crate</span>::http::prometheus::{retrieve_metric_name_and_result_type, PrometheusJsonResponse};
 <span class="kw">use </span><span class="kw">crate</span>::prometheus_handler::PrometheusHandlerRef;
@@ -266,17 +265,14 @@
                         err.status_code().to_string(),
                         err.output_msg(),
                     )
-                    .<span class="number">0
-                </span>}
+                }
             };
         <span class="comment">// range query only returns matrix
         </span><span class="kw">if </span>is_range_query {
             result_type = ValueType::Matrix;
         };
 
-        PrometheusJsonResponse::from_query_result(result, metric_name, result_type)
-            .<span class="kw">await
-            </span>.<span class="number">0
+        PrometheusJsonResponse::from_query_result(result, metric_name, result_type).<span class="kw">await
     </span>}
 }
 </code></pre></div></section></main></body></html>

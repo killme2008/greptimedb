@@ -82,6 +82,7 @@
 <a href="#81" id="81">81</a>
 <a href="#82" id="82">82</a>
 <a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -98,7 +99,8 @@
 
 </span><span class="doccomment">//! Statistics of parquet SSTs.
 
-</span><span class="kw">use </span>std::collections::HashSet;
+</span><span class="kw">use </span>std::borrow::Borrow;
+<span class="kw">use </span>std::collections::HashSet;
 
 <span class="kw">use </span>datafusion::physical_optimizer::pruning::PruningStatistics;
 <span class="kw">use </span>datafusion_common::Column;
@@ -109,9 +111,9 @@
 <span class="kw">use </span><span class="kw">crate</span>::sst::parquet::format::ReadFormat;
 
 <span class="doccomment">/// Statistics for pruning row groups.
-</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct </span>RowGroupPruningStats&lt;<span class="lifetime">'a</span>&gt; {
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct </span>RowGroupPruningStats&lt;<span class="lifetime">'a</span>, T&gt; {
     <span class="doccomment">/// Metadata of SST row groups.
-    </span>row_groups: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>[RowGroupMetaData],
+    </span>row_groups: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>[T],
     <span class="doccomment">/// Helper to read the SST.
     </span>read_format: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>ReadFormat,
     <span class="doccomment">/// Projected column ids to read.
@@ -121,10 +123,10 @@
     </span>column_ids: HashSet&lt;ColumnId&gt;,
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; RowGroupPruningStats&lt;<span class="lifetime">'a</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, T&gt; RowGroupPruningStats&lt;<span class="lifetime">'a</span>, T&gt; {
     <span class="doccomment">/// Creates a new statistics to prune specific `row_groups`.
     </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new(
-        row_groups: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>[RowGroupMetaData],
+        row_groups: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>[T],
         read_format: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>ReadFormat,
         column_ids: HashSet&lt;ColumnId&gt;,
     ) -&gt; <span class="self">Self </span>{
@@ -145,7 +147,7 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; PruningStatistics <span class="kw">for </span>RowGroupPruningStats&lt;<span class="lifetime">'a</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, T: Borrow&lt;RowGroupMetaData&gt;&gt; PruningStatistics <span class="kw">for </span>RowGroupPruningStats&lt;<span class="lifetime">'a</span>, T&gt; {
     <span class="kw">fn </span>min_values(<span class="kw-2">&amp;</span><span class="self">self</span>, column: <span class="kw-2">&amp;</span>Column) -&gt; <span class="prelude-ty">Option</span>&lt;ArrayRef&gt; {
         <span class="kw">let </span>column_id = <span class="self">self</span>.column_id_to_prune(<span class="kw-2">&amp;</span>column.name)<span class="question-mark">?</span>;
         <span class="self">self</span>.read_format.min_values(<span class="self">self</span>.row_groups, column_id)

@@ -146,9 +146,6 @@
 <a href="#145" id="145">145</a>
 <a href="#146" id="146">146</a>
 <a href="#147" id="147">147</a>
-<a href="#148" id="148">148</a>
-<a href="#149" id="149">149</a>
-<a href="#150" id="150">150</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -166,7 +163,7 @@
 </span><span class="kw">use </span>std::collections::HashMap;
 <span class="kw">use </span>std::time::Instant;
 
-<span class="kw">use </span>axum::extract::{Json, Query, RawBody, State};
+<span class="kw">use </span>axum::extract::{Query, RawBody, State};
 <span class="kw">use </span>common_catalog::consts::DEFAULT_CATALOG_NAME;
 <span class="kw">use </span>common_error::ext::ErrorExt;
 <span class="kw">use </span>common_error::status_code::StatusCode;
@@ -176,18 +173,19 @@
 <span class="kw">use </span>snafu::ResultExt;
 
 <span class="kw">use </span><span class="kw">crate</span>::error::{HyperSnafu, InvalidUtf8ValueSnafu};
-<span class="kw">use </span><span class="kw">crate</span>::http::{ApiState, GreptimedbV1Response, JsonResponse, ResponseFormat};
+<span class="kw">use </span><span class="kw">crate</span>::http::error_result::ErrorResponse;
+<span class="kw">use </span><span class="kw">crate</span>::http::{ApiState, GreptimedbV1Response, HttpResponse, ResponseFormat};
 
 <span class="macro">macro_rules! </span>json_err {
     (<span class="macro-nonterminal">$e</span>: expr) =&gt; {{
-        <span class="kw">return </span>Json(JsonResponse::with_error(<span class="macro-nonterminal">$e</span>, ResponseFormat::GreptimedbV1));
+        <span class="kw">return </span>HttpResponse::Error(ErrorResponse::from_error(ResponseFormat::GreptimedbV1, <span class="macro-nonterminal">$e</span>));
     }};
 
     (<span class="macro-nonterminal">$msg</span>: expr, <span class="macro-nonterminal">$code</span>: expr) =&gt; {{
-        <span class="kw">return </span>Json(JsonResponse::with_error_message(
-            <span class="macro-nonterminal">$msg</span>.to_string(),
-            <span class="macro-nonterminal">$code</span>,
+        <span class="kw">return </span>HttpResponse::Error(ErrorResponse::from_error_message(
             ResponseFormat::GreptimedbV1,
+            <span class="macro-nonterminal">$code</span>,
+            <span class="macro-nonterminal">$msg</span>.to_string(),
         ));
     }};
 }
@@ -207,7 +205,7 @@
     State(state): State&lt;ApiState&gt;,
     Query(params): Query&lt;ScriptQuery&gt;,
     RawBody(body): RawBody,
-) -&gt; Json&lt;JsonResponse&gt; {
+) -&gt; HttpResponse {
     <span class="kw">if let </span><span class="prelude-val">Some</span>(script_handler) = <span class="kw-2">&amp;</span>state.script_handler {
         <span class="kw">let </span>catalog = params
             .catalog
@@ -231,18 +229,16 @@
 
         <span class="comment">// Safety: schema and name are already checked above.
         </span><span class="kw">let </span>query_ctx = QueryContext::with(<span class="kw-2">&amp;</span>catalog, schema.unwrap());
-        <span class="kw">let </span>body = <span class="kw">match </span>script_handler
+        <span class="kw">match </span>script_handler
             .insert_script(query_ctx, name.unwrap(), <span class="kw-2">&amp;</span>script)
             .<span class="kw">await
         </span>{
-            <span class="prelude-val">Ok</span>(()) =&gt; GreptimedbV1Response::with_output(<span class="macro">vec!</span>[]).into(),
+            <span class="prelude-val">Ok</span>(()) =&gt; GreptimedbV1Response::from_output(<span class="macro">vec!</span>[]).<span class="kw">await</span>,
             <span class="prelude-val">Err</span>(e) =&gt; <span class="macro">json_err!</span>(
                 <span class="macro">format!</span>(<span class="string">"Insert script error: {}"</span>, e.output_msg()),
                 e.status_code()
             ),
-        };
-
-        Json(body)
+        }
     } <span class="kw">else </span>{
         <span class="macro">json_err!</span>(
             <span class="string">"Script execution not supported, missing script handler"</span>,
@@ -265,7 +261,7 @@
 </span><span class="kw">pub async fn </span>run_script(
     State(state): State&lt;ApiState&gt;,
     Query(params): Query&lt;ScriptQuery&gt;,
-) -&gt; Json&lt;JsonResponse&gt; {
+) -&gt; HttpResponse {
     <span class="kw">if let </span><span class="prelude-val">Some</span>(script_handler) = <span class="kw-2">&amp;</span>state.script_handler {
         <span class="kw">let </span>catalog = params
             .catalog
@@ -288,10 +284,8 @@
         <span class="kw">let </span>output = script_handler
             .execute_script(query_ctx, name.unwrap(), params.params)
             .<span class="kw">await</span>;
-        <span class="kw">let </span>resp =
-            JsonResponse::from_output(<span class="macro">vec!</span>[output], ResponseFormat::GreptimedbV1, <span class="prelude-val">None</span>).<span class="kw">await</span>;
-
-        Json(resp.with_execution_time(start.elapsed().as_millis()))
+        <span class="kw">let </span>resp = GreptimedbV1Response::from_output(<span class="macro">vec!</span>[output]).<span class="kw">await</span>;
+        resp.with_execution_time(start.elapsed().as_millis() <span class="kw">as </span>u64)
     } <span class="kw">else </span>{
         <span class="macro">json_err!</span>(
             <span class="string">"Script execution not supported, missing script handler"</span>,

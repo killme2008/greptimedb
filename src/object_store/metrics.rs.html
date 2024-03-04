@@ -72,18 +72,18 @@
 <span class="macro">lazy_static! </span>{
     <span class="doccomment">/// Cache hit counter, no matter what the cache result is.
     </span><span class="kw">pub static </span><span class="kw-2">ref </span>OBJECT_STORE_LRU_CACHE_HIT: IntCounterVec = <span class="macro">register_int_counter_vec!</span>(
-        <span class="string">"object_store_lru_cache_hit"</span>,
+        <span class="string">"greptime_object_store_lru_cache_hit"</span>,
         <span class="string">"object store lru cache hit"</span>,
         <span class="kw-2">&amp;</span>[<span class="string">"result"</span>]
     )
     .unwrap();
     <span class="doccomment">/// Cache miss counter
     </span><span class="kw">pub static </span><span class="kw-2">ref </span>OBJECT_STORE_LRU_CACHE_MISS: IntCounter =
-        <span class="macro">register_int_counter!</span>(<span class="string">"object_store_lru_cache_miss"</span>, <span class="string">"object store lru cache miss"</span>)
+        <span class="macro">register_int_counter!</span>(<span class="string">"greptime_object_store_lru_cache_miss"</span>, <span class="string">"object store lru cache miss"</span>)
             .unwrap();
     <span class="doccomment">/// Object store read error counter
     </span><span class="kw">pub static </span><span class="kw-2">ref </span>OBJECT_STORE_READ_ERROR: IntCounterVec = <span class="macro">register_int_counter_vec!</span>(
-        <span class="string">"object_store_read_errors"</span>,
+        <span class="string">"greptime_object_store_read_errors"</span>,
         <span class="string">"object store read errors"</span>,
         <span class="kw-2">&amp;</span>[<span class="string">"kind"</span>]
     )
@@ -91,12 +91,12 @@
 
     <span class="doccomment">/// Cache entry number
     </span><span class="kw">pub static </span><span class="kw-2">ref </span>OBJECT_STORE_LRU_CACHE_ENTRIES: IntGauge =
-        <span class="macro">register_int_gauge!</span>(<span class="string">"object_store_lru_cache_entries"</span>, <span class="string">"object store lru cache entries"</span>)
+        <span class="macro">register_int_gauge!</span>(<span class="string">"greptime_object_store_lru_cache_entries"</span>, <span class="string">"object store lru cache entries"</span>)
             .unwrap();
 
     <span class="doccomment">/// Cache size in bytes
     </span><span class="kw">pub static </span><span class="kw-2">ref </span>OBJECT_STORE_LRU_CACHE_BYTES: IntGauge =
-        <span class="macro">register_int_gauge!</span>(<span class="string">"object_store_lru_cache_bytes"</span>,  <span class="string">"object store lru cache bytes"</span>)
+        <span class="macro">register_int_gauge!</span>(<span class="string">"greptime_object_store_lru_cache_bytes"</span>,  <span class="string">"object store lru cache bytes"</span>)
             .unwrap();
 }
 </code></pre></div></section></main></body></html>

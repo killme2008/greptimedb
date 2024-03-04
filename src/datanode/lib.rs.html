@@ -27,6 +27,7 @@
 <a href="#26" id="26">26</a>
 <a href="#27" id="27">27</a>
 <a href="#28" id="28">28</a>
+<a href="#29" id="29">29</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -52,7 +53,8 @@
 <span class="kw">pub mod </span>heartbeat;
 <span class="kw">pub mod </span>metrics;
 <span class="kw">pub mod </span>region_server;
+<span class="kw">pub mod </span>service;
 <span class="kw">mod </span>store;
-<span class="attr">#[cfg(test)]
-</span><span class="kw">mod </span>tests;
+<span class="attr">#[cfg(any(test, feature = <span class="string">"testing"</span>))]
+</span><span class="kw">pub mod </span>tests;
 </code></pre></div></section></main></body></html>

@@ -263,6 +263,28 @@
 <a href="#262" id="262">262</a>
 <a href="#263" id="263">263</a>
 <a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -307,165 +329,187 @@
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">const </span>METRIC_PATH_LABEL: <span class="kw-2">&amp;</span>str = <span class="string">"path"</span>;
 
 <span class="macro">lazy_static! </span>{
-    <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_ERROR_COUNTER: IntCounterVec =
-        <span class="macro">register_int_counter_vec!</span>(<span class="string">"servers_error"</span>, <span class="string">"servers error"</span>, <span class="kw-2">&amp;</span>[METRIC_PROTOCOL_LABEL])
-            .unwrap();
+    <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_ERROR_COUNTER: IntCounterVec = <span class="macro">register_int_counter_vec!</span>(
+        <span class="string">"greptime_servers_error"</span>,
+        <span class="string">"servers error"</span>,
+        <span class="kw-2">&amp;</span>[METRIC_PROTOCOL_LABEL]
+    )
+    .unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_HTTP_SQL_ELAPSED: HistogramVec = <span class="macro">register_histogram_vec!</span>(
-        <span class="string">"servers_http_sql_elapsed"</span>,
+        <span class="string">"greptime_servers_http_sql_elapsed"</span>,
         <span class="string">"servers http sql elapsed"</span>,
         <span class="kw-2">&amp;</span>[METRIC_DB_LABEL]
     )
     .unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_HTTP_PROMQL_ELAPSED: HistogramVec = <span class="macro">register_histogram_vec!</span>(
-        <span class="string">"servers_http_promql_elapsed"</span>,
+        <span class="string">"greptime_servers_http_promql_elapsed"</span>,
         <span class="string">"servers http promql elapsed"</span>,
         <span class="kw-2">&amp;</span>[METRIC_DB_LABEL]
     )
     .unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_AUTH_FAILURE: IntCounterVec = <span class="macro">register_int_counter_vec!</span>(
-        <span class="string">"servers_auth_failure_count"</span>,
+        <span class="string">"greptime_servers_auth_failure_count"</span>,
         <span class="string">"servers auth failure count"</span>,
         <span class="kw-2">&amp;</span>[METRIC_CODE_LABEL]
     )
     .unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_HTTP_INFLUXDB_WRITE_ELAPSED: HistogramVec = <span class="macro">register_histogram_vec!</span>(
-        <span class="string">"servers_http_influxdb_write_elapsed"</span>,
+        <span class="string">"greptime_servers_http_influxdb_write_elapsed"</span>,
         <span class="string">"servers http influxdb write elapsed"</span>,
         <span class="kw-2">&amp;</span>[METRIC_DB_LABEL]
     )
     .unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_HTTP_PROM_STORE_WRITE_ELAPSED: HistogramVec = <span class="macro">register_histogram_vec!</span>(
-        <span class="string">"servers_http_prometheus_write_elapsed"</span>,
+        <span class="string">"greptime_servers_http_prometheus_write_elapsed"</span>,
         <span class="string">"servers http prometheus write elapsed"</span>,
         <span class="kw-2">&amp;</span>[METRIC_DB_LABEL]
     )
     .unwrap();
+    <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_HTTP_PROM_STORE_DECODE_ELAPSED: Histogram = <span class="macro">register_histogram!</span>(
+        <span class="string">"greptime_servers_http_prometheus_decode_elapsed"</span>,
+        <span class="string">"servers http prometheus decode elapsed"</span>,
+    )
+    .unwrap();
+    <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_HTTP_PROM_STORE_DECODE_NUM_SERIES: Histogram = <span class="macro">register_histogram!</span>(
+        <span class="string">"greptime_servers_http_prometheus_decode_num_series"</span>,
+        <span class="string">"servers http prometheus decode num series"</span>,
+    )
+    .unwrap();
+    <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_HTTP_PROM_STORE_CONVERT_ELAPSED: Histogram = <span class="macro">register_histogram!</span>(
+        <span class="string">"greptime_servers_http_prometheus_convert_elapsed"</span>,
+        <span class="string">"servers http prometheus convert to gRPC request elapsed"</span>,
+    )
+    .unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_HTTP_PROM_STORE_READ_ELAPSED: HistogramVec = <span class="macro">register_histogram_vec!</span>(
-        <span class="string">"servers_http_prometheus_read_elapsed"</span>,
+        <span class="string">"greptime_servers_http_prometheus_read_elapsed"</span>,
         <span class="string">"servers http prometheus read elapsed"</span>,
         <span class="kw-2">&amp;</span>[METRIC_DB_LABEL]
     )
     .unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_HTTP_OPENTELEMETRY_METRICS_ELAPSED: HistogramVec =
         <span class="macro">register_histogram_vec!</span>(
-            <span class="string">"servers_http_otlp_metrics_elapsed"</span>,
+            <span class="string">"greptime_servers_http_otlp_metrics_elapsed"</span>,
             <span class="string">"servers_http_otlp_metrics_elapsed"</span>,
             <span class="kw-2">&amp;</span>[METRIC_DB_LABEL]
         )
         .unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_HTTP_OPENTELEMETRY_TRACES_ELAPSED: HistogramVec =
         <span class="macro">register_histogram_vec!</span>(
-            <span class="string">"servers_http_otlp_traces_elapsed"</span>,
+            <span class="string">"greptime_servers_http_otlp_traces_elapsed"</span>,
             <span class="string">"servers http otlp traces elapsed"</span>,
             <span class="kw-2">&amp;</span>[METRIC_DB_LABEL]
         )
         .unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_TCP_OPENTSDB_LINE_WRITE_ELAPSED: Histogram = <span class="macro">register_histogram!</span>(
-        <span class="string">"servers_opentsdb_line_write_elapsed"</span>,
+        <span class="string">"greptime_servers_opentsdb_line_write_elapsed"</span>,
         <span class="string">"servers opentsdb line write elapsed"
     </span>)
     .unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_HTTP_PROMQL_FORMAT_QUERY_ELAPSED: Histogram = <span class="macro">register_histogram!</span>(
-        <span class="string">"servers_http_promql_format_query_elapsed"</span>,
+        <span class="string">"greptime_servers_http_promql_format_query_elapsed"</span>,
         <span class="string">"servers http promql format query elapsed"
     </span>)
     .unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_HTTP_PROMQL_INSTANT_QUERY_ELAPSED: Histogram = <span class="macro">register_histogram!</span>(
-        <span class="string">"servers_http_promql_instant_query_elapsed"</span>,
+        <span class="string">"greptime_servers_http_promql_instant_query_elapsed"</span>,
         <span class="string">"servers http promql instant query elapsed"
     </span>)
     .unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_HTTP_PROMQL_RANGE_QUERY_ELAPSED: Histogram = <span class="macro">register_histogram!</span>(
-        <span class="string">"servers_http_promql_range_query_elapsed"</span>,
+        <span class="string">"greptime_servers_http_promql_range_query_elapsed"</span>,
         <span class="string">"servers http promql range query elapsed"
     </span>)
     .unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_HTTP_PROMQL_LABEL_QUERY_ELAPSED: Histogram = <span class="macro">register_histogram!</span>(
-        <span class="string">"servers_http_promql_label_query_elapsed"</span>,
+        <span class="string">"greptime_servers_http_promql_label_query_elapsed"</span>,
         <span class="string">"servers http promql label query elapsed"
     </span>)
     .unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_HTTP_PROMQL_SERIES_QUERY_ELAPSED: Histogram = <span class="macro">register_histogram!</span>(
-        <span class="string">"servers_http_promql_series_query_elapsed"</span>,
+        <span class="string">"greptime_servers_http_promql_series_query_elapsed"</span>,
         <span class="string">"servers http promql series query elapsed"
     </span>)
     .unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_HTTP_PROMQL_LABEL_VALUE_QUERY_ELAPSED: Histogram = <span class="macro">register_histogram!</span>(
-        <span class="string">"servers_http_promql_label_value_query_elapsed"</span>,
+        <span class="string">"greptime_servers_http_promql_label_value_query_elapsed"</span>,
         <span class="string">"servers http promql label value query elapsed"
     </span>)
     .unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_MYSQL_CONNECTIONS: IntGauge = <span class="macro">register_int_gauge!</span>(
-        <span class="string">"servers_mysql_connection_count"</span>,
+        <span class="string">"greptime_servers_mysql_connection_count"</span>,
         <span class="string">"servers mysql connection count"
     </span>)
     .unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_MYSQL_QUERY_TIMER: HistogramVec = <span class="macro">register_histogram_vec!</span>(
-        <span class="string">"servers_mysql_query_elapsed"</span>,
+        <span class="string">"greptime_servers_mysql_query_elapsed"</span>,
         <span class="string">"servers mysql query elapsed"</span>,
         <span class="kw-2">&amp;</span>[METRIC_MYSQL_SUBPROTOCOL_LABEL, METRIC_DB_LABEL]
     )
     .unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_MYSQL_PREPARED_COUNT: IntCounterVec = <span class="macro">register_int_counter_vec!</span>(
-        <span class="string">"servers_mysql_prepared_count"</span>,
+        <span class="string">"greptime_servers_mysql_prepared_count"</span>,
         <span class="string">"servers mysql prepared count"</span>,
         <span class="kw-2">&amp;</span>[METRIC_DB_LABEL]
     )
     .unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_POSTGRES_CONNECTIONS: IntGauge = <span class="macro">register_int_gauge!</span>(
-        <span class="string">"servers_postgres_connection_count"</span>,
+        <span class="string">"greptime_servers_postgres_connection_count"</span>,
         <span class="string">"servers postgres connection count"
     </span>)
     .unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_POSTGRES_QUERY_TIMER: HistogramVec = <span class="macro">register_histogram_vec!</span>(
-        <span class="string">"servers_postgres_query_elapsed"</span>,
+        <span class="string">"greptime_servers_postgres_query_elapsed"</span>,
         <span class="string">"servers postgres query elapsed"</span>,
         <span class="kw-2">&amp;</span>[METRIC_POSTGRES_SUBPROTOCOL_LABEL, METRIC_DB_LABEL]
     )
     .unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_POSTGRES_PREPARED_COUNT: IntCounter = <span class="macro">register_int_counter!</span>(
-        <span class="string">"servers_postgres_prepared_count"</span>,
+        <span class="string">"greptime_servers_postgres_prepared_count"</span>,
         <span class="string">"servers postgres prepared count"
     </span>)
     .unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_SERVER_GRPC_DB_REQUEST_TIMER: HistogramVec = <span class="macro">register_histogram_vec!</span>(
-        <span class="string">"servers_grpc_db_request_elapsed"</span>,
+        <span class="string">"greptime_servers_grpc_db_request_elapsed"</span>,
         <span class="string">"servers grpc db request elapsed"</span>,
         <span class="kw-2">&amp;</span>[METRIC_DB_LABEL, METRIC_TYPE_LABEL, METRIC_CODE_LABEL]
     )
     .unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_SERVER_GRPC_PROM_REQUEST_TIMER: HistogramVec = <span class="macro">register_histogram_vec!</span>(
-        <span class="string">"servers_grpc_prom_request_elapsed"</span>,
+        <span class="string">"greptime_servers_grpc_prom_request_elapsed"</span>,
         <span class="string">"servers grpc prom request elapsed"</span>,
         <span class="kw-2">&amp;</span>[METRIC_DB_LABEL]
     )
     .unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_HTTP_REQUESTS_TOTAL: IntCounterVec = <span class="macro">register_int_counter_vec!</span>(
-        <span class="string">"servers_http_requests_total"</span>,
+        <span class="string">"greptime_servers_http_requests_total"</span>,
         <span class="string">"servers http requests total"</span>,
         <span class="kw-2">&amp;</span>[METRIC_METHOD_LABEL, METRIC_PATH_LABEL, METRIC_CODE_LABEL]
     )
     .unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_HTTP_REQUESTS_ELAPSED: HistogramVec = <span class="macro">register_histogram_vec!</span>(
-        <span class="string">"servers_http_requests_elapsed"</span>,
+        <span class="string">"greptime_servers_http_requests_elapsed"</span>,
         <span class="string">"servers http requests elapsed"</span>,
         <span class="kw-2">&amp;</span>[METRIC_METHOD_LABEL, METRIC_PATH_LABEL, METRIC_CODE_LABEL]
     )
     .unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_GRPC_REQUESTS_TOTAL: IntCounterVec = <span class="macro">register_int_counter_vec!</span>(
-        <span class="string">"servers_grpc_requests_total"</span>,
+        <span class="string">"greptime_servers_grpc_requests_total"</span>,
         <span class="string">"servers grpc requests total"</span>,
         <span class="kw-2">&amp;</span>[METRIC_PATH_LABEL, METRIC_CODE_LABEL]
     )
     .unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_GRPC_REQUESTS_ELAPSED: HistogramVec = <span class="macro">register_histogram_vec!</span>(
-        <span class="string">"servers_grpc_requests_elapsed"</span>,
+        <span class="string">"greptime_servers_grpc_requests_elapsed"</span>,
         <span class="string">"servers grpc requests elapsed"</span>,
         <span class="kw-2">&amp;</span>[METRIC_PATH_LABEL, METRIC_CODE_LABEL]
     )
     .unwrap();
-    <span class="kw">pub static </span><span class="kw-2">ref </span>HTTP_TRACK_METRICS: HistogramVec =
-        <span class="macro">register_histogram_vec!</span>(<span class="string">"http_track_metrics"</span>, <span class="string">"http track metrics"</span>, <span class="kw-2">&amp;</span>[<span class="string">"tag"</span>]).unwrap();
+    <span class="kw">pub static </span><span class="kw-2">ref </span>HTTP_TRACK_METRICS: HistogramVec = <span class="macro">register_histogram_vec!</span>(
+        <span class="string">"greptime_http_track_metrics"</span>,
+        <span class="string">"http track metrics"</span>,
+        <span class="kw-2">&amp;</span>[<span class="string">"tag"</span>]
+    )
+    .unwrap();
 }
 
 <span class="comment">// Based on https://github.com/hyperium/tonic/blob/master/examples/src/tower/server.rs

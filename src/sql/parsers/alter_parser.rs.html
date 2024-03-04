@@ -273,6 +273,21 @@
 <a href="#272" id="272">272</a>
 <a href="#273" id="273">273</a>
 <a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -379,11 +394,14 @@
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use </span><span class="kw">crate</span>::dialect::GreptimeDbDialect;
+    <span class="kw">use </span><span class="kw">crate</span>::parser::ParseOptions;
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_parse_alter_add_column() {
         <span class="kw">let </span>sql = <span class="string">"ALTER TABLE my_metric_1 ADD tagk_i STRING Null;"</span>;
-        <span class="kw">let </span><span class="kw-2">mut </span>result = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
+        <span class="kw">let </span><span class="kw-2">mut </span>result =
+            ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}, ParseOptions::default())
+                .unwrap();
         <span class="macro">assert_eq!</span>(<span class="number">1</span>, result.len());
 
         <span class="kw">let </span>statement = result.remove(<span class="number">0</span>);
@@ -417,7 +435,9 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_parse_alter_add_column_with_first() {
         <span class="kw">let </span>sql = <span class="string">"ALTER TABLE my_metric_1 ADD tagk_i STRING Null FIRST;"</span>;
-        <span class="kw">let </span><span class="kw-2">mut </span>result = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
+        <span class="kw">let </span><span class="kw-2">mut </span>result =
+            ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}, ParseOptions::default())
+                .unwrap();
         <span class="macro">assert_eq!</span>(<span class="number">1</span>, result.len());
 
         <span class="kw">let </span>statement = result.remove(<span class="number">0</span>);
@@ -451,7 +471,9 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_parse_alter_add_column_with_after() {
         <span class="kw">let </span>sql = <span class="string">"ALTER TABLE my_metric_1 ADD tagk_i STRING Null AFTER ts;"</span>;
-        <span class="kw">let </span><span class="kw-2">mut </span>result = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
+        <span class="kw">let </span><span class="kw-2">mut </span>result =
+            ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}, ParseOptions::default())
+                .unwrap();
         <span class="macro">assert_eq!</span>(<span class="number">1</span>, result.len());
 
         <span class="kw">let </span>statement = result.remove(<span class="number">0</span>);
@@ -490,12 +512,16 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_parse_alter_drop_column() {
         <span class="kw">let </span>sql = <span class="string">"ALTER TABLE my_metric_1 DROP a"</span>;
-        <span class="kw">let </span>result = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap_err();
+        <span class="kw">let </span>result =
+            ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}, ParseOptions::default())
+                .unwrap_err();
         <span class="kw">let </span>err = result.output_msg();
         <span class="macro">assert!</span>(err.contains(<span class="string">"expect keyword COLUMN after ALTER TABLE DROP"</span>));
 
         <span class="kw">let </span>sql = <span class="string">"ALTER TABLE my_metric_1 DROP COLUMN a"</span>;
-        <span class="kw">let </span><span class="kw-2">mut </span>result = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
+        <span class="kw">let </span><span class="kw-2">mut </span>result =
+            ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}, ParseOptions::default())
+                .unwrap();
         <span class="macro">assert_eq!</span>(<span class="number">1</span>, result.len());
 
         <span class="kw">let </span>statement = result.remove(<span class="number">0</span>);
@@ -520,12 +546,16 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_parse_alter_rename_table() {
         <span class="kw">let </span>sql = <span class="string">"ALTER TABLE test_table table_t"</span>;
-        <span class="kw">let </span>result = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap_err();
+        <span class="kw">let </span>result =
+            ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}, ParseOptions::default())
+                .unwrap_err();
         <span class="kw">let </span>err = result.output_msg();
         <span class="macro">assert!</span>(err.contains(<span class="string">"expect keyword ADD or DROP or RENAME after ALTER TABLE"</span>));
 
         <span class="kw">let </span>sql = <span class="string">"ALTER TABLE test_table RENAME table_t"</span>;
-        <span class="kw">let </span><span class="kw-2">mut </span>result = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
+        <span class="kw">let </span><span class="kw-2">mut </span>result =
+            ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}, ParseOptions::default())
+                .unwrap();
         <span class="macro">assert_eq!</span>(<span class="number">1</span>, result.len());
 
         <span class="kw">let </span>statement = result.remove(<span class="number">0</span>);

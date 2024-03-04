@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["CloseTableResult"],"struct":["EngineContext","TableReference"],"trait":["TableEngine","TableEngineProcedure"],"type":["OwnedTableReference","TableEngineProcedureRef","TableEngineRef"]};

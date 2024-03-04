@@ -88,6 +88,7 @@
 <a href="#87" id="87">87</a>
 <a href="#88" id="88">88</a>
 <a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -156,14 +157,15 @@
             fun: fun.clone(),
         }
     }
+}
 
-    <span class="doccomment">/// Cast self into datafusion UDF.
-    </span><span class="kw">pub fn </span>into_df_udf(<span class="self">self</span>) -&gt; DfScalarUDF {
+<span class="kw">impl </span>From&lt;ScalarUdf&gt; <span class="kw">for </span>DfScalarUDF {
+    <span class="kw">fn </span>from(udf: ScalarUdf) -&gt; <span class="self">Self </span>{
         DfScalarUDF::new(
-            <span class="kw-2">&amp;</span><span class="self">self</span>.name,
-            <span class="kw-2">&amp;</span><span class="self">self</span>.signature.into(),
-            <span class="kw-2">&amp;</span>to_df_return_type(<span class="self">self</span>.return_type),
-            <span class="kw-2">&amp;</span>to_df_scalar_func(<span class="self">self</span>.fun),
+            <span class="kw-2">&amp;</span>udf.name,
+            <span class="kw-2">&amp;</span>udf.signature.into(),
+            <span class="kw-2">&amp;</span>to_df_return_type(udf.return_type),
+            <span class="kw-2">&amp;</span>to_df_scalar_func(udf.fun),
         )
     }
 }

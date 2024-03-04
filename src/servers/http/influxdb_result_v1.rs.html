@@ -228,20 +228,6 @@
 <a href="#227" id="227">227</a>
 <a href="#228" id="228">228</a>
 <a href="#229" id="229">229</a>
-<a href="#230" id="230">230</a>
-<a href="#231" id="231">231</a>
-<a href="#232" id="232">232</a>
-<a href="#233" id="233">233</a>
-<a href="#234" id="234">234</a>
-<a href="#235" id="235">235</a>
-<a href="#236" id="236">236</a>
-<a href="#237" id="237">237</a>
-<a href="#238" id="238">238</a>
-<a href="#239" id="239">239</a>
-<a href="#240" id="240">240</a>
-<a href="#241" id="241">241</a>
-<a href="#242" id="242">242</a>
-<a href="#243" id="243">243</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -256,17 +242,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-</span><span class="kw">use </span>common_error::ext::ErrorExt;
+</span><span class="kw">use </span>axum::http::HeaderValue;
+<span class="kw">use </span>axum::response::{IntoResponse, Response};
+<span class="kw">use </span>axum::Json;
+<span class="kw">use </span>common_error::ext::ErrorExt;
 <span class="kw">use </span>common_query::Output;
 <span class="kw">use </span>common_recordbatch::{util, RecordBatch};
-<span class="kw">use </span>common_telemetry::{debug, error};
 <span class="kw">use </span>schemars::JsonSchema;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>serde_json::Value;
 <span class="kw">use </span>snafu::ResultExt;
 
 <span class="kw">use </span><span class="kw">crate</span>::error::{Error, ToJsonSnafu};
-<span class="kw">use </span><span class="kw">crate</span>::http::Epoch;
+<span class="kw">use </span><span class="kw">crate</span>::http::error_result::ErrorResponse;
+<span class="kw">use </span><span class="kw">crate</span>::http::header::{GREPTIME_DB_HEADER_EXECUTION_TIME, GREPTIME_DB_HEADER_FORMAT};
+<span class="kw">use </span><span class="kw">crate</span>::http::{Epoch, HttpResponse, ResponseFormat};
 
 <span class="attr">#[derive(Debug, Default, Serialize, Deserialize, JsonSchema)]
 </span><span class="kw">pub struct </span>SqlQuery {
@@ -290,7 +280,7 @@
 <span class="kw">impl </span>InfluxdbRecordsOutput {
     <span class="kw">pub fn </span>new(columns: Vec&lt;String&gt;, values: Vec&lt;Vec&lt;Value&gt;&gt;) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            name: <span class="string">""</span>.to_string(),
+            name: String::default(),
             columns,
             values,
         }
@@ -369,55 +359,26 @@
 <span class="attr">#[derive(Serialize, Deserialize, Debug, JsonSchema)]
 </span><span class="kw">pub struct </span>InfluxdbV1Response {
     results: Vec&lt;InfluxdbOutput&gt;,
-    <span class="attr">#[serde(skip_serializing_if = <span class="string">"Option::is_none"</span>)]
-    </span>error: <span class="prelude-ty">Option</span>&lt;String&gt;,
-    <span class="attr">#[serde(skip_serializing_if = <span class="string">"Option::is_none"</span>)]
-    </span>execution_time_ms: <span class="prelude-ty">Option</span>&lt;u64&gt;,
+    execution_time_ms: u64,
 }
 
 <span class="kw">impl </span>InfluxdbV1Response {
-    <span class="kw">pub fn </span>with_error(error: <span class="kw">impl </span>ErrorExt) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>code = error.status_code();
-        <span class="kw">if </span>code.should_log_error() {
-            <span class="macro">error!</span>(error; <span class="string">"Failed to handle HTTP request"</span>);
-        } <span class="kw">else </span>{
-            <span class="macro">debug!</span>(<span class="string">"Failed to handle HTTP request, err: {:?}"</span>, error);
-        }
-
-        InfluxdbV1Response {
-            results: <span class="macro">vec!</span>[],
-            error: <span class="prelude-val">Some</span>(error.output_msg()),
-            execution_time_ms: <span class="prelude-val">None</span>,
-        }
-    }
-
-    <span class="kw">pub fn </span>with_error_message(err_msg: String) -&gt; <span class="self">Self </span>{
-        InfluxdbV1Response {
-            results: <span class="macro">vec!</span>[],
-            error: <span class="prelude-val">Some</span>(err_msg),
-            execution_time_ms: <span class="prelude-val">None</span>,
-        }
-    }
-
-    <span class="kw">fn </span>with_output(results: Vec&lt;InfluxdbOutput&gt;) -&gt; <span class="self">Self </span>{
-        InfluxdbV1Response {
-            results,
-            error: <span class="prelude-val">None</span>,
-            execution_time_ms: <span class="prelude-val">None</span>,
-        }
-    }
-
-    <span class="kw">pub fn </span>with_execution_time(<span class="kw-2">&amp;mut </span><span class="self">self</span>, execution_time: u64) {
-        <span class="self">self</span>.execution_time_ms = <span class="prelude-val">Some</span>(execution_time);
-    }
+    <span class="kw">pub fn </span>with_execution_time(<span class="kw-2">mut </span><span class="self">self</span>, execution_time: u64) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.execution_time_ms = execution_time;
+        <span class="self">self
+    </span>}
 
     <span class="doccomment">/// Create a influxdb v1 response from query result
     </span><span class="kw">pub async fn </span>from_output(
         outputs: Vec&lt;<span class="kw">crate</span>::error::Result&lt;Output&gt;&gt;,
         epoch: <span class="prelude-ty">Option</span>&lt;Epoch&gt;,
-    ) -&gt; <span class="self">Self </span>{
-        <span class="comment">// TODO(sunng87): this api response structure cannot represent error
-        // well. It hides successful execution results from error response
+    ) -&gt; HttpResponse {
+        <span class="kw">fn </span>make_error_response(error: <span class="kw">impl </span>ErrorExt) -&gt; HttpResponse {
+            HttpResponse::Error(ErrorResponse::from_error(ResponseFormat::InfluxdbV1, error))
+        }
+
+        <span class="comment">// TODO(sunng87): this api response structure cannot represent error well.
+        //  It hides successful execution results from error response
         </span><span class="kw">let </span><span class="kw-2">mut </span>results = Vec::with_capacity(outputs.len());
         <span class="kw">for </span>(statement_id, out) <span class="kw">in </span>outputs.into_iter().enumerate() {
             <span class="kw">let </span>statement_id = statement_id <span class="kw">as </span>u32;
@@ -428,7 +389,7 @@
                         series: <span class="macro">vec!</span>[],
                     });
                 }
-                <span class="prelude-val">Ok</span>(Output::Stream(stream)) =&gt; {
+                <span class="prelude-val">Ok</span>(Output::Stream(stream, <span class="kw">_</span>)) =&gt; {
                     <span class="comment">// TODO(sunng87): streaming response
                     </span><span class="kw">match </span>util::collect(stream).<span class="kw">await </span>{
                         <span class="prelude-val">Ok</span>(rows) =&gt; <span class="kw">match </span>InfluxdbRecordsOutput::try_from((epoch, rows)) {
@@ -439,12 +400,11 @@
                                 });
                             }
                             <span class="prelude-val">Err</span>(err) =&gt; {
-                                <span class="kw">return </span><span class="self">Self</span>::with_error(err);
+                                <span class="kw">return </span>make_error_response(err);
                             }
                         },
-
-                        <span class="prelude-val">Err</span>(e) =&gt; {
-                            <span class="kw">return </span><span class="self">Self</span>::with_error(e);
+                        <span class="prelude-val">Err</span>(err) =&gt; {
+                            <span class="kw">return </span>make_error_response(err);
                         }
                     }
                 }
@@ -457,32 +417,44 @@
                             });
                         }
                         <span class="prelude-val">Err</span>(err) =&gt; {
-                            <span class="kw">return </span><span class="self">Self</span>::with_error(err);
+                            <span class="kw">return </span>make_error_response(err);
                         }
                     }
                 }
-                <span class="prelude-val">Err</span>(e) =&gt; {
-                    <span class="kw">return </span><span class="self">Self</span>::with_error(e);
+                <span class="prelude-val">Err</span>(err) =&gt; {
+                    <span class="kw">return </span>make_error_response(err);
                 }
             }
         }
-        <span class="self">Self</span>::with_output(results)
-    }
 
-    <span class="kw">pub fn </span>success(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        <span class="self">self</span>.error.is_none()
-    }
-
-    <span class="kw">pub fn </span>error(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>String&gt; {
-        <span class="self">self</span>.error.as_ref()
+        HttpResponse::InfluxdbV1(InfluxdbV1Response {
+            results,
+            execution_time_ms: <span class="number">0</span>,
+        })
     }
 
     <span class="kw">pub fn </span>results(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[InfluxdbOutput] {
         <span class="kw-2">&amp;</span><span class="self">self</span>.results
     }
 
-    <span class="kw">pub fn </span>execution_time_ms(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u64&gt; {
+    <span class="kw">pub fn </span>execution_time_ms(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u64 {
         <span class="self">self</span>.execution_time_ms
+    }
+}
+
+<span class="kw">impl </span>IntoResponse <span class="kw">for </span>InfluxdbV1Response {
+    <span class="kw">fn </span>into_response(<span class="self">self</span>) -&gt; Response {
+        <span class="kw">let </span>execution_time = <span class="self">self</span>.execution_time_ms;
+        <span class="kw">let </span><span class="kw-2">mut </span>resp = Json(<span class="self">self</span>).into_response();
+        resp.headers_mut().insert(
+            <span class="kw-2">&amp;</span>GREPTIME_DB_HEADER_FORMAT,
+            HeaderValue::from_static(<span class="string">"influxdb_v1"</span>),
+        );
+        resp.headers_mut().insert(
+            <span class="kw-2">&amp;</span>GREPTIME_DB_HEADER_EXECUTION_TIME,
+            HeaderValue::from(execution_time),
+        );
+        resp
     }
 }
 </code></pre></div></section></main></body></html>

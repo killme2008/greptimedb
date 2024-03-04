@@ -80,27 +80,6 @@
 <a href="#79" id="79">79</a>
 <a href="#80" id="80">80</a>
 <a href="#81" id="81">81</a>
-<a href="#82" id="82">82</a>
-<a href="#83" id="83">83</a>
-<a href="#84" id="84">84</a>
-<a href="#85" id="85">85</a>
-<a href="#86" id="86">86</a>
-<a href="#87" id="87">87</a>
-<a href="#88" id="88">88</a>
-<a href="#89" id="89">89</a>
-<a href="#90" id="90">90</a>
-<a href="#91" id="91">91</a>
-<a href="#92" id="92">92</a>
-<a href="#93" id="93">93</a>
-<a href="#94" id="94">94</a>
-<a href="#95" id="95">95</a>
-<a href="#96" id="96">96</a>
-<a href="#97" id="97">97</a>
-<a href="#98" id="98">98</a>
-<a href="#99" id="99">99</a>
-<a href="#100" id="100">100</a>
-<a href="#101" id="101">101</a>
-<a href="#102" id="102">102</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -125,9 +104,7 @@
 
 <span class="kw">use </span><span class="kw">crate</span>::function::{Function, FunctionContext};
 
-<span class="kw">const </span>DEFAULT_VALUE: <span class="kw-2">&amp;</span>str = <span class="string">"unknown"</span>;
-
-<span class="doccomment">/// Generates build information  
+<span class="doccomment">/// Generates build information
 </span><span class="attr">#[derive(Clone, Debug, Default)]
 </span><span class="kw">pub struct </span>BuildFunction;
 
@@ -147,23 +124,11 @@
     }
 
     <span class="kw">fn </span>signature(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Signature {
-        Signature::uniform(
-            <span class="number">0</span>,
-            <span class="macro">vec!</span>[ConcreteDataType::string_datatype()],
-            Volatility::Immutable,
-        )
+        Signature::uniform(<span class="number">0</span>, <span class="macro">vec!</span>[], Volatility::Immutable)
     }
 
     <span class="kw">fn </span>eval(<span class="kw-2">&amp;</span><span class="self">self</span>, _func_ctx: FunctionContext, _columns: <span class="kw-2">&amp;</span>[VectorRef]) -&gt; <span class="prelude-ty">Result</span>&lt;VectorRef&gt; {
-        <span class="kw">let </span>build_info = <span class="macro">format!</span>(
-            <span class="string">"branch: {}\ncommit: {}\ncommit short: {}\ndirty: {}\nversion: {}"</span>,
-            build_data::get_git_branch().unwrap_or_else(|<span class="kw">_</span>| DEFAULT_VALUE.to_string()),
-            build_data::get_git_commit().unwrap_or_else(|<span class="kw">_</span>| DEFAULT_VALUE.to_string()),
-            build_data::get_git_commit_short().unwrap_or_else(|<span class="kw">_</span>| DEFAULT_VALUE.to_string()),
-            build_data::get_git_dirty().map_or(DEFAULT_VALUE.to_string(), |v| v.to_string()),
-            <span class="macro">env!</span>(<span class="string">"CARGO_PKG_VERSION"</span>)
-        );
-
+        <span class="kw">let </span>build_info = common_version::build_info().to_string();
         <span class="kw">let </span>v = Arc::new(StringVector::from(<span class="macro">vec!</span>[build_info]));
         <span class="prelude-val">Ok</span>(v)
     }
@@ -188,16 +153,9 @@
                          Signature {
                              type_signature: TypeSignature::Uniform(<span class="number">0</span>, valid_types),
                              volatility: Volatility::Immutable
-                         } <span class="kw">if  </span>valid_types == <span class="macro">vec!</span>[ConcreteDataType::string_datatype()]
+                         } <span class="kw">if  </span>valid_types.is_empty()
         ));
-        <span class="kw">let </span>build_info = <span class="macro">format!</span>(
-            <span class="string">"branch: {}\ncommit: {}\ncommit short: {}\ndirty: {}\nversion: {}"</span>,
-            build_data::get_git_branch().unwrap_or_else(|<span class="kw">_</span>| DEFAULT_VALUE.to_string()),
-            build_data::get_git_commit().unwrap_or_else(|<span class="kw">_</span>| DEFAULT_VALUE.to_string()),
-            build_data::get_git_commit_short().unwrap_or_else(|<span class="kw">_</span>| DEFAULT_VALUE.to_string()),
-            build_data::get_git_dirty().map_or(DEFAULT_VALUE.to_string(), |v| v.to_string()),
-            <span class="macro">env!</span>(<span class="string">"CARGO_PKG_VERSION"</span>)
-        );
+        <span class="kw">let </span>build_info = common_version::build_info().to_string();
         <span class="kw">let </span>vector = build.eval(FunctionContext::default(), <span class="kw-2">&amp;</span>[]).unwrap();
         <span class="kw">let </span>expect: VectorRef = Arc::new(StringVector::from(<span class="macro">vec!</span>[build_info]));
         <span class="macro">assert_eq!</span>(expect, vector);

@@ -139,8 +139,6 @@
 <a href="#138" id="138">138</a>
 <a href="#139" id="139">139</a>
 <a href="#140" id="140">140</a>
-<a href="#141" id="141">141</a>
-<a href="#142" id="142">142</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -155,9 +153,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-</span><span class="kw">use </span>std::str::FromStr;
-
-<span class="kw">use </span>arrow::datatypes::{DataType <span class="kw">as </span>ArrowDataType, Date32Type};
+</span><span class="kw">use </span>arrow::datatypes::{DataType <span class="kw">as </span>ArrowDataType, Date32Type};
 <span class="kw">use </span>common_time::Date;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>snafu::OptionExt;
@@ -198,7 +194,7 @@
     <span class="kw">fn </span>try_cast(<span class="kw-2">&amp;</span><span class="self">self</span>, from: Value) -&gt; <span class="prelude-ty">Option</span>&lt;Value&gt; {
         <span class="kw">match </span>from {
             Value::Int32(v) =&gt; <span class="prelude-val">Some</span>(Value::Date(Date::from(v))),
-            Value::String(v) =&gt; Date::from_str(v.as_utf8()).map(Value::Date).ok(),
+            Value::String(v) =&gt; Date::from_str_utc(v.as_utf8()).map(Value::Date).ok(),
             Value::Timestamp(v) =&gt; v.to_chrono_date().map(|date| Value::Date(date.into())),
             Value::DateTime(v) =&gt; <span class="prelude-val">Some</span>(Value::DateTime(v)),
             <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
@@ -254,33 +250,33 @@
     </span><span class="kw">fn </span>test_date_cast() {
         set_default_timezone(<span class="prelude-val">Some</span>(<span class="string">"Asia/Shanghai"</span>)).unwrap();
         <span class="comment">// timestamp -&gt; date
-        </span><span class="kw">let </span>ts = Value::Timestamp(Timestamp::from_str(<span class="string">"2000-01-01 08:00:01"</span>).unwrap());
+        </span><span class="kw">let </span>ts = Value::Timestamp(Timestamp::from_str_utc(<span class="string">"2000-01-01 08:00:01"</span>).unwrap());
         <span class="kw">let </span>date = ConcreteDataType::date_datatype().try_cast(ts).unwrap();
-        <span class="macro">assert_eq!</span>(date, Value::Date(Date::from_str(<span class="string">"2000-01-01"</span>).unwrap()));
+        <span class="macro">assert_eq!</span>(date, Value::Date(Date::from_str_utc(<span class="string">"2000-01-01"</span>).unwrap()));
 
         <span class="comment">// this case bind with Zulu timezone.
-        </span><span class="kw">let </span>ts = Value::Timestamp(Timestamp::from_str(<span class="string">"2000-01-02 07:59:59"</span>).unwrap());
+        </span><span class="kw">let </span>ts = Value::Timestamp(Timestamp::from_str_utc(<span class="string">"2000-01-02 07:59:59"</span>).unwrap());
         <span class="kw">let </span>date = ConcreteDataType::date_datatype().try_cast(ts).unwrap();
-        <span class="macro">assert_eq!</span>(date, Value::Date(Date::from_str(<span class="string">"2000-01-02"</span>).unwrap()));
+        <span class="macro">assert_eq!</span>(date, Value::Date(Date::from_str_utc(<span class="string">"2000-01-02"</span>).unwrap()));
 
         <span class="comment">// while this case is offsetted to Asia/Shanghai.
-        </span><span class="kw">let </span>ts = Value::Timestamp(Timestamp::from_str(<span class="string">"2000-01-02 07:59:59+08:00"</span>).unwrap());
+        </span><span class="kw">let </span>ts = Value::Timestamp(Timestamp::from_str_utc(<span class="string">"2000-01-02 07:59:59+08:00"</span>).unwrap());
         <span class="kw">let </span>date = ConcreteDataType::date_datatype().try_cast(ts).unwrap();
-        <span class="macro">assert_eq!</span>(date, Value::Date(Date::from_str(<span class="string">"2000-01-01"</span>).unwrap()));
+        <span class="macro">assert_eq!</span>(date, Value::Date(Date::from_str_utc(<span class="string">"2000-01-01"</span>).unwrap()));
 
         <span class="comment">// Int32 -&gt; date
         </span><span class="kw">let </span>val = Value::Int32(<span class="number">0</span>);
         <span class="kw">let </span>date = ConcreteDataType::date_datatype().try_cast(val).unwrap();
-        <span class="macro">assert_eq!</span>(date, Value::Date(Date::from_str(<span class="string">"1970-01-01"</span>).unwrap()));
+        <span class="macro">assert_eq!</span>(date, Value::Date(Date::from_str_utc(<span class="string">"1970-01-01"</span>).unwrap()));
 
         <span class="kw">let </span>val = Value::Int32(<span class="number">19614</span>);
         <span class="kw">let </span>date = ConcreteDataType::date_datatype().try_cast(val).unwrap();
-        <span class="macro">assert_eq!</span>(date, Value::Date(Date::from_str(<span class="string">"2023-09-14"</span>).unwrap()));
+        <span class="macro">assert_eq!</span>(date, Value::Date(Date::from_str_utc(<span class="string">"2023-09-14"</span>).unwrap()));
 
         <span class="comment">// String -&gt; date
         </span><span class="kw">let </span>s = Value::String(StringBytes::from(<span class="string">"1970-02-12"</span>));
         <span class="kw">let </span>date = ConcreteDataType::date_datatype().try_cast(s).unwrap();
-        <span class="macro">assert_eq!</span>(date, Value::Date(Date::from_str(<span class="string">"1970-02-12"</span>).unwrap()));
+        <span class="macro">assert_eq!</span>(date, Value::Date(Date::from_str_utc(<span class="string">"1970-02-12"</span>).unwrap()));
     }
 }
 </code></pre></div></section></main></body></html>

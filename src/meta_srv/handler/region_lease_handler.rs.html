@@ -378,6 +378,7 @@
 <a href="#377" id="377">377</a>
 <a href="#378" id="378">378</a>
 <a href="#379" id="379">379</a>
+<a href="#380" id="380">380</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -676,6 +677,7 @@
                 leader_peer: <span class="prelude-val">Some</span>(peer.clone()),
                 follower_peers: <span class="macro">vec!</span>[follower_peer.clone()],
                 leader_status: <span class="prelude-val">Some</span>(RegionStatus::Downgraded),
+                leader_down_since: <span class="prelude-val">Some</span>(<span class="number">1</span>),
             },
             RegionRoute {
                 region: Region::new_test(another_region_id),

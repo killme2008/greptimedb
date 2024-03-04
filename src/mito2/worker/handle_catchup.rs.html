@@ -94,6 +94,18 @@
 <a href="#93" id="93">93</a>
 <a href="#94" id="94">94</a>
 <a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
+<a href="#104" id="104">104</a>
+<a href="#105" id="105">105</a>
+<a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -112,10 +124,12 @@
 
 </span><span class="kw">use </span>std::sync::Arc;
 
+<span class="kw">use </span>common_telemetry::info;
 <span class="kw">use </span>snafu::ensure;
 <span class="kw">use </span>store_api::logstore::LogStore;
 <span class="kw">use </span>store_api::region_request::{AffectedRows, RegionCatchupRequest};
 <span class="kw">use </span>store_api::storage::RegionId;
+<span class="kw">use </span>tokio::time::Instant;
 
 <span class="kw">use </span><span class="kw">crate</span>::error::{<span class="self">self</span>, <span class="prelude-ty">Result</span>};
 <span class="kw">use </span><span class="kw">crate</span>::region::opener::{replay_memtable, RegionOpener};
@@ -140,6 +154,7 @@
 
         <span class="comment">// Utilizes the short circuit evaluation.
         </span><span class="kw">let </span>region = <span class="kw">if </span>!is_mutable_empty || region.manifest_manager.has_update().<span class="kw">await</span><span class="question-mark">? </span>{
+            <span class="macro">info!</span>(<span class="string">"Reopening the region: {region_id}, empty mutable: {is_mutable_empty}"</span>);
             <span class="kw">let </span>reopened_region = Arc::new(
                 RegionOpener::new(
                     region_id,
@@ -147,6 +162,7 @@
                     <span class="self">self</span>.memtable_builder.clone(),
                     <span class="self">self</span>.object_store_manager.clone(),
                     <span class="self">self</span>.scheduler.clone(),
+                    <span class="self">self</span>.intermediate_manager.clone(),
                 )
                 .cache(<span class="prelude-val">Some</span>(<span class="self">self</span>.cache_manager.clone()))
                 .options(region.version().options.clone())
@@ -163,14 +179,22 @@
         };
 
         <span class="kw">let </span>flushed_entry_id = region.version_control.current().last_entry_id;
+        <span class="macro">info!</span>(<span class="string">"Trying to replay memtable for region: {region_id}, flushed entry id: {flushed_entry_id}"</span>);
+        <span class="kw">let </span>timer = Instant::now();
         <span class="kw">let </span>last_entry_id = replay_memtable(
             <span class="kw-2">&amp;</span><span class="self">self</span>.wal,
             <span class="kw-2">&amp;</span>region.wal_options,
             region_id,
             flushed_entry_id,
             <span class="kw-2">&amp;</span>region.version_control,
+            <span class="self">self</span>.config.allow_stale_entries,
         )
         .<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="macro">info!</span>(
+            <span class="string">"Elapsed: {:?}, region: {region_id} catchup finished. last entry id: {last_entry_id}, expected: {:?}."</span>,
+            timer.elapsed(),
+            request.entry_id
+        );
         <span class="kw">if let </span><span class="prelude-val">Some</span>(expected_last_entry_id) = request.entry_id {
             <span class="macro">ensure!</span>(
                 expected_last_entry_id == last_entry_id,

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["FieldWithId","MergeTree","SparseEncoder","TreeIter","TreeIterMetrics"]};

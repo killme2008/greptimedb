@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["MetaSrvTableMetadataAllocator"]};
+window.SIDEBAR_ITEMS = {"struct":["MetasrvPeerAllocator"]};

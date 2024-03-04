@@ -517,6 +517,16 @@
 <a href="#516" id="516">516</a>
 <a href="#517" id="517">517</a>
 <a href="#518" id="518">518</a>
+<a href="#519" id="519">519</a>
+<a href="#520" id="520">520</a>
+<a href="#521" id="521">521</a>
+<a href="#522" id="522">522</a>
+<a href="#523" id="523">523</a>
+<a href="#524" id="524">524</a>
+<a href="#525" id="525">525</a>
+<a href="#526" id="526">526</a>
+<a href="#527" id="527">527</a>
+<a href="#528" id="528">528</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -553,12 +563,13 @@
 <span class="kw">use </span>rustpython_vm <span class="kw">as </span>vm;
 <span class="attr">#[cfg(test)]
 </span><span class="kw">use </span>serde::Deserialize;
-<span class="kw">use </span>session::context::QueryContextBuilder;
+<span class="kw">use </span>session::context::{QueryContextBuilder, QueryContextRef};
 <span class="kw">use </span>snafu::{OptionExt, ResultExt};
 <span class="kw">use </span>vm::convert::ToPyObject;
 <span class="kw">use </span>vm::{pyclass <span class="kw">as </span>rspyclass, PyObjectRef, PyPayload, PyResult, VirtualMachine};
 
 <span class="kw">use </span><span class="kw">super</span>::py_recordbatch::PyRecordBatch;
+<span class="kw">use </span><span class="kw">crate</span>::engine::EvalContext;
 <span class="kw">use </span><span class="kw">crate</span>::python::error::{ensure, ArrowSnafu, OtherSnafu, <span class="prelude-ty">Result</span>, TypeCastSnafu};
 <span class="kw">use </span><span class="kw">crate</span>::python::ffi_types::PyVector;
 <span class="attr">#[cfg(feature = <span class="string">"pyo3_backend"</span>)]
@@ -844,12 +855,16 @@
 /// You can return constant in python code like `return 1, 1.0, True`
 /// which create a constant array(with same value)(currently support int, float and bool) as column on return
 </span><span class="attr">#[cfg(test)]
-</span><span class="kw">pub fn </span>exec_coprocessor(script: <span class="kw-2">&amp;</span>str, rb: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;RecordBatch&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;RecordBatch&gt; {
+</span><span class="kw">pub fn </span>exec_coprocessor(
+    script: <span class="kw-2">&amp;</span>str,
+    rb: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;RecordBatch&gt;,
+    eval_ctx: <span class="kw-2">&amp;</span>EvalContext,
+) -&gt; <span class="prelude-ty">Result</span>&lt;RecordBatch&gt; {
     <span class="comment">// 1. parse the script and check if it's only a function with `@coprocessor` decorator, and get `args` and `returns`,
     // 2. also check for exist of `args` in `rb`, if not found, return error
     // cache the result of parse_copr
     </span><span class="kw">let </span>copr = parse::parse_and_compile_copr(script, <span class="prelude-val">None</span>)<span class="question-mark">?</span>;
-    exec_parsed(<span class="kw-2">&amp;</span>copr, rb, <span class="kw-2">&amp;</span>HashMap::new())
+    exec_parsed(<span class="kw-2">&amp;</span>copr, rb, <span class="kw-2">&amp;</span>HashMap::new(), eval_ctx)
 }
 
 <span class="attr">#[cfg_attr(feature = <span class="string">"pyo3_backend"</span>, pyo3class(name = <span class="string">"query_engine"</span>))]
@@ -857,6 +872,7 @@
 #[derive(Debug, PyPayload, Clone)]
 </span><span class="kw">pub struct </span>PyQueryEngine {
     inner: QueryEngineWeakRef,
+    query_ctx: QueryContextRef,
 }
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">enum </span>Either {
     Rb(RecordBatches),
@@ -884,14 +900,16 @@
 
 <span class="attr">#[rspyclass]
 </span><span class="kw">impl </span>PyQueryEngine {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>from_weakref(inner: QueryEngineWeakRef) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{ inner }
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>from_weakref(inner: QueryEngineWeakRef, query_ctx: QueryContextRef) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{ inner, query_ctx }
     }
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>query_with_new_thread(<span class="kw-2">&amp;</span><span class="self">self</span>, s: String) -&gt; StdResult&lt;Either, String&gt; {
         <span class="kw">let </span>query = <span class="self">self</span>.inner.<span class="number">0</span>.upgrade();
+        <span class="kw">let </span>query_ctx = <span class="self">self</span>.query_ctx.clone();
         <span class="kw">let </span>thread_handle = std::thread::spawn(<span class="kw">move </span>|| -&gt; std::result::Result&lt;<span class="kw">_</span>, String&gt; {
             <span class="kw">if let </span><span class="prelude-val">Some</span>(engine) = query {
-                <span class="kw">let </span>stmt = QueryLanguageParser::parse_sql(<span class="kw-2">&amp;</span>s).map_err(|e| e.to_string())<span class="question-mark">?</span>;
+                <span class="kw">let </span>stmt =
+                    QueryLanguageParser::parse_sql(<span class="kw-2">&amp;</span>s, <span class="kw-2">&amp;</span>query_ctx).map_err(|e| e.to_string())<span class="question-mark">?</span>;
 
                 <span class="comment">// To prevent the error of nested creating Runtime, if is nested, use the parent runtime instead
 
@@ -914,7 +932,7 @@
                             <span class="prelude-val">Ok</span>(Either::AffectedRows(cnt))
                         }
                         <span class="prelude-val">Ok</span>(common_query::Output::RecordBatches(rbs)) =&gt; <span class="prelude-val">Ok</span>(Either::Rb(rbs)),
-                        <span class="prelude-val">Ok</span>(common_query::Output::Stream(s)) =&gt; <span class="prelude-val">Ok</span>(Either::Rb(
+                        <span class="prelude-val">Ok</span>(common_query::Output::Stream(s, <span class="kw">_</span>)) =&gt; <span class="prelude-val">Ok</span>(Either::Rb(
                             common_recordbatch::util::collect_batches(s).<span class="kw">await</span>.unwrap(),
                         )),
                         <span class="prelude-val">Err</span>(e) =&gt; <span class="prelude-val">Err</span>(e),
@@ -964,13 +982,14 @@
     copr: <span class="kw-2">&amp;</span>Coprocessor,
     rb: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;RecordBatch&gt;,
     params: <span class="kw-2">&amp;</span>HashMap&lt;String, String&gt;,
+    eval_ctx: <span class="kw-2">&amp;</span>EvalContext,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;RecordBatch&gt; {
     <span class="kw">match </span>copr.backend {
-        BackendType::RustPython =&gt; rspy_exec_parsed(copr, rb, params),
+        BackendType::RustPython =&gt; rspy_exec_parsed(copr, rb, params, eval_ctx),
         BackendType::CPython =&gt; {
             <span class="attr">#[cfg(feature = <span class="string">"pyo3_backend"</span>)]
             </span>{
-                pyo3_exec_parsed(copr, rb, params)
+                pyo3_exec_parsed(copr, rb, params, eval_ctx)
             }
             <span class="attr">#[cfg(not(feature = <span class="string">"pyo3_backend"</span>))]
             </span>{
@@ -996,8 +1015,9 @@
     rb: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;RecordBatch&gt;,
     ln_offset: usize,
     filename: <span class="kw-2">&amp;</span>str,
+    eval_ctx: <span class="kw-2">&amp;</span>EvalContext,
 ) -&gt; StdResult&lt;RecordBatch, String&gt; {
-    <span class="kw">let </span>res = exec_coprocessor(script, rb);
+    <span class="kw">let </span>res = exec_coprocessor(script, rb, eval_ctx);
     res.map_err(|e| {
         <span class="kw">crate</span>::python::error::pretty_print_error_in_src(script, <span class="kw-2">&amp;</span>e, ln_offset, filename)
     })

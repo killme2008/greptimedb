@@ -1,21 +1,21 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="[!WARNING] Our default branch has changed from `develop` to `main` (issue #3025). Please update your local repository to use the `main` branch."><title>greptime - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="greptime" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../greptime/index.html">greptime</a><span class="version">0.5.0</span></h2></div><div class="sidebar-elems"><ul class="block">
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="What is GreptimeDB"><title>greptime - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-804b98a1284a310a.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="greptime" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (3f28fe133 2023-12-18)" data-channel="nightly" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../greptime/index.html">greptime</a><span class="version">0.6.0</span></h2></div><div class="sidebar-elems"><ul class="block">
             <li><a id="all-types" href="all.html">All Items</a></li></ul><section><ul class="block"><li><a href="#enums">Enums</a></li><li><a href="#statics">Statics</a></li><li><a href="#functions">Functions</a></li></ul></section></div></nav><div class="sidebar-resizer"></div>
     <main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../greptime/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Crate <a class="mod" href="#">greptime</a><button id="copy-path" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../src/greptime/greptime.rs.html#15-137">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p align="center">
   <picture>
-    <source media="(prefers-color-scheme: light)" srcset="https://cdn.jsdelivr.net/gh/GreptimeTeam/greptimedb@develop/docs/logo-text-padding.png">
-    <source media="(prefers-color-scheme: dark)" srcset="https://cdn.jsdelivr.net/gh/GreptimeTeam/greptimedb@develop/docs/logo-text-padding-dark.png">
-    <img alt="GreptimeDB Logo" src="https://cdn.jsdelivr.net/gh/GreptimeTeam/greptimedb@develop/docs/logo-text-padding.png" width="400px">
+    <source media="(prefers-color-scheme: light)" srcset="https://cdn.jsdelivr.net/gh/GreptimeTeam/greptimedb@main/docs/logo-text-padding.png">
+    <source media="(prefers-color-scheme: dark)" srcset="https://cdn.jsdelivr.net/gh/GreptimeTeam/greptimedb@main/docs/logo-text-padding-dark.png">
+    <img alt="GreptimeDB Logo" src="https://cdn.jsdelivr.net/gh/GreptimeTeam/greptimedb@main/docs/logo-text-padding.png" width="400px">
   </picture>
 </p>
 <h3 align="center">
     The next-generation hybrid time-series/analytics processing database in the cloud
 </h3>
 <p align="center">
-    <a href="https://codecov.io/gh/GrepTimeTeam/greptimedb"><img src="https://codecov.io/gh/GrepTimeTeam/greptimedb/branch/develop/graph/badge.svg?token=FITFDI3J3C"></img></a>
+    <a href="https://codecov.io/gh/GrepTimeTeam/greptimedb"><img src="https://codecov.io/gh/GrepTimeTeam/greptimedb/branch/main/graph/badge.svg?token=FITFDI3J3C"></img></a>
     &nbsp;
     <a href="https://github.com/GreptimeTeam/greptimedb/actions/workflows/develop.yml"><img src="https://github.com/GreptimeTeam/greptimedb/actions/workflows/develop.yml/badge.svg" alt="CI"></img></a>
     &nbsp;
-    <a href="https://github.com/greptimeTeam/greptimedb/blob/develop/LICENSE"><img src="https://img.shields.io/github/license/greptimeTeam/greptimedb"></a>
+    <a href="https://github.com/greptimeTeam/greptimedb/blob/main/LICENSE"><img src="https://img.shields.io/github/license/greptimeTeam/greptimedb"></a>
 </p>
 <p align="center">
     <a href="https://twitter.com/greptime"><img src="https://img.shields.io/badge/twitter-follow_us-1d9bf0.svg"></a>
@@ -24,25 +24,17 @@
     &nbsp;
     <a href="https://greptime.com/slack"><img src="https://img.shields.io/badge/slack-GreptimeDB-0abd59?logo=slack" alt="slack" /></a>
 </p>
-<blockquote>
-<p>[!WARNING]<br />
-Our default branch has changed from <code>develop</code> to <code>main</code> (issue <a href="https://github.com/GreptimeTeam/greptimedb/issues/3025">#3025</a>). Please update your local repository to use the <code>main</code> branch.</p>
-</blockquote>
 <h3 id="what-is-greptimedb"><a href="#what-is-greptimedb">What is GreptimeDB</a></h3>
-<p>GreptimeDB is an open-source time-series database with a special focus on
-scalability, analytical capabilities and efficiency. It’s designed to work on
-infrastructure of the cloud era, and users benefit from its elasticity and commodity
-storage.</p>
-<p>Our core developers have been building time-series data platform
-for years. Based on their best-practices, GreptimeDB is born to give you:</p>
+<p>GreptimeDB is an open-source time-series database focusing on efficiency, scalability, and analytical capabilities.
+It’s designed to work on infrastructure of the cloud era, and users benefit from its elasticity and commodity storage.</p>
+<p>Our core developers have been building time-series data platforms for years. Based on their best-practices, GreptimeDB is born to give you:</p>
 <ul>
-<li>A standalone binary that scales to highly-available distributed cluster, providing a transparent experience for cluster users</li>
-<li>Optimized columnar layout for handling time-series data; compacted, compressed, and stored on various storage backends</li>
-<li>Flexible indexes, tackling high cardinality issues down</li>
-<li>Distributed, parallel query execution, leveraging elastic computing resource</li>
-<li>Native SQL, and Python scripting for advanced analytical scenarios</li>
-<li>Widely adopted database protocols and APIs, native PromQL supports</li>
-<li>Extensible table engine architecture for extensive workloads</li>
+<li>Optimized columnar layout for handling time-series data; compacted, compressed, and stored on various storage backends, particularly cloud object storage with 50x cost efficiency.</li>
+<li>Fully open-source distributed cluster architecture that harnesses the power of cloud-native elastic computing resources.</li>
+<li>Seamless scalability from a standalone binary at edge to a robust, highly available distributed cluster in cloud, with a transparent experience for both developers and administrators.</li>
+<li>Native SQL and PromQL for queries, and Python scripting to facilitate complex analytical tasks.</li>
+<li>Flexible indexing capabilities and distributed, parallel-processing query engine, tackling high cardinality issues down.</li>
+<li>Widely adopted database protocols and APIs, including MySQL, PostgreSQL, and Prometheus Remote Storage, etc.</li>
 </ul>
 <h3 id="quick-start"><a href="#quick-start">Quick Start</a></h3><h4 id="greptimeplay"><a href="#greptimeplay">GreptimePlay</a></h4>
 <p>Try out the features of GreptimeDB right from your browser.</p>
@@ -107,12 +99,14 @@ Guide</a></li>
 <ul>
 <li><a href="https://github.com/GreptimeTeam/greptimedb-client-cpp">GreptimeDB C++ Client</a></li>
 <li><a href="https://github.com/GreptimeTeam/greptimedb-client-erl">GreptimeDB Erlang Client</a></li>
-<li><a href="https://github.com/GreptimeTeam/greptimedb-client-go">GreptimeDB Go Client</a></li>
-<li><a href="https://github.com/GreptimeTeam/greptimedb-client-java">GreptimeDB Java Client</a></li>
+<li><a href="https://github.com/GreptimeTeam/greptimedb-ingester-go">GreptimeDB Go Ingester</a></li>
+<li><a href="https://github.com/GreptimeTeam/greptimedb-ingester-java">GreptimeDB Java Ingester</a></li>
 <li><a href="https://github.com/GreptimeTeam/greptimedb-client-py">GreptimeDB Python Client</a> (WIP)</li>
 <li><a href="https://github.com/GreptimeTeam/greptimedb-client-rust">GreptimeDB Rust Client</a></li>
 <li><a href="https://github.com/GreptimeTeam/greptime-js-sdk">GreptimeDB JavaScript Client</a></li>
 </ul>
+<h4 id="grafana-dashboard"><a href="#grafana-dashboard">Grafana Dashboard</a></h4>
+<p>Our official Grafana dashboard is available at <a href="./grafana/README.md">grafana</a> directory.</p>
 <h3 id="project-status"><a href="#project-status">Project Status</a></h3>
 <p>This project is in its early stage and under heavy development. We move fast and
 break things. Benchmark on development branch may not represent its potential
@@ -136,15 +130,15 @@ community, please check out:</p>
 <li>Follow us on <a href="https://twitter.com/greptime">Twitter</a></li>
 </ul>
 <h3 id="license"><a href="#license">License</a></h3>
-<p>GreptimeDB uses the <a href="https://github.com/greptimeTeam/greptimedb/blob/develop/LICENSE">Apache 2.0 license</a> to strike a balance between
+<p>GreptimeDB uses the <a href="https://apache.org/licenses/LICENSE-2.0.txt">Apache License 2.0</a> to strike a balance between
 open contributions and allowing you to use the software however you want.</p>
 <h3 id="contributing"><a href="#contributing">Contributing</a></h3>
 <p>Please refer to <a href="CONTRIBUTING.md">contribution guidelines</a> for more information.</p>
 <h3 id="acknowledgement"><a href="#acknowledgement">Acknowledgement</a></h3>
 <ul>
-<li>GreptimeDB uses <a href="https://arrow.apache.org/">Apache Arrow</a> as the memory model and <a href="https://parquet.apache.org/">Apache Parquet</a> as the persistent file format.</li>
-<li>GreptimeDB’s query engine is powered by <a href="https://github.com/apache/arrow-datafusion">Apache Arrow DataFusion</a>.</li>
-<li><a href="https://opendal.apache.org">Apache OpenDAL (incubating)</a> gives GreptimeDB a very general and elegant data access abstraction layer.</li>
+<li>GreptimeDB uses <a href="https://arrow.apache.org/">Apache Arrow™</a> as the memory model and <a href="https://parquet.apache.org/">Apache Parquet™</a> as the persistent file format.</li>
+<li>GreptimeDB’s query engine is powered by <a href="https://arrow.apache.org/datafusion/">Apache Arrow DataFusion™</a>.</li>
+<li><a href="https://opendal.apache.org">Apache OpenDAL™</a> gives GreptimeDB a very general and elegant data access abstraction layer.</li>
 <li>GreptimeDB’s meta service is based on <a href="https://etcd.io/">etcd</a>.</li>
 <li>GreptimeDB uses <a href="https://github.com/RustPython/RustPython">RustPython</a> for experimental embedded python scripting.</li>
 </ul>

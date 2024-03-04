@@ -64,6 +64,17 @@
 <a href="#63" id="63">63</a>
 <a href="#64" id="64">64</a>
 <a href="#65" id="65">65</a>
+<a href="#66" id="66">66</a>
+<a href="#67" id="67">67</a>
+<a href="#68" id="68">68</a>
+<a href="#69" id="69">69</a>
+<a href="#70" id="70">70</a>
+<a href="#71" id="71">71</a>
+<a href="#72" id="72">72</a>
+<a href="#73" id="73">73</a>
+<a href="#74" id="74">74</a>
+<a href="#75" id="75">75</a>
+<a href="#76" id="76">76</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -86,6 +97,7 @@
 <span class="kw">use </span>async_trait::async_trait;
 <span class="kw">use </span>common_error::ext::ErrorExt;
 <span class="kw">use </span>common_query::Output;
+<span class="kw">use </span>session::context::{QueryContext, QueryContextRef};
 
 <span class="attr">#[async_trait]
 </span><span class="kw">pub trait </span>Script {
@@ -123,8 +135,18 @@
 }
 
 <span class="doccomment">/// Evaluate script context
-</span><span class="attr">#[derive(Debug, Default)]
-</span><span class="kw">pub struct </span>EvalContext {}
+</span><span class="attr">#[derive(Debug)]
+</span><span class="kw">pub struct </span>EvalContext {
+    <span class="kw">pub </span>query_ctx: QueryContextRef,
+}
+
+<span class="kw">impl </span>Default <span class="kw">for </span>EvalContext {
+    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            query_ctx: QueryContext::arc(),
+        }
+    }
+}
 
 <span class="doccomment">/// Compile script context
 </span><span class="attr">#[derive(Debug, Default)]

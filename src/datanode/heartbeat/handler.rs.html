@@ -392,6 +392,45 @@
 <a href="#391" id="391">391</a>
 <a href="#392" id="392">392</a>
 <a href="#393" id="393">393</a>
+<a href="#394" id="394">394</a>
+<a href="#395" id="395">395</a>
+<a href="#396" id="396">396</a>
+<a href="#397" id="397">397</a>
+<a href="#398" id="398">398</a>
+<a href="#399" id="399">399</a>
+<a href="#400" id="400">400</a>
+<a href="#401" id="401">401</a>
+<a href="#402" id="402">402</a>
+<a href="#403" id="403">403</a>
+<a href="#404" id="404">404</a>
+<a href="#405" id="405">405</a>
+<a href="#406" id="406">406</a>
+<a href="#407" id="407">407</a>
+<a href="#408" id="408">408</a>
+<a href="#409" id="409">409</a>
+<a href="#410" id="410">410</a>
+<a href="#411" id="411">411</a>
+<a href="#412" id="412">412</a>
+<a href="#413" id="413">413</a>
+<a href="#414" id="414">414</a>
+<a href="#415" id="415">415</a>
+<a href="#416" id="416">416</a>
+<a href="#417" id="417">417</a>
+<a href="#418" id="418">418</a>
+<a href="#419" id="419">419</a>
+<a href="#420" id="420">420</a>
+<a href="#421" id="421">421</a>
+<a href="#422" id="422">422</a>
+<a href="#423" id="423">423</a>
+<a href="#424" id="424">424</a>
+<a href="#425" id="425">425</a>
+<a href="#426" id="426">426</a>
+<a href="#427" id="427">427</a>
+<a href="#428" id="428">428</a>
+<a href="#429" id="429">429</a>
+<a href="#430" id="430">430</a>
+<a href="#431" id="431">431</a>
+<a href="#432" id="432">432</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -490,6 +529,7 @@
             <span class="prelude-val">Some</span>((<span class="kw">_</span>, Instruction::OpenRegion { .. }))
                 | <span class="prelude-val">Some</span>((<span class="kw">_</span>, Instruction::CloseRegion { .. }))
                 | <span class="prelude-val">Some</span>((<span class="kw">_</span>, Instruction::DowngradeRegion { .. }))
+                | <span class="prelude-val">Some</span>((<span class="kw">_</span>, Instruction::UpgradeRegion { .. }))
         )
     }
 
@@ -528,7 +568,7 @@
     <span class="kw">use </span>common_meta::heartbeat::mailbox::{
         HeartbeatMailbox, IncomingMessage, MailboxRef, MessageMeta,
     };
-    <span class="kw">use </span>common_meta::instruction::{DowngradeRegion, OpenRegion};
+    <span class="kw">use </span>common_meta::instruction::{DowngradeRegion, OpenRegion, UpgradeRegion};
     <span class="kw">use </span>mito2::config::MitoConfig;
     <span class="kw">use </span>mito2::engine::MITO_ENGINE_NAME;
     <span class="kw">use </span>mito2::test_util::{CreateRequestBuilder, TestEnv};
@@ -567,6 +607,44 @@
                 incoming_message: <span class="prelude-val">Some</span>(incoming_message),
             }
         }
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_is_acceptable() {
+        common_telemetry::init_default_ut_logging();
+        <span class="kw">let </span>region_server = mock_region_server();
+        <span class="kw">let </span>heartbeat_handler = RegionHeartbeatResponseHandler::new(region_server.clone());
+        <span class="kw">let </span>heartbeat_env = HeartbeatResponseTestEnv::new();
+        <span class="kw">let </span>meta = MessageMeta::new_test(<span class="number">1</span>, <span class="string">"test"</span>, <span class="string">"dn-1"</span>, <span class="string">"me-0"</span>);
+
+        <span class="comment">// Open region
+        </span><span class="kw">let </span>region_id = RegionId::new(<span class="number">1024</span>, <span class="number">1</span>);
+        <span class="kw">let </span>storage_path = <span class="string">"test"</span>;
+        <span class="kw">let </span>instruction = open_region_instruction(region_id, storage_path);
+        <span class="macro">assert!</span>(heartbeat_handler
+            .is_acceptable(<span class="kw-2">&amp;</span>heartbeat_env.create_handler_ctx((meta.clone(), instruction))));
+
+        <span class="comment">// Close region
+        </span><span class="kw">let </span>instruction = close_region_instruction(region_id);
+        <span class="macro">assert!</span>(heartbeat_handler
+            .is_acceptable(<span class="kw-2">&amp;</span>heartbeat_env.create_handler_ctx((meta.clone(), instruction))));
+
+        <span class="comment">// Downgrade region
+        </span><span class="kw">let </span>instruction = Instruction::DowngradeRegion(DowngradeRegion {
+            region_id: RegionId::new(<span class="number">2048</span>, <span class="number">1</span>),
+        });
+        <span class="macro">assert!</span>(heartbeat_handler
+            .is_acceptable(<span class="kw-2">&amp;</span>heartbeat_env.create_handler_ctx((meta.clone(), instruction))));
+
+        <span class="comment">// Upgrade region
+        </span><span class="kw">let </span>instruction = Instruction::UpgradeRegion(UpgradeRegion {
+            region_id,
+            last_entry_id: <span class="prelude-val">None</span>,
+            wait_for_replay_timeout: <span class="prelude-val">None</span>,
+        });
+        <span class="macro">assert!</span>(
+            heartbeat_handler.is_acceptable(<span class="kw-2">&amp;</span>heartbeat_env.create_handler_ctx((meta, instruction)))
+        );
     }
 
     <span class="kw">fn </span>close_region_instruction(region_id: RegionId) -&gt; Instruction {

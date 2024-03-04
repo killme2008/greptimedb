@@ -238,6 +238,18 @@
 <a href="#237" id="237">237</a>
 <a href="#238" id="238">238</a>
 <a href="#239" id="239">239</a>
+<a href="#240" id="240">240</a>
+<a href="#241" id="241">241</a>
+<a href="#242" id="242">242</a>
+<a href="#243" id="243">243</a>
+<a href="#244" id="244">244</a>
+<a href="#245" id="245">245</a>
+<a href="#246" id="246">246</a>
+<a href="#247" id="247">247</a>
+<a href="#248" id="248">248</a>
+<a href="#249" id="249">249</a>
+<a href="#250" id="250">250</a>
+<a href="#251" id="251">251</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -265,17 +277,27 @@
 <span class="kw">use </span>datafusion::physical_plan::SendableRecordBatchStream <span class="kw">as </span>DfSendableRecordBatchStream;
 <span class="kw">use </span>datatypes::prelude::{ConcreteDataType, ScalarVectorBuilder, VectorRef};
 <span class="kw">use </span>datatypes::schema::{ColumnSchema, Schema, SchemaRef};
+<span class="kw">use </span>datatypes::value::Value;
 <span class="kw">use </span>datatypes::vectors::{StringVectorBuilder, UInt32VectorBuilder};
+<span class="kw">use </span>futures::TryStreamExt;
 <span class="kw">use </span>snafu::{OptionExt, ResultExt};
-<span class="kw">use </span>store_api::storage::TableId;
+<span class="kw">use </span>store_api::storage::{ScanRequest, TableId};
 <span class="kw">use </span>table::metadata::TableType;
 
 <span class="kw">use </span><span class="kw">super</span>::TABLES;
 <span class="kw">use </span><span class="kw">crate</span>::error::{
     CreateRecordBatchSnafu, InternalSnafu, <span class="prelude-ty">Result</span>, UpgradeWeakCatalogManagerRefSnafu,
 };
-<span class="kw">use </span><span class="kw">crate</span>::information_schema::InformationTable;
+<span class="kw">use </span><span class="kw">crate</span>::information_schema::{InformationTable, Predicates};
 <span class="kw">use </span><span class="kw">crate</span>::CatalogManager;
+
+<span class="kw">pub const </span>TABLE_CATALOG: <span class="kw-2">&amp;</span>str = <span class="string">"table_catalog"</span>;
+<span class="kw">pub const </span>TABLE_SCHEMA: <span class="kw-2">&amp;</span>str = <span class="string">"table_schema"</span>;
+<span class="kw">pub const </span>TABLE_NAME: <span class="kw-2">&amp;</span>str = <span class="string">"table_name"</span>;
+<span class="kw">pub const </span>TABLE_TYPE: <span class="kw-2">&amp;</span>str = <span class="string">"table_type"</span>;
+<span class="kw">const </span>TABLE_ID: <span class="kw-2">&amp;</span>str = <span class="string">"table_id"</span>;
+<span class="kw">const </span>ENGINE: <span class="kw-2">&amp;</span>str = <span class="string">"engine"</span>;
+<span class="kw">const </span>INIT_CAPACITY: usize = <span class="number">42</span>;
 
 <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">struct </span>InformationSchemaTables {
     schema: SchemaRef,
@@ -294,12 +316,12 @@
 
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>schema() -&gt; SchemaRef {
         Arc::new(Schema::new(<span class="macro">vec!</span>[
-            ColumnSchema::new(<span class="string">"table_catalog"</span>, ConcreteDataType::string_datatype(), <span class="bool-val">false</span>),
-            ColumnSchema::new(<span class="string">"table_schema"</span>, ConcreteDataType::string_datatype(), <span class="bool-val">false</span>),
-            ColumnSchema::new(<span class="string">"table_name"</span>, ConcreteDataType::string_datatype(), <span class="bool-val">false</span>),
-            ColumnSchema::new(<span class="string">"table_type"</span>, ConcreteDataType::string_datatype(), <span class="bool-val">false</span>),
-            ColumnSchema::new(<span class="string">"table_id"</span>, ConcreteDataType::uint32_datatype(), <span class="bool-val">true</span>),
-            ColumnSchema::new(<span class="string">"engine"</span>, ConcreteDataType::string_datatype(), <span class="bool-val">true</span>),
+            ColumnSchema::new(TABLE_CATALOG, ConcreteDataType::string_datatype(), <span class="bool-val">false</span>),
+            ColumnSchema::new(TABLE_SCHEMA, ConcreteDataType::string_datatype(), <span class="bool-val">false</span>),
+            ColumnSchema::new(TABLE_NAME, ConcreteDataType::string_datatype(), <span class="bool-val">false</span>),
+            ColumnSchema::new(TABLE_TYPE, ConcreteDataType::string_datatype(), <span class="bool-val">false</span>),
+            ColumnSchema::new(TABLE_ID, ConcreteDataType::uint32_datatype(), <span class="bool-val">true</span>),
+            ColumnSchema::new(ENGINE, ConcreteDataType::string_datatype(), <span class="bool-val">true</span>),
         ]))
     }
 
@@ -325,14 +347,14 @@
         <span class="self">self</span>.schema.clone()
     }
 
-    <span class="kw">fn </span>to_stream(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;SendableRecordBatchStream&gt; {
+    <span class="kw">fn </span>to_stream(<span class="kw-2">&amp;</span><span class="self">self</span>, request: ScanRequest) -&gt; <span class="prelude-ty">Result</span>&lt;SendableRecordBatchStream&gt; {
         <span class="kw">let </span>schema = <span class="self">self</span>.schema.arrow_schema().clone();
         <span class="kw">let </span><span class="kw-2">mut </span>builder = <span class="self">self</span>.builder();
         <span class="kw">let </span>stream = Box::pin(DfRecordBatchStreamAdapter::new(
             schema,
             futures::stream::once(<span class="kw">async move </span>{
                 builder
-                    .make_tables()
+                    .make_tables(<span class="prelude-val">Some</span>(request))
                     .<span class="kw">await
                     </span>.map(|x| x.into_df_record_batch())
                     .map_err(Into::into)
@@ -372,59 +394,48 @@
             schema,
             catalog_name,
             catalog_manager,
-            catalog_names: StringVectorBuilder::with_capacity(<span class="number">42</span>),
-            schema_names: StringVectorBuilder::with_capacity(<span class="number">42</span>),
-            table_names: StringVectorBuilder::with_capacity(<span class="number">42</span>),
-            table_types: StringVectorBuilder::with_capacity(<span class="number">42</span>),
-            table_ids: UInt32VectorBuilder::with_capacity(<span class="number">42</span>),
-            engines: StringVectorBuilder::with_capacity(<span class="number">42</span>),
+            catalog_names: StringVectorBuilder::with_capacity(INIT_CAPACITY),
+            schema_names: StringVectorBuilder::with_capacity(INIT_CAPACITY),
+            table_names: StringVectorBuilder::with_capacity(INIT_CAPACITY),
+            table_types: StringVectorBuilder::with_capacity(INIT_CAPACITY),
+            table_ids: UInt32VectorBuilder::with_capacity(INIT_CAPACITY),
+            engines: StringVectorBuilder::with_capacity(INIT_CAPACITY),
         }
     }
 
     <span class="doccomment">/// Construct the `information_schema.tables` virtual table
-    </span><span class="kw">async fn </span>make_tables(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;RecordBatch&gt; {
+    </span><span class="kw">async fn </span>make_tables(<span class="kw-2">&amp;mut </span><span class="self">self</span>, request: <span class="prelude-ty">Option</span>&lt;ScanRequest&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;RecordBatch&gt; {
         <span class="kw">let </span>catalog_name = <span class="self">self</span>.catalog_name.clone();
         <span class="kw">let </span>catalog_manager = <span class="self">self
             </span>.catalog_manager
             .upgrade()
             .context(UpgradeWeakCatalogManagerRefSnafu)<span class="question-mark">?</span>;
+        <span class="kw">let </span>predicates = Predicates::from_scan_request(<span class="kw-2">&amp;</span>request);
 
         <span class="kw">for </span>schema_name <span class="kw">in </span>catalog_manager.schema_names(<span class="kw-2">&amp;</span>catalog_name).<span class="kw">await</span><span class="question-mark">? </span>{
-            <span class="kw">if </span>!catalog_manager
-                .schema_exists(<span class="kw-2">&amp;</span>catalog_name, <span class="kw-2">&amp;</span>schema_name)
-                .<span class="kw">await</span><span class="question-mark">?
-            </span>{
-                <span class="kw">continue</span>;
-            }
+            <span class="kw">let </span><span class="kw-2">mut </span>stream = catalog_manager.tables(<span class="kw-2">&amp;</span>catalog_name, <span class="kw-2">&amp;</span>schema_name).<span class="kw">await</span>;
 
-            <span class="kw">for </span>table_name <span class="kw">in </span>catalog_manager
-                .table_names(<span class="kw-2">&amp;</span>catalog_name, <span class="kw-2">&amp;</span>schema_name)
-                .<span class="kw">await</span><span class="question-mark">?
-            </span>{
-                <span class="kw">if let </span><span class="prelude-val">Some</span>(table) = catalog_manager
-                    .table(<span class="kw-2">&amp;</span>catalog_name, <span class="kw-2">&amp;</span>schema_name, <span class="kw-2">&amp;</span>table_name)
-                    .<span class="kw">await</span><span class="question-mark">?
-                </span>{
-                    <span class="kw">let </span>table_info = table.table_info();
-                    <span class="self">self</span>.add_table(
-                        <span class="kw-2">&amp;</span>catalog_name,
-                        <span class="kw-2">&amp;</span>schema_name,
-                        <span class="kw-2">&amp;</span>table_name,
-                        table.table_type(),
-                        <span class="prelude-val">Some</span>(table_info.ident.table_id),
-                        <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>table_info.meta.engine),
-                    );
-                } <span class="kw">else </span>{
-                    <span class="macro">unreachable!</span>();
-                }
+            <span class="kw">while let </span><span class="prelude-val">Some</span>(table) = stream.try_next().<span class="kw">await</span><span class="question-mark">? </span>{
+                <span class="kw">let </span>table_info = table.table_info();
+                <span class="self">self</span>.add_table(
+                    <span class="kw-2">&amp;</span>predicates,
+                    <span class="kw-2">&amp;</span>catalog_name,
+                    <span class="kw-2">&amp;</span>schema_name,
+                    <span class="kw-2">&amp;</span>table_info.name,
+                    table.table_type(),
+                    <span class="prelude-val">Some</span>(table_info.ident.table_id),
+                    <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>table_info.meta.engine),
+                );
             }
         }
 
         <span class="self">self</span>.finish()
     }
 
-    <span class="kw">fn </span>add_table(
+    <span class="attr">#[allow(clippy::too_many_arguments)]
+    </span><span class="kw">fn </span>add_table(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        predicates: <span class="kw-2">&amp;</span>Predicates,
         catalog_name: <span class="kw-2">&amp;</span>str,
         schema_name: <span class="kw-2">&amp;</span>str,
         table_name: <span class="kw-2">&amp;</span>str,
@@ -432,14 +443,27 @@
         table_id: <span class="prelude-ty">Option</span>&lt;u32&gt;,
         engine: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;,
     ) {
-        <span class="self">self</span>.catalog_names.push(<span class="prelude-val">Some</span>(catalog_name));
-        <span class="self">self</span>.schema_names.push(<span class="prelude-val">Some</span>(schema_name));
-        <span class="self">self</span>.table_names.push(<span class="prelude-val">Some</span>(table_name));
-        <span class="self">self</span>.table_types.push(<span class="prelude-val">Some</span>(<span class="kw">match </span>table_type {
+        <span class="kw">let </span>table_type = <span class="kw">match </span>table_type {
             TableType::Base =&gt; <span class="string">"BASE TABLE"</span>,
             TableType::View =&gt; <span class="string">"VIEW"</span>,
             TableType::Temporary =&gt; <span class="string">"LOCAL TEMPORARY"</span>,
-        }));
+        };
+
+        <span class="kw">let </span>row = [
+            (TABLE_CATALOG, <span class="kw-2">&amp;</span>Value::from(catalog_name)),
+            (TABLE_SCHEMA, <span class="kw-2">&amp;</span>Value::from(schema_name)),
+            (TABLE_NAME, <span class="kw-2">&amp;</span>Value::from(table_name)),
+            (TABLE_TYPE, <span class="kw-2">&amp;</span>Value::from(table_type)),
+        ];
+
+        <span class="kw">if </span>!predicates.eval(<span class="kw-2">&amp;</span>row) {
+            <span class="kw">return</span>;
+        }
+
+        <span class="self">self</span>.catalog_names.push(<span class="prelude-val">Some</span>(catalog_name));
+        <span class="self">self</span>.schema_names.push(<span class="prelude-val">Some</span>(schema_name));
+        <span class="self">self</span>.table_names.push(<span class="prelude-val">Some</span>(table_name));
+        <span class="self">self</span>.table_types.push(<span class="prelude-val">Some</span>(table_type));
         <span class="self">self</span>.table_ids.push(table_id);
         <span class="self">self</span>.engines.push(engine);
     }
@@ -469,7 +493,7 @@
             schema,
             futures::stream::once(<span class="kw">async move </span>{
                 builder
-                    .make_tables()
+                    .make_tables(<span class="prelude-val">None</span>)
                     .<span class="kw">await
                     </span>.map(|x| x.into_df_record_batch())
                     .map_err(Into::into)

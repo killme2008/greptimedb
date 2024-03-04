@@ -233,6 +233,16 @@
 <a href="#232" id="232">232</a>
 <a href="#233" id="233">233</a>
 <a href="#234" id="234">234</a>
+<a href="#235" id="235">235</a>
+<a href="#236" id="236">236</a>
+<a href="#237" id="237">237</a>
+<a href="#238" id="238">238</a>
+<a href="#239" id="239">239</a>
+<a href="#240" id="240">240</a>
+<a href="#241" id="241">241</a>
+<a href="#242" id="242">242</a>
+<a href="#243" id="243">243</a>
+<a href="#244" id="244">244</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -249,9 +259,9 @@
 
 </span><span class="doccomment">//! Memtables are write buffers for regions.
 
-</span><span class="kw">pub mod </span>time_series;
-
-<span class="kw">pub mod </span>key_values;
+</span><span class="kw">pub mod </span>key_values;
+<span class="kw">pub mod </span>merge_tree;
+<span class="kw">pub mod </span>time_series;
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod </span>version;
 
 <span class="kw">use </span>std::fmt;
@@ -294,7 +304,7 @@
     }
 }
 
-<span class="kw">pub type </span>BoxedBatchIterator = Box&lt;<span class="kw">dyn </span>Iterator&lt;Item = <span class="prelude-ty">Result</span>&lt;Batch&gt;&gt; + Send + Sync&gt;;
+<span class="kw">pub type </span>BoxedBatchIterator = Box&lt;<span class="kw">dyn </span>Iterator&lt;Item = <span class="prelude-ty">Result</span>&lt;Batch&gt;&gt; + Send&gt;;
 
 <span class="doccomment">/// In memory write buffer.
 </span><span class="kw">pub trait </span>Memtable: Send + Sync + fmt::Debug {
@@ -311,16 +321,21 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         projection: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>[ColumnId]&gt;,
         predicate: <span class="prelude-ty">Option</span>&lt;Predicate&gt;,
-    ) -&gt; BoxedBatchIterator;
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;BoxedBatchIterator&gt;;
 
     <span class="doccomment">/// Returns true if the memtable is empty.
     </span><span class="kw">fn </span>is_empty(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool;
 
-    <span class="doccomment">/// Mark the memtable as immutable.
-    </span><span class="kw">fn </span>mark_immutable(<span class="kw-2">&amp;</span><span class="self">self</span>);
+    <span class="doccomment">/// Turns a mutable memtable into an immutable memtable.
+    </span><span class="kw">fn </span>freeze(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;;
 
     <span class="doccomment">/// Returns the [MemtableStats] info of Memtable.
     </span><span class="kw">fn </span>stats(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; MemtableStats;
+
+    <span class="doccomment">/// Forks this (immutable) memtable and returns a new mutable memtable with specific memtable `id`.
+    ///
+    /// A region must freeze the memtable before invoking this method.
+    </span><span class="kw">fn </span>fork(<span class="kw-2">&amp;</span><span class="self">self</span>, id: MemtableId, metadata: <span class="kw-2">&amp;</span>RegionMetadataRef) -&gt; MemtableRef;
 }
 
 <span class="kw">pub type </span>MemtableRef = Arc&lt;<span class="kw">dyn </span>Memtable&gt;;
@@ -328,7 +343,7 @@
 <span class="doccomment">/// Builder to build a new [Memtable].
 </span><span class="kw">pub trait </span>MemtableBuilder: Send + Sync + fmt::Debug {
     <span class="doccomment">/// Builds a new memtable instance.
-    </span><span class="kw">fn </span>build(<span class="kw-2">&amp;</span><span class="self">self</span>, metadata: <span class="kw-2">&amp;</span>RegionMetadataRef) -&gt; MemtableRef;
+    </span><span class="kw">fn </span>build(<span class="kw-2">&amp;</span><span class="self">self</span>, id: MemtableId, metadata: <span class="kw-2">&amp;</span>RegionMetadataRef) -&gt; MemtableRef;
 }
 
 <span class="kw">pub type </span>MemtableBuilderRef = Arc&lt;<span class="kw">dyn </span>MemtableBuilder&gt;;
@@ -391,6 +406,11 @@
     <span class="doccomment">/// Returns bytes allocated.
     </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>bytes_allocated(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
         <span class="self">self</span>.bytes_allocated.load(Ordering::Relaxed)
+    }
+
+    <span class="doccomment">/// Returns the write buffer manager.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>write_buffer_manager(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;WriteBufferManagerRef&gt; {
+        <span class="self">self</span>.write_buffer_manager.clone()
     }
 }
 

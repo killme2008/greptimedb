@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["pow","rate"],"struct":["MathFunction","PowFunction","RangeFunction","RateFunction"]};
+window.SIDEBAR_ITEMS = {"mod":["modulo","pow","rate"],"struct":["MathFunction","PowFunction","RangeFunction","RateFunction"]};

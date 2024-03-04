@@ -44,6 +44,7 @@
 <a href="#43" id="43">43</a>
 <a href="#44" id="44">44</a>
 <a href="#45" id="45">45</a>
+<a href="#46" id="46">46</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -61,7 +62,8 @@
 </span><span class="kw">use </span>std::{fs, path};
 
 <span class="kw">use </span>common_telemetry::logging::info;
-<span class="kw">use </span>object_store::services::Fs <span class="kw">as </span>FsBuilder;
+<span class="kw">use </span>object_store::services::Fs;
+<span class="kw">use </span>object_store::util::join_dir;
 <span class="kw">use </span>object_store::ObjectStore;
 <span class="kw">use </span>snafu::prelude::<span class="kw-2">*</span>;
 
@@ -77,10 +79,10 @@
         .context(error::CreateDirSnafu { dir: data_home })<span class="question-mark">?</span>;
     <span class="macro">info!</span>(<span class="string">"The file storage home is: {}"</span>, data_home);
 
-    <span class="kw">let </span>atomic_write_dir = <span class="macro">format!</span>(<span class="string">"{data_home}.tmp/"</span>);
+    <span class="kw">let </span>atomic_write_dir = join_dir(data_home, <span class="string">".tmp/"</span>);
     store::clean_temp_dir(<span class="kw-2">&amp;</span>atomic_write_dir)<span class="question-mark">?</span>;
 
-    <span class="kw">let </span><span class="kw-2">mut </span>builder = FsBuilder::default();
+    <span class="kw">let </span><span class="kw-2">mut </span>builder = Fs::default();
     <span class="kw">let _ </span>= builder.root(data_home).atomic_write_dir(<span class="kw-2">&amp;</span>atomic_write_dir);
 
     <span class="kw">let </span>object_store = ObjectStore::new(builder)

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["ParserContext"]};
+window.SIDEBAR_ITEMS = {"struct":["ParseOptions","ParserContext"]};

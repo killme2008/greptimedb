@@ -673,11 +673,11 @@
 
 </span><span class="kw">use </span>api::v1::{RowInsertRequests, Value};
 <span class="kw">use </span>common_grpc::writer::Precision;
+<span class="kw">use </span>common_query::prelude::{GREPTIME_COUNT, GREPTIME_TIMESTAMP, GREPTIME_VALUE};
 <span class="kw">use </span>opentelemetry_proto::tonic::collector::metrics::v1::ExportMetricsServiceRequest;
 <span class="kw">use </span>opentelemetry_proto::tonic::common::v1::{any_value, KeyValue};
 <span class="kw">use </span>opentelemetry_proto::tonic::metrics::v1::{metric, number_data_point, <span class="kw-2">*</span>};
 
-<span class="kw">use super</span>::{GREPTIME_COUNT, GREPTIME_TIMESTAMP, GREPTIME_VALUE};
 <span class="kw">use </span><span class="kw">crate</span>::error::Result;
 <span class="kw">use </span><span class="kw">crate</span>::row_writer::{<span class="self">self</span>, MultiTableData, TableData};
 

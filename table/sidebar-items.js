@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"macro":["meter_insert_request"],"mod":["dist_table","engine","error","metadata","predicate","requests","stats","table","test_util","thin_table"]};
+window.SIDEBAR_ITEMS = {"mod":["dist_table","error","metadata","predicate","requests","stats","table","table_reference","test_util","thin_table"]};

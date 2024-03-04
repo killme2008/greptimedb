@@ -212,6 +212,8 @@
 <a href="#211" id="211">211</a>
 <a href="#212" id="212">212</a>
 <a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -226,13 +228,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-</span><span class="kw">use </span>store_api::storage::{RegionNumber, TableId};
-
-<span class="kw">pub fn </span>region_lock_key(table_id: TableId, region_number: RegionNumber) -&gt; String {
-    <span class="macro">format!</span>(<span class="string">"{}/region-{}"</span>, table_id, region_number)
-}
-
-<span class="attr">#[cfg(test)]
+</span><span class="attr">#[cfg(any(test, feature = <span class="string">"mock"</span>))]
 </span><span class="kw">pub mod </span>mock {
     <span class="kw">use </span>std::io::Error;
     <span class="kw">use </span>std::sync::Arc;
@@ -309,7 +305,7 @@
                 header: <span class="prelude-val">Some</span>(ResponseHeader {
                     status: <span class="prelude-val">Some</span>(PbStatus {
                         status_code: <span class="number">0</span>,
-                        err_msg: <span class="string">""</span>.to_string(),
+                        err_msg: String::default(),
                     }),
                 }),
                 affected_rows: <span class="number">0</span>,
@@ -325,6 +321,7 @@
     <span class="kw">use </span>chrono::DateTime;
     <span class="kw">use </span>common_catalog::consts::MITO2_ENGINE;
     <span class="kw">use </span>common_meta::datanode_manager::DatanodeManagerRef;
+    <span class="kw">use </span>common_meta::ddl::table_meta::TableMetadataAllocator;
     <span class="kw">use </span>common_meta::ddl::DdlContext;
     <span class="kw">use </span>common_meta::key::TableMetadataManager;
     <span class="kw">use </span>common_meta::kv_backend::memory::MemoryKvBackend;
@@ -332,6 +329,7 @@
     <span class="kw">use </span>common_meta::region_keeper::MemoryRegionKeeper;
     <span class="kw">use </span>common_meta::rpc::router::RegionRoute;
     <span class="kw">use </span>common_meta::sequence::SequenceBuilder;
+    <span class="kw">use </span>common_meta::wal_options_allocator::WalOptionsAllocator;
     <span class="kw">use </span>datatypes::prelude::ConcreteDataType;
     <span class="kw">use </span>datatypes::schema::{ColumnSchema, RawSchema};
     <span class="kw">use </span>table::metadata::{RawTableInfo, RawTableMeta, TableIdent, TableType};
@@ -412,6 +410,7 @@
             SequenceBuilder::new(<span class="string">"test_heartbeat_mailbox"</span>, kv_backend.clone()).build();
         <span class="kw">let </span>mailbox = HeartbeatMailbox::create(Pushers::default(), mailbox_sequence);
 
+        <span class="kw">let </span>table_metadata_manager = Arc::new(TableMetadataManager::new(kv_backend.clone()));
         DdlContext {
             datanode_manager,
             cache_invalidator: Arc::new(MetasrvCacheInvalidator::new(
@@ -420,8 +419,13 @@
                     server_addr: <span class="string">"127.0.0.1:4321"</span>.to_string(),
                 },
             )),
-            table_metadata_manager: Arc::new(TableMetadataManager::new(kv_backend)),
+            table_metadata_manager: table_metadata_manager.clone(),
             memory_region_keeper: Arc::new(MemoryRegionKeeper::new()),
+            table_metadata_allocator: Arc::new(TableMetadataAllocator::new(
+                Arc::new(SequenceBuilder::new(<span class="string">"test"</span>, kv_backend).build()),
+                Arc::new(WalOptionsAllocator::default()),
+                table_metadata_manager.table_name_manager().clone(),
+            )),
         }
     }
 }

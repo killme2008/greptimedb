@@ -342,6 +342,29 @@
 <a href="#341" id="341">341</a>
 <a href="#342" id="342">342</a>
 <a href="#343" id="343">343</a>
+<a href="#344" id="344">344</a>
+<a href="#345" id="345">345</a>
+<a href="#346" id="346">346</a>
+<a href="#347" id="347">347</a>
+<a href="#348" id="348">348</a>
+<a href="#349" id="349">349</a>
+<a href="#350" id="350">350</a>
+<a href="#351" id="351">351</a>
+<a href="#352" id="352">352</a>
+<a href="#353" id="353">353</a>
+<a href="#354" id="354">354</a>
+<a href="#355" id="355">355</a>
+<a href="#356" id="356">356</a>
+<a href="#357" id="357">357</a>
+<a href="#358" id="358">358</a>
+<a href="#359" id="359">359</a>
+<a href="#360" id="360">360</a>
+<a href="#361" id="361">361</a>
+<a href="#362" id="362">362</a>
+<a href="#363" id="363">363</a>
+<a href="#364" id="364">364</a>
+<a href="#365" id="365">365</a>
+<a href="#366" id="366">366</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -363,18 +386,19 @@
 <span class="kw">use </span>arrow_schema::{Schema <span class="kw">as </span>ArrowSchema, SchemaRef <span class="kw">as </span>ArrowSchemaRef};
 <span class="kw">use </span>async_stream::stream;
 <span class="kw">use </span>common_base::bytes::Bytes;
+<span class="kw">use </span>common_catalog::parse_catalog_and_schema_from_db_string;
 <span class="kw">use </span>common_error::ext::BoxedError;
 <span class="kw">use </span>common_meta::table_name::TableName;
+<span class="kw">use </span>common_plugins::GREPTIME_EXEC_COST;
 <span class="kw">use </span>common_query::physical_plan::TaskContext;
 <span class="kw">use </span>common_recordbatch::adapter::DfRecordBatchStreamAdapter;
 <span class="kw">use </span>common_recordbatch::error::ExternalSnafu;
 <span class="kw">use </span>common_recordbatch::{
     DfSendableRecordBatchStream, RecordBatch, RecordBatchStreamWrapper, SendableRecordBatchStream,
 };
-<span class="kw">use </span>common_telemetry::tracing;
 <span class="kw">use </span>common_telemetry::tracing_context::TracingContext;
 <span class="kw">use </span>datafusion::physical_plan::metrics::{
-    Count, ExecutionPlanMetricsSet, MetricBuilder, MetricsSet, Time,
+    Count, ExecutionPlanMetricsSet, Gauge, MetricBuilder, MetricsSet, Time,
 };
 <span class="kw">use </span>datafusion::physical_plan::{DisplayAs, DisplayFormatType, ExecutionPlan, Partitioning};
 <span class="kw">use </span>datafusion_common::{<span class="prelude-ty">Result</span>, Statistics};
@@ -383,6 +407,8 @@
 <span class="kw">use </span>datatypes::schema::{Schema, SchemaRef};
 <span class="kw">use </span>futures_util::StreamExt;
 <span class="kw">use </span>greptime_proto::v1::region::{QueryRequest, RegionRequestHeader};
+<span class="kw">use </span>meter_core::data::ReadItem;
+<span class="kw">use </span>meter_macros::read_meter;
 <span class="kw">use </span>snafu::ResultExt;
 <span class="kw">use </span>store_api::storage::RegionId;
 <span class="kw">use </span>tokio::time::Instant;
@@ -500,8 +526,7 @@
         })
     }
 
-    <span class="attr">#[tracing::instrument(skip_all)]
-    </span><span class="kw">pub fn </span>to_stream(<span class="kw-2">&amp;</span><span class="self">self</span>, context: Arc&lt;TaskContext&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;SendableRecordBatchStream&gt; {
+    <span class="kw">pub fn </span>to_stream(<span class="kw-2">&amp;</span><span class="self">self</span>, context: Arc&lt;TaskContext&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;SendableRecordBatchStream&gt; {
         <span class="kw">let </span>substrait_plan = <span class="self">self</span>.substrait_plan.to_vec();
         <span class="kw">let </span>regions = <span class="self">self</span>.regions.clone();
         <span class="kw">let </span>region_query_handler = <span class="self">self</span>.region_query_handler.clone();
@@ -509,8 +534,7 @@
         <span class="kw">let </span>schema = <span class="self">Self</span>::arrow_schema_to_schema(<span class="self">self</span>.schema())<span class="question-mark">?</span>;
 
         <span class="kw">let </span>dbname = context.task_id().unwrap_or_default();
-
-        <span class="kw">let </span>tracing_context = TracingContext::from_current_span().to_w3c();
+        <span class="kw">let </span>tracing_context = TracingContext::from_json(context.session_id().as_str());
 
         <span class="kw">let </span>stream = Box::pin(<span class="macro">stream!</span>({
             METRIC_MERGE_SCAN_REGIONS.observe(regions.len() <span class="kw">as </span>f64);
@@ -521,7 +545,7 @@
             <span class="kw">for </span>region_id <span class="kw">in </span>regions {
                 <span class="kw">let </span>request = QueryRequest {
                     header: <span class="prelude-val">Some</span>(RegionRequestHeader {
-                        tracing_context: tracing_context.clone(),
+                        tracing_context: tracing_context.to_w3c(),
                         dbname: dbname.clone(),
                     }),
                     region_id: region_id.into(),
@@ -557,6 +581,19 @@
                     <span class="comment">// reset poll timer
                     </span>poll_timer = Instant::now();
                 }
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(metrics) = stream.metrics() {
+                    <span class="kw">let </span>(c, s) = parse_catalog_and_schema_from_db_string(<span class="kw-2">&amp;</span>dbname);
+                    <span class="kw">let </span>value = <span class="macro">read_meter!</span>(
+                        c,
+                        s,
+                        ReadItem {
+                            cpu_time: metrics.elapsed_compute <span class="kw">as </span>u64,
+                            table_scan: metrics.memory_usage <span class="kw">as </span>u64
+                        }
+                    );
+                    metric.record_greptime_exec_cost(value <span class="kw">as </span>usize);
+                }
+
                 METRIC_MERGE_SCAN_POLL_ELAPSED.observe(poll_duration.as_secs_f64());
             }
         }));
@@ -565,6 +602,7 @@
             schema: <span class="self">self</span>.schema.clone(),
             stream,
             output_ordering: <span class="prelude-val">None</span>,
+            metrics: Default::default(),
         }))
     }
 
@@ -657,6 +695,9 @@
     </span>finish_time: Time,
     <span class="doccomment">/// Count of rows fetched from remote
     </span>output_rows: Count,
+
+    <span class="doccomment">/// Gauge for greptime plan execution cost metrics for output
+    </span>greptime_exec_cost: Gauge,
 }
 
 <span class="kw">impl </span>MergeScanMetric {
@@ -666,6 +707,7 @@
             first_consume_time: MetricBuilder::new(metric).subset_time(<span class="string">"first_consume_time"</span>, <span class="number">1</span>),
             finish_time: MetricBuilder::new(metric).subset_time(<span class="string">"finish_time"</span>, <span class="number">1</span>),
             output_rows: MetricBuilder::new(metric).output_rows(<span class="number">1</span>),
+            greptime_exec_cost: MetricBuilder::new(metric).gauge(GREPTIME_EXEC_COST, <span class="number">1</span>),
         }
     }
 
@@ -683,6 +725,10 @@
 
     <span class="kw">pub fn </span>record_output_batch_rows(<span class="kw-2">&amp;</span><span class="self">self</span>, num_rows: usize) {
         <span class="self">self</span>.output_rows.add(num_rows);
+    }
+
+    <span class="kw">pub fn </span>record_greptime_exec_cost(<span class="kw-2">&amp;</span><span class="self">self</span>, metrics: usize) {
+        <span class="self">self</span>.greptime_exec_cost.add(metrics);
     }
 }
 </code></pre></div></section></main></body></html>

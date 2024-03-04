@@ -364,7 +364,7 @@
 <span class="kw">pub const </span>TIB: u64 = GIB * BINARY_DATA_MAGNITUDE;
 <span class="kw">pub const </span>PIB: u64 = TIB * BINARY_DATA_MAGNITUDE;
 
-<span class="attr">#[derive(Clone, Copy, PartialEq, Eq, PartialOrd)]
+<span class="attr">#[derive(Clone, Copy, PartialEq, Eq, Ord, PartialOrd)]
 </span><span class="kw">pub struct </span>ReadableSize(<span class="kw">pub </span>u64);
 
 <span class="kw">impl </span>ReadableSize {

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["DEFAULT_VALUE"],"fn":["setup_git_versions"]};
+window.SIDEBAR_ITEMS = {"constant":["UNKNOWN"],"fn":["build_info","setup_build_info"],"static":["BUILD"],"struct":["BuildInfo"]};

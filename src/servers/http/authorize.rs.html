@@ -441,6 +441,26 @@
 <a href="#440" id="440">440</a>
 <a href="#441" id="441">441</a>
 <a href="#442" id="442">442</a>
+<a href="#443" id="443">443</a>
+<a href="#444" id="444">444</a>
+<a href="#445" id="445">445</a>
+<a href="#446" id="446">446</a>
+<a href="#447" id="447">447</a>
+<a href="#448" id="448">448</a>
+<a href="#449" id="449">449</a>
+<a href="#450" id="450">450</a>
+<a href="#451" id="451">451</a>
+<a href="#452" id="452">452</a>
+<a href="#453" id="453">453</a>
+<a href="#454" id="454">454</a>
+<a href="#455" id="455">455</a>
+<a href="#456" id="456">456</a>
+<a href="#457" id="457">457</a>
+<a href="#458" id="458">458</a>
+<a href="#459" id="459">459</a>
+<a href="#460" id="460">460</a>
+<a href="#461" id="461">461</a>
+<a href="#462" id="462">462</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -455,29 +475,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-</span><span class="kw">use </span>::auth::UserProviderRef;
+</span><span class="kw">use </span>std::sync::Arc;
+
+<span class="kw">use </span>::auth::UserProviderRef;
 <span class="kw">use </span>axum::extract::State;
 <span class="kw">use </span>axum::http::{<span class="self">self</span>, Request, StatusCode};
 <span class="kw">use </span>axum::middleware::Next;
 <span class="kw">use </span>axum::response::{IntoResponse, Response};
-<span class="kw">use </span>axum::Json;
 <span class="kw">use </span>base64::prelude::BASE64_STANDARD;
 <span class="kw">use </span>base64::Engine;
 <span class="kw">use </span>common_catalog::consts::DEFAULT_SCHEMA_NAME;
 <span class="kw">use </span>common_catalog::parse_catalog_and_schema_from_db_string;
 <span class="kw">use </span>common_error::ext::ErrorExt;
 <span class="kw">use </span>common_telemetry::warn;
+<span class="kw">use </span>common_time::timezone::parse_timezone;
+<span class="kw">use </span>common_time::Timezone;
 <span class="kw">use </span>headers::Header;
 <span class="kw">use </span>secrecy::SecretString;
-<span class="kw">use </span>session::context::QueryContext;
+<span class="kw">use </span>session::context::QueryContextBuilder;
 <span class="kw">use </span>snafu::{ensure, OptionExt, ResultExt};
 
-<span class="kw">use </span><span class="kw">super</span>::header::GreptimeDbName;
-<span class="kw">use super</span>::{JsonResponse, ResponseFormat, PUBLIC_APIS};
+<span class="kw">use </span><span class="kw">super</span>::header::{GreptimeDbName, GREPTIME_TIMEZONE_HEADER_NAME};
+<span class="kw">use super</span>::{ResponseFormat, PUBLIC_APIS};
 <span class="kw">use </span><span class="kw">crate</span>::error::{
     <span class="self">self</span>, InvalidAuthorizationHeaderSnafu, InvalidParameterSnafu, InvisibleASCIISnafu,
     NotFoundInfluxAuthSnafu, <span class="prelude-ty">Result</span>, UnsupportedAuthSchemeSnafu, UrlDecodeSnafu,
 };
+<span class="kw">use </span><span class="kw">crate</span>::http::error_result::ErrorResponse;
 <span class="kw">use </span><span class="kw">crate</span>::http::HTTP_API_PREFIX;
 
 <span class="doccomment">/// AuthState is a holder state for [`UserProviderRef`]
@@ -499,7 +523,14 @@
 ) -&gt; std::result::Result&lt;Request&lt;B&gt;, Response&gt; {
     <span class="comment">// 1. prepare
     </span><span class="kw">let </span>(catalog, schema) = extract_catalog_and_schema(<span class="kw-2">&amp;</span>req);
-    <span class="kw">let </span>query_ctx = QueryContext::with(catalog, schema);
+    <span class="comment">// TODO(ruihang): move this out of auth module
+    </span><span class="kw">let </span>timezone = Arc::new(extract_timezone(<span class="kw-2">&amp;</span>req));
+    <span class="kw">let </span>query_ctx_builder = QueryContextBuilder::default()
+        .current_catalog(catalog.to_string())
+        .current_schema(schema.to_string())
+        .timezone(timezone);
+
+    <span class="kw">let </span>query_ctx = query_ctx_builder.build();
     <span class="kw">let </span>need_auth = need_auth(<span class="kw-2">&amp;</span>req);
     <span class="kw">let </span>is_influxdb = req.uri().path().contains(<span class="string">"influxdb"</span>);
 
@@ -561,17 +592,15 @@
 }
 
 <span class="kw">fn </span>err_response(is_influxdb: bool, err: <span class="kw">impl </span>ErrorExt) -&gt; <span class="kw">impl </span>IntoResponse {
-    <span class="kw">let </span>format = <span class="kw">if </span>is_influxdb {
+    <span class="kw">let </span>ty = <span class="kw">if </span>is_influxdb {
         ResponseFormat::InfluxdbV1
     } <span class="kw">else </span>{
         ResponseFormat::GreptimedbV1
     };
-
-    <span class="kw">let </span>body = JsonResponse::with_error(err, format);
-    (StatusCode::UNAUTHORIZED, Json(body))
+    (StatusCode::UNAUTHORIZED, ErrorResponse::from_error(ty, err))
 }
 
-<span class="kw">fn </span>extract_catalog_and_schema&lt;B&gt;(request: <span class="kw-2">&amp;</span>Request&lt;B&gt;) -&gt; (<span class="kw-2">&amp;</span>str, <span class="kw-2">&amp;</span>str) {
+<span class="kw">pub fn </span>extract_catalog_and_schema&lt;B&gt;(request: <span class="kw-2">&amp;</span>Request&lt;B&gt;) -&gt; (<span class="kw-2">&amp;</span>str, <span class="kw-2">&amp;</span>str) {
     <span class="comment">// parse database from header
     </span><span class="kw">let </span>dbname = request
         .headers()
@@ -585,6 +614,17 @@
         .unwrap_or(DEFAULT_SCHEMA_NAME);
 
     parse_catalog_and_schema_from_db_string(dbname)
+}
+
+<span class="kw">fn </span>extract_timezone&lt;B&gt;(request: <span class="kw-2">&amp;</span>Request&lt;B&gt;) -&gt; Timezone {
+    <span class="comment">// parse timezone from header
+    </span><span class="kw">let </span>timezone = request
+        .headers()
+        .get(<span class="kw-2">&amp;</span>GREPTIME_TIMEZONE_HEADER_NAME)
+        <span class="comment">// eat this invalid ascii error and give user the final IllegalParam error
+        </span>.and_then(|header| header.to_str().ok())
+        .unwrap_or(<span class="string">""</span>);
+    parse_timezone(<span class="prelude-val">Some</span>(timezone))
 }
 
 <span class="kw">fn </span>get_influxdb_credentials&lt;B&gt;(request: <span class="kw-2">&amp;</span>Request&lt;B&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;(Username, Password)&gt;&gt; {
@@ -628,7 +668,7 @@
     }
 }
 
-<span class="kw">fn </span>extract_username_and_password&lt;B&gt;(
+<span class="kw">pub fn </span>extract_username_and_password&lt;B&gt;(
     is_influxdb: bool,
     request: <span class="kw-2">&amp;</span>Request&lt;B&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;(Username, Password)&gt; {

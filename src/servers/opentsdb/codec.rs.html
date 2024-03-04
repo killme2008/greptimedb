@@ -294,8 +294,6 @@
 <a href="#293" id="293">293</a>
 <a href="#294" id="294">294</a>
 <a href="#295" id="295">295</a>
-<a href="#296" id="296">296</a>
-<a href="#297" id="297">297</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -311,11 +309,9 @@
 // limitations under the License.
 
 </span><span class="kw">use </span>api::v1::{column, Column, ColumnDataType, InsertRequest <span class="kw">as </span>GrpcInsertRequest, SemanticType};
+<span class="kw">use </span>common_query::prelude::{GREPTIME_TIMESTAMP, GREPTIME_VALUE};
 
 <span class="kw">use </span><span class="kw">crate</span>::error::{<span class="self">self</span>, <span class="prelude-ty">Result</span>};
-
-<span class="kw">pub const </span>OPENTSDB_TIMESTAMP_COLUMN_NAME: <span class="kw-2">&amp;</span>str = <span class="string">"greptime_timestamp"</span>;
-<span class="kw">pub const </span>OPENTSDB_FIELD_COLUMN_NAME: <span class="kw-2">&amp;</span>str = <span class="string">"greptime_value"</span>;
 
 <span class="attr">#[derive(Debug, Clone)]
 </span><span class="kw">pub struct </span>DataPoint {
@@ -429,7 +425,7 @@
         <span class="kw">let </span><span class="kw-2">mut </span>columns = Vec::with_capacity(<span class="number">2 </span>+ <span class="self">self</span>.tags.len());
 
         <span class="kw">let </span>ts_column = Column {
-            column_name: OPENTSDB_TIMESTAMP_COLUMN_NAME.to_string(),
+            column_name: GREPTIME_TIMESTAMP.to_string(),
             values: <span class="prelude-val">Some</span>(column::Values {
                 timestamp_millisecond_values: <span class="macro">vec!</span>[<span class="self">self</span>.ts_millis],
                 ..Default::default()
@@ -441,7 +437,7 @@
         columns.push(ts_column);
 
         <span class="kw">let </span>field_column = Column {
-            column_name: OPENTSDB_FIELD_COLUMN_NAME.to_string(),
+            column_name: GREPTIME_VALUE.to_string(),
             values: <span class="prelude-val">Some</span>(column::Values {
                 f64_values: <span class="macro">vec!</span>[<span class="self">self</span>.value],
                 ..Default::default()
@@ -567,7 +563,7 @@
         <span class="macro">assert_eq!</span>(row_count, <span class="number">1</span>);
         <span class="macro">assert_eq!</span>(columns.len(), <span class="number">4</span>);
 
-        <span class="macro">assert_eq!</span>(columns[<span class="number">0</span>].column_name, OPENTSDB_TIMESTAMP_COLUMN_NAME);
+        <span class="macro">assert_eq!</span>(columns[<span class="number">0</span>].column_name, GREPTIME_TIMESTAMP);
         <span class="macro">assert_eq!</span>(
             columns[<span class="number">0</span>]
                 .values
@@ -577,7 +573,7 @@
             <span class="macro">vec!</span>[<span class="number">1000</span>]
         );
 
-        <span class="macro">assert_eq!</span>(columns[<span class="number">1</span>].column_name, OPENTSDB_FIELD_COLUMN_NAME);
+        <span class="macro">assert_eq!</span>(columns[<span class="number">1</span>].column_name, GREPTIME_VALUE);
         <span class="macro">assert_eq!</span>(columns[<span class="number">1</span>].values.as_ref().unwrap().f64_values, <span class="macro">vec!</span>[<span class="number">1.0</span>]);
 
         <span class="macro">assert_eq!</span>(columns[<span class="number">2</span>].column_name, <span class="string">"tagk1"</span>);

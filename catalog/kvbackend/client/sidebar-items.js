@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["CACHE_MAX_CAPACITY","CACHE_TTI_SECOND","CACHE_TTL_SECOND"],"struct":["CachedMetaKvBackend","MetaKvBackend"],"type":["CacheBackendRef"]};
+window.SIDEBAR_ITEMS = {"constant":["DEFAULT_CACHE_MAX_CAPACITY","DEFAULT_CACHE_TTI","DEFAULT_CACHE_TTL"],"struct":["CachedMetaKvBackend","CachedMetaKvBackendBuilder","MetaKvBackend"],"type":["CacheBackend"]};

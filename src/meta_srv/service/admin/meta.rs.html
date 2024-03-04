@@ -229,6 +229,10 @@
 <a href="#228" id="228">228</a>
 <a href="#229" id="229">229</a>
 <a href="#230" id="230">230</a>
+<a href="#231" id="231">231</a>
+<a href="#232" id="232">232</a>
+<a href="#233" id="233">233</a>
+<a href="#234" id="234">234</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -346,15 +350,19 @@
         <span class="kw">let </span>catalog = util::get_value(params, <span class="string">"catalog"</span>)<span class="question-mark">?</span>;
         <span class="kw">let </span>schema = util::get_value(params, <span class="string">"schema"</span>)<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>tables = <span class="self">self
+        <span class="kw">let </span>stream = <span class="self">self
             </span>.table_metadata_manager
             .table_name_manager()
             .tables(catalog, schema)
+            .<span class="kw">await</span>;
+        <span class="kw">let </span>tables = stream
+            .try_collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
             .<span class="kw">await
-            </span>.context(TableMetadataManagerSnafu)<span class="question-mark">?
+            </span>.map_err(BoxedError::new)
+            .context(error::ListTablesSnafu { catalog, schema })<span class="question-mark">?
             </span>.into_iter()
             .map(|(k, <span class="kw">_</span>)| k)
-            .collect();
+            .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
 
         to_http_response(tables)
     }

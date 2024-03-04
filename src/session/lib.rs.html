@@ -108,6 +108,12 @@
 <a href="#107" id="107">107</a>
 <a href="#108" id="108">108</a>
 <a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -123,6 +129,7 @@
 // limitations under the License.
 
 </span><span class="kw">pub mod </span>context;
+<span class="kw">pub mod </span>table_name;
 
 <span class="kw">use </span>std::net::SocketAddr;
 <span class="kw">use </span>std::sync::Arc;
@@ -156,7 +163,7 @@
             schema: ArcSwap::new(Arc::new(DEFAULT_SCHEMA_NAME.into())),
             user_info: ArcSwap::new(Arc::new(auth::userinfo_by_name(<span class="prelude-val">None</span>))),
             conn_info: ConnInfo::new(addr, channel),
-            timezone: ArcSwap::new(Arc::new(get_timezone(<span class="prelude-val">None</span>))),
+            timezone: ArcSwap::new(Arc::new(get_timezone(<span class="prelude-val">None</span>).clone())),
         }
     }
 
@@ -169,7 +176,7 @@
             .current_catalog(<span class="self">self</span>.catalog.load().to_string())
             .current_schema(<span class="self">self</span>.schema.load().to_string())
             .sql_dialect(<span class="self">self</span>.conn_info.channel.dialect())
-            .timezone((<span class="kw-2">**</span><span class="self">self</span>.timezone.load()).clone())
+            .timezone(<span class="self">self</span>.timezone())
             .build()
     }
 
@@ -184,8 +191,8 @@
     }
 
     <span class="attr">#[inline]
-    </span><span class="kw">pub fn </span>timezone(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Timezone {
-        <span class="self">self</span>.timezone.load().as_ref().clone()
+    </span><span class="kw">pub fn </span>timezone(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Arc&lt;Timezone&gt; {
+        <span class="self">self</span>.timezone.load().clone()
     }
 
     <span class="attr">#[inline]
@@ -206,6 +213,11 @@
     <span class="attr">#[inline]
     </span><span class="kw">pub fn </span>set_catalog(<span class="kw-2">&amp;</span><span class="self">self</span>, catalog: String) {
         <span class="self">self</span>.catalog.store(Arc::new(catalog));
+    }
+
+    <span class="attr">#[inline]
+    </span><span class="kw">pub fn </span>get_catalog(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
+        <span class="self">self</span>.catalog.load().as_ref().clone()
     }
 
     <span class="attr">#[inline]

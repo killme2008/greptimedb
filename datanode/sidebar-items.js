@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["alive_keeper","config","datanode","error","event_listener","greptimedb_telemetry","heartbeat","metrics","region_server","store"]};
+window.SIDEBAR_ITEMS = {"mod":["alive_keeper","config","datanode","error","event_listener","greptimedb_telemetry","heartbeat","metrics","region_server","service","store"]};

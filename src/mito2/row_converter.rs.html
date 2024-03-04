@@ -415,6 +415,10 @@
 <a href="#414" id="414">414</a>
 <a href="#415" id="415">415</a>
 <a href="#416" id="416">416</a>
+<a href="#417" id="417">417</a>
+<a href="#418" id="418">418</a>
+<a href="#419" id="419">419</a>
+<a href="#420" id="420">420</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -465,9 +469,9 @@
     </span><span class="kw">fn </span>decode(<span class="kw-2">&amp;</span><span class="self">self</span>, bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;Value&gt;&gt;;
 }
 
-<span class="attr">#[derive(Debug)]
+<span class="attr">#[derive(Debug, Clone, PartialEq, Eq)]
 </span><span class="kw">pub struct </span>SortField {
-    data_type: ConcreteDataType,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) data_type: ConcreteDataType,
 }
 
 <span class="kw">impl </span>SortField {
@@ -501,7 +505,11 @@
 }
 
 <span class="kw">impl </span>SortField {
-    <span class="kw">fn </span>serialize(<span class="kw-2">&amp;</span><span class="self">self</span>, serializer: <span class="kw-2">&amp;mut </span>Serializer&lt;<span class="kw-2">&amp;mut </span>Vec&lt;u8&gt;&gt;, value: <span class="kw-2">&amp;</span>ValueRef) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>serialize(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        serializer: <span class="kw-2">&amp;mut </span>Serializer&lt;<span class="kw-2">&amp;mut </span>Vec&lt;u8&gt;&gt;,
+        value: <span class="kw-2">&amp;</span>ValueRef,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="macro">macro_rules! </span>cast_value_and_serialize {
             (
                 <span class="macro-nonterminal">$self</span>: ident;

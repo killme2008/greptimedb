@@ -95,6 +95,32 @@
 <a href="#94" id="94">94</a>
 <a href="#95" id="95">95</a>
 <a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
+<a href="#104" id="104">104</a>
+<a href="#105" id="105">105</a>
+<a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
+<a href="#116" id="116">116</a>
+<a href="#117" id="117">117</a>
+<a href="#118" id="118">118</a>
+<a href="#119" id="119">119</a>
+<a href="#120" id="120">120</a>
+<a href="#121" id="121">121</a>
+<a href="#122" id="122">122</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -110,58 +136,36 @@
 // limitations under the License.
 
 </span><span class="kw">use </span>async_trait::async_trait;
+<span class="kw">use </span>common_base::AffectedRows;
 <span class="kw">use </span>common_error::ext::BoxedError;
-<span class="kw">use </span>query::error <span class="kw">as </span>query_error;
-<span class="kw">use </span>query::error::Result <span class="kw">as </span>QueryResult;
-<span class="kw">use </span>query::table_mutation::{AffectedRows, TableMutationHandler};
+<span class="kw">use </span>common_function::handlers::TableMutationHandler;
+<span class="kw">use </span>common_query::error <span class="kw">as </span>query_error;
+<span class="kw">use </span>common_query::error::Result <span class="kw">as </span>QueryResult;
 <span class="kw">use </span>session::context::QueryContextRef;
 <span class="kw">use </span>snafu::ResultExt;
-<span class="kw">use </span>sqlparser::ast::ObjectName;
-<span class="kw">use </span>table::requests::{DeleteRequest <span class="kw">as </span>TableDeleteRequest, InsertRequest <span class="kw">as </span>TableInsertRequest};
+<span class="kw">use </span>store_api::storage::RegionId;
+<span class="kw">use </span>table::requests::{
+    CompactTableRequest, DeleteRequest <span class="kw">as </span>TableDeleteRequest, FlushTableRequest,
+    InsertRequest <span class="kw">as </span>TableInsertRequest,
+};
 
 <span class="kw">use </span><span class="kw">crate</span>::delete::DeleterRef;
-<span class="kw">use </span><span class="kw">crate</span>::error::{InvalidSqlSnafu, <span class="prelude-ty">Result</span>};
 <span class="kw">use </span><span class="kw">crate</span>::insert::InserterRef;
-
-<span class="comment">// TODO(LFC): Refactor consideration: move this function to some helper mod,
-// could be done together or after `TableReference`'s refactoring, when issue #559 is resolved.
-</span><span class="doccomment">/// Converts maybe fully-qualified table name (`&lt;catalog&gt;.&lt;schema&gt;.&lt;table&gt;`) to tuple.
-</span><span class="kw">pub fn </span>table_idents_to_full_name(
-    obj_name: <span class="kw-2">&amp;</span>ObjectName,
-    query_ctx: QueryContextRef,
-) -&gt; <span class="prelude-ty">Result</span>&lt;(String, String, String)&gt; {
-    <span class="kw">match </span><span class="kw-2">&amp;</span>obj_name.<span class="number">0</span>[..] {
-        [table] =&gt; <span class="prelude-val">Ok</span>((
-            query_ctx.current_catalog().to_owned(),
-            query_ctx.current_schema().to_owned(),
-            table.value.clone(),
-        )),
-        [schema, table] =&gt; <span class="prelude-val">Ok</span>((
-            query_ctx.current_catalog().to_owned(),
-            schema.value.clone(),
-            table.value.clone(),
-        )),
-        [catalog, schema, table] =&gt; <span class="prelude-val">Ok</span>((
-            catalog.value.clone(),
-            schema.value.clone(),
-            table.value.clone(),
-        )),
-        <span class="kw">_ </span>=&gt; InvalidSqlSnafu {
-            err_msg: <span class="macro">format!</span>(
-                <span class="string">"expect table name to be &lt;catalog&gt;.&lt;schema&gt;.&lt;table&gt;, &lt;schema&gt;.&lt;table&gt; or &lt;table&gt;, actual: {obj_name}"</span>,
-            ),
-        }.fail(),
-    }
-}
+<span class="kw">use </span><span class="kw">crate</span>::request::RequesterRef;
 
 <span class="kw">pub struct </span>TableMutationOperator {
     inserter: InserterRef,
     deleter: DeleterRef,
+    requester: RequesterRef,
 }
 
 <span class="kw">impl </span>TableMutationOperator {
-    <span class="kw">pub fn </span>new(inserter: InserterRef, deleter: DeleterRef) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{ inserter, deleter }
+    <span class="kw">pub fn </span>new(inserter: InserterRef, deleter: DeleterRef, requester: RequesterRef) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            inserter,
+            deleter,
+            requester,
+        }
     }
 }
 
@@ -186,6 +190,54 @@
     ) -&gt; QueryResult&lt;AffectedRows&gt; {
         <span class="self">self</span>.deleter
             .handle_table_delete(request, ctx)
+            .<span class="kw">await
+            </span>.map_err(BoxedError::new)
+            .context(query_error::TableMutationSnafu)
+    }
+
+    <span class="kw">async fn </span>flush(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        request: FlushTableRequest,
+        ctx: QueryContextRef,
+    ) -&gt; QueryResult&lt;AffectedRows&gt; {
+        <span class="self">self</span>.requester
+            .handle_table_flush(request, ctx)
+            .<span class="kw">await
+            </span>.map_err(BoxedError::new)
+            .context(query_error::TableMutationSnafu)
+    }
+
+    <span class="kw">async fn </span>compact(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        request: CompactTableRequest,
+        ctx: QueryContextRef,
+    ) -&gt; QueryResult&lt;AffectedRows&gt; {
+        <span class="self">self</span>.requester
+            .handle_table_compaction(request, ctx)
+            .<span class="kw">await
+            </span>.map_err(BoxedError::new)
+            .context(query_error::TableMutationSnafu)
+    }
+
+    <span class="kw">async fn </span>flush_region(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        region_id: RegionId,
+        ctx: QueryContextRef,
+    ) -&gt; QueryResult&lt;AffectedRows&gt; {
+        <span class="self">self</span>.requester
+            .handle_region_flush(region_id, ctx)
+            .<span class="kw">await
+            </span>.map_err(BoxedError::new)
+            .context(query_error::TableMutationSnafu)
+    }
+
+    <span class="kw">async fn </span>compact_region(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        region_id: RegionId,
+        ctx: QueryContextRef,
+    ) -&gt; QueryResult&lt;AffectedRows&gt; {
+        <span class="self">self</span>.requester
+            .handle_region_compaction(region_id, ctx)
             .<span class="kw">await
             </span>.map_err(BoxedError::new)
             .context(query_error::TableMutationSnafu)

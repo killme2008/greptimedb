@@ -302,41 +302,6 @@
 <a href="#301" id="301">301</a>
 <a href="#302" id="302">302</a>
 <a href="#303" id="303">303</a>
-<a href="#304" id="304">304</a>
-<a href="#305" id="305">305</a>
-<a href="#306" id="306">306</a>
-<a href="#307" id="307">307</a>
-<a href="#308" id="308">308</a>
-<a href="#309" id="309">309</a>
-<a href="#310" id="310">310</a>
-<a href="#311" id="311">311</a>
-<a href="#312" id="312">312</a>
-<a href="#313" id="313">313</a>
-<a href="#314" id="314">314</a>
-<a href="#315" id="315">315</a>
-<a href="#316" id="316">316</a>
-<a href="#317" id="317">317</a>
-<a href="#318" id="318">318</a>
-<a href="#319" id="319">319</a>
-<a href="#320" id="320">320</a>
-<a href="#321" id="321">321</a>
-<a href="#322" id="322">322</a>
-<a href="#323" id="323">323</a>
-<a href="#324" id="324">324</a>
-<a href="#325" id="325">325</a>
-<a href="#326" id="326">326</a>
-<a href="#327" id="327">327</a>
-<a href="#328" id="328">328</a>
-<a href="#329" id="329">329</a>
-<a href="#330" id="330">330</a>
-<a href="#331" id="331">331</a>
-<a href="#332" id="332">332</a>
-<a href="#333" id="333">333</a>
-<a href="#334" id="334">334</a>
-<a href="#335" id="335">335</a>
-<a href="#336" id="336">336</a>
-<a href="#337" id="337">337</a>
-<a href="#338" id="338">338</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -354,13 +319,13 @@
 </span><span class="kw">use </span>std::collections::HashMap;
 
 <span class="kw">use </span>serde::{Deserialize, Serialize};
-<span class="kw">use </span>table::engine::TableReference;
 <span class="kw">use </span>table::metadata::{RawTableInfo, TableId};
+<span class="kw">use </span>table::table_reference::TableReference;
 
-<span class="kw">use super</span>::{DeserializedValueWithBytes, TableMetaValue, TABLE_INFO_KEY_PREFIX};
+<span class="kw">use super</span>::{txn_helper, DeserializedValueWithBytes, TableMetaValue, TABLE_INFO_KEY_PREFIX};
 <span class="kw">use </span><span class="kw">crate</span>::error::Result;
 <span class="kw">use </span><span class="kw">crate</span>::key::{to_removed_key, TableMetaKey};
-<span class="kw">use </span><span class="kw">crate</span>::kv_backend::txn::{Compare, CompareOp, Txn, TxnOp, TxnOpResponse};
+<span class="kw">use </span><span class="kw">crate</span>::kv_backend::txn::{Txn, TxnOp, TxnOpResponse};
 <span class="kw">use </span><span class="kw">crate</span>::kv_backend::KvBackendRef;
 <span class="kw">use </span><span class="kw">crate</span>::rpc::store::BatchGetRequest;
 <span class="kw">use </span><span class="kw">crate</span>::table_name::TableName;
@@ -451,7 +416,7 @@
         <span class="kw">let </span>raw_key = key.as_raw_key();
         <span class="kw">let </span>txn = Txn::new().and_then(<span class="macro">vec!</span>[TxnOp::Get(raw_key.clone())]);
 
-        (txn, <span class="self">Self</span>::build_decode_fn(raw_key))
+        (txn, txn_helper::build_txn_response_decoder_fn(raw_key))
     }
 
     <span class="doccomment">/// Builds a create table info transaction, it expected the `__table_info/{table_id}` wasn't occupied.
@@ -466,18 +431,12 @@
         <span class="kw">let </span>key = TableInfoKey::new(table_id);
         <span class="kw">let </span>raw_key = key.as_raw_key();
 
-        <span class="kw">let </span>txn = Txn::new()
-            .when(<span class="macro">vec!</span>[Compare::with_not_exist_value(
-                raw_key.clone(),
-                CompareOp::Equal,
-            )])
-            .and_then(<span class="macro">vec!</span>[TxnOp::Put(
-                raw_key.clone(),
-                table_info_value.try_as_raw_value()<span class="question-mark">?</span>,
-            )])
-            .or_else(<span class="macro">vec!</span>[TxnOp::Get(raw_key.clone())]);
+        <span class="kw">let </span>txn = txn_helper::build_put_if_absent_txn(
+            raw_key.clone(),
+            table_info_value.try_as_raw_value()<span class="question-mark">?</span>,
+        );
 
-        <span class="prelude-val">Ok</span>((txn, <span class="self">Self</span>::build_decode_fn(raw_key)))
+        <span class="prelude-val">Ok</span>((txn, txn_helper::build_txn_response_decoder_fn(raw_key)))
     }
 
     <span class="doccomment">/// Builds a update table info transaction, it expected the remote value equals the `current_current_table_info_value`.
@@ -493,21 +452,12 @@
     )&gt; {
         <span class="kw">let </span>key = TableInfoKey::new(table_id);
         <span class="kw">let </span>raw_key = key.as_raw_key();
-        <span class="kw">let </span>raw_value = current_table_info_value.into_bytes();
+        <span class="kw">let </span>raw_value = current_table_info_value.get_raw_bytes();
+        <span class="kw">let </span>new_raw_value: Vec&lt;u8&gt; = new_table_info_value.try_as_raw_value()<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>txn = Txn::new()
-            .when(<span class="macro">vec!</span>[Compare::with_value(
-                raw_key.clone(),
-                CompareOp::Equal,
-                raw_value,
-            )])
-            .and_then(<span class="macro">vec!</span>[TxnOp::Put(
-                raw_key.clone(),
-                new_table_info_value.try_as_raw_value()<span class="question-mark">?</span>,
-            )])
-            .or_else(<span class="macro">vec!</span>[TxnOp::Get(raw_key.clone())]);
+        <span class="kw">let </span>txn = txn_helper::build_compare_and_put_txn(raw_key.clone(), raw_value, new_raw_value);
 
-        <span class="prelude-val">Ok</span>((txn, <span class="self">Self</span>::build_decode_fn(raw_key)))
+        <span class="prelude-val">Ok</span>((txn, txn_helper::build_txn_response_decoder_fn(raw_key)))
     }
 
     <span class="doccomment">/// Builds a delete table info transaction.
@@ -518,7 +468,7 @@
     ) -&gt; <span class="prelude-ty">Result</span>&lt;Txn&gt; {
         <span class="kw">let </span>key = TableInfoKey::new(table_id);
         <span class="kw">let </span>raw_key = key.as_raw_key();
-        <span class="kw">let </span>raw_value = table_info_value.into_bytes();
+        <span class="kw">let </span>raw_value = table_info_value.get_raw_bytes();
         <span class="kw">let </span>removed_key = to_removed_key(<span class="kw-2">&amp;</span>String::from_utf8_lossy(<span class="kw-2">&amp;</span>raw_key));
 
         <span class="kw">let </span>txn = Txn::new().and_then(<span class="macro">vec!</span>[
@@ -527,26 +477,6 @@
         ]);
 
         <span class="prelude-val">Ok</span>(txn)
-    }
-
-    <span class="kw">fn </span>build_decode_fn(
-        raw_key: Vec&lt;u8&gt;,
-    ) -&gt; <span class="kw">impl </span>FnOnce(<span class="kw-2">&amp;</span>Vec&lt;TxnOpResponse&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;DeserializedValueWithBytes&lt;TableInfoValue&gt;&gt;&gt;
-    {
-        <span class="kw">move </span>|kvs: <span class="kw-2">&amp;</span>Vec&lt;TxnOpResponse&gt;| {
-            kvs.iter()
-                .filter_map(|resp| {
-                    <span class="kw">if let </span>TxnOpResponse::ResponseGet(r) = resp {
-                        <span class="prelude-val">Some</span>(r)
-                    } <span class="kw">else </span>{
-                        <span class="prelude-val">None
-                    </span>}
-                })
-                .flat_map(|r| <span class="kw-2">&amp;</span>r.kvs)
-                .find(|kv| kv.key == raw_key)
-                .map(|kv| DeserializedValueWithBytes::from_inner_slice(<span class="kw-2">&amp;</span>kv.value))
-                .transpose()
-        }
     }
 
     <span class="attr">#[cfg(test)]

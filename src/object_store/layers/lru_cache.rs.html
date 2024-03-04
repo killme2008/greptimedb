@@ -218,8 +218,8 @@
     <span class="kw">type </span>BlockingReader = I::BlockingReader;
     <span class="kw">type </span>Writer = I::Writer;
     <span class="kw">type </span>BlockingWriter = I::BlockingWriter;
-    <span class="kw">type </span>Pager = I::Pager;
-    <span class="kw">type </span>BlockingPager = I::BlockingPager;
+    <span class="kw">type </span>Lister = I::Lister;
+    <span class="kw">type </span>BlockingLister = I::BlockingLister;
 
     <span class="kw">fn </span>inner(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Inner {
         <span class="kw-2">&amp;</span><span class="self">self</span>.inner
@@ -249,7 +249,7 @@
         result
     }
 
-    <span class="kw">async fn </span>list(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpList) -&gt; <span class="prelude-ty">Result</span>&lt;(RpList, <span class="self">Self</span>::Pager)&gt; {
+    <span class="kw">async fn </span>list(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpList) -&gt; <span class="prelude-ty">Result</span>&lt;(RpList, <span class="self">Self</span>::Lister)&gt; {
         <span class="self">self</span>.inner.list(path, args).<span class="kw">await
     </span>}
 
@@ -267,7 +267,7 @@
         result
     }
 
-    <span class="kw">fn </span>blocking_list(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpList) -&gt; <span class="prelude-ty">Result</span>&lt;(RpList, <span class="self">Self</span>::BlockingPager)&gt; {
+    <span class="kw">fn </span>blocking_list(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpList) -&gt; <span class="prelude-ty">Result</span>&lt;(RpList, <span class="self">Self</span>::BlockingLister)&gt; {
         <span class="self">self</span>.inner.blocking_list(path, args)
     }
 }

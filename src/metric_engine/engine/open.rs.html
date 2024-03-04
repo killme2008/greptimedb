@@ -149,6 +149,10 @@
 <a href="#148" id="148">148</a>
 <a href="#149" id="149">149</a>
 <a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -177,7 +181,8 @@
 <span class="kw">use </span>store_api::storage::RegionId;
 
 <span class="kw">use </span><span class="kw">super</span>::MetricEngineInner;
-<span class="kw">use </span><span class="kw">crate</span>::error::{Error, LogicalRegionNotFoundSnafu, OpenMitoRegionSnafu, <span class="prelude-ty">Result</span>};
+<span class="kw">use </span><span class="kw">crate</span>::engine::options::set_index_options_for_data_region;
+<span class="kw">use </span><span class="kw">crate</span>::error::{OpenMitoRegionSnafu, <span class="prelude-ty">Result</span>};
 <span class="kw">use </span><span class="kw">crate</span>::metrics::{LOGICAL_REGION_COUNT, PHYSICAL_REGION_COUNT};
 <span class="kw">use </span><span class="kw">crate</span>::utils;
 
@@ -228,9 +233,12 @@
             engine: MITO_ENGINE_NAME.to_string(),
             skip_wal_replay: request.skip_wal_replay,
         };
+
+        <span class="kw">let </span><span class="kw-2">mut </span>data_region_options = request.options;
+        set_index_options_for_data_region(<span class="kw-2">&amp;mut </span>data_region_options);
         <span class="kw">let </span>open_data_region_request = RegionOpenRequest {
             region_dir: data_region_dir,
-            options: request.options.clone(),
+            options: data_region_options,
             engine: MITO_ENGINE_NAME.to_string(),
             skip_wal_replay: request.skip_wal_replay,
         };
@@ -281,7 +289,7 @@
             .<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="kw">let </span>logical_region_num = logical_regions.len();
 
-        <span class="kw">let </span><span class="kw-2">mut </span>state = <span class="self">self</span>.state.write().<span class="kw">await</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>state = <span class="self">self</span>.state.write().unwrap();
         <span class="comment">// recover physical column names
         </span><span class="kw">let </span>physical_column_names = physical_columns
             .into_iter()

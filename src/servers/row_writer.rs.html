@@ -456,16 +456,10 @@
 
 <span class="kw">pub fn </span>write_tags(
     table_data: <span class="kw-2">&amp;mut </span>TableData,
-    kvs: <span class="kw">impl </span>Iterator&lt;Item = (String, <span class="kw">impl </span>ToString)&gt;,
+    kvs: <span class="kw">impl </span>Iterator&lt;Item = (String, String)&gt;,
     one_row: <span class="kw-2">&amp;mut </span>Vec&lt;Value&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-    <span class="kw">let </span>ktv_iter = kvs.map(|(k, v)| {
-        (
-            k,
-            ColumnDataType::String,
-            ValueData::StringValue(v.to_string()),
-        )
-    });
+    <span class="kw">let </span>ktv_iter = kvs.map(|(k, v)| (k, ColumnDataType::String, ValueData::StringValue(v)));
     write_by_semantic_type(table_data, SemanticType::Tag, ktv_iter, one_row)
 }
 
@@ -525,18 +519,22 @@
     } = table_data;
 
     <span class="kw">for </span>(name, datatype, value) <span class="kw">in </span>ktv_iter {
-        <span class="kw">let </span>index = column_indexes.entry(name.clone()).or_insert(schema.len());
-        <span class="kw">if </span><span class="kw-2">*</span>index == schema.len() {
+        <span class="kw">let </span>index = column_indexes.get(<span class="kw-2">&amp;</span>name);
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(index) = index {
+            check_schema(datatype, semantic_type, <span class="kw-2">&amp;</span>schema[<span class="kw-2">*</span>index])<span class="question-mark">?</span>;
+            one_row[<span class="kw-2">*</span>index].value_data = <span class="prelude-val">Some</span>(value);
+        } <span class="kw">else </span>{
+            <span class="kw">let </span>index = schema.len();
             schema.push(ColumnSchema {
-                column_name: name.to_string(),
+                column_name: name.clone(),
                 datatype: datatype <span class="kw">as </span>i32,
                 semantic_type: semantic_type <span class="kw">as </span>i32,
                 ..Default::default()
             });
-            one_row.push(value.into());
-        } <span class="kw">else </span>{
-            check_schema(datatype, semantic_type, <span class="kw-2">&amp;</span>schema[<span class="kw-2">*</span>index])<span class="question-mark">?</span>;
-            one_row[<span class="kw-2">*</span>index].value_data = <span class="prelude-val">Some</span>(value);
+            column_indexes.insert(name, index);
+            one_row.push(Value {
+                value_data: <span class="prelude-val">Some</span>(value),
+            });
         }
     }
 
@@ -580,22 +578,24 @@
         }
     };
 
-    <span class="kw">let </span>index = column_indexes.entry(name.clone()).or_insert(schema.len());
-    <span class="kw">if </span><span class="kw-2">*</span>index == schema.len() {
-        schema.push(ColumnSchema {
-            column_name: name,
-            datatype: ColumnDataType::TimestampMillisecond <span class="kw">as </span>i32,
-            semantic_type: SemanticType::Timestamp <span class="kw">as </span>i32,
-            ..Default::default()
-        });
-        one_row.push(ValueData::TimestampMillisecondValue(ts).into())
-    } <span class="kw">else </span>{
+    <span class="kw">let </span>index = column_indexes.get(<span class="kw-2">&amp;</span>name);
+    <span class="kw">if let </span><span class="prelude-val">Some</span>(index) = index {
         check_schema(
             ColumnDataType::TimestampMillisecond,
             SemanticType::Timestamp,
             <span class="kw-2">&amp;</span>schema[<span class="kw-2">*</span>index],
         )<span class="question-mark">?</span>;
         one_row[<span class="kw-2">*</span>index].value_data = <span class="prelude-val">Some</span>(ValueData::TimestampMillisecondValue(ts));
+    } <span class="kw">else </span>{
+        <span class="kw">let </span>index = schema.len();
+        schema.push(ColumnSchema {
+            column_name: name.clone(),
+            datatype: ColumnDataType::TimestampMillisecond <span class="kw">as </span>i32,
+            semantic_type: SemanticType::Timestamp <span class="kw">as </span>i32,
+            ..Default::default()
+        });
+        column_indexes.insert(name, index);
+        one_row.push(ValueData::TimestampMillisecondValue(ts).into())
     }
 
     <span class="prelude-val">Ok</span>(())

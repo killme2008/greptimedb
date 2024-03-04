@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["RegionMigrationManager","RegionMigrationProcedureGuard","RegionMigrationProcedureTask"]};
+window.SIDEBAR_ITEMS = {"struct":["RegionMigrationManager","RegionMigrationProcedureGuard","RegionMigrationProcedureTask"],"type":["RegionMigrationManagerRef"]};

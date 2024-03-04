@@ -24,7 +24,6 @@
 <a href="#23" id="23">23</a>
 <a href="#24" id="24">24</a>
 <a href="#25" id="25">25</a>
-<a href="#26" id="26">26</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,8 +38,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-</span><span class="kw">pub use </span>opendal::raw::oio::Pager;
-<span class="kw">pub use </span>opendal::raw::{normalize_path <span class="kw">as </span>raw_normalize_path, HttpClient};
+</span><span class="kw">pub use </span>opendal::raw::{normalize_path <span class="kw">as </span>raw_normalize_path, HttpClient};
 <span class="kw">pub use </span>opendal::{
     services, Builder <span class="kw">as </span>ObjectStoreBuilder, Entry, EntryMode, Error, ErrorKind, Lister, Metakey,
     Operator <span class="kw">as </span>ObjectStore, Reader, <span class="prelude-ty">Result</span>, Writer,

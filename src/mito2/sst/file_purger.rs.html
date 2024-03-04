@@ -152,6 +152,60 @@
 <a href="#151" id="151">151</a>
 <a href="#152" id="152">152</a>
 <a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
+<a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
+<a href="#160" id="160">160</a>
+<a href="#161" id="161">161</a>
+<a href="#162" id="162">162</a>
+<a href="#163" id="163">163</a>
+<a href="#164" id="164">164</a>
+<a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
+<a href="#168" id="168">168</a>
+<a href="#169" id="169">169</a>
+<a href="#170" id="170">170</a>
+<a href="#171" id="171">171</a>
+<a href="#172" id="172">172</a>
+<a href="#173" id="173">173</a>
+<a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
+<a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
+<a href="#182" id="182">182</a>
+<a href="#183" id="183">183</a>
+<a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
+<a href="#186" id="186">186</a>
+<a href="#187" id="187">187</a>
+<a href="#188" id="188">188</a>
+<a href="#189" id="189">189</a>
+<a href="#190" id="190">190</a>
+<a href="#191" id="191">191</a>
+<a href="#192" id="192">192</a>
+<a href="#193" id="193">193</a>
+<a href="#194" id="194">194</a>
+<a href="#195" id="195">195</a>
+<a href="#196" id="196">196</a>
+<a href="#197" id="197">197</a>
+<a href="#198" id="198">198</a>
+<a href="#199" id="199">199</a>
+<a href="#200" id="200">200</a>
+<a href="#201" id="201">201</a>
+<a href="#202" id="202">202</a>
+<a href="#203" id="203">203</a>
+<a href="#204" id="204">204</a>
+<a href="#205" id="205">205</a>
+<a href="#206" id="206">206</a>
+<a href="#207" id="207">207</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -170,20 +224,17 @@
 <span class="kw">use </span>std::sync::Arc;
 
 <span class="kw">use </span>common_telemetry::{error, info};
-<span class="kw">use </span>store_api::storage::RegionId;
 
 <span class="kw">use </span><span class="kw">crate</span>::access_layer::AccessLayerRef;
 <span class="kw">use </span><span class="kw">crate</span>::cache::CacheManagerRef;
 <span class="kw">use </span><span class="kw">crate</span>::schedule::scheduler::SchedulerRef;
-<span class="kw">use </span><span class="kw">crate</span>::sst::file::FileId;
+<span class="kw">use </span><span class="kw">crate</span>::sst::file::FileMeta;
 
 <span class="doccomment">/// Request to remove a file.
 </span><span class="attr">#[derive(Debug)]
 </span><span class="kw">pub struct </span>PurgeRequest {
-    <span class="doccomment">/// Region id of the file.
-    </span><span class="kw">pub </span>region_id: RegionId,
-    <span class="doccomment">/// Id of the file.
-    </span><span class="kw">pub </span>file_id: FileId,
+    <span class="doccomment">/// File meta.
+    </span><span class="kw">pub </span>file_meta: FileMeta,
 }
 
 <span class="doccomment">/// A worker to delete files in background.
@@ -226,24 +277,22 @@
 
 <span class="kw">impl </span>FilePurger <span class="kw">for </span>LocalFilePurger {
     <span class="kw">fn </span>send_request(<span class="kw-2">&amp;</span><span class="self">self</span>, request: PurgeRequest) {
-        <span class="kw">let </span>file_id = request.file_id;
-        <span class="kw">let </span>region_id = request.region_id;
+        <span class="kw">let </span>file_meta = request.file_meta;
         <span class="kw">let </span>sst_layer = <span class="self">self</span>.sst_layer.clone();
 
         <span class="comment">// Remove meta of the file from cache.
         </span><span class="kw">if let </span><span class="prelude-val">Some</span>(cache) = <span class="kw-2">&amp;</span><span class="self">self</span>.cache_manager {
-            cache.remove_parquet_meta_data(region_id, file_id);
+            cache.remove_parquet_meta_data(file_meta.region_id, file_meta.file_id);
         }
 
         <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = <span class="self">self</span>.scheduler.schedule(Box::pin(<span class="kw">async move </span>{
-            <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = sst_layer.delete_sst(file_id).<span class="kw">await </span>{
-                <span class="macro">error!</span>(e; <span class="string">"Failed to delete SST file, file: {}, region: {}"</span>, 
-                    file_id.as_parquet(), region_id);
+            <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = sst_layer.delete_sst(<span class="kw-2">&amp;</span>file_meta).<span class="kw">await </span>{
+                <span class="macro">error!</span>(e; <span class="string">"Failed to delete SST file, file_id: {}, region: {}"</span>, 
+                    file_meta.file_id, file_meta.region_id);
             } <span class="kw">else </span>{
                 <span class="macro">info!</span>(
-                    <span class="string">"Successfully deleted SST file: {}, region: {}"</span>,
-                    file_id.as_parquet(),
-                    region_id
+                    <span class="string">"Successfully deleted SST file, file_id: {}, region: {}"</span>,
+                    file_meta.file_id, file_meta.region_id
                 );
             }
         })) {
@@ -256,29 +305,37 @@
 </span><span class="kw">mod </span>tests {
     <span class="kw">use </span>common_test_util::temp_dir::create_temp_dir;
     <span class="kw">use </span>object_store::services::Fs;
-    <span class="kw">use </span>object_store::{util, ObjectStore};
+    <span class="kw">use </span>object_store::util::join_dir;
+    <span class="kw">use </span>object_store::ObjectStore;
+    <span class="kw">use </span>smallvec::SmallVec;
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use </span><span class="kw">crate</span>::access_layer::AccessLayer;
     <span class="kw">use </span><span class="kw">crate</span>::schedule::scheduler::{LocalScheduler, Scheduler};
-    <span class="kw">use </span><span class="kw">crate</span>::sst::file::{FileHandle, FileId, FileMeta, FileTimeRange};
+    <span class="kw">use </span><span class="kw">crate</span>::sst::file::{FileHandle, FileId, FileMeta, FileTimeRange, IndexType};
+    <span class="kw">use </span><span class="kw">crate</span>::sst::index::intermediate::IntermediateManager;
+    <span class="kw">use </span><span class="kw">crate</span>::sst::location;
 
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>test_file_purge() {
         common_telemetry::init_default_ut_logging();
 
         <span class="kw">let </span>dir = create_temp_dir(<span class="string">"file-purge"</span>);
+        <span class="kw">let </span>dir_path = dir.path().display().to_string();
         <span class="kw">let </span><span class="kw-2">mut </span>builder = Fs::default();
-        builder.root(dir.path().to_str().unwrap());
-        <span class="kw">let </span>object_store = ObjectStore::new(builder).unwrap().finish();
+        builder.root(<span class="kw-2">&amp;</span>dir_path);
         <span class="kw">let </span>sst_file_id = FileId::random();
         <span class="kw">let </span>sst_dir = <span class="string">"table1"</span>;
-        <span class="kw">let </span>path = util::join_path(sst_dir, <span class="kw-2">&amp;</span>sst_file_id.as_parquet());
+        <span class="kw">let </span>path = location::sst_file_path(sst_dir, sst_file_id);
+        <span class="kw">let </span>intm_mgr = IntermediateManager::init_fs(join_dir(<span class="kw-2">&amp;</span>dir_path, <span class="string">"intm"</span>))
+            .<span class="kw">await
+            </span>.unwrap();
 
+        <span class="kw">let </span>object_store = ObjectStore::new(builder).unwrap().finish();
         object_store.write(<span class="kw-2">&amp;</span>path, <span class="macro">vec!</span>[<span class="number">0</span>; <span class="number">4096</span>]).<span class="kw">await</span>.unwrap();
 
         <span class="kw">let </span>scheduler = Arc::new(LocalScheduler::new(<span class="number">3</span>));
-        <span class="kw">let </span>layer = Arc::new(AccessLayer::new(sst_dir, object_store.clone()));
+        <span class="kw">let </span>layer = Arc::new(AccessLayer::new(sst_dir, object_store.clone(), intm_mgr));
 
         <span class="kw">let </span>file_purger = Arc::new(LocalFilePurger::new(scheduler.clone(), layer, <span class="prelude-val">None</span>));
 
@@ -290,6 +347,8 @@
                     time_range: FileTimeRange::default(),
                     level: <span class="number">0</span>,
                     file_size: <span class="number">4096</span>,
+                    available_indexes: Default::default(),
+                    index_file_size: <span class="number">0</span>,
                 },
                 file_purger,
             );
@@ -299,10 +358,59 @@
 
         scheduler.stop(<span class="bool-val">true</span>).<span class="kw">await</span>.unwrap();
 
-        <span class="macro">assert!</span>(!object_store
-            .is_exist(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">"{}/{}"</span>, sst_dir, sst_file_id.as_parquet()))
+        <span class="macro">assert!</span>(!object_store.is_exist(<span class="kw-2">&amp;</span>path).<span class="kw">await</span>.unwrap());
+    }
+
+    <span class="attr">#[tokio::test]
+    </span><span class="kw">async fn </span>test_file_purge_with_index() {
+        common_telemetry::init_default_ut_logging();
+
+        <span class="kw">let </span>dir = create_temp_dir(<span class="string">"file-purge"</span>);
+        <span class="kw">let </span>dir_path = dir.path().display().to_string();
+        <span class="kw">let </span><span class="kw-2">mut </span>builder = Fs::default();
+        builder.root(<span class="kw-2">&amp;</span>dir_path);
+        <span class="kw">let </span>sst_file_id = FileId::random();
+        <span class="kw">let </span>sst_dir = <span class="string">"table1"</span>;
+        <span class="kw">let </span>intm_mgr = IntermediateManager::init_fs(join_dir(<span class="kw-2">&amp;</span>dir_path, <span class="string">"intm"</span>))
             .<span class="kw">await
-            </span>.unwrap());
+            </span>.unwrap();
+        <span class="kw">let </span>path = location::sst_file_path(sst_dir, sst_file_id);
+
+        <span class="kw">let </span>object_store = ObjectStore::new(builder).unwrap().finish();
+        object_store.write(<span class="kw-2">&amp;</span>path, <span class="macro">vec!</span>[<span class="number">0</span>; <span class="number">4096</span>]).<span class="kw">await</span>.unwrap();
+
+        <span class="kw">let </span>index_path = location::index_file_path(sst_dir, sst_file_id);
+        object_store
+            .write(<span class="kw-2">&amp;</span>index_path, <span class="macro">vec!</span>[<span class="number">0</span>; <span class="number">4096</span>])
+            .<span class="kw">await
+            </span>.unwrap();
+
+        <span class="kw">let </span>scheduler = Arc::new(LocalScheduler::new(<span class="number">3</span>));
+        <span class="kw">let </span>layer = Arc::new(AccessLayer::new(sst_dir, object_store.clone(), intm_mgr));
+
+        <span class="kw">let </span>file_purger = Arc::new(LocalFilePurger::new(scheduler.clone(), layer, <span class="prelude-val">None</span>));
+
+        {
+            <span class="kw">let </span>handle = FileHandle::new(
+                FileMeta {
+                    region_id: <span class="number">0</span>.into(),
+                    file_id: sst_file_id,
+                    time_range: FileTimeRange::default(),
+                    level: <span class="number">0</span>,
+                    file_size: <span class="number">4096</span>,
+                    available_indexes: SmallVec::from_iter([IndexType::InvertedIndex]),
+                    index_file_size: <span class="number">4096</span>,
+                },
+                file_purger,
+            );
+            <span class="comment">// mark file as deleted and drop the handle, we expect the sst file and the index file are deleted.
+            </span>handle.mark_deleted();
+        }
+
+        scheduler.stop(<span class="bool-val">true</span>).<span class="kw">await</span>.unwrap();
+
+        <span class="macro">assert!</span>(!object_store.is_exist(<span class="kw-2">&amp;</span>path).<span class="kw">await</span>.unwrap());
+        <span class="macro">assert!</span>(!object_store.is_exist(<span class="kw-2">&amp;</span>index_path).<span class="kw">await</span>.unwrap());
     }
 }
 </code></pre></div></section></main></body></html>

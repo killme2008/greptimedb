@@ -172,68 +172,6 @@
 <a href="#171" id="171">171</a>
 <a href="#172" id="172">172</a>
 <a href="#173" id="173">173</a>
-<a href="#174" id="174">174</a>
-<a href="#175" id="175">175</a>
-<a href="#176" id="176">176</a>
-<a href="#177" id="177">177</a>
-<a href="#178" id="178">178</a>
-<a href="#179" id="179">179</a>
-<a href="#180" id="180">180</a>
-<a href="#181" id="181">181</a>
-<a href="#182" id="182">182</a>
-<a href="#183" id="183">183</a>
-<a href="#184" id="184">184</a>
-<a href="#185" id="185">185</a>
-<a href="#186" id="186">186</a>
-<a href="#187" id="187">187</a>
-<a href="#188" id="188">188</a>
-<a href="#189" id="189">189</a>
-<a href="#190" id="190">190</a>
-<a href="#191" id="191">191</a>
-<a href="#192" id="192">192</a>
-<a href="#193" id="193">193</a>
-<a href="#194" id="194">194</a>
-<a href="#195" id="195">195</a>
-<a href="#196" id="196">196</a>
-<a href="#197" id="197">197</a>
-<a href="#198" id="198">198</a>
-<a href="#199" id="199">199</a>
-<a href="#200" id="200">200</a>
-<a href="#201" id="201">201</a>
-<a href="#202" id="202">202</a>
-<a href="#203" id="203">203</a>
-<a href="#204" id="204">204</a>
-<a href="#205" id="205">205</a>
-<a href="#206" id="206">206</a>
-<a href="#207" id="207">207</a>
-<a href="#208" id="208">208</a>
-<a href="#209" id="209">209</a>
-<a href="#210" id="210">210</a>
-<a href="#211" id="211">211</a>
-<a href="#212" id="212">212</a>
-<a href="#213" id="213">213</a>
-<a href="#214" id="214">214</a>
-<a href="#215" id="215">215</a>
-<a href="#216" id="216">216</a>
-<a href="#217" id="217">217</a>
-<a href="#218" id="218">218</a>
-<a href="#219" id="219">219</a>
-<a href="#220" id="220">220</a>
-<a href="#221" id="221">221</a>
-<a href="#222" id="222">222</a>
-<a href="#223" id="223">223</a>
-<a href="#224" id="224">224</a>
-<a href="#225" id="225">225</a>
-<a href="#226" id="226">226</a>
-<a href="#227" id="227">227</a>
-<a href="#228" id="228">228</a>
-<a href="#229" id="229">229</a>
-<a href="#230" id="230">230</a>
-<a href="#231" id="231">231</a>
-<a href="#232" id="232">232</a>
-<a href="#233" id="233">233</a>
-<a href="#234" id="234">234</a>
-<a href="#235" id="235">235</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -248,18 +186,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-</span><span class="kw">use </span>std::pin::Pin;
-<span class="kw">use </span>std::sync::Arc;
-<span class="kw">use </span>std::task::{Context, Poll};
+</span><span class="kw">use </span>std::sync::Arc;
 
-<span class="kw">use </span>arrow::compute::cast;
 <span class="kw">use </span>arrow_schema::{ArrowError, Schema, SchemaRef};
 <span class="kw">use </span>async_trait::async_trait;
-<span class="kw">use </span>datafusion::arrow::record_batch::RecordBatch <span class="kw">as </span>DfRecordBatch;
+<span class="kw">use </span>common_recordbatch::adapter::RecordBatchStreamTypeAdapter;
 <span class="kw">use </span>datafusion::datasource::physical_plan::{FileMeta, FileOpenFuture, FileOpener};
 <span class="kw">use </span>datafusion::error::{DataFusionError, <span class="prelude-ty">Result </span><span class="kw">as </span>DfResult};
-<span class="kw">use </span>datafusion::physical_plan::RecordBatchStream;
-<span class="kw">use </span>futures::{Stream, StreamExt, TryStreamExt};
+<span class="kw">use </span>futures::{StreamExt, TryStreamExt};
 <span class="kw">use </span>object_store::ObjectStore;
 <span class="kw">use </span>orc_rust::arrow_reader::{create_arrow_schema, Cursor};
 <span class="kw">use </span>orc_rust::async_arrow_reader::ArrowStreamReader;
@@ -295,73 +229,6 @@
 ) -&gt; <span class="prelude-ty">Result</span>&lt;Schema&gt; {
     <span class="kw">let </span>cursor = new_orc_cursor(reader).<span class="kw">await</span><span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>(create_arrow_schema(<span class="kw-2">&amp;</span>cursor))
-}
-
-<span class="kw">pub struct </span>OrcArrowStreamReaderAdapter&lt;T: AsyncRead + AsyncSeek + Unpin + Send + <span class="lifetime">'static</span>&gt; {
-    output_schema: SchemaRef,
-    projection: Vec&lt;usize&gt;,
-    stream: ArrowStreamReader&lt;T&gt;,
-}
-
-<span class="kw">impl</span>&lt;T: AsyncRead + AsyncSeek + Unpin + Send + <span class="lifetime">'static</span>&gt; OrcArrowStreamReaderAdapter&lt;T&gt; {
-    <span class="kw">pub fn </span>new(
-        output_schema: SchemaRef,
-        stream: ArrowStreamReader&lt;T&gt;,
-        projection: <span class="prelude-ty">Option</span>&lt;Vec&lt;usize&gt;&gt;,
-    ) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>projection = <span class="kw">if let </span><span class="prelude-val">Some</span>(projection) = projection {
-            projection
-        } <span class="kw">else </span>{
-            (<span class="number">0</span>..output_schema.fields().len()).collect()
-        };
-
-        <span class="self">Self </span>{
-            output_schema,
-            projection,
-            stream,
-        }
-    }
-}
-
-<span class="kw">impl</span>&lt;T: AsyncRead + AsyncSeek + Unpin + Send + <span class="lifetime">'static</span>&gt; RecordBatchStream
-    <span class="kw">for </span>OrcArrowStreamReaderAdapter&lt;T&gt;
-{
-    <span class="kw">fn </span>schema(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; SchemaRef {
-        <span class="self">self</span>.output_schema.clone()
-    }
-}
-
-<span class="kw">impl</span>&lt;T: AsyncRead + AsyncSeek + Unpin + Send + <span class="lifetime">'static</span>&gt; Stream <span class="kw">for </span>OrcArrowStreamReaderAdapter&lt;T&gt; {
-    <span class="kw">type </span>Item = DfResult&lt;DfRecordBatch&gt;;
-
-    <span class="kw">fn </span>poll_next(<span class="kw-2">mut </span><span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">'_</span>&gt;) -&gt; Poll&lt;<span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt;&gt; {
-        <span class="kw">let </span>batch = <span class="macro">futures::ready!</span>(Pin::new(<span class="kw-2">&amp;mut </span><span class="self">self</span>.stream).poll_next(cx))
-            .map(|r| r.map_err(|e| DataFusionError::External(Box::new(e))));
-
-        <span class="kw">let </span>projected_schema = <span class="self">self</span>.output_schema.project(<span class="kw-2">&amp;</span><span class="self">self</span>.projection)<span class="question-mark">?</span>;
-        <span class="kw">let </span>batch = batch.map(|b| {
-            b.and_then(|b| {
-                <span class="kw">let </span><span class="kw-2">mut </span>columns = Vec::with_capacity(<span class="self">self</span>.projection.len());
-                <span class="kw">for </span>idx <span class="kw">in </span><span class="self">self</span>.projection.iter() {
-                    <span class="kw">let </span>column = b.column(<span class="kw-2">*</span>idx);
-                    <span class="kw">let </span>field = <span class="self">self</span>.output_schema.field(<span class="kw-2">*</span>idx);
-
-                    <span class="kw">if </span>column.data_type() != field.data_type() {
-                        <span class="kw">let </span>output = cast(<span class="kw-2">&amp;</span>column, field.data_type())<span class="question-mark">?</span>;
-                        columns.push(output)
-                    } <span class="kw">else </span>{
-                        columns.push(column.clone())
-                    }
-                }
-
-                <span class="kw">let </span>record_batch = DfRecordBatch::try_new(projected_schema.into(), columns)<span class="question-mark">?</span>;
-
-                <span class="prelude-val">Ok</span>(record_batch)
-            })
-        });
-
-        Poll::Ready(batch)
-    }
 }
 
 <span class="attr">#[async_trait]
@@ -402,7 +269,15 @@
 <span class="kw">impl </span>FileOpener <span class="kw">for </span>OrcOpener {
     <span class="kw">fn </span>open(<span class="kw-2">&amp;</span><span class="self">self</span>, meta: FileMeta) -&gt; DfResult&lt;FileOpenFuture&gt; {
         <span class="kw">let </span>object_store = <span class="self">self</span>.object_store.clone();
-        <span class="kw">let </span>output_schema = <span class="self">self</span>.output_schema.clone();
+        <span class="kw">let </span>projected_schema = <span class="kw">if let </span><span class="prelude-val">Some</span>(projection) = <span class="kw-2">&amp;</span><span class="self">self</span>.projection {
+            <span class="kw">let </span>projected_schema = <span class="self">self
+                </span>.output_schema
+                .project(projection)
+                .map_err(|e| DataFusionError::External(Box::new(e)))<span class="question-mark">?</span>;
+            Arc::new(projected_schema)
+        } <span class="kw">else </span>{
+            <span class="self">self</span>.output_schema.clone()
+        };
         <span class="kw">let </span>projection = <span class="self">self</span>.projection.clone();
         <span class="prelude-val">Ok</span>(Box::pin(<span class="kw">async move </span>{
             <span class="kw">let </span>reader = object_store
@@ -414,7 +289,8 @@
                 .<span class="kw">await
                 </span>.map_err(|e| DataFusionError::External(Box::new(e)))<span class="question-mark">?</span>;
 
-            <span class="kw">let </span>stream = OrcArrowStreamReaderAdapter::new(output_schema, stream_reader, projection);
+            <span class="kw">let </span>stream =
+                RecordBatchStreamTypeAdapter::new(projected_schema, stream_reader, projection);
 
             <span class="kw">let </span>adopted = stream.map_err(|e| ArrowError::ExternalError(Box::new(e)));
             <span class="prelude-val">Ok</span>(adopted.boxed())

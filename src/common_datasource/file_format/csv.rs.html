@@ -323,6 +323,7 @@
 <a href="#322" id="322">322</a>
 <a href="#323" id="323">323</a>
 <a href="#324" id="324">324</a>
+<a href="#325" id="325">325</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -518,8 +519,9 @@
     store: ObjectStore,
     path: <span class="kw-2">&amp;</span>str,
     threshold: usize,
+    concurrency: usize,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;usize&gt; {
-    stream_to_file(stream, store, path, threshold, |buffer| {
+    stream_to_file(stream, store, path, threshold, concurrency, |buffer| {
         csv::Writer::new(buffer)
     })
     .<span class="kw">await

@@ -56,6 +56,24 @@
 <a href="#55" id="55">55</a>
 <a href="#56" id="56">56</a>
 <a href="#57" id="57">57</a>
+<a href="#58" id="58">58</a>
+<a href="#59" id="59">59</a>
+<a href="#60" id="60">60</a>
+<a href="#61" id="61">61</a>
+<a href="#62" id="62">62</a>
+<a href="#63" id="63">63</a>
+<a href="#64" id="64">64</a>
+<a href="#65" id="65">65</a>
+<a href="#66" id="66">66</a>
+<a href="#67" id="67">67</a>
+<a href="#68" id="68">68</a>
+<a href="#69" id="69">69</a>
+<a href="#70" id="70">70</a>
+<a href="#71" id="71">71</a>
+<a href="#72" id="72">72</a>
+<a href="#73" id="73">73</a>
+<a href="#74" id="74">74</a>
+<a href="#75" id="75">75</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -73,24 +91,42 @@
 </span><span class="kw">mod </span>predicates_apply;
 
 <span class="kw">use </span>async_trait::async_trait;
+<span class="kw">use </span>common_base::BitVec;
 <span class="kw">pub use </span>predicates_apply::PredicatesIndexApplier;
 
 <span class="kw">use </span><span class="kw">crate</span>::inverted_index::error::Result;
 <span class="kw">use </span><span class="kw">crate</span>::inverted_index::format::reader::InvertedIndexReader;
 
+<span class="doccomment">/// The output of an apply operation.
+</span><span class="attr">#[derive(Clone, Debug, Eq, PartialEq)]
+</span><span class="kw">pub struct </span>ApplyOutput {
+    <span class="doccomment">/// Bitmap of indices that match the predicates.
+    </span><span class="kw">pub </span>matched_segment_ids: BitVec,
+
+    <span class="doccomment">/// The total number of rows in the index.
+    </span><span class="kw">pub </span>total_row_count: usize,
+
+    <span class="doccomment">/// The number of rows in each segment.
+    </span><span class="kw">pub </span>segment_row_count: usize,
+}
+
 <span class="doccomment">/// A trait for processing and transforming indices obtained from an inverted index.
 ///
 /// Applier instances are reusable and work with various `InvertedIndexReader` instances,
 /// avoiding repeated compilation of fixed predicates such as regex patterns.
-</span><span class="attr">#[async_trait]
-</span><span class="kw">pub trait </span>IndexApplier {
+</span><span class="attr">#[mockall::automock]
+#[async_trait]
+</span><span class="kw">pub trait </span>IndexApplier: Send + Sync {
     <span class="doccomment">/// Applies the predefined predicates to the data read by the given index reader, returning
     /// a list of relevant indices (e.g., post IDs, group IDs, row IDs).
-    </span><span class="kw">async fn </span>apply(
+    </span><span class="kw">async fn </span>apply&lt;<span class="lifetime">'a</span>&gt;(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         context: SearchContext,
-        reader: <span class="kw-2">&amp;mut </span><span class="kw">dyn </span>InvertedIndexReader,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;usize&gt;&gt;;
+        reader: <span class="kw-2">&amp;mut </span>(<span class="kw">dyn </span>InvertedIndexReader + <span class="lifetime">'a</span>),
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;ApplyOutput&gt;;
+
+    <span class="doccomment">/// Returns the memory usage of the applier.
+    </span><span class="kw">fn </span>memory_usage(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize;
 }
 
 <span class="doccomment">/// A context for searching the inverted index.

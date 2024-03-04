@@ -349,7 +349,7 @@
     tracing_context: TracingContext,
 ) -&gt; TonicStream&lt;FlightData&gt; {
     <span class="kw">match </span>output {
-        Output::Stream(stream) =&gt; {
+        Output::Stream(stream, <span class="kw">_</span>) =&gt; {
             <span class="kw">let </span>stream = FlightRecordBatchStream::new(stream, tracing_context);
             Box::pin(stream) <span class="kw">as _
         </span>}

@@ -1,4 +1,0 @@
-(function() {var implementors = {
-"frontend":[["impl TableMetadataAllocator for <a class=\"struct\" href=\"frontend/instance/standalone/struct.StandaloneTableMetadataAllocator.html\" title=\"struct frontend::instance::standalone::StandaloneTableMetadataAllocator\">StandaloneTableMetadataAllocator</a>"]],
-"meta_srv":[["impl TableMetadataAllocator for <a class=\"struct\" href=\"meta_srv/table_meta_alloc/struct.MetaSrvTableMetadataAllocator.html\" title=\"struct meta_srv::table_meta_alloc::MetaSrvTableMetadataAllocator\">MetaSrvTableMetadataAllocator</a>"]]
-};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

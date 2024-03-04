@@ -216,8 +216,8 @@
 };
 <span class="kw">use </span>datatypes::schema::Schema;
 <span class="kw">use </span>snafu::{ensure, OptionExt};
-<span class="kw">use </span>table::engine::TableReference;
 <span class="kw">use </span>table::metadata::TableId;
+<span class="kw">use </span>table::table_reference::TableReference;
 
 <span class="kw">use </span><span class="kw">crate</span>::error::{
     DuplicatedColumnNameSnafu, DuplicatedTimestampColumnSnafu, MissingTimestampColumnSnafu, <span class="prelude-ty">Result</span>,

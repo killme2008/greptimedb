@@ -327,6 +327,7 @@
 <a href="#326" id="326">326</a>
 <a href="#327" id="327">327</a>
 <a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -346,12 +347,12 @@
 </span><span class="kw">use </span>std::time::Duration;
 
 <span class="kw">use </span>common_base::readable_size::ReadableSize;
-<span class="kw">use </span>common_config::WalConfig;
 <span class="kw">use </span>common_grpc::channel_manager::{
     DEFAULT_MAX_GRPC_RECV_MESSAGE_SIZE, DEFAULT_MAX_GRPC_SEND_MESSAGE_SIZE,
 };
 <span class="kw">pub use </span>common_procedure::options::ProcedureConfig;
 <span class="kw">use </span>common_telemetry::logging::LoggingOptions;
+<span class="kw">use </span>common_wal::config::DatanodeWalConfig;
 <span class="kw">use </span>file_engine::config::EngineConfig <span class="kw">as </span>FileEngineConfig;
 <span class="kw">use </span>meta_client::MetaClientOptions;
 <span class="kw">use </span>mito2::config::MitoConfig;
@@ -555,7 +556,7 @@
     <span class="kw">pub </span>mode: Mode,
     <span class="kw">pub </span>node_id: <span class="prelude-ty">Option</span>&lt;u64&gt;,
     <span class="kw">pub </span>require_lease_before_startup: bool,
-    <span class="kw">pub </span>initialize_region_in_background: bool,
+    <span class="kw">pub </span>init_regions_in_background: bool,
     <span class="kw">pub </span>rpc_addr: String,
     <span class="kw">pub </span>rpc_hostname: <span class="prelude-ty">Option</span>&lt;String&gt;,
     <span class="kw">pub </span>rpc_runtime_size: usize,
@@ -566,7 +567,7 @@
     <span class="kw">pub </span>heartbeat: HeartbeatOptions,
     <span class="kw">pub </span>http: HttpOptions,
     <span class="kw">pub </span>meta_client: <span class="prelude-ty">Option</span>&lt;MetaClientOptions&gt;,
-    <span class="kw">pub </span>wal: WalConfig,
+    <span class="kw">pub </span>wal: DatanodeWalConfig,
     <span class="kw">pub </span>storage: StorageConfig,
     <span class="doccomment">/// Options for different store engines.
     </span><span class="kw">pub </span>region_engine: Vec&lt;RegionEngineConfig&gt;,
@@ -581,7 +582,7 @@
             mode: Mode::Standalone,
             node_id: <span class="prelude-val">None</span>,
             require_lease_before_startup: <span class="bool-val">false</span>,
-            initialize_region_in_background: <span class="bool-val">false</span>,
+            init_regions_in_background: <span class="bool-val">false</span>,
             rpc_addr: <span class="string">"127.0.0.1:3001"</span>.to_string(),
             rpc_hostname: <span class="prelude-val">None</span>,
             rpc_runtime_size: <span class="number">8</span>,
@@ -589,7 +590,7 @@
             rpc_max_send_message_size: DEFAULT_MAX_GRPC_SEND_MESSAGE_SIZE,
             http: HttpOptions::default(),
             meta_client: <span class="prelude-val">None</span>,
-            wal: WalConfig::default(),
+            wal: DatanodeWalConfig::default(),
             storage: StorageConfig::default(),
             region_engine: <span class="macro">vec!</span>[
                 RegionEngineConfig::Mito(MitoConfig::default()),
@@ -605,7 +606,7 @@
 
 <span class="kw">impl </span>DatanodeOptions {
     <span class="kw">pub fn </span>env_list_keys() -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'static </span>[<span class="kw-2">&amp;</span><span class="lifetime">'static </span>str]&gt; {
-        <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>[<span class="string">"meta_client.metasrv_addrs"</span>])
+        <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>[<span class="string">"meta_client.metasrv_addrs"</span>, <span class="string">"wal.broker_endpoints"</span>])
     }
 
     <span class="kw">pub fn </span>to_toml_string(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
@@ -613,7 +614,8 @@
     }
 }
 
-<span class="attr">#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
+<span class="attr">#[allow(clippy::large_enum_variant)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
 </span><span class="kw">pub enum </span>RegionEngineConfig {
     <span class="attr">#[serde(rename = <span class="string">"mito"</span>)]
     </span>Mito(MitoConfig),

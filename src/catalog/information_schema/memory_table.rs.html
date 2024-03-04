@@ -241,7 +241,7 @@
 <span class="kw">use </span>datatypes::schema::SchemaRef;
 <span class="kw">use </span>datatypes::vectors::VectorRef;
 <span class="kw">use </span>snafu::ResultExt;
-<span class="kw">use </span>store_api::storage::TableId;
+<span class="kw">use </span>store_api::storage::{ScanRequest, TableId};
 <span class="kw">pub use </span>tables::get_schema_columns;
 
 <span class="kw">use </span><span class="kw">crate</span>::error::{CreateRecordBatchSnafu, InternalSnafu, <span class="prelude-ty">Result</span>};
@@ -289,7 +289,7 @@
         <span class="self">self</span>.schema.clone()
     }
 
-    <span class="kw">fn </span>to_stream(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;SendableRecordBatchStream&gt; {
+    <span class="kw">fn </span>to_stream(<span class="kw-2">&amp;</span><span class="self">self</span>, _request: ScanRequest) -&gt; <span class="prelude-ty">Result</span>&lt;SendableRecordBatchStream&gt; {
         <span class="kw">let </span>schema = <span class="self">self</span>.schema.arrow_schema().clone();
         <span class="kw">let </span><span class="kw-2">mut </span>builder = <span class="self">self</span>.builder();
         <span class="kw">let </span>stream = Box::pin(DfRecordBatchStreamAdapter::new(
@@ -384,7 +384,7 @@
         <span class="macro">assert_eq!</span>(<span class="string">"test"</span>, table.table_name());
         <span class="macro">assert_eq!</span>(schema, InformationTable::schema(<span class="kw-2">&amp;</span>table));
 
-        <span class="kw">let </span>stream = table.to_stream().unwrap();
+        <span class="kw">let </span>stream = table.to_stream(ScanRequest::default()).unwrap();
 
         <span class="kw">let </span>batches = RecordBatches::try_collect(stream).<span class="kw">await</span>.unwrap();
 
@@ -413,7 +413,7 @@
         <span class="macro">assert_eq!</span>(<span class="string">"test"</span>, table.table_name());
         <span class="macro">assert_eq!</span>(schema, InformationTable::schema(<span class="kw-2">&amp;</span>table));
 
-        <span class="kw">let </span>stream = table.to_stream().unwrap();
+        <span class="kw">let </span>stream = table.to_stream(ScanRequest::default()).unwrap();
 
         <span class="kw">let </span>batches = RecordBatches::try_collect(stream).<span class="kw">await</span>.unwrap();
 

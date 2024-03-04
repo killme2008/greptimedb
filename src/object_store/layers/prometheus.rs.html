@@ -687,8 +687,8 @@
     <span class="kw">type </span>BlockingReader = PrometheusMetricWrapper&lt;A::BlockingReader&gt;;
     <span class="kw">type </span>Writer = PrometheusMetricWrapper&lt;A::Writer&gt;;
     <span class="kw">type </span>BlockingWriter = PrometheusMetricWrapper&lt;A::BlockingWriter&gt;;
-    <span class="kw">type </span>Pager = A::Pager;
-    <span class="kw">type </span>BlockingPager = A::BlockingPager;
+    <span class="kw">type </span>Lister = A::Lister;
+    <span class="kw">type </span>BlockingLister = A::BlockingLister;
 
     <span class="kw">fn </span>inner(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Inner {
         <span class="kw-2">&amp;</span><span class="self">self</span>.inner
@@ -806,7 +806,7 @@
         })
     }
 
-    <span class="kw">async fn </span>list(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpList) -&gt; <span class="prelude-ty">Result</span>&lt;(RpList, <span class="self">Self</span>::Pager)&gt; {
+    <span class="kw">async fn </span>list(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpList) -&gt; <span class="prelude-ty">Result</span>&lt;(RpList, <span class="self">Self</span>::Lister)&gt; {
         REQUESTS_TOTAL
             .with_label_values(<span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="self">self</span>.scheme, Operation::List.into_static()])
             .inc();
@@ -951,7 +951,7 @@
         })
     }
 
-    <span class="kw">fn </span>blocking_list(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpList) -&gt; <span class="prelude-ty">Result</span>&lt;(RpList, <span class="self">Self</span>::BlockingPager)&gt; {
+    <span class="kw">fn </span>blocking_list(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpList) -&gt; <span class="prelude-ty">Result</span>&lt;(RpList, <span class="self">Self</span>::BlockingLister)&gt; {
         REQUESTS_TOTAL
             .with_label_values(<span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="self">self</span>.scheme, Operation::BlockingList.into_static()])
             .inc();

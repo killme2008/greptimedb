@@ -445,6 +445,15 @@
 <a href="#444" id="444">444</a>
 <a href="#445" id="445">445</a>
 <a href="#446" id="446">446</a>
+<a href="#447" id="447">447</a>
+<a href="#448" id="448">448</a>
+<a href="#449" id="449">449</a>
+<a href="#450" id="450">450</a>
+<a href="#451" id="451">451</a>
+<a href="#452" id="452">452</a>
+<a href="#453" id="453">453</a>
+<a href="#454" id="454">454</a>
+<a href="#455" id="455">455</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -554,6 +563,11 @@
     <span class="attr">#[inline]
     </span><span class="kw">pub fn </span>mut_metadata(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>Metadata {
         <span class="kw-2">&amp;mut </span><span class="self">self</span>.metadata
+    }
+
+    <span class="doccomment">/// Retrieve the column comment
+    </span><span class="kw">pub fn </span>column_comment(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>String&gt; {
+        <span class="self">self</span>.metadata.get(COMMENT_KEY)
     }
 
     <span class="kw">pub fn </span>with_time_index(<span class="kw-2">mut </span><span class="self">self</span>, is_time_index: bool) -&gt; <span class="self">Self </span>{
@@ -762,12 +776,16 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_column_schema_with_metadata() {
-        <span class="kw">let </span>metadata = Metadata::from([(<span class="string">"k1"</span>.to_string(), <span class="string">"v1"</span>.to_string())]);
+        <span class="kw">let </span>metadata = Metadata::from([
+            (<span class="string">"k1"</span>.to_string(), <span class="string">"v1"</span>.to_string()),
+            (COMMENT_KEY.to_string(), <span class="string">"test comment"</span>.to_string()),
+        ]);
         <span class="kw">let </span>column_schema = ColumnSchema::new(<span class="string">"test"</span>, ConcreteDataType::int32_datatype(), <span class="bool-val">true</span>)
             .with_metadata(metadata)
             .with_default_constraint(<span class="prelude-val">Some</span>(ColumnDefaultConstraint::null_value()))
             .unwrap();
         <span class="macro">assert_eq!</span>(<span class="string">"v1"</span>, column_schema.metadata().get(<span class="string">"k1"</span>).unwrap());
+        <span class="macro">assert_eq!</span>(<span class="string">"test comment"</span>, column_schema.column_comment().unwrap());
         <span class="macro">assert!</span>(column_schema
             .metadata()
             .get(DEFAULT_CONSTRAINT_KEY)

@@ -362,6 +362,64 @@
 <a href="#361" id="361">361</a>
 <a href="#362" id="362">362</a>
 <a href="#363" id="363">363</a>
+<a href="#364" id="364">364</a>
+<a href="#365" id="365">365</a>
+<a href="#366" id="366">366</a>
+<a href="#367" id="367">367</a>
+<a href="#368" id="368">368</a>
+<a href="#369" id="369">369</a>
+<a href="#370" id="370">370</a>
+<a href="#371" id="371">371</a>
+<a href="#372" id="372">372</a>
+<a href="#373" id="373">373</a>
+<a href="#374" id="374">374</a>
+<a href="#375" id="375">375</a>
+<a href="#376" id="376">376</a>
+<a href="#377" id="377">377</a>
+<a href="#378" id="378">378</a>
+<a href="#379" id="379">379</a>
+<a href="#380" id="380">380</a>
+<a href="#381" id="381">381</a>
+<a href="#382" id="382">382</a>
+<a href="#383" id="383">383</a>
+<a href="#384" id="384">384</a>
+<a href="#385" id="385">385</a>
+<a href="#386" id="386">386</a>
+<a href="#387" id="387">387</a>
+<a href="#388" id="388">388</a>
+<a href="#389" id="389">389</a>
+<a href="#390" id="390">390</a>
+<a href="#391" id="391">391</a>
+<a href="#392" id="392">392</a>
+<a href="#393" id="393">393</a>
+<a href="#394" id="394">394</a>
+<a href="#395" id="395">395</a>
+<a href="#396" id="396">396</a>
+<a href="#397" id="397">397</a>
+<a href="#398" id="398">398</a>
+<a href="#399" id="399">399</a>
+<a href="#400" id="400">400</a>
+<a href="#401" id="401">401</a>
+<a href="#402" id="402">402</a>
+<a href="#403" id="403">403</a>
+<a href="#404" id="404">404</a>
+<a href="#405" id="405">405</a>
+<a href="#406" id="406">406</a>
+<a href="#407" id="407">407</a>
+<a href="#408" id="408">408</a>
+<a href="#409" id="409">409</a>
+<a href="#410" id="410">410</a>
+<a href="#411" id="411">411</a>
+<a href="#412" id="412">412</a>
+<a href="#413" id="413">413</a>
+<a href="#414" id="414">414</a>
+<a href="#415" id="415">415</a>
+<a href="#416" id="416">416</a>
+<a href="#417" id="417">417</a>
+<a href="#418" id="418">418</a>
+<a href="#419" id="419">419</a>
+<a href="#420" id="420">420</a>
+<a href="#421" id="421">421</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -398,7 +456,8 @@
 <span class="kw">use </span><span class="kw">crate</span>::rpc::KeyValue;
 <span class="kw">use </span><span class="kw">crate</span>::DatanodeId;
 
-<span class="attr">#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
+<span class="attr">#[serde_with::serde_as]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
 </span><span class="doccomment">/// RegionInfo
 /// For compatible reason, DON'T modify the field name.
 </span><span class="kw">pub struct </span>RegionInfo {
@@ -412,14 +471,15 @@
     </span><span class="attr">#[serde(default)]
     </span><span class="kw">pub </span>region_options: HashMap&lt;String, String&gt;,
     <span class="doccomment">/// The per-region wal options.
-    /// Key: region number (in string representation). Value: the encoded wal options of the region.
+    /// Key: region number. Value: the encoded wal options of the region.
     </span><span class="attr">#[serde(default)]
-    </span><span class="kw">pub </span>region_wal_options: HashMap&lt;String, String&gt;,
+    #[serde_as(<span class="kw">as </span>= <span class="string">"HashMap&lt;serde_with::DisplayFromStr, _&gt;"</span>)]
+    </span><span class="kw">pub </span>region_wal_options: HashMap&lt;RegionNumber, String&gt;,
 }
 
 <span class="kw">pub struct </span>DatanodeTableKey {
-    datanode_id: DatanodeId,
-    table_id: TableId,
+    <span class="kw">pub </span>datanode_id: DatanodeId,
+    <span class="kw">pub </span>table_id: TableId,
 }
 
 <span class="kw">impl </span>DatanodeTableKey {
@@ -540,15 +600,6 @@
         <span class="kw">let </span>txns = distribution
             .into_iter()
             .map(|(datanode_id, regions)| {
-                <span class="kw">let </span>filtered_region_wal_options = regions
-                    .iter()
-                    .filter_map(|region_number| {
-                        region_wal_options
-                            .get(region_number)
-                            .map(|wal_options| (region_number.to_string(), wal_options.clone()))
-                    })
-                    .collect();
-
                 <span class="kw">let </span>key = DatanodeTableKey::new(datanode_id, table_id);
                 <span class="kw">let </span>val = DatanodeTableValue::new(
                     table_id,
@@ -557,7 +608,9 @@
                         engine: engine.to_string(),
                         region_storage_path: region_storage_path.to_string(),
                         region_options: region_options.clone(),
-                        region_wal_options: filtered_region_wal_options,
+                        <span class="comment">// FIXME(weny): Before we store all region wal options into table metadata or somewhere,
+                        // We must store all region wal options.
+                        </span>region_wal_options: region_wal_options.clone(),
                     },
                 );
 
@@ -578,7 +631,7 @@
         current_region_distribution: RegionDistribution,
         new_region_distribution: RegionDistribution,
         new_region_options: <span class="kw-2">&amp;</span>HashMap&lt;String, String&gt;,
-        new_region_wal_options: <span class="kw-2">&amp;</span>HashMap&lt;String, String&gt;,
+        new_region_wal_options: <span class="kw-2">&amp;</span>HashMap&lt;RegionNumber, String&gt;,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;Txn&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>opts = Vec::new();
 
@@ -605,7 +658,15 @@
             <span class="kw">if </span>need_update {
                 <span class="kw">let </span>key = DatanodeTableKey::new(datanode, table_id);
                 <span class="kw">let </span>raw_key = key.as_raw_key();
-                <span class="kw">let </span>val = DatanodeTableValue::new(table_id, regions, region_info.clone())
+                <span class="comment">// FIXME(weny): add unit tests.
+                </span><span class="kw">let </span><span class="kw-2">mut </span>new_region_info = region_info.clone();
+                <span class="kw">if </span>need_update_options {
+                    new_region_info.region_options = new_region_options.clone();
+                }
+                <span class="kw">if </span>need_update_wal_options {
+                    new_region_info.region_wal_options = new_region_wal_options.clone();
+                }
+                <span class="kw">let </span>val = DatanodeTableValue::new(table_id, regions, new_region_info)
                     .try_as_raw_value()<span class="question-mark">?</span>;
                 opts.push(TxnOp::Put(raw_key, val));
             }
@@ -670,6 +731,61 @@
         <span class="macro">assert!</span>(parsed.is_ok());
     }
 
+    <span class="attr">#[derive(Debug, Serialize, Deserialize, PartialEq)]
+    </span><span class="kw">struct </span>StringHashMap {
+        inner: HashMap&lt;String, String&gt;,
+    }
+
+    <span class="attr">#[serde_with::serde_as]
+    #[derive(Debug, Serialize, Deserialize, PartialEq)]
+    </span><span class="kw">struct </span>IntegerHashMap {
+        <span class="attr">#[serde_as(<span class="kw">as </span>= <span class="string">"HashMap&lt;serde_with::DisplayFromStr, _&gt;"</span>)]
+        </span>inner: HashMap&lt;u32, String&gt;,
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_serde_with_integer_hash_map() {
+        <span class="kw">let </span>map = StringHashMap {
+            inner: HashMap::from([
+                (<span class="string">"1"</span>.to_string(), <span class="string">"aaa"</span>.to_string()),
+                (<span class="string">"2"</span>.to_string(), <span class="string">"bbb"</span>.to_string()),
+                (<span class="string">"3"</span>.to_string(), <span class="string">"ccc"</span>.to_string()),
+            ]),
+        };
+        <span class="kw">let </span>encoded = serde_json::to_string(<span class="kw-2">&amp;</span>map).unwrap();
+        <span class="kw">let </span>decoded: IntegerHashMap = serde_json::from_str(<span class="kw-2">&amp;</span>encoded).unwrap();
+        <span class="macro">assert_eq!</span>(
+            IntegerHashMap {
+                inner: HashMap::from([
+                    (<span class="number">1</span>, <span class="string">"aaa"</span>.to_string()),
+                    (<span class="number">2</span>, <span class="string">"bbb"</span>.to_string()),
+                    (<span class="number">3</span>, <span class="string">"ccc"</span>.to_string()),
+                ]),
+            },
+            decoded
+        );
+
+        <span class="kw">let </span>map = IntegerHashMap {
+            inner: HashMap::from([
+                (<span class="number">1</span>, <span class="string">"aaa"</span>.to_string()),
+                (<span class="number">2</span>, <span class="string">"bbb"</span>.to_string()),
+                (<span class="number">3</span>, <span class="string">"ccc"</span>.to_string()),
+            ]),
+        };
+        <span class="kw">let </span>encoded = serde_json::to_string(<span class="kw-2">&amp;</span>map).unwrap();
+        <span class="kw">let </span>decoded: StringHashMap = serde_json::from_str(<span class="kw-2">&amp;</span>encoded).unwrap();
+        <span class="macro">assert_eq!</span>(
+            StringHashMap {
+                inner: HashMap::from([
+                    (<span class="string">"1"</span>.to_string(), <span class="string">"aaa"</span>.to_string()),
+                    (<span class="string">"2"</span>.to_string(), <span class="string">"bbb"</span>.to_string()),
+                    (<span class="string">"3"</span>.to_string(), <span class="string">"ccc"</span>.to_string()),
+                ]),
+            },
+            decoded
+        );
+    }
+
     <span class="comment">// This test intends to ensure both the `serde_json::to_string` + `serde_json::from_str`
     // and `serde_json::to_vec` + `serde_json::from_slice` work for `DatanodeTableValue`.
     // Warning: if the key of `region_wal_options` is of type non-String, this test would fail.
@@ -684,9 +800,9 @@
                 (<span class="string">"c"</span>.to_string(), <span class="string">"cc"</span>.to_string()),
             ]),
             region_wal_options: HashMap::from([
-                (<span class="string">"1"</span>.to_string(), <span class="string">"aaa"</span>.to_string()),
-                (<span class="string">"2"</span>.to_string(), <span class="string">"bbb"</span>.to_string()),
-                (<span class="string">"3"</span>.to_string(), <span class="string">"ccc"</span>.to_string()),
+                (<span class="number">1</span>, <span class="string">"aaa"</span>.to_string()),
+                (<span class="number">2</span>, <span class="string">"bbb"</span>.to_string()),
+                (<span class="number">3</span>, <span class="string">"ccc"</span>.to_string()),
             ]),
         };
         <span class="kw">let </span>table_value = DatanodeTableValue {

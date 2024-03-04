@@ -350,6 +350,78 @@
 <a href="#349" id="349">349</a>
 <a href="#350" id="350">350</a>
 <a href="#351" id="351">351</a>
+<a href="#352" id="352">352</a>
+<a href="#353" id="353">353</a>
+<a href="#354" id="354">354</a>
+<a href="#355" id="355">355</a>
+<a href="#356" id="356">356</a>
+<a href="#357" id="357">357</a>
+<a href="#358" id="358">358</a>
+<a href="#359" id="359">359</a>
+<a href="#360" id="360">360</a>
+<a href="#361" id="361">361</a>
+<a href="#362" id="362">362</a>
+<a href="#363" id="363">363</a>
+<a href="#364" id="364">364</a>
+<a href="#365" id="365">365</a>
+<a href="#366" id="366">366</a>
+<a href="#367" id="367">367</a>
+<a href="#368" id="368">368</a>
+<a href="#369" id="369">369</a>
+<a href="#370" id="370">370</a>
+<a href="#371" id="371">371</a>
+<a href="#372" id="372">372</a>
+<a href="#373" id="373">373</a>
+<a href="#374" id="374">374</a>
+<a href="#375" id="375">375</a>
+<a href="#376" id="376">376</a>
+<a href="#377" id="377">377</a>
+<a href="#378" id="378">378</a>
+<a href="#379" id="379">379</a>
+<a href="#380" id="380">380</a>
+<a href="#381" id="381">381</a>
+<a href="#382" id="382">382</a>
+<a href="#383" id="383">383</a>
+<a href="#384" id="384">384</a>
+<a href="#385" id="385">385</a>
+<a href="#386" id="386">386</a>
+<a href="#387" id="387">387</a>
+<a href="#388" id="388">388</a>
+<a href="#389" id="389">389</a>
+<a href="#390" id="390">390</a>
+<a href="#391" id="391">391</a>
+<a href="#392" id="392">392</a>
+<a href="#393" id="393">393</a>
+<a href="#394" id="394">394</a>
+<a href="#395" id="395">395</a>
+<a href="#396" id="396">396</a>
+<a href="#397" id="397">397</a>
+<a href="#398" id="398">398</a>
+<a href="#399" id="399">399</a>
+<a href="#400" id="400">400</a>
+<a href="#401" id="401">401</a>
+<a href="#402" id="402">402</a>
+<a href="#403" id="403">403</a>
+<a href="#404" id="404">404</a>
+<a href="#405" id="405">405</a>
+<a href="#406" id="406">406</a>
+<a href="#407" id="407">407</a>
+<a href="#408" id="408">408</a>
+<a href="#409" id="409">409</a>
+<a href="#410" id="410">410</a>
+<a href="#411" id="411">411</a>
+<a href="#412" id="412">412</a>
+<a href="#413" id="413">413</a>
+<a href="#414" id="414">414</a>
+<a href="#415" id="415">415</a>
+<a href="#416" id="416">416</a>
+<a href="#417" id="417">417</a>
+<a href="#418" id="418">418</a>
+<a href="#419" id="419">419</a>
+<a href="#420" id="420">420</a>
+<a href="#421" id="421">421</a>
+<a href="#422" id="422">422</a>
+<a href="#423" id="423">423</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -364,7 +436,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-</span><span class="kw">use </span>std::collections::{HashMap, HashSet};
+</span><span class="kw">use </span>std::any::Any;
+<span class="kw">use </span>std::collections::{HashMap, HashSet};
 <span class="kw">use </span>std::sync::Arc;
 <span class="kw">use </span>std::time::Duration;
 
@@ -374,8 +447,12 @@
     RangeRequest <span class="kw">as </span>PbRangeRequest, RangeResponse <span class="kw">as </span>PbRangeResponse, ResponseHeader,
 };
 <span class="kw">use </span>common_grpc::channel_manager::ChannelManager;
-<span class="kw">use </span>common_meta::kv_backend::ResettableKvBackendRef;
-<span class="kw">use </span>common_meta::rpc::store::{BatchGetRequest, RangeRequest};
+<span class="kw">use </span>common_meta::kv_backend::{KvBackend, ResettableKvBackendRef, TxnService};
+<span class="kw">use </span>common_meta::rpc::store::{
+    BatchDeleteRequest, BatchDeleteResponse, BatchGetRequest, BatchGetResponse, BatchPutRequest,
+    BatchPutResponse, CompareAndPutRequest, CompareAndPutResponse, DeleteRangeRequest,
+    DeleteRangeResponse, PutRequest, PutResponse, RangeRequest, RangeResponse,
+};
 <span class="kw">use </span>common_meta::rpc::KeyValue;
 <span class="kw">use </span>common_meta::util;
 <span class="kw">use </span>common_telemetry::warn;
@@ -401,56 +478,28 @@
     </span>retry_interval_ms: u64,
 }
 
-<span class="kw">impl </span>MetaPeerClient {
-    <span class="kw">async fn </span>get_dn_key_value(<span class="kw-2">&amp;</span><span class="self">self</span>, keys_only: bool) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;KeyValue&gt;&gt; {
-        <span class="kw">let </span>key = <span class="macro">format!</span>(<span class="string">"{DN_STAT_PREFIX}-"</span>).into_bytes();
-        <span class="kw">let </span>range_end = util::get_prefix_end_key(<span class="kw-2">&amp;</span>key);
-        <span class="self">self</span>.range(key, range_end, keys_only).<span class="kw">await
+<span class="attr">#[async_trait::async_trait]
+</span><span class="kw">impl </span>TxnService <span class="kw">for </span>MetaPeerClient {
+    <span class="kw">type </span>Error = error::Error;
+}
+
+<span class="attr">#[async_trait::async_trait]
+</span><span class="kw">impl </span>KvBackend <span class="kw">for </span>MetaPeerClient {
+    <span class="kw">fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
+        <span class="string">"MetaPeerClient"
     </span>}
 
-    <span class="comment">// Get all datanode stat kvs from leader meta.
-    </span><span class="kw">pub async fn </span>get_all_dn_stat_kvs(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;HashMap&lt;StatKey, StatValue&gt;&gt; {
-        <span class="kw">let </span>kvs = <span class="self">self</span>.get_dn_key_value(<span class="bool-val">false</span>).<span class="kw">await</span><span class="question-mark">?</span>;
-        to_stat_kv_map(kvs)
-    }
+    <span class="kw">fn </span>as_any(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="kw">dyn </span>Any {
+        <span class="self">self
+    </span>}
 
-    <span class="kw">pub async fn </span>get_node_cnt(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;i32&gt; {
-        <span class="kw">let </span>kvs = <span class="self">self</span>.get_dn_key_value(<span class="bool-val">true</span>).<span class="kw">await</span><span class="question-mark">?</span>;
-        kvs.into_iter()
-            .map(|kv| kv.key.try_into())
-            .collect::&lt;<span class="prelude-ty">Result</span>&lt;HashSet&lt;StatKey&gt;&gt;&gt;()
-            .map(|hash_set| hash_set.len() <span class="kw">as </span>i32)
-    }
-
-    <span class="comment">// Get datanode stat kvs from leader meta by input keys.
-    </span><span class="kw">pub async fn </span>get_dn_stat_kvs(<span class="kw-2">&amp;</span><span class="self">self</span>, keys: Vec&lt;StatKey&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;HashMap&lt;StatKey, StatValue&gt;&gt; {
-        <span class="kw">let </span>stat_keys = keys.into_iter().map(|key| key.into()).collect();
-
-        <span class="kw">let </span>kvs = <span class="self">self</span>.batch_get(stat_keys).<span class="kw">await</span><span class="question-mark">?</span>;
-
-        to_stat_kv_map(kvs)
-    }
-
-    <span class="comment">// Range kv information from the leader's in_mem kv store
-    </span><span class="kw">pub async fn </span>range(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        key: Vec&lt;u8&gt;,
-        range_end: Vec&lt;u8&gt;,
-        keys_only: bool,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;KeyValue&gt;&gt; {
+    <span class="kw">async fn </span>range(<span class="kw-2">&amp;</span><span class="self">self</span>, req: RangeRequest) -&gt; <span class="prelude-ty">Result</span>&lt;RangeResponse&gt; {
         <span class="kw">if </span><span class="self">self</span>.is_leader() {
-            <span class="kw">let </span>request = RangeRequest {
-                key,
-                range_end,
-                ..Default::default()
-            };
-
             <span class="kw">return </span><span class="self">self
                 </span>.in_memory
-                .range(request)
+                .range(req)
                 .<span class="kw">await
-                </span>.map(|resp| resp.kvs)
-                .context(error::KvBackendSnafu);
+                </span>.context(error::KvBackendSnafu);
         }
 
         <span class="kw">let </span>max_retry_count = <span class="self">self</span>.max_retry_count;
@@ -458,10 +507,10 @@
 
         <span class="kw">for _ in </span><span class="number">0</span>..max_retry_count {
             <span class="kw">match </span><span class="self">self
-                </span>.remote_range(key.clone(), range_end.clone(), keys_only)
+                </span>.remote_range(req.key.clone(), req.range_end.clone(), req.keys_only)
                 .<span class="kw">await
             </span>{
-                <span class="prelude-val">Ok</span>(kvs) =&gt; <span class="kw">return </span><span class="prelude-val">Ok</span>(kvs),
+                <span class="prelude-val">Ok</span>(res) =&gt; <span class="kw">return </span><span class="prelude-val">Ok</span>(res),
                 <span class="prelude-val">Err</span>(e) =&gt; {
                     <span class="kw">if </span>need_retry(<span class="kw-2">&amp;</span>e) {
                         <span class="macro">warn!</span>(<span class="string">"Encountered an error that need to retry, err: {:?}"</span>, e);
@@ -480,12 +529,139 @@
         .fail()
     }
 
+    <span class="comment">// Get kv information from the leader's in_mem kv store
+    </span><span class="kw">async fn </span>batch_get(<span class="kw-2">&amp;</span><span class="self">self</span>, req: BatchGetRequest) -&gt; <span class="prelude-ty">Result</span>&lt;BatchGetResponse&gt; {
+        <span class="kw">if </span><span class="self">self</span>.is_leader() {
+            <span class="kw">return </span><span class="self">self
+                </span>.in_memory
+                .batch_get(req)
+                .<span class="kw">await
+                </span>.context(error::KvBackendSnafu);
+        }
+
+        <span class="kw">let </span>max_retry_count = <span class="self">self</span>.max_retry_count;
+        <span class="kw">let </span>retry_interval_ms = <span class="self">self</span>.retry_interval_ms;
+
+        <span class="kw">for _ in </span><span class="number">0</span>..max_retry_count {
+            <span class="kw">match </span><span class="self">self</span>.remote_batch_get(req.keys.clone()).<span class="kw">await </span>{
+                <span class="prelude-val">Ok</span>(res) =&gt; <span class="kw">return </span><span class="prelude-val">Ok</span>(res),
+                <span class="prelude-val">Err</span>(e) =&gt; {
+                    <span class="kw">if </span>need_retry(<span class="kw-2">&amp;</span>e) {
+                        <span class="macro">warn!</span>(<span class="string">"Encountered an error that need to retry, err: {:?}"</span>, e);
+                        tokio::time::sleep(Duration::from_millis(retry_interval_ms)).<span class="kw">await</span>;
+                    } <span class="kw">else </span>{
+                        <span class="kw">return </span><span class="prelude-val">Err</span>(e);
+                    }
+                }
+            }
+        }
+
+        error::ExceededRetryLimitSnafu {
+            func_name: <span class="string">"batch_get"</span>,
+            retry_num: max_retry_count,
+        }
+        .fail()
+    }
+
+    <span class="comment">// MetaPeerClient does not support mutable methods listed below.
+    </span><span class="kw">async fn </span>put(<span class="kw-2">&amp;</span><span class="self">self</span>, _req: PutRequest) -&gt; <span class="prelude-ty">Result</span>&lt;PutResponse&gt; {
+        error::UnsupportedSnafu {
+            operation: <span class="string">"put"</span>.to_string(),
+        }
+        .fail()
+    }
+
+    <span class="kw">async fn </span>batch_put(<span class="kw-2">&amp;</span><span class="self">self</span>, _req: BatchPutRequest) -&gt; <span class="prelude-ty">Result</span>&lt;BatchPutResponse&gt; {
+        error::UnsupportedSnafu {
+            operation: <span class="string">"batch put"</span>.to_string(),
+        }
+        .fail()
+    }
+
+    <span class="kw">async fn </span>compare_and_put(<span class="kw-2">&amp;</span><span class="self">self</span>, _req: CompareAndPutRequest) -&gt; <span class="prelude-ty">Result</span>&lt;CompareAndPutResponse&gt; {
+        error::UnsupportedSnafu {
+            operation: <span class="string">"compare and put"</span>.to_string(),
+        }
+        .fail()
+    }
+
+    <span class="kw">async fn </span>delete_range(<span class="kw-2">&amp;</span><span class="self">self</span>, _req: DeleteRangeRequest) -&gt; <span class="prelude-ty">Result</span>&lt;DeleteRangeResponse&gt; {
+        error::UnsupportedSnafu {
+            operation: <span class="string">"delete range"</span>.to_string(),
+        }
+        .fail()
+    }
+
+    <span class="kw">async fn </span>batch_delete(<span class="kw-2">&amp;</span><span class="self">self</span>, _req: BatchDeleteRequest) -&gt; <span class="prelude-ty">Result</span>&lt;BatchDeleteResponse&gt; {
+        error::UnsupportedSnafu {
+            operation: <span class="string">"batch delete"</span>.to_string(),
+        }
+        .fail()
+    }
+
+    <span class="kw">async fn </span>delete(<span class="kw-2">&amp;</span><span class="self">self</span>, _key: <span class="kw-2">&amp;</span>[u8], _prev_kv: bool) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;KeyValue&gt;&gt; {
+        error::UnsupportedSnafu {
+            operation: <span class="string">"delete"</span>.to_string(),
+        }
+        .fail()
+    }
+
+    <span class="kw">async fn </span>put_conditionally(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        _key: Vec&lt;u8&gt;,
+        _value: Vec&lt;u8&gt;,
+        _if_not_exists: bool,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;bool&gt; {
+        error::UnsupportedSnafu {
+            operation: <span class="string">"put conditionally"</span>.to_string(),
+        }
+        .fail()
+    }
+}
+
+<span class="kw">impl </span>MetaPeerClient {
+    <span class="kw">async fn </span>get_dn_key_value(<span class="kw-2">&amp;</span><span class="self">self</span>, keys_only: bool) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;KeyValue&gt;&gt; {
+        <span class="kw">let </span>key = <span class="macro">format!</span>(<span class="string">"{DN_STAT_PREFIX}-"</span>).into_bytes();
+        <span class="kw">let </span>range_end = util::get_prefix_end_key(<span class="kw-2">&amp;</span>key);
+        <span class="kw">let </span>range_request = RangeRequest {
+            key,
+            range_end,
+            keys_only,
+            ..Default::default()
+        };
+        <span class="self">self</span>.range(range_request).<span class="kw">await</span>.map(|res| res.kvs)
+    }
+
+    <span class="comment">// Get all datanode stat kvs from leader meta.
+    </span><span class="kw">pub async fn </span>get_all_dn_stat_kvs(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;HashMap&lt;StatKey, StatValue&gt;&gt; {
+        <span class="kw">let </span>kvs = <span class="self">self</span>.get_dn_key_value(<span class="bool-val">false</span>).<span class="kw">await</span><span class="question-mark">?</span>;
+        to_stat_kv_map(kvs)
+    }
+
+    <span class="kw">pub async fn </span>get_node_cnt(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;i32&gt; {
+        <span class="kw">let </span>kvs = <span class="self">self</span>.get_dn_key_value(<span class="bool-val">true</span>).<span class="kw">await</span><span class="question-mark">?</span>;
+        kvs.into_iter()
+            .map(|kv| kv.key.try_into())
+            .collect::&lt;<span class="prelude-ty">Result</span>&lt;HashSet&lt;StatKey&gt;&gt;&gt;()
+            .map(|hash_set| hash_set.len() <span class="kw">as </span>i32)
+    }
+
+    <span class="comment">// Get datanode stat kvs from leader meta by input keys.
+    </span><span class="kw">pub async fn </span>get_dn_stat_kvs(<span class="kw-2">&amp;</span><span class="self">self</span>, keys: Vec&lt;StatKey&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;HashMap&lt;StatKey, StatValue&gt;&gt; {
+        <span class="kw">let </span>stat_keys = keys.into_iter().map(|key| key.into()).collect();
+        <span class="kw">let </span>batch_get_req = BatchGetRequest { keys: stat_keys };
+
+        <span class="kw">let </span>res = <span class="self">self</span>.batch_get(batch_get_req).<span class="kw">await</span><span class="question-mark">?</span>;
+
+        to_stat_kv_map(res.kvs)
+    }
+
     <span class="kw">async fn </span>remote_range(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         key: Vec&lt;u8&gt;,
         range_end: Vec&lt;u8&gt;,
         keys_only: bool,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;KeyValue&gt;&gt; {
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;RangeResponse&gt; {
         <span class="comment">// Safety: when self.is_leader() == false, election must not empty.
         </span><span class="kw">let </span>election = <span class="self">self</span>.election.as_ref().unwrap();
 
@@ -511,47 +687,13 @@
 
         check_resp_header(<span class="kw-2">&amp;</span>response.header, Context { addr: <span class="kw-2">&amp;</span>leader_addr })<span class="question-mark">?</span>;
 
-        <span class="prelude-val">Ok</span>(response.kvs.into_iter().map(KeyValue::new).collect())
+        <span class="prelude-val">Ok</span>(RangeResponse {
+            kvs: response.kvs.into_iter().map(KeyValue::new).collect(),
+            more: response.more,
+        })
     }
 
-    <span class="comment">// Get kv information from the leader's in_mem kv store
-    </span><span class="kw">pub async fn </span>batch_get(<span class="kw-2">&amp;</span><span class="self">self</span>, keys: Vec&lt;Vec&lt;u8&gt;&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;KeyValue&gt;&gt; {
-        <span class="kw">if </span><span class="self">self</span>.is_leader() {
-            <span class="kw">let </span>request = BatchGetRequest { keys };
-
-            <span class="kw">return </span><span class="self">self
-                </span>.in_memory
-                .batch_get(request)
-                .<span class="kw">await
-                </span>.map(|resp| resp.kvs)
-                .context(error::KvBackendSnafu);
-        }
-
-        <span class="kw">let </span>max_retry_count = <span class="self">self</span>.max_retry_count;
-        <span class="kw">let </span>retry_interval_ms = <span class="self">self</span>.retry_interval_ms;
-
-        <span class="kw">for _ in </span><span class="number">0</span>..max_retry_count {
-            <span class="kw">match </span><span class="self">self</span>.remote_batch_get(keys.clone()).<span class="kw">await </span>{
-                <span class="prelude-val">Ok</span>(kvs) =&gt; <span class="kw">return </span><span class="prelude-val">Ok</span>(kvs),
-                <span class="prelude-val">Err</span>(e) =&gt; {
-                    <span class="kw">if </span>need_retry(<span class="kw-2">&amp;</span>e) {
-                        <span class="macro">warn!</span>(<span class="string">"Encountered an error that need to retry, err: {:?}"</span>, e);
-                        tokio::time::sleep(Duration::from_millis(retry_interval_ms)).<span class="kw">await</span>;
-                    } <span class="kw">else </span>{
-                        <span class="kw">return </span><span class="prelude-val">Err</span>(e);
-                    }
-                }
-            }
-        }
-
-        error::ExceededRetryLimitSnafu {
-            func_name: <span class="string">"batch_get"</span>,
-            retry_num: max_retry_count,
-        }
-        .fail()
-    }
-
-    <span class="kw">async fn </span>remote_batch_get(<span class="kw-2">&amp;</span><span class="self">self</span>, keys: Vec&lt;Vec&lt;u8&gt;&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;KeyValue&gt;&gt; {
+    <span class="kw">async fn </span>remote_batch_get(<span class="kw-2">&amp;</span><span class="self">self</span>, keys: Vec&lt;Vec&lt;u8&gt;&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;BatchGetResponse&gt; {
         <span class="comment">// Safety: when self.is_leader() == false, election must not empty.
         </span><span class="kw">let </span>election = <span class="self">self</span>.election.as_ref().unwrap();
 
@@ -575,12 +717,14 @@
 
         check_resp_header(<span class="kw-2">&amp;</span>response.header, Context { addr: <span class="kw-2">&amp;</span>leader_addr })<span class="question-mark">?</span>;
 
-        <span class="prelude-val">Ok</span>(response.kvs.into_iter().map(KeyValue::new).collect())
+        <span class="prelude-val">Ok</span>(BatchGetResponse {
+            kvs: response.kvs.into_iter().map(KeyValue::new).collect(),
+        })
     }
 
     <span class="comment">// Check if the meta node is a leader node.
     // Note: when self.election is None, we also consider the meta node is leader
-    </span><span class="kw">fn </span>is_leader(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>is_leader(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="self">self</span>.election
             .as_ref()
             .map(|election| election.is_leader())

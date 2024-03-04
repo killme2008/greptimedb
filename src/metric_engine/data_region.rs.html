@@ -246,6 +246,31 @@
 <a href="#245" id="245">245</a>
 <a href="#246" id="246">246</a>
 <a href="#247" id="247">247</a>
+<a href="#248" id="248">248</a>
+<a href="#249" id="249">249</a>
+<a href="#250" id="250">250</a>
+<a href="#251" id="251">251</a>
+<a href="#252" id="252">252</a>
+<a href="#253" id="253">253</a>
+<a href="#254" id="254">254</a>
+<a href="#255" id="255">255</a>
+<a href="#256" id="256">256</a>
+<a href="#257" id="257">257</a>
+<a href="#258" id="258">258</a>
+<a href="#259" id="259">259</a>
+<a href="#260" id="260">260</a>
+<a href="#261" id="261">261</a>
+<a href="#262" id="262">262</a>
+<a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -261,6 +286,9 @@
 // limitations under the License.
 
 </span><span class="kw">use </span>api::v1::SemanticType;
+<span class="kw">use </span>common_error::ext::ErrorExt;
+<span class="kw">use </span>common_error::status_code::StatusCode;
+<span class="kw">use </span>common_telemetry::info;
 <span class="kw">use </span>common_telemetry::tracing::warn;
 <span class="kw">use </span>mito2::engine::MitoEngine;
 <span class="kw">use </span>snafu::ResultExt;
@@ -278,6 +306,8 @@
 <span class="kw">use </span><span class="kw">crate</span>::metrics::MITO_DDL_DURATION;
 <span class="kw">use </span><span class="kw">crate</span>::utils;
 
+<span class="kw">const </span>MAX_RETRIES: usize = <span class="number">5</span>;
+
 <span class="doccomment">/// This is a generic handler like [MetricEngine](crate::engine::MetricEngine). It
 /// will handle all the data related operations across physical tables. Thus
 /// every operation should be associated to a [RegionId], which is the physical
@@ -294,9 +324,9 @@
 
     <span class="doccomment">/// Submit an alter request to underlying physical region.
     ///
-    /// This method will change the semantic type of those given columns.
-    /// [SemanticType::Tag] will become [SemanticType::Field]. The procedure framework
-    /// ensures there is no concurrent conflict.
+    /// This method will change the nullability of those given columns.
+    /// [SemanticType::Tag] will become nullable column as it's shared between
+    /// logical regions.
     ///
     /// Invoker don't need to set up or verify the column id. This method will adjust
     /// it using underlying schema.
@@ -309,6 +339,35 @@
     ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="kw">let </span>region_id = utils::to_data_region_id(region_id);
 
+        <span class="kw">let </span><span class="kw-2">mut </span>retries = <span class="number">0</span>;
+        <span class="comment">// submit alter request
+        </span><span class="kw">while </span>retries &lt; MAX_RETRIES {
+            <span class="kw">let </span>request = <span class="self">self</span>.assemble_alter_request(region_id, <span class="kw-2">&amp;</span>columns).<span class="kw">await</span><span class="question-mark">?</span>;
+
+            <span class="kw">let </span>_timer = MITO_DDL_DURATION.start_timer();
+
+            <span class="kw">let </span>result = <span class="self">self</span>.mito.handle_request(region_id, request).<span class="kw">await</span>;
+            <span class="kw">match </span>result {
+                <span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; <span class="kw">return </span><span class="prelude-val">Ok</span>(()),
+                <span class="prelude-val">Err</span>(e) <span class="kw">if </span>e.status_code() == StatusCode::RequestOutdated =&gt; {
+                    <span class="macro">info!</span>(<span class="string">"Retrying alter {region_id} due to outdated schema version, times {retries}"</span>);
+                    retries += <span class="number">1</span>;
+                    <span class="kw">continue</span>;
+                }
+                <span class="prelude-val">Err</span>(e) =&gt; {
+                    <span class="kw">return </span><span class="prelude-val">Err</span>(e).context(MitoWriteOperationSnafu)<span class="question-mark">?</span>;
+                }
+            }
+        }
+
+        <span class="prelude-val">Ok</span>(())
+    }
+
+    <span class="kw">async fn </span>assemble_alter_request(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        region_id: RegionId,
+        columns: <span class="kw-2">&amp;</span>[ColumnMetadata],
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;RegionRequest&gt; {
         <span class="comment">// retrieve underlying version
         </span><span class="kw">let </span>region_metadata = <span class="self">self
             </span>.mito
@@ -333,11 +392,11 @@
 
         <span class="comment">// overwrite semantic type
         </span><span class="kw">let </span>columns = columns
-            .into_iter()
+            .iter()
             .enumerate()
-            .map(|(delta, <span class="kw-2">mut </span>c)| {
+            .map(|(delta, c)| {
+                <span class="kw">let </span><span class="kw-2">mut </span>c = c.clone();
                 <span class="kw">if </span>c.semantic_type == SemanticType::Tag {
-                    c.semantic_type = SemanticType::Field;
                     <span class="kw">if </span>!c.column_schema.data_type.is_string() {
                         <span class="kw">return </span>ColumnTypeMismatchSnafu {
                             column_type: c.column_schema.data_type,
@@ -368,16 +427,7 @@
             kind: AlterKind::AddColumns { columns },
         });
 
-        <span class="comment">// submit alter request
-        </span>{
-            <span class="kw">let </span>_timer = MITO_DDL_DURATION.start_timer();
-            <span class="self">self</span>.mito
-                .handle_request(region_id, alter_request)
-                .<span class="kw">await
-                </span>.context(MitoWriteOperationSnafu)<span class="question-mark">?</span>;
-        }
-
-        <span class="prelude-val">Ok</span>(())
+        <span class="prelude-val">Ok</span>(alter_request)
     }
 
     <span class="kw">pub async fn </span>write_data(

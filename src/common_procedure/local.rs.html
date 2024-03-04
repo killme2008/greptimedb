@@ -1082,9 +1082,6 @@
 <a href="#1081" id="1081">1081</a>
 <a href="#1082" id="1082">1082</a>
 <a href="#1083" id="1083">1083</a>
-<a href="#1084" id="1084">1084</a>
-<a href="#1085" id="1085">1085</a>
-<a href="#1086" id="1086">1086</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -1099,8 +1096,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-</span><span class="kw">mod </span>lock;
-<span class="kw">mod </span>runner;
+</span><span class="kw">mod </span>runner;
+<span class="kw">mod </span>rwlock;
 
 <span class="kw">use </span>std::collections::{HashMap, VecDeque};
 <span class="kw">use </span>std::sync::atomic::{AtomicBool, Ordering};
@@ -1116,11 +1113,11 @@
 <span class="kw">use </span>tokio::sync::watch::{<span class="self">self</span>, Receiver, Sender};
 <span class="kw">use </span>tokio::sync::{Mutex <span class="kw">as </span>TokioMutex, Notify};
 
+<span class="kw">use </span><span class="self">self</span>::rwlock::KeyRwLock;
 <span class="kw">use </span><span class="kw">crate</span>::error::{
     DuplicateProcedureSnafu, Error, LoaderConflictSnafu, ManagerNotStartSnafu, <span class="prelude-ty">Result</span>,
     StartRemoveOutdatedMetaTaskSnafu, StopRemoveOutdatedMetaTaskSnafu,
 };
-<span class="kw">use </span><span class="kw">crate</span>::local::lock::LockMap;
 <span class="kw">use </span><span class="kw">crate</span>::local::runner::Runner;
 <span class="kw">use </span><span class="kw">crate</span>::procedure::BoxedProcedureLoader;
 <span class="kw">use </span><span class="kw">crate</span>::store::{ProcedureMessage, ProcedureStore, StateStoreRef};
@@ -1144,8 +1141,6 @@
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct </span>ProcedureMeta {
     <span class="doccomment">/// Id of this procedure.
     </span>id: ProcedureId,
-    <span class="doccomment">/// Notify to wait for a lock.
-    </span>lock_notify: Notify,
     <span class="doccomment">/// Parent procedure id.
     </span>parent_id: <span class="prelude-ty">Option</span>&lt;ProcedureId&gt;,
     <span class="doccomment">/// Notify to wait for subprocedures.
@@ -1165,7 +1160,6 @@
         <span class="kw">let </span>(state_sender, state_receiver) = watch::channel(ProcedureState::Running);
         ProcedureMeta {
             id,
-            lock_notify: Notify::new(),
             parent_id,
             child_notify: Notify::new(),
             lock_key,
@@ -1218,7 +1212,7 @@
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct </span>ManagerContext {
     <span class="doccomment">/// Procedure loaders. The key is the type name of the procedure which the loader returns.
     </span>loaders: Mutex&lt;HashMap&lt;String, BoxedProcedureLoader&gt;&gt;,
-    lock_map: LockMap,
+    key_lock: KeyRwLock&lt;String&gt;,
     procedures: RwLock&lt;HashMap&lt;ProcedureId, ProcedureMetaRef&gt;&gt;,
     <span class="doccomment">/// Messages loaded from the procedure store.
     </span>messages: Mutex&lt;HashMap&lt;ProcedureId, ProcedureMessage&gt;&gt;,
@@ -1239,8 +1233,8 @@
     <span class="doccomment">/// Returns a new [ManagerContext].
     </span><span class="kw">fn </span>new() -&gt; ManagerContext {
         ManagerContext {
+            key_lock: KeyRwLock::new(),
             loaders: Mutex::new(HashMap::new()),
-            lock_map: LockMap::new(),
             procedures: RwLock::new(HashMap::new()),
             messages: Mutex::new(HashMap::new()),
             finished_procedures: Mutex::new(VecDeque::new()),
@@ -1464,7 +1458,7 @@
 <span class="kw">impl </span>Default <span class="kw">for </span>ManagerConfig {
     <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            parent_path: <span class="string">""</span>.to_string(),
+            parent_path: String::default(),
             max_retry_times: <span class="number">3</span>,
             retry_delay: Duration::from_millis(<span class="number">500</span>),
             remove_outdated_meta_task_interval: Duration::from_secs(<span class="number">60 </span>* <span class="number">10</span>),
@@ -1752,7 +1746,7 @@
         <span class="macro">assert!</span>(ctx.contains_procedure(meta.id));
 
         <span class="macro">assert!</span>(ctx.state(meta.id).unwrap().is_running());
-        meta.set_state(ProcedureState::Done);
+        meta.set_state(ProcedureState::Done { output: <span class="prelude-val">None </span>});
         <span class="macro">assert!</span>(ctx.state(meta.id).unwrap().is_done());
     }
 
@@ -1813,7 +1807,7 @@
         </span>}
 
         <span class="kw">async fn </span>execute(<span class="kw-2">&amp;mut </span><span class="self">self</span>, _ctx: <span class="kw-2">&amp;</span>Context) -&gt; <span class="prelude-ty">Result</span>&lt;Status&gt; {
-            <span class="prelude-val">Ok</span>(Status::Done)
+            <span class="prelude-val">Ok</span>(Status::done())
         }
 
         <span class="kw">fn </span>dump(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;String&gt; {
@@ -1937,7 +1931,7 @@
         <span class="macro">assert!</span>(manager.procedure_watcher(procedure_id).is_none());
 
         <span class="kw">let </span><span class="kw-2">mut </span>procedure = ProcedureToLoad::new(<span class="string">"submit"</span>);
-        procedure.lock_key = LockKey::single(<span class="string">"test.submit"</span>);
+        procedure.lock_key = LockKey::single_exclusive(<span class="string">"test.submit"</span>);
         <span class="macro">assert!</span>(manager
             .submit(ProcedureWithId {
                 id: procedure_id,
@@ -2005,7 +1999,7 @@
             }
 
             <span class="kw">fn </span>lock_key(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; LockKey {
-                LockKey::single(<span class="string">"test.submit"</span>)
+                LockKey::single_exclusive(<span class="string">"test.submit"</span>)
             }
         }
 
@@ -2042,7 +2036,7 @@
         <span class="kw">let </span>manager = LocalManager::new(config, state_store);
 
         <span class="kw">let </span><span class="kw-2">mut </span>procedure = ProcedureToLoad::new(<span class="string">"submit"</span>);
-        procedure.lock_key = LockKey::single(<span class="string">"test.submit"</span>);
+        procedure.lock_key = LockKey::single_exclusive(<span class="string">"test.submit"</span>);
         <span class="kw">let </span>procedure_id = ProcedureId::random();
         <span class="macro">assert_matches!</span>(
             manager
@@ -2073,7 +2067,7 @@
         manager.start().<span class="kw">await</span>.unwrap();
 
         <span class="kw">let </span><span class="kw-2">mut </span>procedure = ProcedureToLoad::new(<span class="string">"submit"</span>);
-        procedure.lock_key = LockKey::single(<span class="string">"test.submit"</span>);
+        procedure.lock_key = LockKey::single_exclusive(<span class="string">"test.submit"</span>);
         <span class="kw">let </span>procedure_id = ProcedureId::random();
         <span class="macro">assert!</span>(manager
             .submit(ProcedureWithId {
@@ -2105,7 +2099,7 @@
         manager.manager_ctx.set_running();
 
         <span class="kw">let </span><span class="kw-2">mut </span>procedure = ProcedureToLoad::new(<span class="string">"submit"</span>);
-        procedure.lock_key = LockKey::single(<span class="string">"test.submit"</span>);
+        procedure.lock_key = LockKey::single_exclusive(<span class="string">"test.submit"</span>);
         <span class="kw">let </span>procedure_id = ProcedureId::random();
         <span class="macro">assert!</span>(manager
             .submit(ProcedureWithId {
@@ -2128,7 +2122,7 @@
         <span class="comment">// The remove_outdated_meta method has been stopped, so any procedure meta-data will not be automatically removed.
         </span>manager.stop().<span class="kw">await</span>.unwrap();
         <span class="kw">let </span><span class="kw-2">mut </span>procedure = ProcedureToLoad::new(<span class="string">"submit"</span>);
-        procedure.lock_key = LockKey::single(<span class="string">"test.submit"</span>);
+        procedure.lock_key = LockKey::single_exclusive(<span class="string">"test.submit"</span>);
         <span class="kw">let </span>procedure_id = ProcedureId::random();
 
         manager.manager_ctx.set_running();
@@ -2150,7 +2144,7 @@
 
         <span class="comment">// After restart
         </span><span class="kw">let </span><span class="kw-2">mut </span>procedure = ProcedureToLoad::new(<span class="string">"submit"</span>);
-        procedure.lock_key = LockKey::single(<span class="string">"test.submit"</span>);
+        procedure.lock_key = LockKey::single_exclusive(<span class="string">"test.submit"</span>);
         <span class="kw">let </span>procedure_id = ProcedureId::random();
         <span class="macro">assert!</span>(manager
             .submit(ProcedureWithId {

@@ -850,6 +850,15 @@
 <a href="#849" id="849">849</a>
 <a href="#850" id="850">850</a>
 <a href="#851" id="851">851</a>
+<a href="#852" id="852">852</a>
+<a href="#853" id="853">853</a>
+<a href="#854" id="854">854</a>
+<a href="#855" id="855">855</a>
+<a href="#856" id="856">856</a>
+<a href="#857" id="857">857</a>
+<a href="#858" id="858">858</a>
+<a href="#859" id="859">859</a>
+<a href="#860" id="860">860</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -1078,6 +1087,15 @@
             ConcreteDataType::uint64_datatype(),
             ConcreteDataType::float32_datatype(),
             ConcreteDataType::float64_datatype(),
+        ]
+    }
+
+    <span class="kw">pub fn </span>unsigned_integers() -&gt; Vec&lt;ConcreteDataType&gt; {
+        <span class="macro">vec!</span>[
+            ConcreteDataType::uint8_datatype(),
+            ConcreteDataType::uint16_datatype(),
+            ConcreteDataType::uint32_datatype(),
+            ConcreteDataType::uint64_datatype(),
         ]
     }
 

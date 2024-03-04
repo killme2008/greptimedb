@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["order_hint","string_normalization","type_conversion"]};
+window.SIDEBAR_ITEMS = {"mod":["order_hint","string_normalization","type_conversion"],"trait":["ExtensionAnalyzerRule"]};

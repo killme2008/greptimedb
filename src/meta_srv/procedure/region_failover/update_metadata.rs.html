@@ -487,6 +487,14 @@
 <a href="#486" id="486">486</a>
 <a href="#487" id="487">487</a>
 <a href="#488" id="488">488</a>
+<a href="#489" id="489">489</a>
+<a href="#490" id="490">490</a>
+<a href="#491" id="491">491</a>
+<a href="#492" id="492">492</a>
+<a href="#493" id="493">493</a>
+<a href="#494" id="494">494</a>
+<a href="#495" id="495">495</a>
+<a href="#496" id="496">496</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -504,6 +512,7 @@
 </span><span class="kw">use </span>std::collections::HashMap;
 
 <span class="kw">use </span>async_trait::async_trait;
+<span class="kw">use </span>common_error::ext::BoxedError;
 <span class="kw">use </span>common_meta::key::datanode_table::RegionInfo;
 <span class="kw">use </span>common_meta::key::table_route::TableRouteKey;
 <span class="kw">use </span>common_meta::peer::Peer;
@@ -512,10 +521,11 @@
 <span class="kw">use </span>common_telemetry::info;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>snafu::{OptionExt, ResultExt};
+<span class="kw">use </span>store_api::storage::RegionNumber;
 
 <span class="kw">use </span><span class="kw">super</span>::invalidate_cache::InvalidateCache;
 <span class="kw">use super</span>::{RegionFailoverContext, State};
-<span class="kw">use </span><span class="kw">crate</span>::error::{<span class="self">self</span>, <span class="prelude-ty">Result</span>, RetryLaterSnafu, TableRouteNotFoundSnafu};
+<span class="kw">use </span><span class="kw">crate</span>::error::{<span class="self">self</span>, <span class="prelude-ty">Result</span>, TableRouteNotFoundSnafu};
 <span class="kw">use </span><span class="kw">crate</span>::lock::keys::table_metadata_lock_key;
 <span class="kw">use </span><span class="kw">crate</span>::lock::Opts;
 
@@ -525,7 +535,7 @@
     region_storage_path: String,
     region_options: HashMap&lt;String, String&gt;,
     <span class="attr">#[serde(default)]
-    </span>region_wal_options: HashMap&lt;String, String&gt;,
+    </span>region_wal_options: HashMap&lt;RegionNumber, String&gt;,
 }
 
 <span class="kw">impl </span>UpdateRegionMetadata {
@@ -533,7 +543,7 @@
         candidate: Peer,
         region_storage_path: String,
         region_options: HashMap&lt;String, String&gt;,
-        region_wal_options: HashMap&lt;String, String&gt;,
+        region_wal_options: HashMap&lt;RegionNumber, String&gt;,
     ) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             candidate,
@@ -569,12 +579,18 @@
         <span class="kw">let </span>table_route_value = ctx
             .table_metadata_manager
             .table_route_manager()
-            .get(table_id)
+            .table_route_storage()
+            .get_raw(table_id)
             .<span class="kw">await
             </span>.context(error::TableMetadataManagerSnafu)<span class="question-mark">?
             </span>.context(TableRouteNotFoundSnafu { table_id })<span class="question-mark">?</span>;
 
-        <span class="kw">let </span><span class="kw-2">mut </span>new_region_routes = table_route_value.region_routes().clone();
+        <span class="kw">let </span><span class="kw-2">mut </span>new_region_routes = table_route_value
+            .region_routes()
+            .context(error::UnexpectedLogicalRouteTableSnafu {
+                err_msg: <span class="macro">format!</span>(<span class="string">"{self:?} is a non-physical TableRouteValue."</span>),
+            })<span class="question-mark">?
+            </span>.clone();
 
         <span class="kw">for </span>region_route <span class="kw">in </span>new_region_routes.iter_mut() {
             <span class="kw">if </span>region_route.region.id.region_number() == failed_region.region_number {
@@ -655,14 +671,12 @@
     ) -&gt; <span class="prelude-ty">Result</span>&lt;Box&lt;<span class="kw">dyn </span>State&gt;&gt; {
         <span class="self">self</span>.update_metadata(ctx, failed_region)
             .<span class="kw">await
-            </span>.map_err(|e| {
-                RetryLaterSnafu {
-                    reason: <span class="macro">format!</span>(
-                        <span class="string">"Failed to update metadata for failed region: {}, error: {}"</span>,
-                        failed_region, e
-                    ),
-                }
-                .build()
+            </span>.map_err(BoxedError::new)
+            .context(error::RetryLaterWithSourceSnafu {
+                reason: <span class="macro">format!</span>(
+                    <span class="string">"Failed to update metadata for failed region: {}"</span>,
+                    failed_region
+                ),
             })<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(Box::new(InvalidateCache))
     }
@@ -717,12 +731,14 @@
             env.context
                 .table_metadata_manager
                 .table_route_manager()
-                .get(table_id)
+                .table_route_storage()
+                .get_raw(table_id)
                 .<span class="kw">await
                 </span>.unwrap()
                 .unwrap()
                 .into_inner()
                 .region_routes()
+                .unwrap()
                 .clone()
         }
 
@@ -879,14 +895,14 @@
                 .context
                 .table_metadata_manager
                 .table_route_manager()
+                .table_route_storage()
                 .get(table_id)
                 .<span class="kw">await
                 </span>.unwrap()
-                .unwrap()
-                .into_inner();
+                .unwrap();
 
-            <span class="kw">let </span>peers = <span class="kw-2">&amp;</span>extract_all_peers(table_route_value.region_routes());
-            <span class="kw">let </span>actual = table_route_value.region_routes();
+            <span class="kw">let </span>peers = <span class="kw-2">&amp;</span>extract_all_peers(table_route_value.region_routes().unwrap());
+            <span class="kw">let </span>actual = table_route_value.region_routes().unwrap();
             <span class="kw">let </span>expected = <span class="kw-2">&amp;</span><span class="macro">vec!</span>[
                 new_region_route(<span class="number">1</span>, peers, <span class="number">2</span>),
                 new_region_route(<span class="number">2</span>, peers, <span class="number">3</span>),
@@ -899,13 +915,13 @@
             <span class="kw">let </span>manager = <span class="kw-2">&amp;</span>env.context.table_metadata_manager;
             <span class="kw">let </span>table_route_value = manager
                 .table_route_manager()
+                .table_route_storage()
                 .get(table_id)
                 .<span class="kw">await
                 </span>.unwrap()
-                .unwrap()
-                .into_inner();
+                .unwrap();
 
-            <span class="kw">let </span>map = region_distribution(table_route_value.region_routes()).unwrap();
+            <span class="kw">let </span>map = region_distribution(table_route_value.region_routes().unwrap());
             <span class="macro">assert_eq!</span>(map.len(), <span class="number">2</span>);
             <span class="macro">assert_eq!</span>(map.get(<span class="kw-2">&amp;</span><span class="number">2</span>), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">3</span>]));
             <span class="macro">assert_eq!</span>(map.get(<span class="kw-2">&amp;</span><span class="number">3</span>), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="macro">vec!</span>[<span class="number">2</span>, <span class="number">4</span>]));

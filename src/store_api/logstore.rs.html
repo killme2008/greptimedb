@@ -92,6 +92,8 @@
 <a href="#91" id="91">91</a>
 <a href="#92" id="92">92</a>
 <a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -110,12 +112,14 @@
 
 </span><span class="kw">use </span>std::collections::HashMap;
 
-<span class="kw">use </span>common_config::wal::WalOptions;
 <span class="kw">use </span>common_error::ext::ErrorExt;
+<span class="kw">use </span>common_wal::options::WalOptions;
 
-<span class="kw">use </span><span class="kw">crate</span>::logstore::entry::{Entry, Id <span class="kw">as </span>EntryId};
+<span class="kw">use </span><span class="kw">crate</span>::logstore::entry::Entry;
+<span class="kw">pub use </span><span class="kw">crate</span>::logstore::entry::Id <span class="kw">as </span>EntryId;
 <span class="kw">use </span><span class="kw">crate</span>::logstore::entry_stream::SendableEntryStream;
-<span class="kw">use </span><span class="kw">crate</span>::logstore::namespace::{Id <span class="kw">as </span>NamespaceId, Namespace};
+<span class="kw">pub use </span><span class="kw">crate</span>::logstore::namespace::Id <span class="kw">as </span>NamespaceId;
+<span class="kw">use </span><span class="kw">crate</span>::logstore::namespace::Namespace;
 
 <span class="kw">pub mod </span>entry;
 <span class="kw">pub mod </span>entry_stream;

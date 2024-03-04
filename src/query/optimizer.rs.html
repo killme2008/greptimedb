@@ -16,6 +16,28 @@
 <a href="#15" id="15">15</a>
 <a href="#16" id="16">16</a>
 <a href="#17" id="17">17</a>
+<a href="#18" id="18">18</a>
+<a href="#19" id="19">19</a>
+<a href="#20" id="20">20</a>
+<a href="#21" id="21">21</a>
+<a href="#22" id="22">22</a>
+<a href="#23" id="23">23</a>
+<a href="#24" id="24">24</a>
+<a href="#25" id="25">25</a>
+<a href="#26" id="26">26</a>
+<a href="#27" id="27">27</a>
+<a href="#28" id="28">28</a>
+<a href="#29" id="29">29</a>
+<a href="#30" id="30">30</a>
+<a href="#31" id="31">31</a>
+<a href="#32" id="32">32</a>
+<a href="#33" id="33">33</a>
+<a href="#34" id="34">34</a>
+<a href="#35" id="35">35</a>
+<a href="#36" id="36">36</a>
+<a href="#37" id="37">37</a>
+<a href="#38" id="38">38</a>
+<a href="#39" id="39">39</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,7 +52,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-</span><span class="kw">pub mod </span>order_hint;
+</span><span class="kw">use </span>datafusion_common::config::ConfigOptions;
+<span class="kw">use </span>datafusion_common::Result;
+<span class="kw">use </span>datafusion_expr::LogicalPlan;
+
+<span class="kw">use </span><span class="kw">crate</span>::QueryEngineContext;
+
+<span class="doccomment">/// [`ExtensionAnalyzerRule`]s transform [`LogicalPlan`]s in some way to make
+/// the plan valid prior to the rest of the DataFusion optimization process.
+/// It's an extension of datafusion [`AnalyzerRule`]s but accepts [`QueryEngineContext` as the second parameter.
+</span><span class="kw">pub trait </span>ExtensionAnalyzerRule {
+    <span class="doccomment">/// Rewrite `plan`
+    </span><span class="kw">fn </span>analyze(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        plan: LogicalPlan,
+        ctx: <span class="kw-2">&amp;</span>QueryEngineContext,
+        config: <span class="kw-2">&amp;</span>ConfigOptions,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;LogicalPlan&gt;;
+
+    <span class="doccomment">/// A human readable name for this analyzer rule
+    </span><span class="kw">fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str;
+}
+
+<span class="kw">pub mod </span>order_hint;
 <span class="kw">pub mod </span>string_normalization;
 <span class="kw">pub mod </span>type_conversion;
 </code></pre></div></section></main></body></html>

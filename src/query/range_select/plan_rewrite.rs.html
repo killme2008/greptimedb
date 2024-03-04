@@ -760,6 +760,46 @@
 <a href="#759" id="759">759</a>
 <a href="#760" id="760">760</a>
 <a href="#761" id="761">761</a>
+<a href="#762" id="762">762</a>
+<a href="#763" id="763">763</a>
+<a href="#764" id="764">764</a>
+<a href="#765" id="765">765</a>
+<a href="#766" id="766">766</a>
+<a href="#767" id="767">767</a>
+<a href="#768" id="768">768</a>
+<a href="#769" id="769">769</a>
+<a href="#770" id="770">770</a>
+<a href="#771" id="771">771</a>
+<a href="#772" id="772">772</a>
+<a href="#773" id="773">773</a>
+<a href="#774" id="774">774</a>
+<a href="#775" id="775">775</a>
+<a href="#776" id="776">776</a>
+<a href="#777" id="777">777</a>
+<a href="#778" id="778">778</a>
+<a href="#779" id="779">779</a>
+<a href="#780" id="780">780</a>
+<a href="#781" id="781">781</a>
+<a href="#782" id="782">782</a>
+<a href="#783" id="783">783</a>
+<a href="#784" id="784">784</a>
+<a href="#785" id="785">785</a>
+<a href="#786" id="786">786</a>
+<a href="#787" id="787">787</a>
+<a href="#788" id="788">788</a>
+<a href="#789" id="789">789</a>
+<a href="#790" id="790">790</a>
+<a href="#791" id="791">791</a>
+<a href="#792" id="792">792</a>
+<a href="#793" id="793">793</a>
+<a href="#794" id="794">794</a>
+<a href="#795" id="795">795</a>
+<a href="#796" id="796">796</a>
+<a href="#797" id="797">797</a>
+<a href="#798" id="798">798</a>
+<a href="#799" id="799">799</a>
+<a href="#800" id="800">800</a>
+<a href="#801" id="801">801</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -775,7 +815,6 @@
 // limitations under the License.
 
 </span><span class="kw">use </span>std::collections::BTreeSet;
-<span class="kw">use </span>std::str::FromStr;
 <span class="kw">use </span>std::sync::Arc;
 <span class="kw">use </span>std::time::Duration;
 
@@ -784,7 +823,7 @@
 <span class="kw">use </span>catalog::table_source::DfTableSourceProvider;
 <span class="kw">use </span>common_time::interval::NANOS_PER_MILLI;
 <span class="kw">use </span>common_time::timestamp::TimeUnit;
-<span class="kw">use </span>common_time::{Interval, Timestamp};
+<span class="kw">use </span>common_time::{Interval, Timestamp, Timezone};
 <span class="kw">use </span>datafusion::datasource::DefaultTableSource;
 <span class="kw">use </span>datafusion::prelude::Column;
 <span class="kw">use </span>datafusion::scalar::ScalarValue;
@@ -797,6 +836,7 @@
 };
 <span class="kw">use </span>datatypes::prelude::ConcreteDataType;
 <span class="kw">use </span>promql_parser::util::parse_duration;
+<span class="kw">use </span>session::context::QueryContextRef;
 <span class="kw">use </span>snafu::{ensure, OptionExt, ResultExt};
 <span class="kw">use </span>table::table::adapter::DfTableProviderAdapter;
 
@@ -818,6 +858,7 @@
     <span class="doccomment">/// Use `BTreeSet` to avoid in case like `avg(a) RANGE '5m' + avg(a) RANGE '5m'`, duplicate range expr `avg(a) RANGE '5m'` be calculate twice
     </span>range_fn: BTreeSet&lt;RangeFn&gt;,
     sub_aggr: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>Aggregate,
+    query_ctx: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>QueryContextRef,
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; RangeExprRewriter&lt;<span class="lifetime">'a</span>&gt; {
@@ -895,17 +936,18 @@
 /// which is used as the basis for dividing time slot during the align operation.
 /// 1. NOW: align to current execute time
 /// 2. Timestamp string: align to specific timestamp
-/// 3. leave empty (as Default Option): align to unix epoch 0
-</span><span class="kw">fn </span>parse_align_to(args: <span class="kw-2">&amp;</span>[Expr], i: usize) -&gt; DFResult&lt;i64&gt; {
+/// 3. leave empty (as Default Option): align to unix epoch 0 (timezone aware)
+</span><span class="kw">fn </span>parse_align_to(args: <span class="kw-2">&amp;</span>[Expr], i: usize, timezone: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>Timezone&gt;) -&gt; DFResult&lt;i64&gt; {
     <span class="kw">let </span>s = parse_str_expr(args, i)<span class="question-mark">?</span>;
     <span class="kw">let </span>upper = s.to_uppercase();
     <span class="kw">match </span>upper.as_str() {
         <span class="string">"NOW" </span>=&gt; <span class="kw">return </span><span class="prelude-val">Ok</span>(Timestamp::current_millis().value()),
-        <span class="comment">// default align to unix epoch 0
-        </span><span class="string">"" </span>=&gt; <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="number">0</span>),
+        <span class="comment">// default align to unix epoch 0 (timezone aware)
+        </span><span class="string">"" </span>=&gt; <span class="kw">return </span><span class="prelude-val">Ok</span>(timezone.map(|tz| tz.local_minus_utc() * <span class="number">1000</span>).unwrap_or(<span class="number">0</span>)),
         <span class="kw">_ </span>=&gt; (),
     }
-    Timestamp::from_str(s)
+
+    Timestamp::from_str(s, timezone)
         .map_err(|e| {
             DataFusionError::Plan(<span class="macro">format!</span>(
                 <span class="string">"Illegal `align to` argument `{}` in range select query, can't be parse as NOW/CALENDAR/Timestamp, error: {}"</span>,
@@ -968,7 +1010,11 @@
                     .map_err(|e| DataFusionError::Plan(e.to_string()))<span class="question-mark">?</span>;
                 <span class="kw">let </span>by = parse_expr_list(<span class="kw-2">&amp;</span>func.args, <span class="number">4</span>, byc)<span class="question-mark">?</span>;
                 <span class="kw">let </span>align = parse_duration_expr(<span class="kw-2">&amp;</span>func.args, byc + <span class="number">4</span>)<span class="question-mark">?</span>;
-                <span class="kw">let </span>align_to = parse_align_to(<span class="kw-2">&amp;</span>func.args, byc + <span class="number">5</span>)<span class="question-mark">?</span>;
+                <span class="kw">let </span>align_to = parse_align_to(
+                    <span class="kw-2">&amp;</span>func.args,
+                    byc + <span class="number">5</span>,
+                    <span class="prelude-val">Some</span>(<span class="self">self</span>.query_ctx.timezone().as_ref()),
+                )<span class="question-mark">?</span>;
                 <span class="kw">let </span><span class="kw-2">mut </span>data_type = range_expr.get_type(<span class="self">self</span>.input_plan.schema())<span class="question-mark">?</span>;
                 <span class="kw">let </span><span class="kw-2">mut </span>need_cast = <span class="bool-val">false</span>;
                 <span class="kw">let </span>fill = Fill::try_from_str(parse_str_expr(<span class="kw-2">&amp;</span>func.args, <span class="number">2</span>)<span class="question-mark">?</span>, <span class="kw-2">&amp;</span>data_type)<span class="question-mark">?</span>;
@@ -1009,11 +1055,15 @@
 /// collecting info we need to generate RangeSelect Query LogicalPlan and rewrite th original LogicalPlan.
 </span><span class="kw">pub struct </span>RangePlanRewriter {
     table_provider: DfTableSourceProvider,
+    query_ctx: QueryContextRef,
 }
 
 <span class="kw">impl </span>RangePlanRewriter {
-    <span class="kw">pub fn </span>new(table_provider: DfTableSourceProvider) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{ table_provider }
+    <span class="kw">pub fn </span>new(table_provider: DfTableSourceProvider, query_ctx: QueryContextRef) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            table_provider,
+            query_ctx,
+        }
     }
 
     <span class="kw">pub async fn </span>rewrite(<span class="kw-2">&amp;mut </span><span class="self">self</span>, plan: LogicalPlan) -&gt; <span class="prelude-ty">Result</span>&lt;LogicalPlan&gt; {
@@ -1057,6 +1107,7 @@
                     by: <span class="macro">vec!</span>[],
                     range_fn: BTreeSet::new(),
                     sub_aggr: aggr_plan,
+                    query_ctx: <span class="kw-2">&amp;</span><span class="self">self</span>.query_ctx,
                 };
                 <span class="kw">let </span>new_expr = expr
                     .iter()
@@ -1284,11 +1335,11 @@
                 table,
             })
             .is_ok());
-        QueryEngineFactory::new(catalog_list, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="bool-val">false</span>).query_engine()
+        QueryEngineFactory::new(catalog_list, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="bool-val">false</span>).query_engine()
     }
 
     <span class="kw">async fn </span>do_query(sql: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw">crate</span>::plan::LogicalPlan&gt; {
-        <span class="kw">let </span>stmt = QueryLanguageParser::parse_sql(sql).unwrap();
+        <span class="kw">let </span>stmt = QueryLanguageParser::parse_sql(sql, <span class="kw-2">&amp;</span>QueryContext::arc()).unwrap();
         <span class="kw">let </span>engine = create_test_engine().<span class="kw">await</span>;
         engine.planner().plan(stmt, QueryContext::arc()).<span class="kw">await
     </span>}
@@ -1509,16 +1560,45 @@
     </span><span class="kw">fn </span>test_parse_align_to() {
         <span class="comment">// test NOW
         </span><span class="kw">let </span>args = <span class="macro">vec!</span>[Expr::Literal(ScalarValue::Utf8(<span class="prelude-val">Some</span>(<span class="string">"NOW"</span>.into())))];
-        <span class="kw">let </span>epsinon = parse_align_to(<span class="kw-2">&amp;</span>args, <span class="number">0</span>).unwrap() - Timestamp::current_millis().value();
+        <span class="kw">let </span>epsinon = parse_align_to(<span class="kw-2">&amp;</span>args, <span class="number">0</span>, <span class="prelude-val">None</span>).unwrap() - Timestamp::current_millis().value();
         <span class="macro">assert!</span>(epsinon.abs() &lt; <span class="number">100</span>);
         <span class="comment">// test default
         </span><span class="kw">let </span>args = <span class="macro">vec!</span>[Expr::Literal(ScalarValue::Utf8(<span class="prelude-val">Some</span>(<span class="string">""</span>.into())))];
-        <span class="macro">assert!</span>(parse_align_to(<span class="kw-2">&amp;</span>args, <span class="number">0</span>).unwrap() == <span class="number">0</span>);
+        <span class="macro">assert_eq!</span>(<span class="number">0</span>, parse_align_to(<span class="kw-2">&amp;</span>args, <span class="number">0</span>, <span class="prelude-val">None</span>).unwrap());
+        <span class="comment">// test default with timezone
+        </span><span class="kw">let </span>args = <span class="macro">vec!</span>[Expr::Literal(ScalarValue::Utf8(<span class="prelude-val">Some</span>(<span class="string">""</span>.into())))];
+        <span class="macro">assert_eq!</span>(
+            -<span class="number">36000 </span>* <span class="number">1000</span>,
+            parse_align_to(<span class="kw-2">&amp;</span>args, <span class="number">0</span>, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>Timezone::from_tz_string(<span class="string">"HST"</span>).unwrap())).unwrap()
+        );
+        <span class="macro">assert_eq!</span>(
+            <span class="number">28800 </span>* <span class="number">1000</span>,
+            parse_align_to(
+                <span class="kw-2">&amp;</span>args,
+                <span class="number">0</span>,
+                <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>Timezone::from_tz_string(<span class="string">"Asia/Shanghai"</span>).unwrap())
+            )
+            .unwrap()
+        );
+
         <span class="comment">// test Timestamp
         </span><span class="kw">let </span>args = <span class="macro">vec!</span>[Expr::Literal(ScalarValue::Utf8(<span class="prelude-val">Some</span>(
             <span class="string">"1970-01-01T00:00:00+08:00"</span>.into(),
         )))];
-        <span class="macro">assert!</span>(parse_align_to(<span class="kw-2">&amp;</span>args, <span class="number">0</span>).unwrap() == -<span class="number">8 </span>* <span class="number">60 </span>* <span class="number">60 </span>* <span class="number">1000</span>);
+        <span class="macro">assert!</span>(parse_align_to(<span class="kw-2">&amp;</span>args, <span class="number">0</span>, <span class="prelude-val">None</span>).unwrap() == -<span class="number">8 </span>* <span class="number">60 </span>* <span class="number">60 </span>* <span class="number">1000</span>);
+        <span class="comment">// timezone
+        </span><span class="kw">let </span>args = <span class="macro">vec!</span>[Expr::Literal(ScalarValue::Utf8(<span class="prelude-val">Some</span>(
+            <span class="string">"1970-01-01T00:00:00"</span>.into(),
+        )))];
+        <span class="macro">assert!</span>(
+            parse_align_to(
+                <span class="kw-2">&amp;</span>args,
+                <span class="number">0</span>,
+                <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>Timezone::from_tz_string(<span class="string">"Asia/Shanghai"</span>).unwrap())
+            )
+            .unwrap()
+                == -<span class="number">8 </span>* <span class="number">60 </span>* <span class="number">60 </span>* <span class="number">1000
+        </span>);
     }
 }
 </code></pre></div></section></main></body></html>

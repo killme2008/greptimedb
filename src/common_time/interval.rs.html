@@ -1191,7 +1191,7 @@
             <span class="kw">return </span><span class="string">"PT0S"</span>.to_string();
         }
         <span class="kw">let </span>fract_str = <span class="kw">match </span><span class="self">self</span>.microseconds {
-            <span class="number">0 </span>=&gt; <span class="string">""</span>.to_string(),
+            <span class="number">0 </span>=&gt; String::default(),
             <span class="kw">_ </span>=&gt; <span class="macro">format!</span>(<span class="string">".{:06}"</span>, <span class="self">self</span>.microseconds)
                 .trim_end_matches(<span class="string">'0'</span>)
                 .to_string(),
@@ -1242,7 +1242,7 @@
         <span class="kw">if </span><span class="self">self</span>.is_zero() {
             <span class="kw">return </span><span class="string">"00:00:00"</span>.to_string();
         }
-        <span class="kw">let </span><span class="kw-2">mut </span>result = <span class="string">""</span>.to_string();
+        <span class="kw">let </span><span class="kw-2">mut </span>result = String::default();
         <span class="kw">if </span><span class="self">self</span>.has_year_month() {
             <span class="kw">if </span><span class="self">self</span>.years != <span class="number">0 </span>{
                 result.push_str(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">"{} year "</span>, <span class="self">self</span>.years));
@@ -1260,7 +1260,7 @@
 
     <span class="doccomment">/// get postgres time part(include hours, minutes, seconds, microseconds)
     </span><span class="kw">fn </span>get_postgres_time_part(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
-        <span class="kw">let </span><span class="kw-2">mut </span>time_part = <span class="string">""</span>.to_string();
+        <span class="kw">let </span><span class="kw-2">mut </span>time_part = String::default();
         <span class="kw">if </span><span class="self">self</span>.has_time_part() {
             <span class="kw">let </span>sign = <span class="kw">if </span>!<span class="self">self</span>.has_time_part_positive() {
                 <span class="string">"-"
@@ -1312,7 +1312,7 @@
     is_time_part_positive: bool,
     is_only_time: bool,
 ) -&gt; String {
-    <span class="kw">let </span><span class="kw-2">mut </span>interval = <span class="string">""</span>.to_string();
+    <span class="kw">let </span><span class="kw-2">mut </span>interval = String::default();
     <span class="kw">if </span>is_time_part_positive &amp;&amp; is_only_time {
         interval.push_str(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">"{}:{:02}:{:02}"</span>, hours, mins, secs));
     } <span class="kw">else </span>{

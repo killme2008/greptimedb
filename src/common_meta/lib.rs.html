@@ -43,6 +43,9 @@
 <a href="#42" id="42">42</a>
 <a href="#43" id="43">43</a>
 <a href="#44" id="44">44</a>
+<a href="#45" id="45">45</a>
+<a href="#46" id="46">46</a>
+<a href="#47" id="47">47</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -60,6 +63,7 @@
 </span><span class="attr">#![feature(assert_matches)]
 #![feature(btree_extract_if)]
 #![feature(async_closure)]
+#![feature(let_chains)]
 
 </span><span class="kw">pub mod </span>cache_invalidator;
 <span class="kw">pub mod </span>datanode_manager;
@@ -71,6 +75,7 @@
 <span class="kw">pub mod </span>instruction;
 <span class="kw">pub mod </span>key;
 <span class="kw">pub mod </span>kv_backend;
+<span class="kw">pub mod </span>lock_key;
 <span class="kw">pub mod </span>metrics;
 <span class="kw">pub mod </span>peer;
 <span class="kw">pub mod </span>range_stream;
@@ -79,9 +84,10 @@
 <span class="kw">pub mod </span>sequence;
 <span class="kw">pub mod </span>state_store;
 <span class="kw">pub mod </span>table_name;
+<span class="attr">#[cfg(any(test, feature = <span class="string">"testing"</span>))]
+</span><span class="kw">pub mod </span>test_util;
 <span class="kw">pub mod </span>util;
-<span class="attr">#[allow(unused)]
-</span><span class="kw">pub mod </span>wal;
+<span class="kw">pub mod </span>wal_options_allocator;
 
 <span class="kw">pub type </span>ClusterId = u64;
 <span class="kw">pub type </span>DatanodeId = u64;

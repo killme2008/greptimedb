@@ -248,6 +248,8 @@
 <a href="#247" id="247">247</a>
 <a href="#248" id="248">248</a>
 <a href="#249" id="249">249</a>
+<a href="#250" id="250">250</a>
+<a href="#251" id="251">251</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -265,9 +267,9 @@
 </span><span class="kw">use </span>std::sync::Arc;
 
 <span class="kw">use </span>api::v1::meta::cluster_server::ClusterServer;
-<span class="kw">use </span>api::v1::meta::ddl_task_server::DdlTaskServer;
 <span class="kw">use </span>api::v1::meta::heartbeat_server::HeartbeatServer;
 <span class="kw">use </span>api::v1::meta::lock_server::LockServer;
+<span class="kw">use </span>api::v1::meta::procedure_service_server::ProcedureServiceServer;
 <span class="kw">use </span>api::v1::meta::store_server::StoreServer;
 <span class="kw">use </span>common_base::Plugins;
 <span class="kw">use </span>common_meta::kv_backend::chroot::ChrootKvBackend;
@@ -276,6 +278,7 @@
 <span class="kw">use </span>common_meta::kv_backend::{KvBackendRef, ResettableKvBackendRef};
 <span class="kw">use </span>common_telemetry::info;
 <span class="kw">use </span>etcd_client::Client;
+<span class="kw">use </span>futures::future;
 <span class="kw">use </span>servers::configurator::ConfiguratorRef;
 <span class="kw">use </span>servers::export_metrics::ExportMetricsTask;
 <span class="kw">use </span>servers::http::{HttpServer, HttpServerBuilder};
@@ -283,7 +286,6 @@
 <span class="kw">use </span>servers::server::Server;
 <span class="kw">use </span>snafu::ResultExt;
 <span class="kw">use </span>tokio::net::TcpListener;
-<span class="kw">use </span>tokio::select;
 <span class="kw">use </span>tokio::sync::mpsc::{<span class="self">self</span>, Receiver, Sender};
 <span class="kw">use </span>tonic::transport::server::{Router, TcpIncoming};
 
@@ -344,8 +346,8 @@
         <span class="self">self</span>.meta_srv.try_start().<span class="kw">await</span><span class="question-mark">?</span>;
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(t) = <span class="self">self</span>.export_metrics_task.as_ref() {
-            t.start()
-        }
+            t.start(<span class="prelude-val">None</span>).context(InitExportMetricsTaskSnafu)<span class="question-mark">?
+        </span>}
 
         <span class="kw">let </span>(tx, rx) = mpsc::channel::&lt;()&gt;(<span class="number">1</span>);
 
@@ -360,12 +362,14 @@
         <span class="kw">let </span>addr = <span class="self">self</span>.opts.http.addr.parse().context(error::ParseAddrSnafu {
             addr: <span class="kw-2">&amp;</span><span class="self">self</span>.opts.http.addr,
         })<span class="question-mark">?</span>;
-        <span class="kw">let </span>http_srv = <span class="self">self</span>.http_srv.start(addr);
-        <span class="macro">select! </span>{
-            v = meta_srv =&gt; v<span class="question-mark">?</span>,
-            v = http_srv =&gt; v.map(|<span class="kw">_</span>| ()).context(error::StartHttpSnafu)<span class="question-mark">?</span>,
-        }
-
+        <span class="kw">let </span>http_srv = <span class="kw">async </span>{
+            <span class="self">self</span>.http_srv
+                .start(addr)
+                .<span class="kw">await
+                </span>.map(|<span class="kw">_</span>| ())
+                .context(error::StartHttpSnafu)
+        };
+        future::try_join(meta_srv, http_srv).<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
@@ -422,7 +426,7 @@
         .add_service(StoreServer::new(meta_srv.clone()))
         .add_service(ClusterServer::new(meta_srv.clone()))
         .add_service(LockServer::new(meta_srv.clone()))
-        .add_service(DdlTaskServer::new(meta_srv.clone()))
+        .add_service(ProcedureServiceServer::new(meta_srv.clone()))
         .add_service(admin::make_admin_service(meta_srv))
 }
 

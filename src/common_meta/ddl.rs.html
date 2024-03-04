@@ -83,6 +83,21 @@
 <a href="#82" id="82">82</a>
 <a href="#83" id="83">83</a>
 <a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
+<a href="#91" id="91">91</a>
+<a href="#92" id="92">92</a>
+<a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -103,17 +118,26 @@
 <span class="kw">use </span>common_telemetry::tracing_context::W3cTrace;
 <span class="kw">use </span>store_api::storage::{RegionNumber, TableId};
 
+<span class="kw">use </span><span class="self">self</span>::table_meta::TableMetadataAllocatorRef;
 <span class="kw">use </span><span class="kw">crate</span>::cache_invalidator::CacheInvalidatorRef;
 <span class="kw">use </span><span class="kw">crate</span>::datanode_manager::DatanodeManagerRef;
 <span class="kw">use </span><span class="kw">crate</span>::error::Result;
 <span class="kw">use </span><span class="kw">crate</span>::key::table_route::TableRouteValue;
 <span class="kw">use </span><span class="kw">crate</span>::key::TableMetadataManagerRef;
 <span class="kw">use </span><span class="kw">crate</span>::region_keeper::MemoryRegionKeeperRef;
-<span class="kw">use </span><span class="kw">crate</span>::rpc::ddl::{CreateTableTask, SubmitDdlTaskRequest, SubmitDdlTaskResponse};
+<span class="kw">use </span><span class="kw">crate</span>::rpc::ddl::{SubmitDdlTaskRequest, SubmitDdlTaskResponse};
+<span class="kw">use </span><span class="kw">crate</span>::rpc::procedure::{MigrateRegionRequest, MigrateRegionResponse, ProcedureStateResponse};
 
 <span class="kw">pub mod </span>alter_table;
+<span class="kw">pub mod </span>create_logical_tables;
 <span class="kw">pub mod </span>create_table;
+<span class="kw">mod </span>create_table_template;
 <span class="kw">pub mod </span>drop_table;
+<span class="kw">pub mod </span>table_meta;
+<span class="attr">#[cfg(any(test, feature = <span class="string">"testing"</span>))]
+</span><span class="kw">pub mod </span>test_util;
+<span class="attr">#[cfg(test)]
+</span><span class="kw">mod </span>tests;
 <span class="kw">pub mod </span>truncate_table;
 <span class="kw">pub mod </span>utils;
 
@@ -123,16 +147,32 @@
     <span class="kw">pub </span>tracing_context: <span class="prelude-ty">Option</span>&lt;W3cTrace&gt;,
 }
 
-<span class="attr">#[async_trait::async_trait]
-</span><span class="kw">pub trait </span>DdlTaskExecutor: Send + Sync {
-    <span class="kw">async fn </span>submit_ddl_task(
+<span class="doccomment">/// The procedure executor that accepts ddl, region migration task etc.
+</span><span class="attr">#[async_trait::async_trait]
+</span><span class="kw">pub trait </span>ProcedureExecutor: Send + Sync {
+    <span class="doccomment">/// Submit a ddl task
+    </span><span class="kw">async fn </span>submit_ddl_task(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         ctx: <span class="kw-2">&amp;</span>ExecutorContext,
         request: SubmitDdlTaskRequest,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;SubmitDdlTaskResponse&gt;;
+
+    <span class="doccomment">/// Submit a region migration task
+    </span><span class="kw">async fn </span>migrate_region(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        ctx: <span class="kw-2">&amp;</span>ExecutorContext,
+        request: MigrateRegionRequest,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;MigrateRegionResponse&gt;;
+
+    <span class="doccomment">/// Query the procedure state by its id
+    </span><span class="kw">async fn </span>query_procedure_state(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        ctx: <span class="kw-2">&amp;</span>ExecutorContext,
+        pid: <span class="kw-2">&amp;</span>str,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;ProcedureStateResponse&gt;;
 }
 
-<span class="kw">pub type </span>DdlTaskExecutorRef = Arc&lt;<span class="kw">dyn </span>DdlTaskExecutor&gt;;
+<span class="kw">pub type </span>ProcedureExecutorRef = Arc&lt;<span class="kw">dyn </span>ProcedureExecutor&gt;;
 
 <span class="kw">pub struct </span>TableMetadataAllocatorContext {
     <span class="kw">pub </span>cluster_id: u64,
@@ -149,22 +189,12 @@
     </span><span class="kw">pub </span>region_wal_options: HashMap&lt;RegionNumber, String&gt;,
 }
 
-<span class="attr">#[async_trait::async_trait]
-</span><span class="kw">pub trait </span>TableMetadataAllocator: Send + Sync {
-    <span class="kw">async fn </span>create(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        ctx: <span class="kw-2">&amp;</span>TableMetadataAllocatorContext,
-        task: <span class="kw-2">&amp;</span>CreateTableTask,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;TableMetadata&gt;;
-}
-
-<span class="kw">pub type </span>TableMetadataAllocatorRef = Arc&lt;<span class="kw">dyn </span>TableMetadataAllocator&gt;;
-
 <span class="attr">#[derive(Clone)]
 </span><span class="kw">pub struct </span>DdlContext {
     <span class="kw">pub </span>datanode_manager: DatanodeManagerRef,
     <span class="kw">pub </span>cache_invalidator: CacheInvalidatorRef,
     <span class="kw">pub </span>table_metadata_manager: TableMetadataManagerRef,
     <span class="kw">pub </span>memory_region_keeper: MemoryRegionKeeperRef,
+    <span class="kw">pub </span>table_metadata_allocator: TableMetadataAllocatorRef,
 }
 </code></pre></div></section></main></body></html>

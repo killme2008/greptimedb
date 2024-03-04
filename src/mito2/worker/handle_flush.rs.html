@@ -241,13 +241,6 @@
 <a href="#240" id="240">240</a>
 <a href="#241" id="241">241</a>
 <a href="#242" id="242">242</a>
-<a href="#243" id="243">243</a>
-<a href="#244" id="244">244</a>
-<a href="#245" id="245">245</a>
-<a href="#246" id="246">246</a>
-<a href="#247" id="247">247</a>
-<a href="#248" id="248">248</a>
-<a href="#249" id="249">249</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -275,7 +268,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::config::MitoConfig;
 <span class="kw">use </span><span class="kw">crate</span>::error::{RegionTruncatedSnafu, <span class="prelude-ty">Result</span>};
 <span class="kw">use </span><span class="kw">crate</span>::flush::{FlushReason, RegionFlushTask};
-<span class="kw">use </span><span class="kw">crate</span>::manifest::action::{RegionEdit, RegionMetaAction, RegionMetaActionList};
+<span class="kw">use </span><span class="kw">crate</span>::manifest::action::RegionEdit;
 <span class="kw">use </span><span class="kw">crate</span>::region::MitoRegionRef;
 <span class="kw">use </span><span class="kw">crate</span>::request::{FlushFailed, FlushFinished, OnFailure, OptionOutputTx};
 <span class="kw">use </span><span class="kw">crate</span>::worker::RegionWorkerLoop;
@@ -387,18 +380,18 @@
         row_group_size: <span class="prelude-ty">Option</span>&lt;usize&gt;,
         engine_config: Arc&lt;MitoConfig&gt;,
     ) -&gt; RegionFlushTask {
-        <span class="comment">// TODO(yingwen): metrics for flush requested.
-        </span>RegionFlushTask {
+        RegionFlushTask {
             region_id: region.region_id,
             reason,
             senders: Vec::new(),
             request_sender: <span class="self">self</span>.sender.clone(),
             access_layer: region.access_layer.clone(),
-            memtable_builder: <span class="self">self</span>.memtable_builder.clone(),
             file_purger: region.file_purger.clone(),
             listener: <span class="self">self</span>.listener.clone(),
             engine_config,
             row_group_size,
+            cache_manager: <span class="self">self</span>.cache_manager.clone(),
+            index_options: region.version().options.index_options.clone(),
         }
     }
 }
@@ -431,19 +424,12 @@
             flushed_entry_id: <span class="prelude-val">Some</span>(request.flushed_entry_id),
             flushed_sequence: <span class="prelude-val">Some</span>(request.flushed_sequence),
         };
-        <span class="kw">let </span>action_list = RegionMetaActionList::with_action(RegionMetaAction::Edit(edit.clone()));
-        <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = region.manifest_manager.update(action_list).<span class="kw">await </span>{
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = region.apply_edit(edit, <span class="kw-2">&amp;</span>request.memtables_to_remove).<span class="kw">await </span>{
             <span class="macro">error!</span>(e; <span class="string">"Failed to write manifest, region: {}"</span>, region_id);
             request.on_failure(e);
             <span class="kw">return</span>;
         }
 
-        <span class="comment">// Apply edit to region's version.
-        </span>region.version_control.apply_edit(
-            edit,
-            <span class="kw-2">&amp;</span>request.memtables_to_remove,
-            region.file_purger.clone(),
-        );
         region.update_flush_millis();
 
         <span class="comment">// Delete wal.

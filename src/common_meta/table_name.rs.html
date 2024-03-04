@@ -101,7 +101,7 @@
 
 <span class="kw">use </span>api::v1::meta::TableName <span class="kw">as </span>PbTableName;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
-<span class="kw">use </span>table::engine::TableReference;
+<span class="kw">use </span>table::table_reference::TableReference;
 
 <span class="attr">#[derive(Debug, Clone, Hash, Eq, PartialEq, Deserialize, Serialize)]
 </span><span class="kw">pub struct </span>TableName {

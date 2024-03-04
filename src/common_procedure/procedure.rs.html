@@ -393,6 +393,73 @@
 <a href="#392" id="392">392</a>
 <a href="#393" id="393">393</a>
 <a href="#394" id="394">394</a>
+<a href="#395" id="395">395</a>
+<a href="#396" id="396">396</a>
+<a href="#397" id="397">397</a>
+<a href="#398" id="398">398</a>
+<a href="#399" id="399">399</a>
+<a href="#400" id="400">400</a>
+<a href="#401" id="401">401</a>
+<a href="#402" id="402">402</a>
+<a href="#403" id="403">403</a>
+<a href="#404" id="404">404</a>
+<a href="#405" id="405">405</a>
+<a href="#406" id="406">406</a>
+<a href="#407" id="407">407</a>
+<a href="#408" id="408">408</a>
+<a href="#409" id="409">409</a>
+<a href="#410" id="410">410</a>
+<a href="#411" id="411">411</a>
+<a href="#412" id="412">412</a>
+<a href="#413" id="413">413</a>
+<a href="#414" id="414">414</a>
+<a href="#415" id="415">415</a>
+<a href="#416" id="416">416</a>
+<a href="#417" id="417">417</a>
+<a href="#418" id="418">418</a>
+<a href="#419" id="419">419</a>
+<a href="#420" id="420">420</a>
+<a href="#421" id="421">421</a>
+<a href="#422" id="422">422</a>
+<a href="#423" id="423">423</a>
+<a href="#424" id="424">424</a>
+<a href="#425" id="425">425</a>
+<a href="#426" id="426">426</a>
+<a href="#427" id="427">427</a>
+<a href="#428" id="428">428</a>
+<a href="#429" id="429">429</a>
+<a href="#430" id="430">430</a>
+<a href="#431" id="431">431</a>
+<a href="#432" id="432">432</a>
+<a href="#433" id="433">433</a>
+<a href="#434" id="434">434</a>
+<a href="#435" id="435">435</a>
+<a href="#436" id="436">436</a>
+<a href="#437" id="437">437</a>
+<a href="#438" id="438">438</a>
+<a href="#439" id="439">439</a>
+<a href="#440" id="440">440</a>
+<a href="#441" id="441">441</a>
+<a href="#442" id="442">442</a>
+<a href="#443" id="443">443</a>
+<a href="#444" id="444">444</a>
+<a href="#445" id="445">445</a>
+<a href="#446" id="446">446</a>
+<a href="#447" id="447">447</a>
+<a href="#448" id="448">448</a>
+<a href="#449" id="449">449</a>
+<a href="#450" id="450">450</a>
+<a href="#451" id="451">451</a>
+<a href="#452" id="452">452</a>
+<a href="#453" id="453">453</a>
+<a href="#454" id="454">454</a>
+<a href="#455" id="455">455</a>
+<a href="#456" id="456">456</a>
+<a href="#457" id="457">457</a>
+<a href="#458" id="458">458</a>
+<a href="#459" id="459">459</a>
+<a href="#460" id="460">460</a>
+<a href="#461" id="461">461</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -407,7 +474,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-</span><span class="kw">use </span>std::fmt;
+</span><span class="kw">use </span>std::any::Any;
+<span class="kw">use </span>std::fmt;
 <span class="kw">use </span>std::str::FromStr;
 <span class="kw">use </span>std::sync::Arc;
 
@@ -419,6 +487,8 @@
 
 <span class="kw">use </span><span class="kw">crate</span>::error::{Error, <span class="prelude-ty">Result</span>};
 <span class="kw">use </span><span class="kw">crate</span>::watcher::Watcher;
+
+<span class="kw">pub type </span>Output = Arc&lt;<span class="kw">dyn </span>Any + Send + Sync&gt;;
 
 <span class="doccomment">/// Procedure execution status.
 </span><span class="attr">#[derive(Debug)]
@@ -435,7 +505,7 @@
         </span>persist: bool,
     },
     <span class="doccomment">/// the procedure is done.
-    </span>Done,
+    </span>Done { output: <span class="prelude-ty">Option</span>&lt;Output&gt; },
 }
 
 <span class="kw">impl </span>Status {
@@ -444,13 +514,45 @@
         Status::Executing { persist }
     }
 
+    <span class="doccomment">/// Returns a [Status::Done] without output.
+    </span><span class="kw">pub fn </span>done() -&gt; Status {
+        Status::Done { output: <span class="prelude-val">None </span>}
+    }
+
+    <span class="attr">#[cfg(any(test, feature = <span class="string">"testing"</span>))]
+    </span><span class="doccomment">/// Downcasts [Status::Done]'s output to &amp;T
+    ///  #Panic:
+    /// - if [Status] is not the [Status::Done].
+    /// - if the output is None.
+    </span><span class="kw">pub fn </span>downcast_output_ref&lt;T: <span class="lifetime">'static</span>&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>T&gt; {
+        <span class="kw">if let </span>Status::Done { output } = <span class="self">self </span>{
+            output
+                .as_ref()
+                .expect(<span class="string">"Try to downcast the output of Status::Done, but the output is None"</span>)
+                .downcast_ref()
+        } <span class="kw">else </span>{
+            <span class="macro">panic!</span>(<span class="string">"Expected the Status::Done, but got: {:?}"</span>, <span class="self">self</span>)
+        }
+    }
+
+    <span class="doccomment">/// Returns a [Status::Done] with output.
+    </span><span class="kw">pub fn </span>done_with_output&lt;T: Any + Send + Sync&gt;(output: T) -&gt; Status {
+        Status::Done {
+            output: <span class="prelude-val">Some</span>(Arc::new(output)),
+        }
+    }
+    <span class="doccomment">/// Returns `true` if the procedure is done.
+    </span><span class="kw">pub fn </span>is_done(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="macro">matches!</span>(<span class="self">self</span>, Status::Done { .. })
+    }
+
     <span class="doccomment">/// Returns `true` if the procedure needs the framework to persist its intermediate state.
     </span><span class="kw">pub fn </span>need_persist(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="comment">// If the procedure is done, the framework doesn't need to persist the procedure
         // anymore. It only needs to mark the procedure as committed.
         </span><span class="kw">match </span><span class="self">self </span>{
             Status::Executing { persist } | Status::Suspended { persist, .. } =&gt; <span class="kw-2">*</span>persist,
-            Status::Done =&gt; <span class="bool-val">false</span>,
+            Status::Done { .. } =&gt; <span class="bool-val">false</span>,
         }
     }
 }
@@ -511,22 +613,49 @@
     }
 }
 
+<span class="attr">#[derive(Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
+</span><span class="kw">pub enum </span>StringKey {
+    Share(String),
+    Exclusive(String),
+}
+
 <span class="doccomment">/// Keys to identify required locks.
 ///
 /// [LockKey] always sorts keys lexicographically so that they can be acquired
 /// in the same order.
-</span><span class="comment">// Most procedures should only acquire 1 ~ 2 locks so we use smallvec to hold keys.
+/// Most procedures should only acquire 1 ~ 2 locks so we use smallvec to hold keys.
 </span><span class="attr">#[derive(Clone, Debug, Default, PartialEq, Eq)]
-</span><span class="kw">pub struct </span>LockKey(SmallVec&lt;[String; <span class="number">2</span>]&gt;);
+</span><span class="kw">pub struct </span>LockKey(SmallVec&lt;[StringKey; <span class="number">2</span>]&gt;);
+
+<span class="kw">impl </span>StringKey {
+    <span class="kw">pub fn </span>into_string(<span class="self">self</span>) -&gt; String {
+        <span class="kw">match </span><span class="self">self </span>{
+            StringKey::Share(s) =&gt; s,
+            StringKey::Exclusive(s) =&gt; s,
+        }
+    }
+
+    <span class="kw">pub fn </span>as_string(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>String {
+        <span class="kw">match </span><span class="self">self </span>{
+            StringKey::Share(s) =&gt; s,
+            StringKey::Exclusive(s) =&gt; s,
+        }
+    }
+}
 
 <span class="kw">impl </span>LockKey {
     <span class="doccomment">/// Returns a new [LockKey] with only one key.
-    </span><span class="kw">pub fn </span>single(key: <span class="kw">impl </span>Into&lt;String&gt;) -&gt; LockKey {
+    </span><span class="kw">pub fn </span>single(key: <span class="kw">impl </span>Into&lt;StringKey&gt;) -&gt; LockKey {
         LockKey(<span class="macro">smallvec!</span>[key.into()])
     }
 
+    <span class="doccomment">/// Returns a new [LockKey] with only one key.
+    </span><span class="kw">pub fn </span>single_exclusive(key: <span class="kw">impl </span>Into&lt;String&gt;) -&gt; LockKey {
+        LockKey(<span class="macro">smallvec!</span>[StringKey::Exclusive(key.into())])
+    }
+
     <span class="doccomment">/// Returns a new [LockKey] with keys from specific `iter`.
-    </span><span class="kw">pub fn </span>new(iter: <span class="kw">impl </span>IntoIterator&lt;Item = String&gt;) -&gt; LockKey {
+    </span><span class="kw">pub fn </span>new(iter: <span class="kw">impl </span>IntoIterator&lt;Item = StringKey&gt;) -&gt; LockKey {
         <span class="kw">let </span><span class="kw-2">mut </span>vec: SmallVec&lt;<span class="kw">_</span>&gt; = iter.into_iter().collect();
         vec.sort();
         <span class="comment">// Dedup keys to avoid acquiring the same key multiple times.
@@ -534,14 +663,14 @@
         LockKey(vec)
     }
 
-    <span class="doccomment">/// Returns the keys to lock.
-    </span><span class="kw">pub fn </span>keys_to_lock(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>String&gt; {
-        <span class="self">self</span>.<span class="number">0</span>.iter()
+    <span class="doccomment">/// Returns a new [LockKey] with keys from specific `iter`.
+    </span><span class="kw">pub fn </span>new_exclusive(iter: <span class="kw">impl </span>IntoIterator&lt;Item = String&gt;) -&gt; LockKey {
+        <span class="self">Self</span>::new(iter.into_iter().map(StringKey::Exclusive))
     }
 
-    <span class="doccomment">/// Returns the keys to unlock.
-    </span><span class="kw">pub fn </span>keys_to_unlock(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>String&gt; {
-        <span class="self">self</span>.<span class="number">0</span>.iter().rev()
+    <span class="doccomment">/// Returns the keys to lock.
+    </span><span class="kw">pub fn </span>keys_to_lock(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>StringKey&gt; {
+        <span class="self">self</span>.<span class="number">0</span>.iter()
     }
 }
 
@@ -619,7 +748,7 @@
     </span><span class="attr">#[default]
     </span>Running,
     <span class="doccomment">/// The procedure is finished.
-    </span>Done,
+    </span>Done { output: <span class="prelude-ty">Option</span>&lt;Output&gt; },
     <span class="doccomment">/// The procedure is failed and can be retried.
     </span>Retrying { error: Arc&lt;Error&gt; },
     <span class="doccomment">/// The procedure is failed and cannot proceed anymore.
@@ -644,7 +773,7 @@
 
     <span class="doccomment">/// Returns true if the procedure state is done.
     </span><span class="kw">pub fn </span>is_done(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        <span class="macro">matches!</span>(<span class="self">self</span>, ProcedureState::Done)
+        <span class="macro">matches!</span>(<span class="self">self</span>, ProcedureState::Done { .. })
     }
 
     <span class="doccomment">/// Returns true if the procedure state failed.
@@ -728,27 +857,32 @@
         };
         <span class="macro">assert!</span>(status.need_persist());
 
-        <span class="kw">let </span>status = Status::Done;
+        <span class="kw">let </span>status = Status::done();
         <span class="macro">assert!</span>(!status.need_persist());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_lock_key() {
         <span class="kw">let </span>entity = <span class="string">"catalog.schema.my_table"</span>;
-        <span class="kw">let </span>key = LockKey::single(entity);
-        <span class="macro">assert_eq!</span>(<span class="macro">vec!</span>[entity], key.keys_to_lock().collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;());
-        <span class="macro">assert_eq!</span>(<span class="macro">vec!</span>[entity], key.keys_to_unlock().collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;());
+        <span class="kw">let </span>key = LockKey::single_exclusive(entity);
+        <span class="macro">assert_eq!</span>(
+            <span class="macro">vec!</span>[<span class="kw-2">&amp;</span>StringKey::Exclusive(entity.to_string())],
+            key.keys_to_lock().collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
+        );
 
-        <span class="kw">let </span>key = LockKey::new([
+        <span class="kw">let </span>key = LockKey::new_exclusive([
             <span class="string">"b"</span>.to_string(),
             <span class="string">"c"</span>.to_string(),
             <span class="string">"a"</span>.to_string(),
             <span class="string">"c"</span>.to_string(),
         ]);
-        <span class="macro">assert_eq!</span>(<span class="macro">vec!</span>[<span class="string">"a"</span>, <span class="string">"b"</span>, <span class="string">"c"</span>], key.keys_to_lock().collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;());
         <span class="macro">assert_eq!</span>(
-            <span class="macro">vec!</span>[<span class="string">"c"</span>, <span class="string">"b"</span>, <span class="string">"a"</span>],
-            key.keys_to_unlock().collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
+            <span class="macro">vec!</span>[
+                <span class="kw-2">&amp;</span>StringKey::Exclusive(<span class="string">"a"</span>.to_string()),
+                <span class="kw-2">&amp;</span>StringKey::Exclusive(<span class="string">"b"</span>.to_string()),
+                <span class="kw-2">&amp;</span>StringKey::Exclusive(<span class="string">"c"</span>.to_string())
+            ],
+            key.keys_to_lock().collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
         );
     }
 
@@ -778,7 +912,7 @@
     </span><span class="kw">fn </span>test_procedure_state() {
         <span class="macro">assert!</span>(ProcedureState::Running.is_running());
         <span class="macro">assert!</span>(ProcedureState::Running.error().is_none());
-        <span class="macro">assert!</span>(ProcedureState::Done.is_done());
+        <span class="macro">assert!</span>(ProcedureState::Done { output: <span class="prelude-val">None </span>}.is_done());
 
         <span class="kw">let </span>state = ProcedureState::failed(Arc::new(Error::external(MockError::new(
             StatusCode::Unexpected,

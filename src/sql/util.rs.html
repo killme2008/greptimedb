@@ -96,6 +96,12 @@
 <a href="#95" id="95">95</a>
 <a href="#96" id="96">96</a>
 <a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -119,8 +125,8 @@
 
 <span class="kw">static </span>SQL_SECRET_PATTERNS: LazyLock&lt;Vec&lt;Regex&gt;&gt; = LazyLock::new(|| {
     <span class="macro">vec!</span>[
-        Regex::new(<span class="string">r#"(?i)access_key_id=["'](\w*)["'].*"#</span>).unwrap(),
-        Regex::new(<span class="string">r#"(?i)secret_access_key=["'](\w*)["'].*"#</span>).unwrap(),
+        Regex::new(<span class="string">r#"(?i)access_key_id=["']([^"']*)["'].*"#</span>).unwrap(),
+        Regex::new(<span class="string">r#"(?i)secret_access_key=["']([^"']*)["'].*"#</span>).unwrap(),
     ]
 });
 
@@ -188,6 +194,12 @@
         <span class="macro">assert_eq!</span>(
             redact_sql_secrets(
                 <span class="string">r#"COPY 'my_table' FROM '/test.orc' WITH (FORMAT = 'orc') CONNECTION(ENDPOINT = 's3.storage.site', REGION = 'hz', ACCESS_KEY_ID='my_key_id', SECRET_ACCESS_KEY="my_access_key");"#
+            </span>),
+            <span class="string">r#"COPY 'my_table' FROM '/test.orc' WITH (FORMAT = 'orc') CONNECTION(ENDPOINT = 's3.storage.site', REGION = 'hz', ACCESS_KEY_ID='******', SECRET_ACCESS_KEY="******");"#
+        </span>);
+        <span class="macro">assert_eq!</span>(
+            redact_sql_secrets(
+                <span class="string">r#"COPY 'my_table' FROM '/test.orc' WITH (FORMAT = 'orc') CONNECTION(ENDPOINT = 's3.storage.site', REGION = 'hz', ACCESS_KEY_ID='@scoped/key_id', SECRET_ACCESS_KEY="@scoped/access_key");"#
             </span>),
             <span class="string">r#"COPY 'my_table' FROM '/test.orc' WITH (FORMAT = 'orc') CONNECTION(ENDPOINT = 's3.storage.site', REGION = 'hz', ACCESS_KEY_ID='******', SECRET_ACCESS_KEY="******");"#
         </span>);

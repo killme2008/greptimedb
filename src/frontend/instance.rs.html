@@ -611,6 +611,25 @@
 <a href="#610" id="610">610</a>
 <a href="#611" id="611">611</a>
 <a href="#612" id="612">612</a>
+<a href="#613" id="613">613</a>
+<a href="#614" id="614">614</a>
+<a href="#615" id="615">615</a>
+<a href="#616" id="616">616</a>
+<a href="#617" id="617">617</a>
+<a href="#618" id="618">618</a>
+<a href="#619" id="619">619</a>
+<a href="#620" id="620">620</a>
+<a href="#621" id="621">621</a>
+<a href="#622" id="622">622</a>
+<a href="#623" id="623">623</a>
+<a href="#624" id="624">624</a>
+<a href="#625" id="625">625</a>
+<a href="#626" id="626">626</a>
+<a href="#627" id="627">627</a>
+<a href="#628" id="628">628</a>
+<a href="#629" id="629">629</a>
+<a href="#630" id="630">630</a>
+<a href="#631" id="631">631</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -645,6 +664,7 @@
 <span class="kw">use </span>common_config::KvBackendConfig;
 <span class="kw">use </span>common_error::ext::BoxedError;
 <span class="kw">use </span>common_grpc::channel_manager::{ChannelConfig, ChannelManager};
+<span class="kw">use </span>common_meta::key::TableMetadataManagerRef;
 <span class="kw">use </span>common_meta::kv_backend::KvBackendRef;
 <span class="kw">use </span>common_meta::state_store::KvStateStore;
 <span class="kw">use </span>common_procedure::local::{LocalManager, ManagerConfig};
@@ -659,7 +679,6 @@
 <span class="kw">use </span>operator::delete::DeleterRef;
 <span class="kw">use </span>operator::insert::InserterRef;
 <span class="kw">use </span>operator::statement::StatementExecutor;
-<span class="kw">use </span>operator::table::table_idents_to_full_name;
 <span class="kw">use </span>query::parser::{PromQuery, QueryLanguageParser, QueryStatement};
 <span class="kw">use </span>query::plan::LogicalPlan;
 <span class="kw">use </span>query::query_engine::options::{validate_catalog_and_schema, QueryOptions};
@@ -668,7 +687,7 @@
 <span class="kw">use </span>raft_engine::{Config, ReadableSize, RecoveryMode};
 <span class="kw">use </span>servers::error <span class="kw">as </span>server_error;
 <span class="kw">use </span>servers::error::{AuthSnafu, ExecuteQuerySnafu, ParsePromQLSnafu};
-<span class="kw">use </span>servers::export_metrics::{ExportMetricsOption, ExportMetricsTask};
+<span class="kw">use </span>servers::export_metrics::ExportMetricsTask;
 <span class="kw">use </span>servers::interceptor::{
     PromQueryInterceptor, PromQueryInterceptorRef, SqlQueryInterceptor, SqlQueryInterceptorRef,
 };
@@ -679,16 +698,18 @@
     InfluxdbLineProtocolHandler, OpenTelemetryProtocolHandler, OpentsdbProtocolHandler,
     PromStoreProtocolHandler, ScriptHandler,
 };
-<span class="kw">use </span>servers::server::{start_server, ServerHandlers};
+<span class="kw">use </span>servers::server::ServerHandlers;
 <span class="kw">use </span>session::context::QueryContextRef;
+<span class="kw">use </span>session::table_name::table_idents_to_full_name;
 <span class="kw">use </span>snafu::prelude::<span class="kw-2">*</span>;
 <span class="kw">use </span>sql::dialect::Dialect;
-<span class="kw">use </span>sql::parser::ParserContext;
-<span class="kw">use </span>sql::statements::copy::CopyTable;
+<span class="kw">use </span>sql::parser::{ParseOptions, ParserContext};
+<span class="kw">use </span>sql::statements::copy::{CopyDatabase, CopyTable};
 <span class="kw">use </span>sql::statements::statement::Statement;
 <span class="kw">use </span>sqlparser::ast::ObjectName;
 <span class="kw">pub use </span>standalone::StandaloneDatanodeManager;
 
+<span class="kw">use </span><span class="self">self</span>::prom_store::ExportMetricHandler;
 <span class="kw">use </span><span class="kw">crate</span>::error::{
     <span class="self">self</span>, Error, ExecLogicalPlanSnafu, ExecutePromqlSnafu, ExternalSnafu, ParseSqlSnafu,
     PermissionSnafu, PlanStatementSnafu, <span class="prelude-ty">Result</span>, SqlExecInterceptedSnafu, StartServerSnafu,
@@ -698,7 +719,6 @@
 <span class="kw">use </span><span class="kw">crate</span>::heartbeat::HeartbeatTask;
 <span class="kw">use </span><span class="kw">crate</span>::metrics;
 <span class="kw">use </span><span class="kw">crate</span>::script::ScriptExecutor;
-<span class="kw">use </span><span class="kw">crate</span>::server::Services;
 
 <span class="attr">#[async_trait]
 </span><span class="kw">pub trait </span>FrontendInstance:
@@ -727,11 +747,12 @@
     statement_executor: Arc&lt;StatementExecutor&gt;,
     query_engine: QueryEngineRef,
     plugins: Plugins,
-    servers: Arc&lt;ServerHandlers&gt;,
+    servers: ServerHandlers,
     heartbeat_task: <span class="prelude-ty">Option</span>&lt;HeartbeatTask&gt;,
     inserter: InserterRef,
     deleter: DeleterRef,
     export_metrics_task: <span class="prelude-ty">Option</span>&lt;ExportMetricsTask&gt;,
+    table_metadata_manager: TableMetadataManagerRef,
 }
 
 <span class="kw">impl </span>Instance {
@@ -758,7 +779,7 @@
             .enable_router()
             .enable_store()
             .enable_heartbeat()
-            .enable_ddl()
+            .enable_procedure()
             .channel_manager(channel_manager)
             .ddl_channel_manager(ddl_channel_manager)
             .build();
@@ -799,19 +820,17 @@
         <span class="prelude-val">Ok</span>((kv_backend, procedure_manager))
     }
 
-    <span class="kw">pub async fn </span>build_servers(
+    <span class="kw">pub fn </span>build_servers(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
         opts: <span class="kw">impl </span>Into&lt;FrontendOptions&gt; + TomlSerializable,
+        servers: ServerHandlers,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="kw">let </span>servers = Services::build(opts, Arc::new(<span class="self">self</span>.clone()), <span class="self">self</span>.plugins.clone()).<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="self">self</span>.servers = Arc::new(servers);
-
-        <span class="prelude-val">Ok</span>(())
-    }
-
-    <span class="kw">pub fn </span>build_export_metrics_task(<span class="kw-2">&amp;mut </span><span class="self">self</span>, opts: <span class="kw-2">&amp;</span>ExportMetricsOption) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        <span class="kw">let </span>opts: FrontendOptions = opts.into();
         <span class="self">self</span>.export_metrics_task =
-            ExportMetricsTask::try_new(opts, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.plugins)).context(StartServerSnafu)<span class="question-mark">?</span>;
+            ExportMetricsTask::try_new(<span class="kw-2">&amp;</span>opts.export_metrics, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.plugins))
+                .context(StartServerSnafu)<span class="question-mark">?</span>;
+
+        <span class="self">self</span>.servers = servers;
         <span class="prelude-val">Ok</span>(())
     }
 
@@ -824,14 +843,22 @@
     }
 
     <span class="kw">pub async fn </span>shutdown(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        futures::future::try_join_all(<span class="self">self</span>.servers.values().map(|server| server.<span class="number">0</span>.shutdown()))
+        <span class="self">self</span>.servers
+            .shutdown_all()
             .<span class="kw">await
             </span>.context(error::ShutdownServerSnafu)
-            .map(|<span class="kw">_</span>| ())
+    }
+
+    <span class="kw">pub fn </span>server_handlers(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>ServerHandlers {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.servers
     }
 
     <span class="kw">pub fn </span>statement_executor(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Arc&lt;StatementExecutor&gt; {
         <span class="self">self</span>.statement_executor.clone()
+    }
+
+    <span class="kw">pub fn </span>table_metadata_manager(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>TableMetadataManagerRef {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.table_metadata_manager
     }
 }
 
@@ -845,21 +872,23 @@
         <span class="self">self</span>.script_executor.start(<span class="self">self</span>)<span class="question-mark">?</span>;
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(t) = <span class="self">self</span>.export_metrics_task.as_ref() {
-            t.start()
+            <span class="kw">if </span>t.send_by_handler {
+                <span class="kw">let </span>handler = ExportMetricHandler::new_handler(
+                    <span class="self">self</span>.inserter.clone(),
+                    <span class="self">self</span>.statement_executor.clone(),
+                );
+                t.start(<span class="prelude-val">Some</span>(handler)).context(StartServerSnafu)<span class="question-mark">?
+            </span>} <span class="kw">else </span>{
+                t.start(<span class="prelude-val">None</span>).context(StartServerSnafu)<span class="question-mark">?</span>;
+            }
         }
 
-        futures::future::try_join_all(<span class="self">self</span>.servers.iter().map(|(name, handler)| <span class="kw">async move </span>{
-            <span class="macro">info!</span>(<span class="string">"Starting service: {name}"</span>);
-            start_server(handler).<span class="kw">await
-        </span>}))
-        .<span class="kw">await
-        </span>.context(error::StartServerSnafu)
-        .map(|<span class="kw">_</span>| ())
+        <span class="self">self</span>.servers.start_all().<span class="kw">await</span>.context(StartServerSnafu)
     }
 }
 
 <span class="kw">fn </span>parse_stmt(sql: <span class="kw-2">&amp;</span>str, dialect: <span class="kw-2">&amp;</span>(<span class="kw">dyn </span>Dialect + Send + Sync)) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;Statement&gt;&gt; {
-    ParserContext::create_with_dialect(sql, dialect).context(ParseSqlSnafu)
+    ParserContext::create_with_dialect(sql, dialect, ParseOptions::default()).context(ParseSqlSnafu)
 }
 
 <span class="kw">impl </span>Instance {
@@ -980,11 +1009,11 @@
             <span class="kw">let </span>plan = <span class="self">self
                 </span>.query_engine
                 .planner()
-                .plan(QueryStatement::Sql(stmt), query_ctx)
+                .plan(QueryStatement::Sql(stmt), query_ctx.clone())
                 .<span class="kw">await
                 </span>.context(PlanStatementSnafu)<span class="question-mark">?</span>;
             <span class="self">self</span>.query_engine
-                .describe(plan)
+                .describe(plan, query_ctx)
                 .<span class="kw">await
                 </span>.map(<span class="prelude-val">Some</span>)
                 .context(error::DescribeStatementSnafu)
@@ -1020,8 +1049,10 @@
             .check_permission(query_ctx.current_user(), PermissionReq::PromQuery)
             .context(AuthSnafu)<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>stmt = QueryLanguageParser::parse_promql(query).with_context(|<span class="kw">_</span>| ParsePromQLSnafu {
-            query: query.clone(),
+        <span class="kw">let </span>stmt = QueryLanguageParser::parse_promql(query, <span class="kw-2">&amp;</span>query_ctx).with_context(|<span class="kw">_</span>| {
+            ParsePromQLSnafu {
+                query: query.clone(),
+            }
         })<span class="question-mark">?</span>;
 
         <span class="kw">let </span>output = <span class="self">self
@@ -1048,7 +1079,7 @@
 ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
     <span class="kw">let </span>need_validate = plugins
         .get::&lt;QueryOptions&gt;()
-        .map(|opts| opts.disallow_cross_schema_query)
+        .map(|opts| opts.disallow_cross_catalog_query)
         .unwrap_or_default();
 
     <span class="kw">if </span>!need_validate {
@@ -1063,12 +1094,18 @@
         <span class="comment">// show create table and alter are not supported yet
         </span>Statement::ShowCreateTable(<span class="kw">_</span>) | Statement::CreateExternalTable(<span class="kw">_</span>) | Statement::Alter(<span class="kw">_</span>) =&gt; {
         }
+        <span class="comment">// set/show variable now only alter/show variable in session
+        </span>Statement::SetVariables(<span class="kw">_</span>) | Statement::ShowVariables(<span class="kw">_</span>) =&gt; {}
 
         Statement::Insert(insert) =&gt; {
             validate_param(insert.table_name(), query_ctx)<span class="question-mark">?</span>;
         }
         Statement::CreateTable(stmt) =&gt; {
             validate_param(<span class="kw-2">&amp;</span>stmt.name, query_ctx)<span class="question-mark">?</span>;
+        }
+        Statement::CreateTableLike(stmt) =&gt; {
+            validate_param(<span class="kw-2">&amp;</span>stmt.table_name, query_ctx)<span class="question-mark">?</span>;
+            validate_param(<span class="kw-2">&amp;</span>stmt.source_name, query_ctx)<span class="question-mark">?</span>;
         }
         Statement::DropTable(drop_stmt) =&gt; {
             validate_param(drop_stmt.table_name(), query_ctx)<span class="question-mark">?</span>;
@@ -1089,9 +1126,12 @@
                 validate_param(<span class="kw-2">&amp;</span>copy_table_from.table_name, query_ctx)<span class="question-mark">?
             </span>}
         },
-        Statement::Copy(sql::statements::copy::Copy::CopyDatabase(stmt)) =&gt; {
-            validate_param(<span class="kw-2">&amp;</span>stmt.database_name, query_ctx)<span class="question-mark">?
-        </span>}
+        Statement::Copy(sql::statements::copy::Copy::CopyDatabase(copy_database)) =&gt; {
+            <span class="kw">match </span>copy_database {
+                CopyDatabase::To(stmt) =&gt; validate_param(<span class="kw-2">&amp;</span>stmt.database_name, query_ctx)<span class="question-mark">?</span>,
+                CopyDatabase::From(stmt) =&gt; validate_param(<span class="kw-2">&amp;</span>stmt.database_name, query_ctx)<span class="question-mark">?</span>,
+            }
+        }
         Statement::TruncateTable(stmt) =&gt; {
             validate_param(stmt.table_name(), query_ctx)<span class="question-mark">?</span>;
         }
@@ -1100,7 +1140,7 @@
 }
 
 <span class="kw">fn </span>validate_param(name: <span class="kw-2">&amp;</span>ObjectName, query_ctx: <span class="kw-2">&amp;</span>QueryContextRef) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-    <span class="kw">let </span>(catalog, schema, <span class="kw">_</span>) = table_idents_to_full_name(name, query_ctx.clone())
+    <span class="kw">let </span>(catalog, schema, <span class="kw">_</span>) = table_idents_to_full_name(name, query_ctx)
         .map_err(BoxedError::new)
         .context(ExternalSnafu)<span class="question-mark">?</span>;
 
@@ -1126,7 +1166,7 @@
         <span class="kw">let </span>query_ctx = QueryContext::arc();
         <span class="kw">let </span>plugins: Plugins = Plugins::new();
         plugins.insert(QueryOptions {
-            disallow_cross_schema_query: <span class="bool-val">true</span>,
+            disallow_cross_catalog_query: <span class="bool-val">true</span>,
         });
 
         <span class="kw">let </span>sql = <span class="string">r#"
@@ -1162,8 +1202,6 @@
             }
 
             <span class="kw">let </span>wrong = <span class="macro">vec!</span>[
-                (<span class="string">""</span>, <span class="string">"wrongschema."</span>),
-                (<span class="string">"greptime."</span>, <span class="string">"wrongschema."</span>),
                 (<span class="string">"wrongcatalog."</span>, <span class="string">"public."</span>),
                 (<span class="string">"wrongcatalog."</span>, <span class="string">"wrongschema."</span>),
             ];
@@ -1213,10 +1251,10 @@
         <span class="kw">let </span>stmt = parse_stmt(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
         check_permission(plugins.clone(), <span class="kw-2">&amp;</span>stmt[<span class="number">0</span>], <span class="kw-2">&amp;</span>query_ctx).unwrap();
 
-        <span class="kw">let </span>sql = <span class="string">"SHOW TABLES FROM wrongschema"</span>;
+        <span class="kw">let </span>sql = <span class="string">"SHOW TABLES FROM private"</span>;
         <span class="kw">let </span>stmt = parse_stmt(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
         <span class="kw">let </span>re = check_permission(plugins.clone(), <span class="kw-2">&amp;</span>stmt[<span class="number">0</span>], <span class="kw-2">&amp;</span>query_ctx);
-        <span class="macro">assert!</span>(re.is_err());
+        <span class="macro">assert!</span>(re.is_ok());
 
         <span class="comment">// test describe table
         </span><span class="kw">let </span>sql = <span class="string">"DESC TABLE {catalog}{schema}demo;"</span>;

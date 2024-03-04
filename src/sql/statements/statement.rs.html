@@ -96,6 +96,16 @@
 <a href="#95" id="95">95</a>
 <a href="#96" id="96">96</a>
 <a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
+<a href="#104" id="104">104</a>
+<a href="#105" id="105">105</a>
+<a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -114,15 +124,19 @@
 <span class="kw">use </span>sqlparser::ast::Statement <span class="kw">as </span>SpStatement;
 <span class="kw">use </span>sqlparser_derive::{Visit, VisitMut};
 
+<span class="kw">use </span><span class="kw">super</span>::show::ShowVariables;
 <span class="kw">use </span><span class="kw">crate</span>::error::{ConvertToDfStatementSnafu, Error};
 <span class="kw">use </span><span class="kw">crate</span>::statements::alter::AlterTable;
-<span class="kw">use </span><span class="kw">crate</span>::statements::create::{CreateDatabase, CreateExternalTable, CreateTable};
+<span class="kw">use </span><span class="kw">crate</span>::statements::create::{
+    CreateDatabase, CreateExternalTable, CreateTable, CreateTableLike,
+};
 <span class="kw">use </span><span class="kw">crate</span>::statements::delete::Delete;
 <span class="kw">use </span><span class="kw">crate</span>::statements::describe::DescribeTable;
 <span class="kw">use </span><span class="kw">crate</span>::statements::drop::DropTable;
 <span class="kw">use </span><span class="kw">crate</span>::statements::explain::Explain;
 <span class="kw">use </span><span class="kw">crate</span>::statements::insert::Insert;
 <span class="kw">use </span><span class="kw">crate</span>::statements::query::Query;
+<span class="kw">use </span><span class="kw">crate</span>::statements::set_variables::SetVariables;
 <span class="kw">use </span><span class="kw">crate</span>::statements::show::{ShowCreateTable, ShowDatabases, ShowTables};
 <span class="kw">use </span><span class="kw">crate</span>::statements::tql::Tql;
 <span class="kw">use </span><span class="kw">crate</span>::statements::truncate::TruncateTable;
@@ -141,6 +155,8 @@
     </span>CreateTable(CreateTable),
     <span class="comment">// CREATE EXTERNAL TABLE
     </span>CreateExternalTable(CreateExternalTable),
+    <span class="comment">// CREATE TABLE ... LIKE
+    </span>CreateTableLike(CreateTableLike),
     <span class="comment">// DROP TABLE
     </span>DropTable(DropTable),
     <span class="comment">// CREATE DATABASE
@@ -162,6 +178,10 @@
     Tql(Tql),
     <span class="comment">// TRUNCATE TABLE
     </span>TruncateTable(TruncateTable),
+    <span class="comment">// SET VARIABLES
+    </span>SetVariables(SetVariables),
+    <span class="comment">// SHOW VARIABLES
+    </span>ShowVariables(ShowVariables),
 }
 
 <span class="doccomment">/// Comment hints from SQL.

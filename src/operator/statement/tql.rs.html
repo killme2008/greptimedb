@@ -75,6 +75,21 @@
 <a href="#74" id="74">74</a>
 <a href="#75" id="75">75</a>
 <a href="#76" id="76">76</a>
+<a href="#77" id="77">77</a>
+<a href="#78" id="78">78</a>
+<a href="#79" id="79">79</a>
+<a href="#80" id="80">80</a>
+<a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
+<a href="#91" id="91">91</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -93,7 +108,10 @@
 
 <span class="kw">use </span>common_query::Output;
 <span class="kw">use </span>common_telemetry::tracing;
-<span class="kw">use </span>query::parser::{PromQuery, QueryLanguageParser, ANALYZE_NODE_NAME, EXPLAIN_NODE_NAME};
+<span class="kw">use </span>query::parser::{
+    PromQuery, QueryLanguageParser, ANALYZE_NODE_NAME, ANALYZE_VERBOSE_NODE_NAME,
+    EXPLAIN_NODE_NAME, EXPLAIN_VERBOSE_NODE_NAME,
+};
 <span class="kw">use </span>session::context::QueryContextRef;
 <span class="kw">use </span>snafu::ResultExt;
 <span class="kw">use </span>sql::statements::tql::Tql;
@@ -112,28 +130,40 @@
                     step: eval.step,
                     query: eval.query,
                 };
-                QueryLanguageParser::parse_promql(<span class="kw-2">&amp;</span>promql).context(ParseQuerySnafu)<span class="question-mark">?
+                QueryLanguageParser::parse_promql(<span class="kw-2">&amp;</span>promql, <span class="kw-2">&amp;</span>query_ctx).context(ParseQuerySnafu)<span class="question-mark">?
             </span>}
             Tql::Explain(explain) =&gt; {
                 <span class="kw">let </span>promql = PromQuery {
                     query: explain.query,
                     ..PromQuery::default()
                 };
-                <span class="kw">let </span>params = HashMap::from([(<span class="string">"name"</span>.to_string(), EXPLAIN_NODE_NAME.to_string())]);
-                QueryLanguageParser::parse_promql(<span class="kw-2">&amp;</span>promql)
+                <span class="kw">let </span>explain_node_name = <span class="kw">if </span>explain.is_verbose {
+                    EXPLAIN_VERBOSE_NODE_NAME
+                } <span class="kw">else </span>{
+                    EXPLAIN_NODE_NAME
+                }
+                .to_string();
+                <span class="kw">let </span>params = HashMap::from([(<span class="string">"name"</span>.to_string(), explain_node_name)]);
+                QueryLanguageParser::parse_promql(<span class="kw-2">&amp;</span>promql, <span class="kw-2">&amp;</span>query_ctx)
                     .context(ParseQuerySnafu)<span class="question-mark">?
                     </span>.post_process(params)
                     .unwrap()
             }
-            Tql::Analyze(tql_analyze) =&gt; {
+            Tql::Analyze(analyze) =&gt; {
                 <span class="kw">let </span>promql = PromQuery {
-                    start: tql_analyze.start,
-                    end: tql_analyze.end,
-                    step: tql_analyze.step,
-                    query: tql_analyze.query,
+                    start: analyze.start,
+                    end: analyze.end,
+                    step: analyze.step,
+                    query: analyze.query,
                 };
-                <span class="kw">let </span>params = HashMap::from([(<span class="string">"name"</span>.to_string(), ANALYZE_NODE_NAME.to_string())]);
-                QueryLanguageParser::parse_promql(<span class="kw-2">&amp;</span>promql)
+                <span class="kw">let </span>analyze_node_name = <span class="kw">if </span>analyze.is_verbose {
+                    ANALYZE_VERBOSE_NODE_NAME
+                } <span class="kw">else </span>{
+                    ANALYZE_NODE_NAME
+                }
+                .to_string();
+                <span class="kw">let </span>params = HashMap::from([(<span class="string">"name"</span>.to_string(), analyze_node_name)]);
+                QueryLanguageParser::parse_promql(<span class="kw-2">&amp;</span>promql, <span class="kw-2">&amp;</span>query_ctx)
                     .context(ParseQuerySnafu)<span class="question-mark">?
                     </span>.post_process(params)
                     .unwrap()

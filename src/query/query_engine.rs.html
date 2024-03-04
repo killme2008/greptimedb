@@ -145,6 +145,29 @@
 <a href="#144" id="144">144</a>
 <a href="#145" id="145">145</a>
 <a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
+<a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
+<a href="#160" id="160">160</a>
+<a href="#161" id="161">161</a>
+<a href="#162" id="162">162</a>
+<a href="#163" id="163">163</a>
+<a href="#164" id="164">164</a>
+<a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
+<a href="#168" id="168">168</a>
+<a href="#169" id="169">169</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -171,6 +194,7 @@
 <span class="kw">use </span>common_base::Plugins;
 <span class="kw">use </span>common_function::function::FunctionRef;
 <span class="kw">use </span>common_function::function_registry::FUNCTION_REGISTRY;
+<span class="kw">use </span>common_function::handlers::{ProcedureServiceHandlerRef, TableMutationHandlerRef};
 <span class="kw">use </span>common_function::scalars::aggregate::AggregateFunctionMetaRef;
 <span class="kw">use </span>common_query::prelude::ScalarUdf;
 <span class="kw">use </span>common_query::Output;
@@ -186,7 +210,6 @@
 <span class="kw">pub use </span><span class="kw">crate</span>::query_engine::context::QueryEngineContext;
 <span class="kw">pub use </span><span class="kw">crate</span>::query_engine::state::QueryEngineState;
 <span class="kw">use </span><span class="kw">crate</span>::region_query::RegionQueryHandlerRef;
-<span class="kw">use </span><span class="kw">crate</span>::table_mutation::TableMutationHandlerRef;
 
 <span class="doccomment">/// Describe statement result
 </span><span class="attr">#[derive(Debug)]
@@ -203,22 +226,40 @@
     /// so that it can be downcast to a specific implementation.
     </span><span class="kw">fn </span>as_any(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="kw">dyn </span>Any;
 
-    <span class="kw">fn </span>planner(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Arc&lt;<span class="kw">dyn </span>LogicalPlanner&gt;;
+    <span class="doccomment">/// Returns the logical planner
+    </span><span class="kw">fn </span>planner(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Arc&lt;<span class="kw">dyn </span>LogicalPlanner&gt;;
 
-    <span class="kw">fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str;
+    <span class="doccomment">/// Returns the query engine name.
+    </span><span class="kw">fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str;
 
-    <span class="kw">async fn </span>describe(<span class="kw-2">&amp;</span><span class="self">self</span>, plan: LogicalPlan) -&gt; <span class="prelude-ty">Result</span>&lt;DescribeResult&gt;;
+    <span class="doccomment">/// Describe the given [`LogicalPlan`].
+    </span><span class="kw">async fn </span>describe(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        plan: LogicalPlan,
+        query_ctx: QueryContextRef,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;DescribeResult&gt;;
 
-    <span class="kw">async fn </span>execute(<span class="kw-2">&amp;</span><span class="self">self</span>, plan: LogicalPlan, query_ctx: QueryContextRef) -&gt; <span class="prelude-ty">Result</span>&lt;Output&gt;;
+    <span class="doccomment">/// Execute the given [`LogicalPlan`].
+    </span><span class="kw">async fn </span>execute(<span class="kw-2">&amp;</span><span class="self">self</span>, plan: LogicalPlan, query_ctx: QueryContextRef) -&gt; <span class="prelude-ty">Result</span>&lt;Output&gt;;
 
-    <span class="kw">fn </span>register_udf(<span class="kw-2">&amp;</span><span class="self">self</span>, udf: ScalarUdf);
+    <span class="doccomment">/// Register a [`ScalarUdf`].
+    </span><span class="kw">fn </span>register_udf(<span class="kw-2">&amp;</span><span class="self">self</span>, udf: ScalarUdf);
 
-    <span class="kw">fn </span>register_aggregate_function(<span class="kw-2">&amp;</span><span class="self">self</span>, func: AggregateFunctionMetaRef);
+    <span class="doccomment">/// Register an aggregate function.
+    ///
+    /// # Panics
+    /// Will panic if the function with same name is already registered.
+    </span><span class="kw">fn </span>register_aggregate_function(<span class="kw-2">&amp;</span><span class="self">self</span>, func: AggregateFunctionMetaRef);
 
-    <span class="kw">fn </span>register_function(<span class="kw-2">&amp;</span><span class="self">self</span>, func: FunctionRef);
+    <span class="doccomment">/// Register a SQL function.
+    /// Will override if the function with same name is already registered.
+    </span><span class="kw">fn </span>register_function(<span class="kw-2">&amp;</span><span class="self">self</span>, func: FunctionRef);
 
     <span class="doccomment">/// Create a DataFrame from a table.
     </span><span class="kw">fn </span>read_table(<span class="kw-2">&amp;</span><span class="self">self</span>, table: TableRef) -&gt; <span class="prelude-ty">Result</span>&lt;DataFrame&gt;;
+
+    <span class="doccomment">/// Create a [`QueryEngineContext`].
+    </span><span class="kw">fn </span>engine_context(<span class="kw-2">&amp;</span><span class="self">self</span>, query_ctx: QueryContextRef) -&gt; QueryEngineContext;
 }
 
 <span class="kw">pub struct </span>QueryEngineFactory {
@@ -230,12 +271,14 @@
         catalog_manager: CatalogManagerRef,
         region_query_handler: <span class="prelude-ty">Option</span>&lt;RegionQueryHandlerRef&gt;,
         table_mutation_handler: <span class="prelude-ty">Option</span>&lt;TableMutationHandlerRef&gt;,
+        procedure_service_handler: <span class="prelude-ty">Option</span>&lt;ProcedureServiceHandlerRef&gt;,
         with_dist_planner: bool,
     ) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::new_with_plugins(
             catalog_manager,
             region_query_handler,
             table_mutation_handler,
+            procedure_service_handler,
             with_dist_planner,
             Default::default(),
         )
@@ -245,6 +288,7 @@
         catalog_manager: CatalogManagerRef,
         region_query_handler: <span class="prelude-ty">Option</span>&lt;RegionQueryHandlerRef&gt;,
         table_mutation_handler: <span class="prelude-ty">Option</span>&lt;TableMutationHandlerRef&gt;,
+        procedure_service_handler: <span class="prelude-ty">Option</span>&lt;ProcedureServiceHandlerRef&gt;,
         with_dist_planner: bool,
         plugins: Plugins,
     ) -&gt; <span class="self">Self </span>{
@@ -252,6 +296,7 @@
             catalog_manager,
             region_query_handler,
             table_mutation_handler,
+            procedure_service_handler,
             with_dist_planner,
             plugins.clone(),
         ));
@@ -265,7 +310,8 @@
     }
 }
 
-<span class="kw">fn </span>register_functions(query_engine: <span class="kw-2">&amp;</span>Arc&lt;DatafusionQueryEngine&gt;) {
+<span class="doccomment">/// Register all functions implemented by GreptimeDB
+</span><span class="kw">fn </span>register_functions(query_engine: <span class="kw-2">&amp;</span>Arc&lt;DatafusionQueryEngine&gt;) {
     <span class="kw">for </span>func <span class="kw">in </span>FUNCTION_REGISTRY.functions() {
         query_engine.register_function(func);
     }
@@ -284,7 +330,7 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_query_engine_factory() {
         <span class="kw">let </span>catalog_list = catalog::memory::new_memory_catalog_manager().unwrap();
-        <span class="kw">let </span>factory = QueryEngineFactory::new(catalog_list, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="bool-val">false</span>);
+        <span class="kw">let </span>factory = QueryEngineFactory::new(catalog_list, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="bool-val">false</span>);
 
         <span class="kw">let </span>engine = factory.query_engine();
 

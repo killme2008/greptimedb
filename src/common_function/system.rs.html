@@ -28,6 +28,18 @@
 <a href="#27" id="27">27</a>
 <a href="#28" id="28">28</a>
 <a href="#29" id="29">29</a>
+<a href="#30" id="30">30</a>
+<a href="#31" id="31">31</a>
+<a href="#32" id="32">32</a>
+<a href="#33" id="33">33</a>
+<a href="#34" id="34">34</a>
+<a href="#35" id="35">35</a>
+<a href="#36" id="36">36</a>
+<a href="#37" id="37">37</a>
+<a href="#38" id="38">38</a>
+<a href="#39" id="39">39</a>
+<a href="#40" id="40">40</a>
+<a href="#41" id="41">41</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -42,11 +54,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-</span><span class="kw">pub mod </span>build;
+</span><span class="kw">mod </span>build;
+<span class="kw">mod </span>database;
+<span class="kw">mod </span>procedure_state;
+<span class="kw">mod </span>timezone;
+<span class="kw">mod </span>version;
 
 <span class="kw">use </span>std::sync::Arc;
 
 <span class="kw">use </span>build::BuildFunction;
+<span class="kw">use </span>database::DatabaseFunction;
+<span class="kw">use </span>procedure_state::ProcedureStateFunction;
+<span class="kw">use </span>timezone::TimezoneFunction;
+<span class="kw">use </span>version::VersionFunction;
 
 <span class="kw">use </span><span class="kw">crate</span>::function_registry::FunctionRegistry;
 
@@ -55,6 +75,10 @@
 <span class="kw">impl </span>SystemFunction {
     <span class="kw">pub fn </span>register(registry: <span class="kw-2">&amp;</span>FunctionRegistry) {
         registry.register(Arc::new(BuildFunction));
+        registry.register(Arc::new(VersionFunction));
+        registry.register(Arc::new(DatabaseFunction));
+        registry.register(Arc::new(TimezoneFunction));
+        registry.register(Arc::new(ProcedureStateFunction));
     }
 }
 </code></pre></div></section></main></body></html>

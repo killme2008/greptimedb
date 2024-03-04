@@ -102,6 +102,14 @@
 <a href="#101" id="101">101</a>
 <a href="#102" id="102">102</a>
 <a href="#103" id="103">103</a>
+<a href="#104" id="104">104</a>
+<a href="#105" id="105">105</a>
+<a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -141,7 +149,7 @@
     <span class="kw">use </span>std::assert_matches::assert_matches;
 
     <span class="kw">use </span><span class="kw">crate</span>::dialect::GreptimeDbDialect;
-    <span class="kw">use </span><span class="kw">crate</span>::parser::ParserContext;
+    <span class="kw">use </span><span class="kw">crate</span>::parser::{ParseOptions, ParserContext};
     <span class="kw">use </span><span class="kw">crate</span>::statements::statement::Statement;
     <span class="kw">use </span><span class="kw">crate</span>::util::format_raw_object_name;
 
@@ -149,7 +157,8 @@
     </span><span class="kw">pub fn </span>test_describe_table() {
         <span class="kw">let </span>sql = <span class="string">"DESCRIBE TABLE test"</span>;
         <span class="kw">let </span>stmts: Vec&lt;Statement&gt; =
-            ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
+            ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}, ParseOptions::default())
+                .unwrap();
         <span class="macro">assert_eq!</span>(<span class="number">1</span>, stmts.len());
         <span class="macro">assert_matches!</span>(<span class="kw-2">&amp;</span>stmts[<span class="number">0</span>], Statement::DescribeTable { .. });
         <span class="kw">match </span><span class="kw-2">&amp;</span>stmts[<span class="number">0</span>] {
@@ -166,7 +175,8 @@
     </span><span class="kw">pub fn </span>test_describe_schema_table() {
         <span class="kw">let </span>sql = <span class="string">"DESCRIBE TABLE test_schema.test"</span>;
         <span class="kw">let </span>stmts: Vec&lt;Statement&gt; =
-            ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
+            ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}, ParseOptions::default())
+                .unwrap();
         <span class="macro">assert_eq!</span>(<span class="number">1</span>, stmts.len());
         <span class="macro">assert_matches!</span>(<span class="kw-2">&amp;</span>stmts[<span class="number">0</span>], Statement::DescribeTable { .. });
         <span class="kw">match </span><span class="kw-2">&amp;</span>stmts[<span class="number">0</span>] {
@@ -183,7 +193,8 @@
     </span><span class="kw">pub fn </span>test_describe_catalog_schema_table() {
         <span class="kw">let </span>sql = <span class="string">"DESCRIBE TABLE test_catalog.test_schema.test"</span>;
         <span class="kw">let </span>stmts: Vec&lt;Statement&gt; =
-            ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
+            ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}, ParseOptions::default())
+                .unwrap();
         <span class="macro">assert_eq!</span>(<span class="number">1</span>, stmts.len());
         <span class="macro">assert_matches!</span>(<span class="kw-2">&amp;</span>stmts[<span class="number">0</span>], Statement::DescribeTable { .. });
         <span class="kw">match </span><span class="kw-2">&amp;</span>stmts[<span class="number">0</span>] {
@@ -202,7 +213,12 @@
     <span class="attr">#[test]
     </span><span class="kw">pub fn </span>test_describe_missing_table_name() {
         <span class="kw">let </span>sql = <span class="string">"DESCRIBE TABLE"</span>;
-        <span class="macro">assert!</span>(ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).is_err());
+        <span class="macro">assert!</span>(ParserContext::create_with_dialect(
+            sql,
+            <span class="kw-2">&amp;</span>GreptimeDbDialect {},
+            ParseOptions::default()
+        )
+        .is_err());
     }
 }
 </code></pre></div></section></main></body></html>

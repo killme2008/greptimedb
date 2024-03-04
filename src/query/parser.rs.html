@@ -365,6 +365,31 @@
 <a href="#364" id="364">364</a>
 <a href="#365" id="365">365</a>
 <a href="#366" id="366">366</a>
+<a href="#367" id="367">367</a>
+<a href="#368" id="368">368</a>
+<a href="#369" id="369">369</a>
+<a href="#370" id="370">370</a>
+<a href="#371" id="371">371</a>
+<a href="#372" id="372">372</a>
+<a href="#373" id="373">373</a>
+<a href="#374" id="374">374</a>
+<a href="#375" id="375">375</a>
+<a href="#376" id="376">376</a>
+<a href="#377" id="377">377</a>
+<a href="#378" id="378">378</a>
+<a href="#379" id="379">379</a>
+<a href="#380" id="380">380</a>
+<a href="#381" id="381">381</a>
+<a href="#382" id="382">382</a>
+<a href="#383" id="383">383</a>
+<a href="#384" id="384">384</a>
+<a href="#385" id="385">385</a>
+<a href="#386" id="386">386</a>
+<a href="#387" id="387">387</a>
+<a href="#388" id="388">388</a>
+<a href="#389" id="389">389</a>
+<a href="#390" id="390">390</a>
+<a href="#391" id="391">391</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -390,9 +415,10 @@
 <span class="kw">use </span>promql_parser::parser::ast::{Extension <span class="kw">as </span>NodeExtension, ExtensionExpr};
 <span class="kw">use </span>promql_parser::parser::Expr::Extension;
 <span class="kw">use </span>promql_parser::parser::{EvalStmt, Expr, ValueType};
+<span class="kw">use </span>session::context::QueryContextRef;
 <span class="kw">use </span>snafu::{OptionExt, ResultExt};
 <span class="kw">use </span>sql::dialect::GreptimeDbDialect;
-<span class="kw">use </span>sql::parser::ParserContext;
+<span class="kw">use </span>sql::parser::{ParseOptions, ParserContext};
 <span class="kw">use </span>sql::statements::statement::Statement;
 
 <span class="kw">use </span><span class="kw">crate</span>::error::{
@@ -404,7 +430,9 @@
 <span class="kw">const </span>DEFAULT_LOOKBACK: u64 = <span class="number">5 </span>* <span class="number">60</span>; <span class="comment">// 5m
 </span><span class="kw">pub const </span>DEFAULT_LOOKBACK_STRING: <span class="kw-2">&amp;</span>str = <span class="string">"5m"</span>;
 <span class="kw">pub const </span>EXPLAIN_NODE_NAME: <span class="kw-2">&amp;</span>str = <span class="string">"EXPLAIN"</span>;
+<span class="kw">pub const </span>EXPLAIN_VERBOSE_NODE_NAME: <span class="kw-2">&amp;</span>str = <span class="string">"EXPLAIN VERBOSE"</span>;
 <span class="kw">pub const </span>ANALYZE_NODE_NAME: <span class="kw-2">&amp;</span>str = <span class="string">"ANALYZE"</span>;
+<span class="kw">pub const </span>ANALYZE_VERBOSE_NODE_NAME: <span class="kw-2">&amp;</span>str = <span class="string">"ANALYZE VERBOSE"</span>;
 
 <span class="attr">#[derive(Debug, Clone)]
 </span><span class="kw">pub enum </span>QueryStatement {
@@ -441,8 +469,14 @@
             ANALYZE_NODE_NAME =&gt; <span class="prelude-val">Some</span>(NodeExtension {
                 expr: Arc::new(AnalyzeExpr { expr: expr.clone() }),
             }),
+            ANALYZE_VERBOSE_NODE_NAME =&gt; <span class="prelude-val">Some</span>(NodeExtension {
+                expr: Arc::new(AnalyzeVerboseExpr { expr: expr.clone() }),
+            }),
             EXPLAIN_NODE_NAME =&gt; <span class="prelude-val">Some</span>(NodeExtension {
                 expr: Arc::new(ExplainExpr { expr: expr.clone() }),
+            }),
+            EXPLAIN_VERBOSE_NODE_NAME =&gt; <span class="prelude-val">Some</span>(NodeExtension {
+                expr: Arc::new(ExplainVerboseExpr { expr: expr.clone() }),
             }),
             <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
         }
@@ -468,16 +502,17 @@
     }
 }
 
-<span class="kw">pub struct </span>QueryLanguageParser {}
+<span class="doccomment">/// Query language parser, supports parsing SQL and PromQL
+</span><span class="kw">pub struct </span>QueryLanguageParser {}
 
 <span class="kw">impl </span>QueryLanguageParser {
-    <span class="kw">pub fn </span>parse_sql(sql: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;QueryStatement&gt; {
+    <span class="doccomment">/// Try to parse SQL with GreptimeDB dialect, return the statement when success.
+    </span><span class="kw">pub fn </span>parse_sql(sql: <span class="kw-2">&amp;</span>str, _query_ctx: <span class="kw-2">&amp;</span>QueryContextRef) -&gt; <span class="prelude-ty">Result</span>&lt;QueryStatement&gt; {
         <span class="kw">let </span>_timer = METRIC_PARSE_SQL_ELAPSED.start_timer();
-        <span class="kw">let </span><span class="kw-2">mut </span>statement = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {})
-            .map_err(BoxedError::new)
-            .context(QueryParseSnafu {
-                query: sql.to_string(),
-            })<span class="question-mark">?</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>statement =
+            ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}, ParseOptions::default())
+                .map_err(BoxedError::new)
+                .context(QueryParseSnafu { query: sql })<span class="question-mark">?</span>;
         <span class="kw">if </span>statement.len() != <span class="number">1 </span>{
             MultipleStatementsSnafu {
                 query: sql.to_string(),
@@ -488,7 +523,8 @@
         }
     }
 
-    <span class="kw">pub fn </span>parse_promql(query: <span class="kw-2">&amp;</span>PromQuery) -&gt; <span class="prelude-ty">Result</span>&lt;QueryStatement&gt; {
+    <span class="doccomment">/// Try to parse PromQL, return the statement when success.
+    </span><span class="kw">pub fn </span>parse_promql(query: <span class="kw-2">&amp;</span>PromQuery, _query_ctx: <span class="kw-2">&amp;</span>QueryContextRef) -&gt; <span class="prelude-ty">Result</span>&lt;QueryStatement&gt; {
         <span class="kw">let </span>_timer = METRIC_PARSE_PROMQL_ELAPSED.start_timer();
 
         <span class="kw">let </span>expr = promql_parser::parser::parse(<span class="kw-2">&amp;</span>query.query)
@@ -599,17 +635,31 @@
 }
 
 <span class="macro">define_node_ast_extension!</span>(Analyze, AnalyzeExpr, Expr, ANALYZE_NODE_NAME);
+<span class="macro">define_node_ast_extension!</span>(
+    AnalyzeVerbose,
+    AnalyzeVerboseExpr,
+    Expr,
+    ANALYZE_VERBOSE_NODE_NAME
+);
 <span class="macro">define_node_ast_extension!</span>(Explain, ExplainExpr, Expr, EXPLAIN_NODE_NAME);
+<span class="macro">define_node_ast_extension!</span>(
+    ExplainVerbose,
+    ExplainVerboseExpr,
+    Expr,
+    EXPLAIN_VERBOSE_NODE_NAME
+);
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>test {
+    <span class="kw">use </span>session::context::QueryContext;
+
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
     <span class="comment">// Detailed logic tests are covered in the parser crate.
     </span><span class="attr">#[test]
     </span><span class="kw">fn </span>parse_sql_simple() {
         <span class="kw">let </span>sql = <span class="string">"select * from t1"</span>;
-        <span class="kw">let </span>stmt = QueryLanguageParser::parse_sql(sql).unwrap();
+        <span class="kw">let </span>stmt = QueryLanguageParser::parse_sql(sql, <span class="kw-2">&amp;</span>QueryContext::arc()).unwrap();
         <span class="kw">let </span>expected = String::from(<span class="string">"Sql(Query(Query { \
             inner: Query { \
                 with: None, body: Select(Select { \
@@ -727,7 +777,7 @@
             })"</span>,
         );
 
-        <span class="kw">let </span>result = QueryLanguageParser::parse_promql(<span class="kw-2">&amp;</span>promql).unwrap();
+        <span class="kw">let </span>result = QueryLanguageParser::parse_promql(<span class="kw-2">&amp;</span>promql, <span class="kw-2">&amp;</span>QueryContext::arc()).unwrap();
         <span class="macro">assert_eq!</span>(<span class="macro">format!</span>(<span class="string">"{result:?}"</span>), expected);
     }
 }

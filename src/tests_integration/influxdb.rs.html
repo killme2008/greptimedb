@@ -208,7 +208,7 @@ monitor1,host=host2 memory=1027"</span>;
             )
             .<span class="kw">await</span>;
         <span class="kw">let </span>output = output.remove(<span class="number">0</span>).unwrap();
-        <span class="kw">let </span>Output::Stream(stream) = output <span class="kw">else </span>{
+        <span class="kw">let </span>Output::Stream(stream, <span class="kw">_</span>) = output <span class="kw">else </span>{
             <span class="macro">unreachable!</span>()
         };
 
@@ -237,7 +237,7 @@ monitor1,host=host2 memory=1027 1663840496400340001"</span>;
             )
             .<span class="kw">await</span>;
         <span class="kw">let </span>output = output.remove(<span class="number">0</span>).unwrap();
-        <span class="kw">let </span>Output::Stream(stream) = output <span class="kw">else </span>{
+        <span class="kw">let </span>Output::Stream(stream, <span class="kw">_</span>) = output <span class="kw">else </span>{
             <span class="macro">unreachable!</span>()
         };
         <span class="kw">let </span>recordbatches = RecordBatches::try_collect(stream).<span class="kw">await</span>.unwrap();

@@ -184,11 +184,6 @@
 <a href="#183" id="183">183</a>
 <a href="#184" id="184">184</a>
 <a href="#185" id="185">185</a>
-<a href="#186" id="186">186</a>
-<a href="#187" id="187">187</a>
-<a href="#188" id="188">188</a>
-<a href="#189" id="189">189</a>
-<a href="#190" id="190">190</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -220,14 +215,9 @@
         region_id: RegionId,
         request: RegionAlterRequest,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;AffectedRows&gt; {
-        <span class="kw">let </span>is_altering_logical_region = <span class="self">self
-            </span>.state
-            .read()
-            .<span class="kw">await
-            </span>.physical_regions()
-            .contains_key(<span class="kw-2">&amp;</span>region_id);
+        <span class="kw">let </span>is_altering_physical_region = <span class="self">self</span>.is_physical_region(region_id);
 
-        <span class="kw">let </span>result = <span class="kw">if </span>is_altering_logical_region {
+        <span class="kw">let </span>result = <span class="kw">if </span>is_altering_physical_region {
             <span class="self">self</span>.alter_physical_region(region_id, request).<span class="kw">await
         </span>} <span class="kw">else </span>{
             <span class="self">self</span>.alter_logical_region(region_id, request).<span class="kw">await
@@ -242,7 +232,7 @@
         request: RegionAlterRequest,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="kw">let </span>physical_region_id = {
-            <span class="kw">let </span>state = <span class="kw-2">&amp;</span><span class="self">self</span>.state.read().<span class="kw">await</span>;
+            <span class="kw">let </span>state = <span class="kw-2">&amp;</span><span class="self">self</span>.state.read().unwrap();
             state.get_physical_region_id(region_id).with_context(|| {
                 <span class="macro">error!</span>(<span class="string">"Trying to alter an nonexistent region {region_id}"</span>);
                 LogicalRegionNotFoundSnafu { region_id }

@@ -56,6 +56,11 @@
 <a href="#55" id="55">55</a>
 <a href="#56" id="56">56</a>
 <a href="#57" id="57">57</a>
+<a href="#58" id="58">58</a>
+<a href="#59" id="59">59</a>
+<a href="#60" id="60">60</a>
+<a href="#61" id="61">61</a>
+<a href="#62" id="62">62</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -79,7 +84,7 @@
 <span class="kw">use </span>datafusion::physical_plan::ExecutionPlan;
 <span class="kw">use </span>datafusion::physical_planner::{ExtensionPlanner, PhysicalPlanner};
 
-<span class="kw">use </span><span class="kw">super</span>::HistogramFold;
+<span class="kw">use super</span>::{HistogramFold, UnionDistinctOn};
 <span class="kw">use </span><span class="kw">crate</span>::extension_plan::{
     EmptyMetric, InstantManipulate, RangeManipulate, SeriesDivide, SeriesNormalize,
 };
@@ -108,6 +113,11 @@
             <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(node.to_execution_plan(session_state, planner)<span class="question-mark">?</span>))
         } <span class="kw">else if let </span><span class="prelude-val">Some</span>(node) = node.as_any().downcast_ref::&lt;HistogramFold&gt;() {
             <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(node.to_execution_plan(physical_inputs[<span class="number">0</span>].clone())))
+        } <span class="kw">else if let </span><span class="prelude-val">Some</span>(node) = node.as_any().downcast_ref::&lt;UnionDistinctOn&gt;() {
+            <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(node.to_execution_plan(
+                physical_inputs[<span class="number">0</span>].clone(),
+                physical_inputs[<span class="number">1</span>].clone(),
+            )))
         } <span class="kw">else </span>{
             <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
         }

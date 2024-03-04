@@ -139,6 +139,7 @@
 <a href="#138" id="138">138</a>
 <a href="#139" id="139">139</a>
 <a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -255,7 +256,8 @@
         <span class="prelude-val">Ok</span>(!resp.kvs.is_empty())
     }
 
-    <span class="kw">async fn </span>delete(<span class="kw-2">&amp;</span><span class="self">self</span>, key: <span class="kw-2">&amp;</span>[u8], prev_kv: bool) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;KeyValue&gt;, <span class="self">Self</span>::Error&gt; {
+    <span class="doccomment">/// Returns previous key-value pair if `prev_kv` is `true`.
+    </span><span class="kw">async fn </span>delete(<span class="kw-2">&amp;</span><span class="self">self</span>, key: <span class="kw-2">&amp;</span>[u8], prev_kv: bool) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;KeyValue&gt;, <span class="self">Self</span>::Error&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>req = DeleteRangeRequest::new().with_key(key.to_vec());
         <span class="kw">if </span>prev_kv {
             req = req.with_prev_kv();

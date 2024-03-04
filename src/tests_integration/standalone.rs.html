@@ -170,6 +170,51 @@
 <a href="#169" id="169">169</a>
 <a href="#170" id="170">170</a>
 <a href="#171" id="171">171</a>
+<a href="#172" id="172">172</a>
+<a href="#173" id="173">173</a>
+<a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
+<a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
+<a href="#182" id="182">182</a>
+<a href="#183" id="183">183</a>
+<a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
+<a href="#186" id="186">186</a>
+<a href="#187" id="187">187</a>
+<a href="#188" id="188">188</a>
+<a href="#189" id="189">189</a>
+<a href="#190" id="190">190</a>
+<a href="#191" id="191">191</a>
+<a href="#192" id="192">192</a>
+<a href="#193" id="193">193</a>
+<a href="#194" id="194">194</a>
+<a href="#195" id="195">195</a>
+<a href="#196" id="196">196</a>
+<a href="#197" id="197">197</a>
+<a href="#198" id="198">198</a>
+<a href="#199" id="199">199</a>
+<a href="#200" id="200">200</a>
+<a href="#201" id="201">201</a>
+<a href="#202" id="202">202</a>
+<a href="#203" id="203">203</a>
+<a href="#204" id="204">204</a>
+<a href="#205" id="205">205</a>
+<a href="#206" id="206">206</a>
+<a href="#207" id="207">207</a>
+<a href="#208" id="208">208</a>
+<a href="#209" id="209">209</a>
+<a href="#210" id="210">210</a>
+<a href="#211" id="211">211</a>
+<a href="#212" id="212">212</a>
+<a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
+<a href="#216" id="216">216</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -191,31 +236,38 @@
 <span class="kw">use </span>common_catalog::consts::MIN_USER_TABLE_ID;
 <span class="kw">use </span>common_config::KvBackendConfig;
 <span class="kw">use </span>common_meta::cache_invalidator::DummyCacheInvalidator;
+<span class="kw">use </span>common_meta::ddl::table_meta::TableMetadataAllocator;
 <span class="kw">use </span>common_meta::ddl_manager::DdlManager;
 <span class="kw">use </span>common_meta::key::TableMetadataManager;
+<span class="kw">use </span>common_meta::kv_backend::KvBackendRef;
 <span class="kw">use </span>common_meta::region_keeper::MemoryRegionKeeper;
 <span class="kw">use </span>common_meta::sequence::SequenceBuilder;
-<span class="kw">use </span>common_meta::wal::{WalConfig <span class="kw">as </span>MetaSrvWalConfig, WalOptionsAllocator};
+<span class="kw">use </span>common_meta::wal_options_allocator::WalOptionsAllocator;
 <span class="kw">use </span>common_procedure::options::ProcedureConfig;
+<span class="kw">use </span>common_procedure::ProcedureManagerRef;
 <span class="kw">use </span>common_telemetry::logging::LoggingOptions;
-<span class="kw">use </span>datanode::config::DatanodeOptions;
+<span class="kw">use </span>common_wal::config::{DatanodeWalConfig, MetaSrvWalConfig};
 <span class="kw">use </span>datanode::datanode::DatanodeBuilder;
 <span class="kw">use </span>frontend::frontend::FrontendOptions;
 <span class="kw">use </span>frontend::instance::builder::FrontendBuilder;
-<span class="kw">use </span>frontend::instance::standalone::StandaloneTableMetadataAllocator;
 <span class="kw">use </span>frontend::instance::{FrontendInstance, Instance, StandaloneDatanodeManager};
+<span class="kw">use </span>servers::Mode;
 
 <span class="kw">use </span><span class="kw">crate</span>::test_util::{<span class="self">self</span>, create_tmp_dir_and_datanode_opts, StorageType, TestGuard};
 
 <span class="kw">pub struct </span>GreptimeDbStandalone {
     <span class="kw">pub </span>instance: Arc&lt;Instance&gt;,
-    <span class="kw">pub </span>datanode_opts: DatanodeOptions,
     <span class="kw">pub </span>mix_options: MixOptions,
     <span class="kw">pub </span>guard: TestGuard,
+    <span class="comment">// Used in rebuild.
+    </span><span class="kw">pub </span>kv_backend: KvBackendRef,
+    <span class="kw">pub </span>procedure_manager: ProcedureManagerRef,
 }
 
 <span class="kw">pub struct </span>GreptimeDbStandaloneBuilder {
     instance_name: String,
+    wal_config: DatanodeWalConfig,
+    meta_wal_config: MetaSrvWalConfig,
     store_providers: <span class="prelude-ty">Option</span>&lt;Vec&lt;StorageType&gt;&gt;,
     default_store: <span class="prelude-ty">Option</span>&lt;StorageType&gt;,
     plugin: <span class="prelude-ty">Option</span>&lt;Plugins&gt;,
@@ -228,10 +280,13 @@
             store_providers: <span class="prelude-val">None</span>,
             plugin: <span class="prelude-val">None</span>,
             default_store: <span class="prelude-val">None</span>,
+            wal_config: DatanodeWalConfig::default(),
+            meta_wal_config: MetaSrvWalConfig::default(),
         }
     }
 
-    <span class="kw">pub fn </span>with_default_store_type(<span class="self">self</span>, store_type: StorageType) -&gt; <span class="self">Self </span>{
+    <span class="attr">#[must_use]
+    </span><span class="kw">pub fn </span>with_default_store_type(<span class="self">self</span>, store_type: StorageType) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             default_store: <span class="prelude-val">Some</span>(store_type),
             ..<span class="self">self
@@ -239,6 +294,7 @@
     }
 
     <span class="attr">#[cfg(test)]
+    #[must_use]
     </span><span class="kw">pub fn </span>with_store_providers(<span class="self">self</span>, store_providers: Vec&lt;StorageType&gt;) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             store_providers: <span class="prelude-val">Some</span>(store_providers),
@@ -247,6 +303,7 @@
     }
 
     <span class="attr">#[cfg(test)]
+    #[must_use]
     </span><span class="kw">pub fn </span>with_plugin(<span class="self">self</span>, plugin: Plugins) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             plugin: <span class="prelude-val">Some</span>(plugin),
@@ -254,26 +311,28 @@
         </span>}
     }
 
-    <span class="kw">pub async fn </span>build(<span class="self">self</span>) -&gt; GreptimeDbStandalone {
-        <span class="kw">let </span>default_store_type = <span class="self">self</span>.default_store.unwrap_or(StorageType::File);
-        <span class="kw">let </span>store_types = <span class="self">self</span>.store_providers.unwrap_or_default();
+    <span class="attr">#[must_use]
+    </span><span class="kw">pub fn </span>with_wal_config(<span class="kw-2">mut </span><span class="self">self</span>, wal_config: DatanodeWalConfig) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.wal_config = wal_config;
+        <span class="self">self
+    </span>}
 
-        <span class="kw">let </span>(opts, guard) =
-            create_tmp_dir_and_datanode_opts(default_store_type, store_types, <span class="kw-2">&amp;</span><span class="self">self</span>.instance_name);
+    <span class="attr">#[must_use]
+    </span><span class="kw">pub fn </span>with_meta_wal_config(<span class="kw-2">mut </span><span class="self">self</span>, wal_meta: MetaSrvWalConfig) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.meta_wal_config = wal_meta;
+        <span class="self">self
+    </span>}
 
-        <span class="kw">let </span>procedure_config = ProcedureConfig::default();
-        <span class="kw">let </span>kv_backend_config = KvBackendConfig::default();
-        <span class="kw">let </span>(kv_backend, procedure_manager) = Instance::try_build_standalone_components(
-            <span class="macro">format!</span>(<span class="string">"{}/kv"</span>, <span class="kw-2">&amp;</span>opts.storage.data_home),
-            kv_backend_config.clone(),
-            procedure_config.clone(),
-        )
-        .<span class="kw">await
-        </span>.unwrap();
+    <span class="kw">pub async fn </span>build_with(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        kv_backend: KvBackendRef,
+        procedure_manager: ProcedureManagerRef,
+        guard: TestGuard,
+        mix_options: MixOptions,
+    ) -&gt; GreptimeDbStandalone {
+        <span class="kw">let </span>plugins = <span class="self">self</span>.plugin.clone().unwrap_or_default();
 
-        <span class="kw">let </span>plugins = <span class="self">self</span>.plugin.unwrap_or_default();
-
-        <span class="kw">let </span>datanode = DatanodeBuilder::new(opts.clone(), plugins.clone())
+        <span class="kw">let </span>datanode = DatanodeBuilder::new(mix_options.datanode.clone(), plugins.clone())
             .with_kv_backend(kv_backend.clone())
             .build()
             .<span class="kw">await
@@ -290,14 +349,14 @@
                 .step(<span class="number">10</span>)
                 .build(),
         );
-        <span class="kw">let </span>wal_meta = MetaSrvWalConfig::default();
         <span class="kw">let </span>wal_options_allocator = Arc::new(WalOptionsAllocator::new(
-            wal_meta.clone(),
+            mix_options.wal_meta.clone(),
             kv_backend.clone(),
         ));
-        <span class="kw">let </span>table_meta_allocator = Arc::new(StandaloneTableMetadataAllocator::new(
+        <span class="kw">let </span>table_meta_allocator = Arc::new(TableMetadataAllocator::new(
             table_id_sequence,
             wal_options_allocator.clone(),
+            table_metadata_manager.table_name_manager().clone(),
         ));
 
         <span class="kw">let </span>ddl_task_executor = Arc::new(
@@ -312,11 +371,12 @@
             .unwrap(),
         );
 
-        <span class="kw">let </span>instance = FrontendBuilder::new(kv_backend, datanode_manager, ddl_task_executor)
-            .with_plugin(plugins)
-            .try_build()
-            .<span class="kw">await
-            </span>.unwrap();
+        <span class="kw">let </span>instance =
+            FrontendBuilder::new(kv_backend.clone(), datanode_manager, ddl_task_executor)
+                .with_plugin(plugins)
+                .try_build()
+                .<span class="kw">await
+                </span>.unwrap();
 
         procedure_manager.start().<span class="kw">await</span>.unwrap();
         wal_options_allocator.start().<span class="kw">await</span>.unwrap();
@@ -327,18 +387,48 @@
 
         GreptimeDbStandalone {
             instance: Arc::new(instance),
-            datanode_opts: opts.clone(),
-            mix_options: MixOptions {
-                data_home: opts.storage.data_home.to_string(),
-                procedure: procedure_config,
-                metadata_store: kv_backend_config,
-                frontend: FrontendOptions::default(),
-                datanode: opts,
-                logging: LoggingOptions::default(),
-                wal_meta,
-            },
+            mix_options,
             guard,
+            kv_backend,
+            procedure_manager,
         }
     }
+
+    <span class="kw">pub async fn </span>build(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; GreptimeDbStandalone {
+        <span class="kw">let </span>default_store_type = <span class="self">self</span>.default_store.unwrap_or(StorageType::File);
+        <span class="kw">let </span>store_types = <span class="self">self</span>.store_providers.clone().unwrap_or_default();
+
+        <span class="kw">let </span>(opts, guard) = create_tmp_dir_and_datanode_opts(
+            Mode::Standalone,
+            default_store_type,
+            store_types,
+            <span class="kw-2">&amp;</span><span class="self">self</span>.instance_name,
+            <span class="self">self</span>.wal_config.clone(),
+        );
+
+        <span class="kw">let </span>kv_backend_config = KvBackendConfig::default();
+        <span class="kw">let </span>procedure_config = ProcedureConfig::default();
+        <span class="kw">let </span>(kv_backend, procedure_manager) = Instance::try_build_standalone_components(
+            <span class="macro">format!</span>(<span class="string">"{}/kv"</span>, <span class="kw-2">&amp;</span>opts.storage.data_home),
+            kv_backend_config.clone(),
+            procedure_config.clone(),
+        )
+        .<span class="kw">await
+        </span>.unwrap();
+
+        <span class="kw">let </span>wal_meta = <span class="self">self</span>.meta_wal_config.clone();
+        <span class="kw">let </span>mix_options = MixOptions {
+            data_home: opts.storage.data_home.to_string(),
+            procedure: procedure_config,
+            metadata_store: kv_backend_config,
+            frontend: FrontendOptions::default(),
+            datanode: opts,
+            logging: LoggingOptions::default(),
+            wal_meta,
+        };
+
+        <span class="self">self</span>.build_with(kv_backend, procedure_manager, guard, mix_options)
+            .<span class="kw">await
+    </span>}
 }
 </code></pre></div></section></main></body></html>

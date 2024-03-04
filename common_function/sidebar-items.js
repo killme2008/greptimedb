@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["function","function_registry","helper","scalars","system"]};
+window.SIDEBAR_ITEMS = {"macro":["ensure_greptime"],"mod":["function","function_registry","handlers","helper","macros","scalars","state","system","table"]};

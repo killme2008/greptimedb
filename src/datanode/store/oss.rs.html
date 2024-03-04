@@ -58,7 +58,7 @@
 // limitations under the License.
 
 </span><span class="kw">use </span>common_telemetry::logging::info;
-<span class="kw">use </span>object_store::services::Oss <span class="kw">as </span>OSSBuilder;
+<span class="kw">use </span>object_store::services::Oss;
 <span class="kw">use </span>object_store::{util, ObjectStore};
 <span class="kw">use </span>secrecy::ExposeSecret;
 <span class="kw">use </span>snafu::prelude::<span class="kw-2">*</span>;
@@ -74,7 +74,7 @@
         oss_config.bucket, <span class="kw-2">&amp;</span>root
     );
 
-    <span class="kw">let </span><span class="kw-2">mut </span>builder = OSSBuilder::default();
+    <span class="kw">let </span><span class="kw-2">mut </span>builder = Oss::default();
     <span class="kw">let _ </span>= builder
         .root(<span class="kw-2">&amp;</span>root)
         .bucket(<span class="kw-2">&amp;</span>oss_config.bucket)

@@ -278,6 +278,73 @@
 <a href="#277" id="277">277</a>
 <a href="#278" id="278">278</a>
 <a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
+<a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
+<a href="#308" id="308">308</a>
+<a href="#309" id="309">309</a>
+<a href="#310" id="310">310</a>
+<a href="#311" id="311">311</a>
+<a href="#312" id="312">312</a>
+<a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
+<a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
+<a href="#325" id="325">325</a>
+<a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
+<a href="#330" id="330">330</a>
+<a href="#331" id="331">331</a>
+<a href="#332" id="332">332</a>
+<a href="#333" id="333">333</a>
+<a href="#334" id="334">334</a>
+<a href="#335" id="335">335</a>
+<a href="#336" id="336">336</a>
+<a href="#337" id="337">337</a>
+<a href="#338" id="338">338</a>
+<a href="#339" id="339">339</a>
+<a href="#340" id="340">340</a>
+<a href="#341" id="341">341</a>
+<a href="#342" id="342">342</a>
+<a href="#343" id="343">343</a>
+<a href="#344" id="344">344</a>
+<a href="#345" id="345">345</a>
+<a href="#346" id="346">346</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -295,18 +362,20 @@
 </span><span class="kw">mod </span>alter;
 <span class="kw">mod </span>close;
 <span class="kw">mod </span>create;
+<span class="kw">mod </span>drop;
 <span class="kw">mod </span>open;
+<span class="kw">mod </span>options;
 <span class="kw">mod </span>put;
 <span class="kw">mod </span>read;
 <span class="kw">mod </span>region_metadata;
 <span class="kw">mod </span>state;
 
-<span class="kw">use </span>std::sync::Arc;
+<span class="kw">use </span>std::any::Any;
+<span class="kw">use </span>std::sync::{Arc, RwLock};
 
 <span class="kw">use </span>async_trait::async_trait;
 <span class="kw">use </span>common_error::ext::{BoxedError, ErrorExt};
 <span class="kw">use </span>common_error::status_code::StatusCode;
-<span class="kw">use </span>common_query::Output;
 <span class="kw">use </span>common_recordbatch::SendableRecordBatchStream;
 <span class="kw">use </span>mito2::engine::MitoEngine;
 <span class="kw">use </span>store_api::metadata::RegionMetadataRef;
@@ -314,11 +383,12 @@
 <span class="kw">use </span>store_api::region_engine::{RegionEngine, RegionRole, SetReadonlyResponse};
 <span class="kw">use </span>store_api::region_request::{AffectedRows, RegionRequest};
 <span class="kw">use </span>store_api::storage::{RegionId, ScanRequest};
-<span class="kw">use </span>tokio::sync::RwLock;
 
 <span class="kw">use </span><span class="self">self</span>::state::MetricEngineState;
 <span class="kw">use </span><span class="kw">crate</span>::data_region::DataRegion;
+<span class="kw">use </span><span class="kw">crate</span>::error::Result;
 <span class="kw">use </span><span class="kw">crate</span>::metadata_region::MetadataRegion;
+<span class="kw">use </span><span class="kw">crate</span>::utils;
 
 <span class="attr">#[cfg_attr(doc, aquamarine::aquamarine)]
 </span><span class="doccomment">/// # Metric Engine
@@ -361,12 +431,14 @@
 /// | Operations | Logical Region | Physical Region |
 /// | ---------- | -------------- | --------------- |
 /// |   Create   |       ✅        |        ✅        |
-/// |    Drop    |       ✅        |        ❌        |
+/// |    Drop    |       ✅        |        ❓*       |
 /// |   Write    |       ✅        |        ❌        |
 /// |    Read    |       ✅        |        ✅        |
 /// |   Close    |       ✅        |        ✅        |
 /// |    Open    |       ✅        |        ✅        |
 /// |   Alter    |       ✅        |        ❌        |
+///
+/// *: Physical region can be dropped only when all related logical regions are dropped.
 ///
 /// ## Internal Columns
 ///
@@ -401,14 +473,14 @@
             RegionRequest::Put(put) =&gt; <span class="self">self</span>.inner.put_region(region_id, put).<span class="kw">await</span>,
             RegionRequest::Delete(<span class="kw">_</span>) =&gt; <span class="macro">todo!</span>(),
             RegionRequest::Create(create) =&gt; <span class="self">self</span>.inner.create_region(region_id, create).<span class="kw">await</span>,
-            RegionRequest::Drop(<span class="kw">_</span>) =&gt; <span class="macro">todo!</span>(),
+            RegionRequest::Drop(drop) =&gt; <span class="self">self</span>.inner.drop_region(region_id, drop).<span class="kw">await</span>,
             RegionRequest::Open(open) =&gt; <span class="self">self</span>.inner.open_region(region_id, open).<span class="kw">await</span>,
             RegionRequest::Close(close) =&gt; <span class="self">self</span>.inner.close_region(region_id, close).<span class="kw">await</span>,
             RegionRequest::Alter(alter) =&gt; <span class="self">self</span>.inner.alter_region(region_id, alter).<span class="kw">await</span>,
             RegionRequest::Flush(<span class="kw">_</span>) =&gt; <span class="macro">todo!</span>(),
             RegionRequest::Compact(<span class="kw">_</span>) =&gt; <span class="macro">todo!</span>(),
             RegionRequest::Truncate(<span class="kw">_</span>) =&gt; <span class="macro">todo!</span>(),
-            <span class="doccomment">/// It always Ok(0), all data is latest.
+            <span class="comment">// It always Ok(0), all data is the latest.
             </span>RegionRequest::Catchup(<span class="kw">_</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="number">0</span>),
         };
 
@@ -436,8 +508,14 @@
     }
 
     <span class="doccomment">/// Retrieves region's disk usage.
+    ///
+    /// Note: Returns `None` if it's a logical region.
     </span><span class="kw">async fn </span>region_disk_usage(<span class="kw-2">&amp;</span><span class="self">self</span>, region_id: RegionId) -&gt; <span class="prelude-ty">Option</span>&lt;i64&gt; {
-        <span class="macro">todo!</span>()
+        <span class="kw">if </span><span class="self">self</span>.inner.is_physical_region(region_id) {
+            <span class="self">self</span>.inner.mito.region_disk_usage(region_id).<span class="kw">await
+        </span>} <span class="kw">else </span>{
+            <span class="prelude-val">None
+        </span>}
     }
 
     <span class="doccomment">/// Stops the engine
@@ -448,12 +526,18 @@
 
     <span class="kw">fn </span>set_writable(<span class="kw-2">&amp;</span><span class="self">self</span>, region_id: RegionId, writable: bool) -&gt; <span class="prelude-ty">Result</span>&lt;(), BoxedError&gt; {
         <span class="comment">// ignore the region not found error
-        </span><span class="kw">let </span>result = <span class="self">self</span>.inner.mito.set_writable(region_id, writable);
-
-        <span class="kw">match </span>result {
-            <span class="prelude-val">Err</span>(e) <span class="kw">if </span>e.status_code() == StatusCode::RegionNotFound =&gt; <span class="prelude-val">Ok</span>(()),
-            <span class="kw">_ </span>=&gt; result,
+        </span><span class="kw">for </span>x <span class="kw">in </span>[
+            utils::to_metadata_region_id(region_id),
+            utils::to_data_region_id(region_id),
+            region_id,
+        ] {
+            <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = <span class="self">self</span>.inner.mito.set_writable(x, writable)
+                &amp;&amp; e.status_code() != StatusCode::RegionNotFound
+            {
+                <span class="kw">return </span><span class="prelude-val">Err</span>(e);
+            }
         }
+        <span class="prelude-val">Ok</span>(())
     }
 
     <span class="kw">async fn </span>set_readonly_gracefully(
@@ -463,9 +547,20 @@
         <span class="self">self</span>.inner.mito.set_readonly_gracefully(region_id).<span class="kw">await
     </span>}
 
-    <span class="kw">fn </span>role(<span class="kw-2">&amp;</span><span class="self">self</span>, region_id: RegionId) -&gt; <span class="prelude-ty">Option</span>&lt;RegionRole&gt; {
-        <span class="macro">todo!</span>()
+    <span class="doccomment">/// Returns the physical region role.
+    ///
+    /// Note: Returns `None` if it's a logical region.
+    </span><span class="kw">fn </span>role(<span class="kw-2">&amp;</span><span class="self">self</span>, region_id: RegionId) -&gt; <span class="prelude-ty">Option</span>&lt;RegionRole&gt; {
+        <span class="kw">if </span><span class="self">self</span>.inner.is_physical_region(region_id) {
+            <span class="self">self</span>.inner.mito.role(region_id)
+        } <span class="kw">else </span>{
+            <span class="prelude-val">None
+        </span>}
     }
+
+    <span class="kw">fn </span>as_any(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="kw">dyn </span>Any {
+        <span class="self">self
+    </span>}
 }
 
 <span class="kw">impl </span>MetricEngine {
@@ -481,6 +576,13 @@
             }),
         }
     }
+
+    <span class="kw">pub async fn </span>logical_regions(<span class="kw-2">&amp;</span><span class="self">self</span>, physical_region_id: RegionId) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;RegionId&gt;&gt; {
+        <span class="self">self</span>.inner
+            .metadata_region
+            .logical_regions(physical_region_id)
+            .<span class="kw">await
+    </span>}
 }
 
 <span class="kw">struct </span>MetricEngineInner {
@@ -555,6 +657,38 @@
             )
             .<span class="kw">await
             </span>.unwrap();
+    }
+
+    <span class="attr">#[tokio::test]
+    </span><span class="kw">async fn </span>test_role() {
+        <span class="kw">let </span>env = TestEnv::new().<span class="kw">await</span>;
+        env.init_metric_region().<span class="kw">await</span>;
+
+        <span class="kw">let </span>logical_region_id = env.default_logical_region_id();
+        <span class="kw">let </span>physical_region_id = env.default_physical_region_id();
+
+        <span class="macro">assert!</span>(env.metric().role(logical_region_id).is_none());
+        <span class="macro">assert!</span>(env.metric().role(physical_region_id).is_some());
+    }
+
+    <span class="attr">#[tokio::test]
+    </span><span class="kw">async fn </span>test_region_disk_usage() {
+        <span class="kw">let </span>env = TestEnv::new().<span class="kw">await</span>;
+        env.init_metric_region().<span class="kw">await</span>;
+
+        <span class="kw">let </span>logical_region_id = env.default_logical_region_id();
+        <span class="kw">let </span>physical_region_id = env.default_physical_region_id();
+
+        <span class="macro">assert!</span>(env
+            .metric()
+            .region_disk_usage(logical_region_id)
+            .<span class="kw">await
+            </span>.is_none());
+        <span class="macro">assert!</span>(env
+            .metric()
+            .region_disk_usage(physical_region_id)
+            .<span class="kw">await
+            </span>.is_some());
     }
 }
 </code></pre></div></section></main></body></html>

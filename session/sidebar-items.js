@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["context"],"struct":["Session"],"type":["SessionRef"]};
+window.SIDEBAR_ITEMS = {"mod":["context","table_name"],"struct":["Session"],"type":["SessionRef"]};

@@ -69,34 +69,34 @@
 
 <span class="macro">lazy_static! </span>{
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_HANDLE_SQL_ELAPSED: Histogram =
-        <span class="macro">register_histogram!</span>(<span class="string">"frontend_handle_sql_elapsed"</span>, <span class="string">"frontend handle sql elapsed"</span>).unwrap();
+        <span class="macro">register_histogram!</span>(<span class="string">"greptime_frontend_handle_sql_elapsed"</span>, <span class="string">"frontend handle sql elapsed"</span>).unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_HANDLE_PROMQL_ELAPSED: Histogram = <span class="macro">register_histogram!</span>(
-        <span class="string">"frontend_handle_promql_elapsed"</span>,
+        <span class="string">"greptime_frontend_handle_promql_elapsed"</span>,
         <span class="string">"frontend handle promql elapsed"
     </span>)
     .unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_EXEC_PLAN_ELAPSED: Histogram =
-        <span class="macro">register_histogram!</span>(<span class="string">"frontend_exec_plan_elapsed"</span>, <span class="string">"frontend exec plan elapsed"</span>).unwrap();
+        <span class="macro">register_histogram!</span>(<span class="string">"greptime_frontend_exec_plan_elapsed"</span>, <span class="string">"frontend exec plan elapsed"</span>).unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_HANDLE_SCRIPTS_ELAPSED: Histogram = <span class="macro">register_histogram!</span>(
-        <span class="string">"frontend_handle_scripts_elapsed"</span>,
+        <span class="string">"greptime_frontend_handle_scripts_elapsed"</span>,
         <span class="string">"frontend handle scripts elapsed"
     </span>)
     .unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_RUN_SCRIPT_ELAPSED: Histogram =
-        <span class="macro">register_histogram!</span>(<span class="string">"frontend_run_script_elapsed"</span>, <span class="string">"frontend run script elapsed"</span>).unwrap();
+        <span class="macro">register_histogram!</span>(<span class="string">"greptime_frontend_run_script_elapsed"</span>, <span class="string">"frontend run script elapsed"</span>).unwrap();
     <span class="doccomment">/// The samples count of Prometheus remote write.
     </span><span class="kw">pub static </span><span class="kw-2">ref </span>PROM_STORE_REMOTE_WRITE_SAMPLES: IntCounter = <span class="macro">register_int_counter!</span>(
-        <span class="string">"frontend_prometheus_remote_write_samples"</span>,
+        <span class="string">"greptime_frontend_prometheus_remote_write_samples"</span>,
         <span class="string">"frontend prometheus remote write samples"
     </span>)
     .unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>OTLP_METRICS_ROWS: IntCounter = <span class="macro">register_int_counter!</span>(
-        <span class="string">"frontend_otlp_metrics_rows"</span>,
+        <span class="string">"greptime_frontend_otlp_metrics_rows"</span>,
         <span class="string">"frontend otlp metrics rows"
     </span>)
     .unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>OTLP_TRACES_ROWS: IntCounter = <span class="macro">register_int_counter!</span>(
-        <span class="string">"frontend_otlp_traces_rows"</span>,
+        <span class="string">"greptime_frontend_otlp_traces_rows"</span>,
         <span class="string">"frontend otlp traces rows"
     </span>)
     .unwrap();

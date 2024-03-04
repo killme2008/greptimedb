@@ -109,6 +109,49 @@
 <a href="#108" id="108">108</a>
 <a href="#109" id="109">109</a>
 <a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
+<a href="#116" id="116">116</a>
+<a href="#117" id="117">117</a>
+<a href="#118" id="118">118</a>
+<a href="#119" id="119">119</a>
+<a href="#120" id="120">120</a>
+<a href="#121" id="121">121</a>
+<a href="#122" id="122">122</a>
+<a href="#123" id="123">123</a>
+<a href="#124" id="124">124</a>
+<a href="#125" id="125">125</a>
+<a href="#126" id="126">126</a>
+<a href="#127" id="127">127</a>
+<a href="#128" id="128">128</a>
+<a href="#129" id="129">129</a>
+<a href="#130" id="130">130</a>
+<a href="#131" id="131">131</a>
+<a href="#132" id="132">132</a>
+<a href="#133" id="133">133</a>
+<a href="#134" id="134">134</a>
+<a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
+<a href="#137" id="137">137</a>
+<a href="#138" id="138">138</a>
+<a href="#139" id="139">139</a>
+<a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -123,12 +166,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-</span><span class="kw">use </span>api::prom_store::remote::{ReadRequest, WriteRequest};
+</span><span class="kw">use </span>std::sync::Arc;
+
+<span class="kw">use </span>api::prom_store::remote::{ReadRequest, WriteRequest};
 <span class="kw">use </span>axum::extract::{Query, RawBody, State};
 <span class="kw">use </span>axum::http::{header, StatusCode};
 <span class="kw">use </span>axum::response::IntoResponse;
 <span class="kw">use </span>axum::Extension;
 <span class="kw">use </span>common_catalog::consts::DEFAULT_SCHEMA_NAME;
+<span class="kw">use </span>common_query::prelude::GREPTIME_PHYSICAL_TABLE;
 <span class="kw">use </span>hyper::Body;
 <span class="kw">use </span>prost::Message;
 <span class="kw">use </span>schemars::JsonSchema;
@@ -136,38 +182,72 @@
 <span class="kw">use </span>session::context::QueryContextRef;
 <span class="kw">use </span>snafu::prelude::<span class="kw-2">*</span>;
 
-<span class="kw">use </span><span class="kw">crate</span>::error::{<span class="self">self</span>, <span class="prelude-ty">Result</span>};
+<span class="kw">use </span><span class="kw">crate</span>::error::{<span class="self">self</span>, <span class="prelude-ty">Result</span>, UnexpectedPhysicalTableSnafu};
 <span class="kw">use </span><span class="kw">crate</span>::prom_store::snappy_decompress;
 <span class="kw">use </span><span class="kw">crate</span>::query_handler::{PromStoreProtocolHandlerRef, PromStoreResponse};
+
+<span class="kw">pub const </span>PHYSICAL_TABLE_PARAM: <span class="kw-2">&amp;</span>str = <span class="string">"physical_table"</span>;
 
 <span class="attr">#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 </span><span class="kw">pub struct </span>DatabaseQuery {
     <span class="kw">pub </span>db: <span class="prelude-ty">Option</span>&lt;String&gt;,
+    <span class="doccomment">/// Specify which physical table to use for storing metrics.
+    /// This only works on remote write requests.
+    </span><span class="kw">pub </span>physical_table: <span class="prelude-ty">Option</span>&lt;String&gt;,
 }
 
 <span class="kw">impl </span>Default <span class="kw">for </span>DatabaseQuery {
     <span class="kw">fn </span>default() -&gt; DatabaseQuery {
         <span class="self">Self </span>{
             db: <span class="prelude-val">Some</span>(DEFAULT_SCHEMA_NAME.to_string()),
+            physical_table: <span class="prelude-val">Some</span>(GREPTIME_PHYSICAL_TABLE.to_string()),
         }
     }
+}
+
+<span class="doccomment">/// Same with [remote_write] but won't store data to metric engine.
+</span><span class="attr">#[axum_macros::debug_handler]
+</span><span class="kw">pub async fn </span>route_write_without_metric_engine(
+    State(handler): State&lt;PromStoreProtocolHandlerRef&gt;,
+    Query(params): Query&lt;DatabaseQuery&gt;,
+    Extension(query_ctx): Extension&lt;QueryContextRef&gt;,
+    RawBody(body): RawBody,
+) -&gt; <span class="prelude-ty">Result</span>&lt;(StatusCode, ())&gt; {
+    <span class="kw">let </span>db = params.db.clone().unwrap_or_default();
+    <span class="kw">let </span>_timer = <span class="kw">crate</span>::metrics::METRIC_HTTP_PROM_STORE_WRITE_ELAPSED
+        .with_label_values(<span class="kw-2">&amp;</span>[db.as_str()])
+        .start_timer();
+
+    <span class="kw">let </span>request = decode_remote_write_request(body).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="comment">// reject if physical table is specified when metric engine is disabled
+    </span><span class="kw">if </span>params.physical_table.is_some() {
+        <span class="kw">return </span>UnexpectedPhysicalTableSnafu {}.fail();
+    }
+
+    handler.write(request, query_ctx, <span class="bool-val">false</span>).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="prelude-val">Ok</span>((StatusCode::NO_CONTENT, ()))
 }
 
 <span class="attr">#[axum_macros::debug_handler]
 </span><span class="kw">pub async fn </span>remote_write(
     State(handler): State&lt;PromStoreProtocolHandlerRef&gt;,
     Query(params): Query&lt;DatabaseQuery&gt;,
-    Extension(query_ctx): Extension&lt;QueryContextRef&gt;,
+    Extension(<span class="kw-2">mut </span>query_ctx): Extension&lt;QueryContextRef&gt;,
     RawBody(body): RawBody,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;(StatusCode, ())&gt; {
-    <span class="kw">let </span>request = decode_remote_write_request(body).<span class="kw">await</span><span class="question-mark">?</span>;
     <span class="kw">let </span>db = params.db.clone().unwrap_or_default();
-
     <span class="kw">let </span>_timer = <span class="kw">crate</span>::metrics::METRIC_HTTP_PROM_STORE_WRITE_ELAPSED
         .with_label_values(<span class="kw-2">&amp;</span>[db.as_str()])
         .start_timer();
 
-    handler.write(request, query_ctx).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">let </span>request = decode_remote_write_request(body).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">if let </span><span class="prelude-val">Some</span>(physical_table) = params.physical_table {
+        <span class="kw">let </span><span class="kw-2">mut </span>new_query_ctx = query_ctx.as_ref().clone();
+        new_query_ctx.set_extension(PHYSICAL_TABLE_PARAM, physical_table);
+        query_ctx = Arc::new(new_query_ctx);
+    }
+
+    handler.write(request, query_ctx, <span class="bool-val">true</span>).<span class="kw">await</span><span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>((StatusCode::NO_CONTENT, ()))
 }
 
@@ -191,23 +271,29 @@
     Extension(query_ctx): Extension&lt;QueryContextRef&gt;,
     RawBody(body): RawBody,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;PromStoreResponse&gt; {
-    <span class="kw">let </span>request = decode_remote_read_request(body).<span class="kw">await</span><span class="question-mark">?</span>;
     <span class="kw">let </span>db = params.db.clone().unwrap_or_default();
-
     <span class="kw">let </span>_timer = <span class="kw">crate</span>::metrics::METRIC_HTTP_PROM_STORE_READ_ELAPSED
         .with_label_values(<span class="kw-2">&amp;</span>[db.as_str()])
         .start_timer();
+
+    <span class="kw">let </span>request = decode_remote_read_request(body).<span class="kw">await</span><span class="question-mark">?</span>;
+
     handler.read(request, query_ctx).<span class="kw">await
 </span>}
 
 <span class="kw">async fn </span>decode_remote_write_request(body: Body) -&gt; <span class="prelude-ty">Result</span>&lt;WriteRequest&gt; {
+    <span class="kw">let </span>_timer = <span class="kw">crate</span>::metrics::METRIC_HTTP_PROM_STORE_DECODE_ELAPSED.start_timer();
     <span class="kw">let </span>body = hyper::body::to_bytes(body)
         .<span class="kw">await
         </span>.context(error::HyperSnafu)<span class="question-mark">?</span>;
 
     <span class="kw">let </span>buf = snappy_decompress(<span class="kw-2">&amp;</span>body[..])<span class="question-mark">?</span>;
 
-    WriteRequest::decode(<span class="kw-2">&amp;</span>buf[..]).context(error::DecodePromRemoteRequestSnafu)
+    <span class="kw">let </span>request = WriteRequest::decode(<span class="kw-2">&amp;</span>buf[..]).context(error::DecodePromRemoteRequestSnafu)<span class="question-mark">?</span>;
+    <span class="kw">crate</span>::metrics::METRIC_HTTP_PROM_STORE_DECODE_NUM_SERIES
+        .observe(request.timeseries.len() <span class="kw">as </span>f64);
+
+    <span class="prelude-val">Ok</span>(request)
 }
 
 <span class="kw">async fn </span>decode_remote_read_request(body: Body) -&gt; <span class="prelude-ty">Result</span>&lt;ReadRequest&gt; {

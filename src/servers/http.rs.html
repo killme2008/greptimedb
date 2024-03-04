@@ -1068,30 +1068,6 @@
 <a href="#1067" id="1067">1067</a>
 <a href="#1068" id="1068">1068</a>
 <a href="#1069" id="1069">1069</a>
-<a href="#1070" id="1070">1070</a>
-<a href="#1071" id="1071">1071</a>
-<a href="#1072" id="1072">1072</a>
-<a href="#1073" id="1073">1073</a>
-<a href="#1074" id="1074">1074</a>
-<a href="#1075" id="1075">1075</a>
-<a href="#1076" id="1076">1076</a>
-<a href="#1077" id="1077">1077</a>
-<a href="#1078" id="1078">1078</a>
-<a href="#1079" id="1079">1079</a>
-<a href="#1080" id="1080">1080</a>
-<a href="#1081" id="1081">1081</a>
-<a href="#1082" id="1082">1082</a>
-<a href="#1083" id="1083">1083</a>
-<a href="#1084" id="1084">1084</a>
-<a href="#1085" id="1085">1085</a>
-<a href="#1086" id="1086">1086</a>
-<a href="#1087" id="1087">1087</a>
-<a href="#1088" id="1088">1088</a>
-<a href="#1089" id="1089">1089</a>
-<a href="#1090" id="1090">1090</a>
-<a href="#1091" id="1091">1091</a>
-<a href="#1092" id="1092">1092</a>
-<a href="#1093" id="1093">1093</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -1106,46 +1082,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-</span><span class="kw">pub mod </span>authorize;
-<span class="kw">pub mod </span>handler;
-<span class="kw">pub mod </span>header;
-<span class="kw">pub mod </span>influxdb;
-<span class="kw">pub mod </span>mem_prof;
-<span class="kw">pub mod </span>opentsdb;
-<span class="kw">pub mod </span>otlp;
-<span class="kw">pub mod </span>pprof;
-<span class="kw">pub mod </span>prom_store;
-<span class="kw">pub mod </span>prometheus;
-<span class="kw">pub mod </span>script;
-
-<span class="attr">#[cfg(feature = <span class="string">"dashboard"</span>)]
-</span><span class="kw">mod </span>dashboard;
-<span class="kw">pub mod </span>influxdb_result_v1;
-
+</span><span class="kw">use </span>std::collections::HashMap;
 <span class="kw">use </span>std::fmt::Display;
 <span class="kw">use </span>std::net::SocketAddr;
+<span class="kw">use </span>std::sync::Mutex <span class="kw">as </span>StdMutex;
 <span class="kw">use </span>std::time::{Duration, Instant};
 
 <span class="kw">use </span>aide::axum::{routing <span class="kw">as </span>apirouting, ApiRouter, IntoApiResponse};
 <span class="kw">use </span>aide::openapi::{Info, OpenApi, Server <span class="kw">as </span>OpenAPIServer};
+<span class="kw">use </span>aide::OperationOutput;
 <span class="kw">use </span>async_trait::async_trait;
 <span class="kw">use </span>auth::UserProviderRef;
 <span class="kw">use </span>axum::error_handling::HandleErrorLayer;
 <span class="kw">use </span>axum::extract::{DefaultBodyLimit, MatchedPath};
 <span class="kw">use </span>axum::http::Request;
 <span class="kw">use </span>axum::middleware::{<span class="self">self</span>, Next};
-<span class="kw">use </span>axum::response::{Html, IntoResponse, Json};
+<span class="kw">use </span>axum::response::{Html, IntoResponse, Json, Response};
 <span class="kw">use </span>axum::{routing, BoxError, Extension, Router};
 <span class="kw">use </span>common_base::readable_size::ReadableSize;
 <span class="kw">use </span>common_base::Plugins;
-<span class="kw">use </span>common_error::ext::ErrorExt;
 <span class="kw">use </span>common_error::status_code::StatusCode;
-<span class="kw">use </span>common_query::Output;
-<span class="kw">use </span>common_recordbatch::{util, RecordBatch};
-<span class="kw">use </span>common_telemetry::logging::{debug, error, info};
+<span class="kw">use </span>common_recordbatch::RecordBatch;
+<span class="kw">use </span>common_telemetry::logging::{error, info};
 <span class="kw">use </span>common_time::timestamp::TimeUnit;
 <span class="kw">use </span>common_time::Timestamp;
 <span class="kw">use </span>datatypes::data_type::DataType;
+<span class="kw">use </span>datatypes::schema::SchemaRef;
 <span class="kw">use </span>futures::FutureExt;
 <span class="kw">use </span>schemars::JsonSchema;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
@@ -1159,7 +1121,11 @@
 
 <span class="kw">use </span><span class="self">self</span>::authorize::AuthState;
 <span class="kw">use </span><span class="kw">crate</span>::configurator::ConfiguratorRef;
-<span class="kw">use </span><span class="kw">crate</span>::error::{AlreadyStartedSnafu, Error, <span class="prelude-ty">Result</span>, StartHttpSnafu, ToJsonSnafu};
+<span class="kw">use </span><span class="kw">crate</span>::error::{AlreadyStartedSnafu, Error, HyperSnafu, <span class="prelude-ty">Result</span>, ToJsonSnafu};
+<span class="kw">use </span><span class="kw">crate</span>::http::arrow_result::ArrowResponse;
+<span class="kw">use </span><span class="kw">crate</span>::http::csv_result::CsvResponse;
+<span class="kw">use </span><span class="kw">crate</span>::http::error_result::ErrorResponse;
+<span class="kw">use </span><span class="kw">crate</span>::http::greptime_result_v1::GreptimedbV1Response;
 <span class="kw">use </span><span class="kw">crate</span>::http::influxdb::{influxdb_health, influxdb_ping, influxdb_write_v1, influxdb_write_v2};
 <span class="kw">use </span><span class="kw">crate</span>::http::influxdb_result_v1::InfluxdbV1Response;
 <span class="kw">use </span><span class="kw">crate</span>::http::prometheus::{
@@ -1170,13 +1136,33 @@
 };
 <span class="kw">use </span><span class="kw">crate</span>::metrics_handler::MetricsHandler;
 <span class="kw">use </span><span class="kw">crate</span>::prometheus_handler::PrometheusHandlerRef;
-<span class="kw">use </span><span class="kw">crate</span>::query_handler::grpc::ServerGrpcQueryHandlerRef;
 <span class="kw">use </span><span class="kw">crate</span>::query_handler::sql::ServerSqlQueryHandlerRef;
 <span class="kw">use </span><span class="kw">crate</span>::query_handler::{
     InfluxdbLineProtocolHandlerRef, OpenTelemetryProtocolHandlerRef, OpentsdbProtocolHandlerRef,
     PromStoreProtocolHandlerRef, ScriptHandlerRef,
 };
 <span class="kw">use </span><span class="kw">crate</span>::server::Server;
+
+<span class="kw">pub mod </span>authorize;
+<span class="kw">pub mod </span>handler;
+<span class="kw">pub mod </span>header;
+<span class="kw">pub mod </span>influxdb;
+<span class="kw">pub mod </span>mem_prof;
+<span class="kw">pub mod </span>opentsdb;
+<span class="kw">pub mod </span>otlp;
+<span class="kw">pub mod </span>pprof;
+<span class="kw">pub mod </span>prom_store;
+<span class="kw">pub mod </span>prometheus;
+<span class="kw">mod </span>prometheus_resp;
+<span class="kw">pub mod </span>script;
+
+<span class="kw">pub mod </span>arrow_result;
+<span class="kw">pub mod </span>csv_result;
+<span class="attr">#[cfg(feature = <span class="string">"dashboard"</span>)]
+</span><span class="kw">mod </span>dashboard;
+<span class="kw">pub mod </span>error_result;
+<span class="kw">pub mod </span>greptime_result_v1;
+<span class="kw">pub mod </span>influxdb_result_v1;
 
 <span class="kw">pub const </span>HTTP_API_VERSION: <span class="kw-2">&amp;</span>str = <span class="string">"v1"</span>;
 <span class="kw">pub const </span>HTTP_API_PREFIX: <span class="kw-2">&amp;</span>str = <span class="string">"/v1/"</span>;
@@ -1188,20 +1174,15 @@
 
 <span class="attr">#[derive(Default)]
 </span><span class="kw">pub struct </span>HttpServer {
-    sql_handler: <span class="prelude-ty">Option</span>&lt;ServerSqlQueryHandlerRef&gt;,
-    grpc_handler: <span class="prelude-ty">Option</span>&lt;ServerGrpcQueryHandlerRef&gt;,
-    options: HttpOptions,
-    influxdb_handler: <span class="prelude-ty">Option</span>&lt;InfluxdbLineProtocolHandlerRef&gt;,
-    opentsdb_handler: <span class="prelude-ty">Option</span>&lt;OpentsdbProtocolHandlerRef&gt;,
-    prom_handler: <span class="prelude-ty">Option</span>&lt;PromStoreProtocolHandlerRef&gt;,
-    prometheus_handler: <span class="prelude-ty">Option</span>&lt;PrometheusHandlerRef&gt;,
-    otlp_handler: <span class="prelude-ty">Option</span>&lt;OpenTelemetryProtocolHandlerRef&gt;,
-    script_handler: <span class="prelude-ty">Option</span>&lt;ScriptHandlerRef&gt;,
+    router: StdMutex&lt;Router&gt;,
     shutdown_tx: Mutex&lt;<span class="prelude-ty">Option</span>&lt;Sender&lt;()&gt;&gt;&gt;,
     user_provider: <span class="prelude-ty">Option</span>&lt;UserProviderRef&gt;,
-    metrics_handler: <span class="prelude-ty">Option</span>&lt;MetricsHandler&gt;,
-    greptime_config_options: <span class="prelude-ty">Option</span>&lt;String&gt;,
-    plugins: Plugins,
+
+    <span class="comment">// plugins
+    </span>plugins: Plugins,
+
+    <span class="comment">// server configs
+    </span>options: HttpOptions,
 }
 
 <span class="attr">#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -1242,22 +1223,42 @@
 }
 
 <span class="attr">#[derive(Debug, Serialize, Deserialize, JsonSchema, Eq, PartialEq)]
-</span><span class="kw">pub struct </span>Schema {
+</span><span class="kw">pub struct </span>OutputSchema {
     column_schemas: Vec&lt;ColumnSchema&gt;,
 }
 
-<span class="kw">impl </span>Schema {
-    <span class="kw">pub fn </span>new(columns: Vec&lt;ColumnSchema&gt;) -&gt; Schema {
-        Schema {
+<span class="kw">impl </span>OutputSchema {
+    <span class="kw">pub fn </span>new(columns: Vec&lt;ColumnSchema&gt;) -&gt; OutputSchema {
+        OutputSchema {
             column_schemas: columns,
+        }
+    }
+}
+
+<span class="kw">impl </span>From&lt;SchemaRef&gt; <span class="kw">for </span>OutputSchema {
+    <span class="kw">fn </span>from(schema: SchemaRef) -&gt; OutputSchema {
+        OutputSchema {
+            column_schemas: schema
+                .column_schemas()
+                .iter()
+                .map(|cs| ColumnSchema {
+                    name: cs.name.clone(),
+                    data_type: cs.data_type.name(),
+                })
+                .collect(),
         }
     }
 }
 
 <span class="attr">#[derive(Debug, Serialize, Deserialize, JsonSchema, Eq, PartialEq)]
 </span><span class="kw">pub struct </span>HttpRecordsOutput {
-    schema: <span class="prelude-ty">Option</span>&lt;Schema&gt;,
+    schema: OutputSchema,
     rows: Vec&lt;Vec&lt;Value&gt;&gt;,
+
+    <span class="comment">// plan level execution metrics
+    </span><span class="attr">#[serde(skip_serializing_if = <span class="string">"HashMap::is_empty"</span>)]
+    #[serde(default)]
+    </span>metrics: HashMap&lt;String, Value&gt;,
 }
 
 <span class="kw">impl </span>HttpRecordsOutput {
@@ -1266,14 +1267,11 @@
     }
 
     <span class="kw">pub fn </span>num_cols(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
-        <span class="self">self</span>.schema
-            .as_ref()
-            .map(|x| x.column_schemas.len())
-            .unwrap_or(<span class="number">0</span>)
+        <span class="self">self</span>.schema.column_schemas.len()
     }
 
-    <span class="kw">pub fn </span>schema(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>Schema&gt; {
-        <span class="self">self</span>.schema.as_ref()
+    <span class="kw">pub fn </span>schema(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>OutputSchema {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.schema
     }
 
     <span class="kw">pub fn </span>rows(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>Vec&lt;Vec&lt;Value&gt;&gt; {
@@ -1281,33 +1279,18 @@
     }
 }
 
-<span class="kw">impl </span>TryFrom&lt;Vec&lt;RecordBatch&gt;&gt; <span class="kw">for </span>HttpRecordsOutput {
-    <span class="kw">type </span>Error = Error;
-
-    <span class="comment">// TODO(sunng87): use schema from recordstreams when #366 fixed
-    </span><span class="kw">fn </span>try_from(
+<span class="kw">impl </span>HttpRecordsOutput {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>try_new(
+        schema: SchemaRef,
         recordbatches: Vec&lt;RecordBatch&gt;,
-    ) -&gt; std::result::Result&lt;HttpRecordsOutput, <span class="self">Self</span>::Error&gt; {
+    ) -&gt; std::result::Result&lt;HttpRecordsOutput, Error&gt; {
         <span class="kw">if </span>recordbatches.is_empty() {
             <span class="prelude-val">Ok</span>(HttpRecordsOutput {
-                schema: <span class="prelude-val">None</span>,
+                schema: OutputSchema::from(schema),
                 rows: <span class="macro">vec!</span>[],
+                metrics: Default::default(),
             })
         } <span class="kw">else </span>{
-            <span class="comment">// safety ensured by previous empty check
-            </span><span class="kw">let </span>first = <span class="kw-2">&amp;</span>recordbatches[<span class="number">0</span>];
-            <span class="kw">let </span>schema = Schema {
-                column_schemas: first
-                    .schema
-                    .column_schemas()
-                    .iter()
-                    .map(|cs| ColumnSchema {
-                        name: cs.name.clone(),
-                        data_type: cs.data_type.name(),
-                    })
-                    .collect(),
-            };
-
             <span class="kw">let </span><span class="kw-2">mut </span>rows =
                 Vec::with_capacity(recordbatches.iter().map(|r| r.num_rows()).sum::&lt;usize&gt;());
 
@@ -1324,8 +1307,9 @@
             }
 
             <span class="prelude-val">Ok</span>(HttpRecordsOutput {
-                schema: <span class="prelude-val">Some</span>(schema),
+                schema: OutputSchema::from(schema),
                 rows,
+                metrics: Default::default(),
             })
         }
     }
@@ -1333,139 +1317,38 @@
 
 <span class="attr">#[derive(Serialize, Deserialize, Debug, JsonSchema, Eq, PartialEq)]
 #[serde(rename_all = <span class="string">"lowercase"</span>)]
-</span><span class="kw">pub enum </span>JsonOutput {
+</span><span class="kw">pub enum </span>GreptimeQueryOutput {
     AffectedRows(usize),
     Records(HttpRecordsOutput),
 }
 
-<span class="attr">#[derive(Serialize, Deserialize, Debug, JsonSchema)]
-</span><span class="kw">pub struct </span>GreptimedbV1Response {
-    code: u32,
-    <span class="attr">#[serde(skip_serializing_if = <span class="string">"Option::is_none"</span>)]
-    </span>error: <span class="prelude-ty">Option</span>&lt;String&gt;,
-    <span class="attr">#[serde(skip_serializing_if = <span class="string">"Vec::is_empty"</span>, default)]
-    </span>output: Vec&lt;JsonOutput&gt;,
-    <span class="attr">#[serde(skip_serializing_if = <span class="string">"Option::is_none"</span>)]
-    </span>execution_time_ms: <span class="prelude-ty">Option</span>&lt;u64&gt;,
-}
-
-<span class="kw">impl </span>GreptimedbV1Response {
-    <span class="kw">pub fn </span>with_error(error: <span class="kw">impl </span>ErrorExt) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>code = error.status_code();
-        <span class="kw">if </span>code.should_log_error() {
-            <span class="macro">error!</span>(error; <span class="string">"Failed to handle HTTP request"</span>);
-        } <span class="kw">else </span>{
-            <span class="macro">debug!</span>(<span class="string">"Failed to handle HTTP request, err: {:?}"</span>, error);
-        }
-
-        GreptimedbV1Response {
-            error: <span class="prelude-val">Some</span>(error.output_msg()),
-            code: code <span class="kw">as </span>u32,
-            output: <span class="macro">vec!</span>[],
-            execution_time_ms: <span class="prelude-val">None</span>,
-        }
-    }
-
-    <span class="kw">fn </span>with_error_message(err_msg: String, error_code: StatusCode) -&gt; <span class="self">Self </span>{
-        GreptimedbV1Response {
-            error: <span class="prelude-val">Some</span>(err_msg),
-            code: error_code <span class="kw">as </span>u32,
-            output: <span class="macro">vec!</span>[],
-            execution_time_ms: <span class="prelude-val">None</span>,
-        }
-    }
-
-    <span class="kw">fn </span>with_output(output: Vec&lt;JsonOutput&gt;) -&gt; <span class="self">Self </span>{
-        GreptimedbV1Response {
-            error: <span class="prelude-val">None</span>,
-            code: StatusCode::Success <span class="kw">as </span>u32,
-            output,
-            execution_time_ms: <span class="prelude-val">None</span>,
-        }
-    }
-
-    <span class="kw">fn </span>with_execution_time(<span class="kw-2">&amp;mut </span><span class="self">self</span>, execution_time: u64) {
-        <span class="self">self</span>.execution_time_ms = <span class="prelude-val">Some</span>(execution_time);
-    }
-
-    <span class="doccomment">/// Create a json response from query result
-    </span><span class="kw">pub async fn </span>from_output(outputs: Vec&lt;<span class="prelude-ty">Result</span>&lt;Output&gt;&gt;) -&gt; <span class="self">Self </span>{
-        <span class="comment">// TODO(sunng87): this api response structure cannot represent error
-        // well. It hides successful execution results from error response
-        </span><span class="kw">let </span><span class="kw-2">mut </span>results = Vec::with_capacity(outputs.len());
-        <span class="kw">for </span>out <span class="kw">in </span>outputs {
-            <span class="kw">match </span>out {
-                <span class="prelude-val">Ok</span>(Output::AffectedRows(rows)) =&gt; {
-                    results.push(JsonOutput::AffectedRows(rows));
-                }
-                <span class="prelude-val">Ok</span>(Output::Stream(stream)) =&gt; {
-                    <span class="comment">// TODO(sunng87): streaming response
-                    </span><span class="kw">match </span>util::collect(stream).<span class="kw">await </span>{
-                        <span class="prelude-val">Ok</span>(rows) =&gt; <span class="kw">match </span>HttpRecordsOutput::try_from(rows) {
-                            <span class="prelude-val">Ok</span>(rows) =&gt; {
-                                results.push(JsonOutput::Records(rows));
-                            }
-                            <span class="prelude-val">Err</span>(err) =&gt; {
-                                <span class="kw">return </span><span class="self">Self</span>::with_error(err);
-                            }
-                        },
-
-                        <span class="prelude-val">Err</span>(e) =&gt; {
-                            <span class="kw">return </span><span class="self">Self</span>::with_error(e);
-                        }
-                    }
-                }
-                <span class="prelude-val">Ok</span>(Output::RecordBatches(rbs)) =&gt; <span class="kw">match </span>HttpRecordsOutput::try_from(rbs.take()) {
-                    <span class="prelude-val">Ok</span>(rows) =&gt; {
-                        results.push(JsonOutput::Records(rows));
-                    }
-                    <span class="prelude-val">Err</span>(err) =&gt; {
-                        <span class="kw">return </span><span class="self">Self</span>::with_error(err);
-                    }
-                },
-                <span class="prelude-val">Err</span>(e) =&gt; {
-                    <span class="kw">return </span><span class="self">Self</span>::with_error(e);
-                }
-            }
-        }
-        <span class="self">Self</span>::with_output(results)
-    }
-
-    <span class="kw">pub fn </span>code(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u32 {
-        <span class="self">self</span>.code
-    }
-
-    <span class="kw">pub fn </span>success(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        <span class="self">self</span>.code == (StatusCode::Success <span class="kw">as </span>u32)
-    }
-
-    <span class="kw">pub fn </span>error(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>String&gt; {
-        <span class="self">self</span>.error.as_ref()
-    }
-
-    <span class="kw">pub fn </span>output(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[JsonOutput] {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.output
-    }
-
-    <span class="kw">pub fn </span>execution_time_ms(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u64&gt; {
-        <span class="self">self</span>.execution_time_ms
-    }
-}
-
 <span class="doccomment">/// It allows the results of SQL queries to be presented in different formats.
-/// Currently, `greptimedb_v1` and `influxdb_v1` are supported.
-</span><span class="attr">#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+</span><span class="attr">#[derive(Default, Debug, Clone, Copy, PartialEq, Eq)]
 </span><span class="kw">pub enum </span>ResponseFormat {
-    GreptimedbV1,
+    Arrow,
+    Csv,
+    <span class="attr">#[default]
+    </span>GreptimedbV1,
     InfluxdbV1,
 }
 
 <span class="kw">impl </span>ResponseFormat {
     <span class="kw">pub fn </span>parse(s: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
         <span class="kw">match </span>s {
+            <span class="string">"arrow" </span>=&gt; <span class="prelude-val">Some</span>(ResponseFormat::Arrow),
+            <span class="string">"csv" </span>=&gt; <span class="prelude-val">Some</span>(ResponseFormat::Csv),
             <span class="string">"greptimedb_v1" </span>=&gt; <span class="prelude-val">Some</span>(ResponseFormat::GreptimedbV1),
             <span class="string">"influxdb_v1" </span>=&gt; <span class="prelude-val">Some</span>(ResponseFormat::InfluxdbV1),
             <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
+        }
+    }
+
+    <span class="kw">pub fn </span>as_str(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str {
+        <span class="kw">match </span><span class="self">self </span>{
+            ResponseFormat::Arrow =&gt; <span class="string">"arrow"</span>,
+            ResponseFormat::Csv =&gt; <span class="string">"csv"</span>,
+            ResponseFormat::GreptimedbV1 =&gt; <span class="string">"greptimedb_v1"</span>,
+            ResponseFormat::InfluxdbV1 =&gt; <span class="string">"influxdb_v1"</span>,
         }
     }
 }
@@ -1515,68 +1398,70 @@
 }
 
 <span class="attr">#[derive(Serialize, Deserialize, Debug, JsonSchema)]
-#[serde(tag = <span class="string">"type"</span>)]
-</span><span class="kw">pub enum </span>JsonResponse {
+</span><span class="kw">pub enum </span>HttpResponse {
+    Arrow(ArrowResponse),
+    Csv(CsvResponse),
+    Error(ErrorResponse),
     GreptimedbV1(GreptimedbV1Response),
     InfluxdbV1(InfluxdbV1Response),
 }
 
-<span class="kw">impl </span>From&lt;GreptimedbV1Response&gt; <span class="kw">for </span>JsonResponse {
+<span class="kw">impl </span>HttpResponse {
+    <span class="kw">pub fn </span>with_execution_time(<span class="self">self</span>, execution_time: u64) -&gt; <span class="self">Self </span>{
+        <span class="kw">match </span><span class="self">self </span>{
+            HttpResponse::Arrow(resp) =&gt; resp.with_execution_time(execution_time).into(),
+            HttpResponse::Csv(resp) =&gt; resp.with_execution_time(execution_time).into(),
+            HttpResponse::GreptimedbV1(resp) =&gt; resp.with_execution_time(execution_time).into(),
+            HttpResponse::InfluxdbV1(resp) =&gt; resp.with_execution_time(execution_time).into(),
+            HttpResponse::Error(resp) =&gt; resp.with_execution_time(execution_time).into(),
+        }
+    }
+}
+
+<span class="kw">impl </span>IntoResponse <span class="kw">for </span>HttpResponse {
+    <span class="kw">fn </span>into_response(<span class="self">self</span>) -&gt; Response {
+        <span class="kw">match </span><span class="self">self </span>{
+            HttpResponse::Arrow(resp) =&gt; resp.into_response(),
+            HttpResponse::Csv(resp) =&gt; resp.into_response(),
+            HttpResponse::GreptimedbV1(resp) =&gt; resp.into_response(),
+            HttpResponse::InfluxdbV1(resp) =&gt; resp.into_response(),
+            HttpResponse::Error(resp) =&gt; resp.into_response(),
+        }
+    }
+}
+
+<span class="kw">impl </span>OperationOutput <span class="kw">for </span>HttpResponse {
+    <span class="kw">type </span>Inner = Response;
+}
+
+<span class="kw">impl </span>From&lt;ArrowResponse&gt; <span class="kw">for </span>HttpResponse {
+    <span class="kw">fn </span>from(value: ArrowResponse) -&gt; <span class="self">Self </span>{
+        HttpResponse::Arrow(value)
+    }
+}
+
+<span class="kw">impl </span>From&lt;CsvResponse&gt; <span class="kw">for </span>HttpResponse {
+    <span class="kw">fn </span>from(value: CsvResponse) -&gt; <span class="self">Self </span>{
+        HttpResponse::Csv(value)
+    }
+}
+
+<span class="kw">impl </span>From&lt;ErrorResponse&gt; <span class="kw">for </span>HttpResponse {
+    <span class="kw">fn </span>from(value: ErrorResponse) -&gt; <span class="self">Self </span>{
+        HttpResponse::Error(value)
+    }
+}
+
+<span class="kw">impl </span>From&lt;GreptimedbV1Response&gt; <span class="kw">for </span>HttpResponse {
     <span class="kw">fn </span>from(value: GreptimedbV1Response) -&gt; <span class="self">Self </span>{
-        JsonResponse::GreptimedbV1(value)
+        HttpResponse::GreptimedbV1(value)
     }
 }
 
-<span class="kw">impl </span>From&lt;InfluxdbV1Response&gt; <span class="kw">for </span>JsonResponse {
+<span class="kw">impl </span>From&lt;InfluxdbV1Response&gt; <span class="kw">for </span>HttpResponse {
     <span class="kw">fn </span>from(value: InfluxdbV1Response) -&gt; <span class="self">Self </span>{
-        JsonResponse::InfluxdbV1(value)
+        HttpResponse::InfluxdbV1(value)
     }
-}
-
-<span class="kw">impl </span>JsonResponse {
-    <span class="kw">pub fn </span>with_error(error: <span class="kw">impl </span>ErrorExt, response_format: ResponseFormat) -&gt; <span class="self">Self </span>{
-        <span class="kw">match </span>response_format {
-            ResponseFormat::GreptimedbV1 =&gt; GreptimedbV1Response::with_error(error).into(),
-            ResponseFormat::InfluxdbV1 =&gt; InfluxdbV1Response::with_error(error).into(),
-        }
-    }
-
-    <span class="kw">pub fn </span>with_error_message(
-        err_msg: String,
-        error_code: StatusCode,
-        response_format: ResponseFormat,
-    ) -&gt; <span class="self">Self </span>{
-        <span class="kw">match </span>response_format {
-            ResponseFormat::GreptimedbV1 =&gt; {
-                GreptimedbV1Response::with_error_message(err_msg, error_code).into()
-            }
-            ResponseFormat::InfluxdbV1 =&gt; InfluxdbV1Response::with_error_message(err_msg).into(),
-        }
-    }
-    <span class="kw">pub async fn </span>from_output(
-        outputs: Vec&lt;<span class="prelude-ty">Result</span>&lt;Output&gt;&gt;,
-        response_format: ResponseFormat,
-        epoch: <span class="prelude-ty">Option</span>&lt;Epoch&gt;,
-    ) -&gt; <span class="self">Self </span>{
-        <span class="kw">match </span>response_format {
-            ResponseFormat::GreptimedbV1 =&gt; GreptimedbV1Response::from_output(outputs).<span class="kw">await</span>.into(),
-            ResponseFormat::InfluxdbV1 =&gt; {
-                InfluxdbV1Response::from_output(outputs, epoch).<span class="kw">await</span>.into()
-            }
-        }
-    }
-
-    <span class="kw">fn </span>with_execution_time(<span class="kw-2">mut </span><span class="self">self</span>, execution_time: u128) -&gt; <span class="self">Self </span>{
-        <span class="kw">match </span><span class="kw-2">&amp;mut </span><span class="self">self </span>{
-            JsonResponse::GreptimedbV1(resp) =&gt; {
-                resp.with_execution_time(execution_time <span class="kw">as </span>u64);
-            }
-            JsonResponse::InfluxdbV1(resp) =&gt; {
-                resp.with_execution_time(execution_time <span class="kw">as </span>u64);
-            }
-        }
-        <span class="self">self
-    </span>}
 }
 
 <span class="kw">async fn </span>serve_api(Extension(api): Extension&lt;OpenApi&gt;) -&gt; <span class="kw">impl </span>IntoApiResponse {
@@ -1600,99 +1485,16 @@
 
 <span class="attr">#[derive(Default)]
 </span><span class="kw">pub struct </span>HttpServerBuilder {
-    inner: HttpServer,
+    options: HttpOptions,
+    plugins: Plugins,
+    user_provider: <span class="prelude-ty">Option</span>&lt;UserProviderRef&gt;,
+    api: OpenApi,
+    router: Router,
 }
 
 <span class="kw">impl </span>HttpServerBuilder {
     <span class="kw">pub fn </span>new(options: HttpOptions) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
-            inner: HttpServer {
-                sql_handler: <span class="prelude-val">None</span>,
-                grpc_handler: <span class="prelude-val">None</span>,
-                options,
-                opentsdb_handler: <span class="prelude-val">None</span>,
-                influxdb_handler: <span class="prelude-val">None</span>,
-                prom_handler: <span class="prelude-val">None</span>,
-                prometheus_handler: <span class="prelude-val">None</span>,
-                otlp_handler: <span class="prelude-val">None</span>,
-                user_provider: <span class="prelude-val">None</span>,
-                script_handler: <span class="prelude-val">None</span>,
-                metrics_handler: <span class="prelude-val">None</span>,
-                shutdown_tx: Mutex::new(<span class="prelude-val">None</span>),
-                greptime_config_options: <span class="prelude-val">None</span>,
-                plugins: Default::default(),
-            },
-        }
-    }
-
-    <span class="kw">pub fn </span>with_sql_handler(<span class="kw-2">&amp;mut </span><span class="self">self</span>, handler: ServerSqlQueryHandlerRef) -&gt; <span class="kw-2">&amp;mut </span><span class="self">Self </span>{
-        <span class="kw">let _ </span>= <span class="self">self</span>.inner.sql_handler.get_or_insert(handler);
-        <span class="self">self
-    </span>}
-
-    <span class="kw">pub fn </span>with_grpc_handler(<span class="kw-2">&amp;mut </span><span class="self">self</span>, handler: ServerGrpcQueryHandlerRef) -&gt; <span class="kw-2">&amp;mut </span><span class="self">Self </span>{
-        <span class="kw">let _ </span>= <span class="self">self</span>.inner.grpc_handler.get_or_insert(handler);
-        <span class="self">self
-    </span>}
-
-    <span class="kw">pub fn </span>with_opentsdb_handler(<span class="kw-2">&amp;mut </span><span class="self">self</span>, handler: OpentsdbProtocolHandlerRef) -&gt; <span class="kw-2">&amp;mut </span><span class="self">Self </span>{
-        <span class="kw">let _ </span>= <span class="self">self</span>.inner.opentsdb_handler.get_or_insert(handler);
-        <span class="self">self
-    </span>}
-
-    <span class="kw">pub fn </span>with_script_handler(<span class="kw-2">&amp;mut </span><span class="self">self</span>, handler: ScriptHandlerRef) -&gt; <span class="kw-2">&amp;mut </span><span class="self">Self </span>{
-        <span class="kw">let _ </span>= <span class="self">self</span>.inner.script_handler.get_or_insert(handler);
-        <span class="self">self
-    </span>}
-
-    <span class="kw">pub fn </span>with_influxdb_handler(<span class="kw-2">&amp;mut </span><span class="self">self</span>, handler: InfluxdbLineProtocolHandlerRef) -&gt; <span class="kw-2">&amp;mut </span><span class="self">Self </span>{
-        <span class="kw">let _ </span>= <span class="self">self</span>.inner.influxdb_handler.get_or_insert(handler);
-        <span class="self">self
-    </span>}
-
-    <span class="kw">pub fn </span>with_prom_handler(<span class="kw-2">&amp;mut </span><span class="self">self</span>, handler: PromStoreProtocolHandlerRef) -&gt; <span class="kw-2">&amp;mut </span><span class="self">Self </span>{
-        <span class="kw">let _ </span>= <span class="self">self</span>.inner.prom_handler.get_or_insert(handler);
-        <span class="self">self
-    </span>}
-
-    <span class="kw">pub fn </span>with_prometheus_handler(<span class="kw-2">&amp;mut </span><span class="self">self</span>, handler: PrometheusHandlerRef) -&gt; <span class="kw-2">&amp;mut </span><span class="self">Self </span>{
-        <span class="kw">let _ </span>= <span class="self">self</span>.inner.prometheus_handler.get_or_insert(handler);
-        <span class="self">self
-    </span>}
-
-    <span class="kw">pub fn </span>with_otlp_handler(<span class="kw-2">&amp;mut </span><span class="self">self</span>, handler: OpenTelemetryProtocolHandlerRef) -&gt; <span class="kw-2">&amp;mut </span><span class="self">Self </span>{
-        <span class="kw">let _ </span>= <span class="self">self</span>.inner.otlp_handler.get_or_insert(handler);
-        <span class="self">self
-    </span>}
-
-    <span class="kw">pub fn </span>with_user_provider(<span class="kw-2">&amp;mut </span><span class="self">self</span>, user_provider: UserProviderRef) -&gt; <span class="kw-2">&amp;mut </span><span class="self">Self </span>{
-        <span class="kw">let _ </span>= <span class="self">self</span>.inner.user_provider.get_or_insert(user_provider);
-        <span class="self">self
-    </span>}
-
-    <span class="kw">pub fn </span>with_metrics_handler(<span class="kw-2">&amp;mut </span><span class="self">self</span>, handler: MetricsHandler) -&gt; <span class="kw-2">&amp;mut </span><span class="self">Self </span>{
-        <span class="kw">let _ </span>= <span class="self">self</span>.inner.metrics_handler.get_or_insert(handler);
-        <span class="self">self
-    </span>}
-
-    <span class="kw">pub fn </span>with_plugins(<span class="kw-2">&amp;mut </span><span class="self">self</span>, plugins: Plugins) -&gt; <span class="kw-2">&amp;mut </span><span class="self">Self </span>{
-        <span class="self">self</span>.inner.plugins = plugins;
-        <span class="self">self
-    </span>}
-
-    <span class="kw">pub fn </span>with_greptime_config_options(<span class="kw-2">&amp;mut </span><span class="self">self</span>, opts: String) -&gt; <span class="kw-2">&amp;mut </span><span class="self">Self </span>{
-        <span class="self">self</span>.inner.greptime_config_options = <span class="prelude-val">Some</span>(opts);
-        <span class="self">self
-    </span>}
-
-    <span class="kw">pub fn </span>build(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; HttpServer {
-        std::mem::take(<span class="self">self</span>).inner
-    }
-}
-
-<span class="kw">impl </span>HttpServer {
-    <span class="kw">pub fn </span>make_app(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Router {
-        <span class="kw">let </span><span class="kw-2">mut </span>api = OpenApi {
+        <span class="kw">let </span>api = OpenApi {
             info: Info {
                 title: <span class="string">"GreptimeDB HTTP API"</span>.to_string(),
                 description: <span class="prelude-val">Some</span>(<span class="string">"HTTP APIs to interact with GreptimeDB"</span>.to_string()),
@@ -1705,74 +1507,148 @@
             }],
             ..OpenApi::default()
         };
-
-        <span class="kw">let </span><span class="kw-2">mut </span>router = Router::new();
-
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(sql_handler) = <span class="self">self</span>.sql_handler.clone() {
-            <span class="kw">let </span>sql_router = <span class="self">self
-                </span>.route_sql(ApiState {
-                    sql_handler,
-                    script_handler: <span class="self">self</span>.script_handler.clone(),
-                })
-                .finish_api(<span class="kw-2">&amp;mut </span>api)
-                .layer(Extension(api.clone()));
-            router = router.nest(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">"/{HTTP_API_VERSION}"</span>), sql_router);
+        <span class="self">Self </span>{
+            options,
+            plugins: Plugins::default(),
+            user_provider: <span class="prelude-val">None</span>,
+            api,
+            router: Router::new(),
         }
+    }
 
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(opentsdb_handler) = <span class="self">self</span>.opentsdb_handler.clone() {
-            router = router.nest(
+    <span class="kw">pub fn </span>with_sql_handler(
+        <span class="kw-2">mut </span><span class="self">self</span>,
+        sql_handler: ServerSqlQueryHandlerRef,
+        script_handler: <span class="prelude-ty">Option</span>&lt;ScriptHandlerRef&gt;,
+    ) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>sql_router = HttpServer::route_sql(ApiState {
+            sql_handler,
+            script_handler,
+        })
+        .finish_api(<span class="kw-2">&amp;mut </span><span class="self">self</span>.api)
+        .layer(Extension(<span class="self">self</span>.api.clone()));
+
+        <span class="self">Self </span>{
+            router: <span class="self">self
+                </span>.router
+                .nest(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">"/{HTTP_API_VERSION}"</span>), sql_router),
+            ..<span class="self">self
+        </span>}
+    }
+
+    <span class="kw">pub fn </span>with_opentsdb_handler(<span class="self">self</span>, handler: OpentsdbProtocolHandlerRef) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            router: <span class="self">self</span>.router.nest(
                 <span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">"/{HTTP_API_VERSION}/opentsdb"</span>),
-                <span class="self">self</span>.route_opentsdb(opentsdb_handler),
-            );
-        }
+                HttpServer::route_opentsdb(handler),
+            ),
+            ..<span class="self">self
+        </span>}
+    }
 
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(influxdb_handler) = <span class="self">self</span>.influxdb_handler.clone() {
-            router = router.nest(
+    <span class="kw">pub fn </span>with_influxdb_handler(<span class="self">self</span>, handler: InfluxdbLineProtocolHandlerRef) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            router: <span class="self">self</span>.router.nest(
                 <span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">"/{HTTP_API_VERSION}/influxdb"</span>),
-                <span class="self">self</span>.route_influxdb(influxdb_handler),
-            );
-        }
+                HttpServer::route_influxdb(handler),
+            ),
+            ..<span class="self">self
+        </span>}
+    }
 
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(prom_handler) = <span class="self">self</span>.prom_handler.clone() {
-            router = router.nest(
+    <span class="kw">pub fn </span>with_prom_handler(
+        <span class="self">self</span>,
+        handler: PromStoreProtocolHandlerRef,
+        prom_store_with_metric_engine: bool,
+    ) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            router: <span class="self">self</span>.router.nest(
                 <span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">"/{HTTP_API_VERSION}/prometheus"</span>),
-                <span class="self">self</span>.route_prom(prom_handler),
-            );
-        }
+                HttpServer::route_prom(handler, prom_store_with_metric_engine),
+            ),
+            ..<span class="self">self
+        </span>}
+    }
 
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(prometheus_handler) = <span class="self">self</span>.prometheus_handler.clone() {
-            router = router.nest(
+    <span class="kw">pub fn </span>with_prometheus_handler(<span class="self">self</span>, handler: PrometheusHandlerRef) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            router: <span class="self">self</span>.router.nest(
                 <span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">"/{HTTP_API_VERSION}/prometheus/api/v1"</span>),
-                <span class="self">self</span>.route_prometheus(prometheus_handler),
-            );
-        }
+                HttpServer::route_prometheus(handler),
+            ),
+            ..<span class="self">self
+        </span>}
+    }
 
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(otlp_handler) = <span class="self">self</span>.otlp_handler.clone() {
-            router = router.nest(
+    <span class="kw">pub fn </span>with_otlp_handler(<span class="self">self</span>, handler: OpenTelemetryProtocolHandlerRef) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            router: <span class="self">self</span>.router.nest(
                 <span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">"/{HTTP_API_VERSION}/otlp"</span>),
-                <span class="self">self</span>.route_otlp(otlp_handler),
-            );
-        }
+                HttpServer::route_otlp(handler),
+            ),
+            ..<span class="self">self
+        </span>}
+    }
 
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(metrics_handler) = <span class="self">self</span>.metrics_handler {
-            router = router.nest(<span class="string">""</span>, <span class="self">self</span>.route_metrics(metrics_handler));
+    <span class="kw">pub fn </span>with_user_provider(<span class="self">self</span>, user_provider: UserProviderRef) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            user_provider: <span class="prelude-val">Some</span>(user_provider),
+            ..<span class="self">self
+        </span>}
+    }
+
+    <span class="kw">pub fn </span>with_metrics_handler(<span class="self">self</span>, handler: MetricsHandler) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            router: <span class="self">self</span>.router.nest(<span class="string">""</span>, HttpServer::route_metrics(handler)),
+            ..<span class="self">self
+        </span>}
+    }
+
+    <span class="kw">pub fn </span>with_plugins(<span class="self">self</span>, plugins: Plugins) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{ plugins, ..<span class="self">self </span>}
+    }
+
+    <span class="kw">pub fn </span>with_greptime_config_options(<span class="kw-2">mut </span><span class="self">self</span>, opts: String) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>config_router = HttpServer::route_config(GreptimeOptionsConfigState {
+            greptime_config_options: opts,
+        })
+        .finish_api(<span class="kw-2">&amp;mut </span><span class="self">self</span>.api);
+
+        <span class="self">Self </span>{
+            router: <span class="self">self</span>.router.nest(<span class="string">""</span>, config_router),
+            ..<span class="self">self
+        </span>}
+    }
+
+    <span class="kw">pub fn </span>with_extra_router(<span class="self">self</span>, router: Router) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            router: <span class="self">self</span>.router.nest(<span class="string">""</span>, router),
+            ..<span class="self">self
+        </span>}
+    }
+
+    <span class="kw">pub fn </span>build(<span class="self">self</span>) -&gt; HttpServer {
+        HttpServer {
+            options: <span class="self">self</span>.options,
+            user_provider: <span class="self">self</span>.user_provider,
+            shutdown_tx: Mutex::new(<span class="prelude-val">None</span>),
+            plugins: <span class="self">self</span>.plugins,
+            router: StdMutex::new(<span class="self">self</span>.router),
         }
+    }
+}
+
+<span class="kw">impl </span>HttpServer {
+    <span class="kw">pub fn </span>make_app(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Router {
+        <span class="kw">let </span><span class="kw-2">mut </span>router = {
+            <span class="kw">let </span>router = <span class="self">self</span>.router.lock().unwrap();
+            router.clone()
+        };
 
         router = router.route(
             <span class="string">"/health"</span>,
             routing::get(handler::health).post(handler::health),
         );
-
-        <span class="kw">let </span>config_router = <span class="self">self
-            </span>.route_config(GreptimeOptionsConfigState {
-                greptime_config_options: <span class="self">self
-                    </span>.greptime_config_options
-                    .clone()
-                    .unwrap_or(<span class="string">""</span>.to_string()),
-            })
-            .finish_api(<span class="kw-2">&amp;mut </span>api);
-
-        router = router.nest(<span class="string">""</span>, config_router);
 
         router = router.route(<span class="string">"/status"</span>, routing::get(handler::status));
 
@@ -1834,13 +1710,13 @@
             )
     }
 
-    <span class="kw">fn </span>route_metrics&lt;S&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, metrics_handler: MetricsHandler) -&gt; Router&lt;S&gt; {
+    <span class="kw">fn </span>route_metrics&lt;S&gt;(metrics_handler: MetricsHandler) -&gt; Router&lt;S&gt; {
         Router::new()
             .route(<span class="string">"/metrics"</span>, routing::get(handler::metrics))
             .with_state(metrics_handler)
     }
 
-    <span class="kw">fn </span>route_sql&lt;S&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, api_state: ApiState) -&gt; ApiRouter&lt;S&gt; {
+    <span class="kw">fn </span>route_sql&lt;S&gt;(api_state: ApiState) -&gt; ApiRouter&lt;S&gt; {
         ApiRouter::new()
             .api_route(
                 <span class="string">"/sql"</span>,
@@ -1859,7 +1735,7 @@
             .with_state(api_state)
     }
 
-    <span class="kw">fn </span>route_prometheus&lt;S&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, prometheus_handler: PrometheusHandlerRef) -&gt; Router&lt;S&gt; {
+    <span class="kw">fn </span>route_prometheus&lt;S&gt;(prometheus_handler: PrometheusHandlerRef) -&gt; Router&lt;S&gt; {
         Router::new()
             .route(
                 <span class="string">"/format_query"</span>,
@@ -1876,14 +1752,23 @@
             .with_state(prometheus_handler)
     }
 
-    <span class="kw">fn </span>route_prom&lt;S&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, prom_handler: PromStoreProtocolHandlerRef) -&gt; Router&lt;S&gt; {
-        Router::new()
-            .route(<span class="string">"/write"</span>, routing::post(prom_store::remote_write))
-            .route(<span class="string">"/read"</span>, routing::post(prom_store::remote_read))
-            .with_state(prom_handler)
+    <span class="kw">fn </span>route_prom&lt;S&gt;(
+        prom_handler: PromStoreProtocolHandlerRef,
+        prom_store_with_metric_engine: bool,
+    ) -&gt; Router&lt;S&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>router = Router::new().route(<span class="string">"/read"</span>, routing::post(prom_store::remote_read));
+        <span class="kw">if </span>prom_store_with_metric_engine {
+            router = router.route(<span class="string">"/write"</span>, routing::post(prom_store::remote_write));
+        } <span class="kw">else </span>{
+            router = router.route(
+                <span class="string">"/write"</span>,
+                routing::post(prom_store::route_write_without_metric_engine),
+            );
+        }
+        router.with_state(prom_handler)
     }
 
-    <span class="kw">fn </span>route_influxdb&lt;S&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, influxdb_handler: InfluxdbLineProtocolHandlerRef) -&gt; Router&lt;S&gt; {
+    <span class="kw">fn </span>route_influxdb&lt;S&gt;(influxdb_handler: InfluxdbLineProtocolHandlerRef) -&gt; Router&lt;S&gt; {
         Router::new()
             .route(<span class="string">"/write"</span>, routing::post(influxdb_write_v1))
             .route(<span class="string">"/api/v2/write"</span>, routing::post(influxdb_write_v2))
@@ -1892,20 +1777,20 @@
             .with_state(influxdb_handler)
     }
 
-    <span class="kw">fn </span>route_opentsdb&lt;S&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, opentsdb_handler: OpentsdbProtocolHandlerRef) -&gt; Router&lt;S&gt; {
+    <span class="kw">fn </span>route_opentsdb&lt;S&gt;(opentsdb_handler: OpentsdbProtocolHandlerRef) -&gt; Router&lt;S&gt; {
         Router::new()
             .route(<span class="string">"/api/put"</span>, routing::post(opentsdb::put))
             .with_state(opentsdb_handler)
     }
 
-    <span class="kw">fn </span>route_otlp&lt;S&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, otlp_handler: OpenTelemetryProtocolHandlerRef) -&gt; Router&lt;S&gt; {
+    <span class="kw">fn </span>route_otlp&lt;S&gt;(otlp_handler: OpenTelemetryProtocolHandlerRef) -&gt; Router&lt;S&gt; {
         Router::new()
             .route(<span class="string">"/v1/metrics"</span>, routing::post(otlp::metrics))
             .route(<span class="string">"/v1/traces"</span>, routing::post(otlp::traces))
             .with_state(otlp_handler)
     }
 
-    <span class="kw">fn </span>route_config&lt;S&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, state: GreptimeOptionsConfigState) -&gt; ApiRouter&lt;S&gt; {
+    <span class="kw">fn </span>route_config&lt;S&gt;(state: GreptimeOptionsConfigState) -&gt; ApiRouter&lt;S&gt; {
         ApiRouter::new()
             .route(<span class="string">"/config"</span>, apirouting::get(handler::config))
             .with_state(state)
@@ -1982,9 +1867,15 @@
         <span class="kw">let </span>listening = server.local_addr();
         <span class="macro">info!</span>(<span class="string">"HTTP server is bound to {}"</span>, listening);
 
-        <span class="kw">let </span>graceful = server.with_graceful_shutdown(rx.map(drop));
-        graceful.<span class="kw">await</span>.context(StartHttpSnafu)<span class="question-mark">?</span>;
-
+        common_runtime::spawn_bg(<span class="kw">async move </span>{
+            <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = server
+                .with_graceful_shutdown(rx.map(drop))
+                .<span class="kw">await
+                </span>.context(HyperSnafu)
+            {
+                <span class="macro">error!</span>(e; <span class="string">"Failed to shutdown http server"</span>);
+            }
+        });
         <span class="prelude-val">Ok</span>(listening)
     }
 
@@ -1994,26 +1885,29 @@
 }
 
 <span class="doccomment">/// handle error middleware
-</span><span class="kw">async fn </span>handle_error(err: BoxError) -&gt; Json&lt;JsonResponse&gt; {
+</span><span class="kw">async fn </span>handle_error(err: BoxError) -&gt; Json&lt;HttpResponse&gt; {
     <span class="macro">error!</span>(err; <span class="string">"Unhandled internal error"</span>);
-
-    Json(JsonResponse::with_error_message(
-        <span class="macro">format!</span>(<span class="string">"Unhandled internal error: {err}"</span>),
-        StatusCode::Unexpected,
+    Json(HttpResponse::Error(ErrorResponse::from_error_message(
         ResponseFormat::GreptimedbV1,
-    ))
+        StatusCode::Unexpected,
+        <span class="macro">format!</span>(<span class="string">"Unhandled internal error: {err}"</span>),
+    )))
 }
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>test {
     <span class="kw">use </span>std::future::pending;
+    <span class="kw">use </span>std::io::Cursor;
     <span class="kw">use </span>std::sync::Arc;
 
     <span class="kw">use </span>api::v1::greptime_request::Request;
+    <span class="kw">use </span>arrow_ipc::reader::FileReader;
+    <span class="kw">use </span>arrow_schema::DataType;
     <span class="kw">use </span>axum::handler::Handler;
     <span class="kw">use </span>axum::http::StatusCode;
     <span class="kw">use </span>axum::routing::get;
     <span class="kw">use </span>axum_test_helper::TestClient;
+    <span class="kw">use </span>common_query::Output;
     <span class="kw">use </span>common_recordbatch::RecordBatches;
     <span class="kw">use </span>datatypes::prelude::<span class="kw-2">*</span>;
     <span class="kw">use </span>datatypes::schema::{ColumnSchema, Schema};
@@ -2026,7 +1920,7 @@
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use </span><span class="kw">crate</span>::error::Error;
-    <span class="kw">use </span><span class="kw">crate</span>::query_handler::grpc::{GrpcQueryHandler, ServerGrpcQueryHandlerAdapter};
+    <span class="kw">use </span><span class="kw">crate</span>::query_handler::grpc::GrpcQueryHandler;
     <span class="kw">use </span><span class="kw">crate</span>::query_handler::sql::{ServerSqlQueryHandlerAdapter, SqlQueryHandler};
 
     <span class="kw">struct </span>DummyInstance {
@@ -2094,10 +1988,8 @@
     <span class="kw">fn </span>make_test_app(tx: mpsc::Sender&lt;(String, Vec&lt;u8&gt;)&gt;) -&gt; Router {
         <span class="kw">let </span>instance = Arc::new(DummyInstance { _tx: tx });
         <span class="kw">let </span>sql_instance = ServerSqlQueryHandlerAdapter::arc(instance.clone());
-        <span class="kw">let </span>grpc_instance = ServerGrpcQueryHandlerAdapter::arc(instance);
         <span class="kw">let </span>server = HttpServerBuilder::new(HttpOptions::default())
-            .with_sql_handler(sql_instance)
-            .with_grpc_handler(grpc_instance)
+            .with_sql_handler(sql_instance, <span class="prelude-val">None</span>)
             .build();
         server.build(server.make_app()).route(
             <span class="string">"/test/timeout"</span>,
@@ -2128,6 +2020,33 @@
     }
 
     <span class="attr">#[tokio::test]
+    </span><span class="kw">async fn </span>test_schema_for_empty_response() {
+        <span class="kw">let </span>column_schemas = <span class="macro">vec!</span>[
+            ColumnSchema::new(<span class="string">"numbers"</span>, ConcreteDataType::uint32_datatype(), <span class="bool-val">false</span>),
+            ColumnSchema::new(<span class="string">"strings"</span>, ConcreteDataType::string_datatype(), <span class="bool-val">true</span>),
+        ];
+        <span class="kw">let </span>schema = Arc::new(Schema::new(column_schemas));
+
+        <span class="kw">let </span>recordbatches = RecordBatches::try_new(schema.clone(), <span class="macro">vec!</span>[]).unwrap();
+        <span class="kw">let </span>outputs = <span class="macro">vec!</span>[<span class="prelude-val">Ok</span>(Output::RecordBatches(recordbatches))];
+
+        <span class="kw">let </span>json_resp = GreptimedbV1Response::from_output(outputs).<span class="kw">await</span>;
+        <span class="kw">if let </span>HttpResponse::GreptimedbV1(json_resp) = json_resp {
+            <span class="kw">let </span>json_output = <span class="kw-2">&amp;</span>json_resp.output[<span class="number">0</span>];
+            <span class="kw">if let </span>GreptimeQueryOutput::Records(r) = json_output {
+                <span class="macro">assert_eq!</span>(r.num_rows(), <span class="number">0</span>);
+                <span class="macro">assert_eq!</span>(r.num_cols(), <span class="number">2</span>);
+                <span class="macro">assert_eq!</span>(r.schema.column_schemas[<span class="number">0</span>].name, <span class="string">"numbers"</span>);
+                <span class="macro">assert_eq!</span>(r.schema.column_schemas[<span class="number">0</span>].data_type, <span class="string">"UInt32"</span>);
+            } <span class="kw">else </span>{
+                <span class="macro">panic!</span>(<span class="string">"invalid output type"</span>);
+            }
+        } <span class="kw">else </span>{
+            <span class="macro">panic!</span>(<span class="string">"invalid format"</span>)
+        }
+    }
+
+    <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>test_recordbatches_conversion() {
         <span class="kw">let </span>column_schemas = <span class="macro">vec!</span>[
             ColumnSchema::new(<span class="string">"numbers"</span>, ConcreteDataType::uint32_datatype(), <span class="bool-val">false</span>),
@@ -2145,33 +2064,38 @@
         ];
         <span class="kw">let </span>recordbatch = RecordBatch::new(schema.clone(), columns).unwrap();
 
-        <span class="kw">for </span>format <span class="kw">in </span>[ResponseFormat::GreptimedbV1, ResponseFormat::InfluxdbV1] {
+        <span class="kw">for </span>format <span class="kw">in </span>[
+            ResponseFormat::GreptimedbV1,
+            ResponseFormat::InfluxdbV1,
+            ResponseFormat::Csv,
+            ResponseFormat::Arrow,
+        ] {
             <span class="kw">let </span>recordbatches =
                 RecordBatches::try_new(schema.clone(), <span class="macro">vec!</span>[recordbatch.clone()]).unwrap();
-            <span class="kw">let </span>json_resp = JsonResponse::from_output(
-                <span class="macro">vec!</span>[<span class="prelude-val">Ok</span>(Output::RecordBatches(recordbatches))],
-                format,
-                <span class="prelude-val">None</span>,
-            )
-            .<span class="kw">await</span>;
+            <span class="kw">let </span>outputs = <span class="macro">vec!</span>[<span class="prelude-val">Ok</span>(Output::RecordBatches(recordbatches))];
+            <span class="kw">let </span>json_resp = <span class="kw">match </span>format {
+                ResponseFormat::Arrow =&gt; ArrowResponse::from_output(outputs).<span class="kw">await</span>,
+                ResponseFormat::Csv =&gt; CsvResponse::from_output(outputs).<span class="kw">await</span>,
+                ResponseFormat::GreptimedbV1 =&gt; GreptimedbV1Response::from_output(outputs).<span class="kw">await</span>,
+                ResponseFormat::InfluxdbV1 =&gt; InfluxdbV1Response::from_output(outputs, <span class="prelude-val">None</span>).<span class="kw">await</span>,
+            };
 
             <span class="kw">match </span>json_resp {
-                JsonResponse::GreptimedbV1(json_resp) =&gt; {
-                    <span class="kw">let </span>json_output = <span class="kw-2">&amp;</span>json_resp.output[<span class="number">0</span>];
-                    <span class="kw">if let </span>JsonOutput::Records(r) = json_output {
+                HttpResponse::GreptimedbV1(resp) =&gt; {
+                    <span class="kw">let </span>json_output = <span class="kw-2">&amp;</span>resp.output[<span class="number">0</span>];
+                    <span class="kw">if let </span>GreptimeQueryOutput::Records(r) = json_output {
                         <span class="macro">assert_eq!</span>(r.num_rows(), <span class="number">4</span>);
                         <span class="macro">assert_eq!</span>(r.num_cols(), <span class="number">2</span>);
-                        <span class="kw">let </span>schema = r.schema.as_ref().unwrap();
-                        <span class="macro">assert_eq!</span>(schema.column_schemas[<span class="number">0</span>].name, <span class="string">"numbers"</span>);
-                        <span class="macro">assert_eq!</span>(schema.column_schemas[<span class="number">0</span>].data_type, <span class="string">"UInt32"</span>);
+                        <span class="macro">assert_eq!</span>(r.schema.column_schemas[<span class="number">0</span>].name, <span class="string">"numbers"</span>);
+                        <span class="macro">assert_eq!</span>(r.schema.column_schemas[<span class="number">0</span>].data_type, <span class="string">"UInt32"</span>);
                         <span class="macro">assert_eq!</span>(r.rows[<span class="number">0</span>][<span class="number">0</span>], serde_json::Value::from(<span class="number">1</span>));
                         <span class="macro">assert_eq!</span>(r.rows[<span class="number">0</span>][<span class="number">1</span>], serde_json::Value::Null);
                     } <span class="kw">else </span>{
                         <span class="macro">panic!</span>(<span class="string">"invalid output type"</span>);
                     }
                 }
-                JsonResponse::InfluxdbV1(json_resp) =&gt; {
-                    <span class="kw">let </span>json_output = <span class="kw-2">&amp;</span>json_resp.results()[<span class="number">0</span>];
+                HttpResponse::InfluxdbV1(resp) =&gt; {
+                    <span class="kw">let </span>json_output = <span class="kw-2">&amp;</span>resp.results()[<span class="number">0</span>];
                     <span class="macro">assert_eq!</span>(json_output.num_rows(), <span class="number">4</span>);
                     <span class="macro">assert_eq!</span>(json_output.num_cols(), <span class="number">2</span>);
                     <span class="macro">assert_eq!</span>(json_output.series[<span class="number">0</span>].columns.clone()[<span class="number">0</span>], <span class="string">"numbers"</span>);
@@ -2181,6 +2105,34 @@
                     );
                     <span class="macro">assert_eq!</span>(json_output.series[<span class="number">0</span>].values[<span class="number">0</span>][<span class="number">1</span>], serde_json::Value::Null);
                 }
+                HttpResponse::Csv(resp) =&gt; {
+                    <span class="kw">let </span>output = <span class="kw-2">&amp;</span>resp.output()[<span class="number">0</span>];
+                    <span class="kw">if let </span>GreptimeQueryOutput::Records(r) = output {
+                        <span class="macro">assert_eq!</span>(r.num_rows(), <span class="number">4</span>);
+                        <span class="macro">assert_eq!</span>(r.num_cols(), <span class="number">2</span>);
+                        <span class="macro">assert_eq!</span>(r.schema.column_schemas[<span class="number">0</span>].name, <span class="string">"numbers"</span>);
+                        <span class="macro">assert_eq!</span>(r.schema.column_schemas[<span class="number">0</span>].data_type, <span class="string">"UInt32"</span>);
+                        <span class="macro">assert_eq!</span>(r.rows[<span class="number">0</span>][<span class="number">0</span>], serde_json::Value::from(<span class="number">1</span>));
+                        <span class="macro">assert_eq!</span>(r.rows[<span class="number">0</span>][<span class="number">1</span>], serde_json::Value::Null);
+                    } <span class="kw">else </span>{
+                        <span class="macro">panic!</span>(<span class="string">"invalid output type"</span>);
+                    }
+                }
+                HttpResponse::Arrow(resp) =&gt; {
+                    <span class="kw">let </span>output = resp.data;
+                    <span class="kw">let </span><span class="kw-2">mut </span>reader =
+                        FileReader::try_new(Cursor::new(output), <span class="prelude-val">None</span>).expect(<span class="string">"Arrow reader error"</span>);
+                    <span class="kw">let </span>schema = reader.schema();
+                    <span class="macro">assert_eq!</span>(schema.fields[<span class="number">0</span>].name(), <span class="string">"numbers"</span>);
+                    <span class="macro">assert_eq!</span>(schema.fields[<span class="number">0</span>].data_type(), <span class="kw-2">&amp;</span>DataType::UInt32);
+                    <span class="macro">assert_eq!</span>(schema.fields[<span class="number">1</span>].name(), <span class="string">"strings"</span>);
+                    <span class="macro">assert_eq!</span>(schema.fields[<span class="number">1</span>].data_type(), <span class="kw-2">&amp;</span>DataType::Utf8);
+
+                    <span class="kw">let </span>rb = reader.next().unwrap().expect(<span class="string">"read record batch failed"</span>);
+                    <span class="macro">assert_eq!</span>(rb.num_columns(), <span class="number">2</span>);
+                    <span class="macro">assert_eq!</span>(rb.num_rows(), <span class="number">4</span>);
+                }
+                HttpResponse::Error(err) =&gt; <span class="macro">unreachable!</span>(<span class="string">"{err:?}"</span>),
             }
         }
     }

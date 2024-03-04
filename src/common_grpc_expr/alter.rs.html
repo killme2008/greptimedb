@@ -435,8 +435,8 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_alter_expr_to_request() {
         <span class="kw">let </span>expr = AlterExpr {
-            catalog_name: <span class="string">""</span>.to_string(),
-            schema_name: <span class="string">""</span>.to_string(),
+            catalog_name: String::default(),
+            schema_name: String::default(),
             table_name: <span class="string">"monitor"</span>.to_string(),
 
             kind: <span class="prelude-val">Some</span>(Kind::AddColumns(AddColumns {
@@ -476,8 +476,8 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_alter_expr_with_location_to_request() {
         <span class="kw">let </span>expr = AlterExpr {
-            catalog_name: <span class="string">""</span>.to_string(),
-            schema_name: <span class="string">""</span>.to_string(),
+            catalog_name: String::default(),
+            schema_name: String::default(),
             table_name: <span class="string">"monitor"</span>.to_string(),
 
             kind: <span class="prelude-val">Some</span>(Kind::AddColumns(AddColumns {
@@ -494,7 +494,7 @@
                         }),
                         location: <span class="prelude-val">Some</span>(Location {
                             location_type: LocationType::First.into(),
-                            after_column_name: <span class="string">""</span>.to_string(),
+                            after_column_name: String::default(),
                         }),
                     },
                     AddColumn {

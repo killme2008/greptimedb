@@ -807,6 +807,7 @@
 <a href="#806" id="806">806</a>
 <a href="#807" id="807">807</a>
 <a href="#808" id="808">808</a>
+<a href="#809" id="809">809</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -944,8 +945,9 @@
         <span class="kw-2">&amp;</span>ConcreteDataType::Decimal128(<span class="kw">_</span>) =&gt; <span class="prelude-val">Ok</span>(Type::NUMERIC),
         <span class="kw-2">&amp;</span>ConcreteDataType::Duration(<span class="kw">_</span>)
         | <span class="kw-2">&amp;</span>ConcreteDataType::List(<span class="kw">_</span>)
-        | <span class="kw-2">&amp;</span>ConcreteDataType::Dictionary(<span class="kw">_</span>) =&gt; error::InternalSnafu {
-            err_msg: <span class="macro">format!</span>(<span class="string">"not implemented for column datatype {origin:?}"</span>),
+        | <span class="kw-2">&amp;</span>ConcreteDataType::Dictionary(<span class="kw">_</span>) =&gt; error::UnsupportedDataTypeSnafu {
+            data_type: origin,
+            reason: <span class="string">"not implemented"</span>,
         }
         .fail(),
     }
@@ -976,7 +978,7 @@
 <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>parameter_to_string(portal: <span class="kw-2">&amp;</span>Portal&lt;SqlPlan&gt;, idx: usize) -&gt; PgWireResult&lt;String&gt; {
     <span class="comment">// the index is managed from portal's parameters count so it's safe to
     // unwrap here.
-    </span><span class="kw">let </span>param_type = portal.statement().parameter_types().get(idx).unwrap();
+    </span><span class="kw">let </span>param_type = portal.statement.parameter_types.get(idx).unwrap();
     <span class="kw">match </span>param_type {
         <span class="kw-2">&amp;</span>Type::VARCHAR | <span class="kw-2">&amp;</span>Type::TEXT =&gt; <span class="prelude-val">Ok</span>(<span class="macro">format!</span>(
             <span class="string">"'{}'"</span>,
@@ -1026,7 +1028,7 @@
 
 <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>invalid_parameter_error(msg: <span class="kw-2">&amp;</span>str, detail: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;) -&gt; PgWireError {
     <span class="kw">let </span><span class="kw-2">mut </span>error_info = ErrorInfo::new(<span class="string">"ERROR"</span>.to_owned(), <span class="string">"22023"</span>.to_owned(), msg.to_owned());
-    error_info.set_detail(detail.map(|s| s.to_owned()));
+    error_info.detail = detail.map(|s| s.to_owned());
     PgWireError::UserError(Box::new(error_info))
 }
 
@@ -1054,7 +1056,7 @@
     <span class="kw">let </span>param_count = portal.parameter_len();
     <span class="kw">let </span><span class="kw-2">mut </span>results = Vec::with_capacity(param_count);
 
-    <span class="kw">let </span>client_param_types = portal.statement().parameter_types();
+    <span class="kw">let </span>client_param_types = <span class="kw-2">&amp;</span>portal.statement.parameter_types;
     <span class="kw">let </span>param_types = plan
         .get_param_types()
         .map_err(|e| PgWireError::ApiError(Box::new(e)))<span class="question-mark">?</span>;

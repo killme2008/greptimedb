@@ -190,6 +190,7 @@
 
 <span class="kw">use </span>api::v1::RowInsertRequests;
 <span class="kw">use </span>async_trait::async_trait;
+<span class="kw">use </span>common_query::prelude::{GREPTIME_TIMESTAMP, GREPTIME_VALUE};
 <span class="kw">use </span>common_runtime::Runtime;
 <span class="kw">use </span>common_telemetry::logging::error;
 <span class="kw">use </span>futures::StreamExt;
@@ -199,7 +200,6 @@
 <span class="kw">use </span><span class="kw">crate</span>::error::Result;
 <span class="kw">use </span><span class="kw">crate</span>::opentsdb::connection::Connection;
 <span class="kw">use </span><span class="kw">crate</span>::opentsdb::handler::Handler;
-<span class="kw">use </span><span class="kw">crate</span>::prom_store::{FIELD_COLUMN_NAME, TIMESTAMP_COLUMN_NAME};
 <span class="kw">use </span><span class="kw">crate</span>::query_handler::OpentsdbProtocolHandlerRef;
 <span class="kw">use </span><span class="kw">crate</span>::row_writer::{<span class="self">self</span>, MultiTableData};
 <span class="kw">use </span><span class="kw">crate</span>::server::{AbortableStream, BaseTcpServer, Server};
@@ -319,11 +319,11 @@
         </span>row_writer::write_tags(table_data, tags.into_iter(), <span class="kw-2">&amp;mut </span>one_row)<span class="question-mark">?</span>;
 
         <span class="comment">// value
-        </span>row_writer::write_f64(table_data, FIELD_COLUMN_NAME, value, <span class="kw-2">&amp;mut </span>one_row)<span class="question-mark">?</span>;
+        </span>row_writer::write_f64(table_data, GREPTIME_VALUE, value, <span class="kw-2">&amp;mut </span>one_row)<span class="question-mark">?</span>;
         <span class="comment">// timestamp
         </span>row_writer::write_ts_millis(
             table_data,
-            TIMESTAMP_COLUMN_NAME,
+            GREPTIME_TIMESTAMP,
             <span class="prelude-val">Some</span>(timestamp),
             <span class="kw-2">&amp;mut </span>one_row,
         )<span class="question-mark">?</span>;

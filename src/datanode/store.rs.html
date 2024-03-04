@@ -171,16 +171,6 @@
 <a href="#170" id="170">170</a>
 <a href="#171" id="171">171</a>
 <a href="#172" id="172">172</a>
-<a href="#173" id="173">173</a>
-<a href="#174" id="174">174</a>
-<a href="#175" id="175">175</a>
-<a href="#176" id="176">176</a>
-<a href="#177" id="177">177</a>
-<a href="#178" id="178">178</a>
-<a href="#179" id="179">179</a>
-<a href="#180" id="180">180</a>
-<a href="#181" id="181">181</a>
-<a href="#182" id="182">182</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -209,10 +199,10 @@
 
 <span class="kw">use </span>common_base::readable_size::ReadableSize;
 <span class="kw">use </span>common_telemetry::logging::info;
-<span class="kw">use </span>object_store::layers::{LoggingLayer, LruCacheLayer, RetryLayer, TracingLayer};
-<span class="kw">use </span>object_store::services::Fs <span class="kw">as </span>FsBuilder;
-<span class="kw">use </span>object_store::util::normalize_dir;
-<span class="kw">use </span>object_store::{util, HttpClient, ObjectStore, ObjectStoreBuilder};
+<span class="kw">use </span>object_store::layers::{LruCacheLayer, RetryLayer};
+<span class="kw">use </span>object_store::services::Fs;
+<span class="kw">use </span>object_store::util::{join_dir, normalize_dir, with_instrument_layers};
+<span class="kw">use </span>object_store::{HttpClient, ObjectStore, ObjectStoreBuilder};
 <span class="kw">use </span>snafu::prelude::<span class="kw-2">*</span>;
 
 <span class="kw">use </span><span class="kw">crate</span>::config::{ObjectStoreConfig, DEFAULT_OBJECT_STORE_CACHE_SIZE};
@@ -243,16 +233,7 @@
         object_store
     };
 
-    <span class="kw">let </span>store = object_store
-        .layer(
-            LoggingLayer::default()
-                <span class="comment">// Print the expected error only in DEBUG level.
-                // See https://docs.rs/opendal/latest/opendal/layers/struct.LoggingLayer.html#method.with_error_level
-                </span>.with_error_level(<span class="prelude-val">Some</span>(<span class="string">"debug"</span>))
-                .expect(<span class="string">"input error level must be valid"</span>),
-        )
-        .layer(TracingLayer)
-        .layer(object_store::layers::PrometheusMetricsLayer);
+    <span class="kw">let </span>store = with_instrument_layers(object_store);
     <span class="prelude-val">Ok</span>(store)
 }
 
@@ -297,11 +278,10 @@
     };
 
     <span class="kw">if let </span><span class="prelude-val">Some</span>(path) = cache_path {
-        <span class="kw">let </span>path = util::normalize_dir(path);
-        <span class="kw">let </span>atomic_temp_dir = <span class="macro">format!</span>(<span class="string">"{path}.tmp/"</span>);
+        <span class="kw">let </span>atomic_temp_dir = join_dir(path, <span class="string">".tmp/"</span>);
         clean_temp_dir(<span class="kw-2">&amp;</span>atomic_temp_dir)<span class="question-mark">?</span>;
-        <span class="kw">let </span>cache_store = FsBuilder::default()
-            .root(<span class="kw-2">&amp;</span>path)
+        <span class="kw">let </span>cache_store = Fs::default()
+            .root(path)
             .atomic_write_dir(<span class="kw-2">&amp;</span>atomic_temp_dir)
             .build()
             .context(error::InitBackendSnafu)<span class="question-mark">?</span>;

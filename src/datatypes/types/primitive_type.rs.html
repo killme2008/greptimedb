@@ -713,11 +713,11 @@
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>snafu::OptionExt;
 
-<span class="kw">use </span><span class="kw">super</span>::boolean_type::bool_to_numeric;
 <span class="kw">use </span><span class="kw">crate</span>::data_type::{ConcreteDataType, DataType};
 <span class="kw">use </span><span class="kw">crate</span>::error::{<span class="self">self</span>, <span class="prelude-ty">Result</span>};
 <span class="kw">use </span><span class="kw">crate</span>::scalars::{Scalar, ScalarRef, ScalarVectorBuilder};
 <span class="kw">use </span><span class="kw">crate</span>::type_id::LogicalTypeId;
+<span class="kw">use </span><span class="kw">crate</span>::types::boolean_type::bool_to_numeric;
 <span class="kw">use </span><span class="kw">crate</span>::types::{DateTimeType, DateType};
 <span class="kw">use </span><span class="kw">crate</span>::value::{Value, ValueRef};
 <span class="kw">use </span><span class="kw">crate</span>::vectors::{MutableVector, PrimitiveVector, PrimitiveVectorBuilder, Vector};

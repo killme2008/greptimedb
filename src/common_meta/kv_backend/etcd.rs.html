@@ -619,6 +619,11 @@
 <a href="#618" id="618">618</a>
 <a href="#619" id="619">619</a>
 <a href="#620" id="620">620</a>
+<a href="#621" id="621">621</a>
+<a href="#622" id="622">622</a>
+<a href="#623" id="623">623</a>
+<a href="#624" id="624">624</a>
+<a href="#625" id="625">625</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -687,7 +692,8 @@
     }
 
     <span class="kw">async fn </span>do_multi_txn(<span class="kw-2">&amp;</span><span class="self">self</span>, txn_ops: Vec&lt;TxnOp&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;TxnResponse&gt;&gt; {
-        <span class="kw">if </span>txn_ops.len() &lt; MAX_TXN_SIZE {
+        <span class="kw">let </span>max_txn_size = <span class="self">self</span>.max_txn_size();
+        <span class="kw">if </span>txn_ops.len() &lt; max_txn_size {
             <span class="comment">// fast path
             </span><span class="kw">let </span>_timer = METRIC_META_TXN_REQUEST
                 .with_label_values(<span class="kw-2">&amp;</span>[<span class="string">"etcd"</span>, <span class="string">"txn"</span>])
@@ -703,7 +709,7 @@
         }
 
         <span class="kw">let </span>txns = txn_ops
-            .chunks(MAX_TXN_SIZE)
+            .chunks(max_txn_size)
             .map(|part| <span class="kw">async move </span>{
                 <span class="kw">let </span>_timer = METRIC_META_TXN_REQUEST
                     .with_label_values(<span class="kw-2">&amp;</span>[<span class="string">"etcd"</span>, <span class="string">"txn"</span>])
@@ -939,6 +945,10 @@
             .<span class="kw">await
             </span>.context(error::EtcdFailedSnafu)<span class="question-mark">?</span>;
         txn_res.try_into()
+    }
+
+    <span class="kw">fn </span>max_txn_size(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+        MAX_TXN_SIZE
     }
 }
 

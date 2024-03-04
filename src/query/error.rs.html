@@ -312,13 +312,6 @@
 <a href="#311" id="311">311</a>
 <a href="#312" id="312">312</a>
 <a href="#313" id="313">313</a>
-<a href="#314" id="314">314</a>
-<a href="#315" id="315">315</a>
-<a href="#316" id="316">316</a>
-<a href="#317" id="317">317</a>
-<a href="#318" id="318">318</a>
-<a href="#319" id="319">319</a>
-<a href="#320" id="320">320</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -351,6 +344,9 @@
     <span class="attr">#[snafu(display(<span class="string">"Unsupported expr type: {}"</span>, name))]
     </span>UnsupportedExpr { name: String, location: Location },
 
+    <span class="attr">#[snafu(display(<span class="string">"Unsupported show variable: {}"</span>, name))]
+    </span>UnsupportedVariable { name: String, location: Location },
+
     <span class="attr">#[snafu(display(<span class="string">"Operation {} not implemented yet"</span>, operation))]
     </span>Unimplemented {
         operation: String,
@@ -372,21 +368,9 @@
     <span class="attr">#[snafu(display(<span class="string">"Table not found: {}"</span>, table))]
     </span>TableNotFound { table: String, location: Location },
 
-    <span class="attr">#[snafu(display(<span class="string">"Failed to do vector computation"</span>))]
-    </span>VectorComputation {
-        source: datatypes::error::Error,
-        location: Location,
-    },
-
     <span class="attr">#[snafu(display(<span class="string">"Failed to create RecordBatch"</span>))]
     </span>CreateRecordBatch {
         source: common_recordbatch::error::Error,
-        location: Location,
-    },
-
-    <span class="attr">#[snafu(display(<span class="string">"Failed to create Schema"</span>))]
-    </span>CreateSchema {
-        source: datatypes::error::Error,
         location: Location,
     },
 
@@ -432,6 +416,9 @@
         </span>error: chrono::ParseError,
         location: Location,
     },
+
+    <span class="attr">#[snafu(display(<span class="string">"Invalid timestamp `{}`"</span>, raw))]
+    </span>InvalidTimestamp { raw: String, location: Location },
 
     <span class="attr">#[snafu(display(<span class="string">"Failed to parse float number `{}`"</span>, raw))]
     </span>ParseFloat {
@@ -562,7 +549,7 @@
 
     <span class="attr">#[snafu(display(<span class="string">"Table mutation error"</span>))]
     </span>TableMutation {
-        source: BoxedError,
+        source: common_query::error::Error,
         location: Location,
     },
 
@@ -589,12 +576,14 @@
             | UnknownTable { .. }
             | TimeIndexNotFound { .. }
             | ParseTimestamp { .. }
+            | InvalidTimestamp { .. }
             | ParseFloat { .. }
             | MissingRequiredField { .. }
             | BuildRegex { .. }
             | ConvertSchema { .. }
             | AddSystemTimeOverflow { .. }
             | ColumnSchemaIncompatible { .. }
+            | UnsupportedVariable { .. }
             | ColumnSchemaNoDefault { .. } =&gt; StatusCode::InvalidArguments,
 
             BuildBackend { .. } | ListObjects { .. } =&gt; StatusCode::StorageUnavailable,
@@ -604,9 +593,7 @@
 
             QueryAccessDenied { .. } =&gt; StatusCode::AccessDenied,
             Catalog { source, .. } =&gt; source.status_code(),
-            VectorComputation { source, .. } | ConvertDatafusionSchema { source, .. } =&gt; {
-                source.status_code()
-            }
+            ConvertDatafusionSchema { source, .. } =&gt; source.status_code(),
             CreateRecordBatch { source, .. } =&gt; source.status_code(),
             QueryExecution { source, .. } | QueryPlan { source, .. } =&gt; source.status_code(),
             DataFusion { error, .. } =&gt; <span class="kw">match </span>error {
@@ -619,7 +606,6 @@
             Sql { source, .. } =&gt; source.status_code(),
             PlanSql { .. } =&gt; StatusCode::PlanQuery,
             ConvertSqlType { source, .. } | ConvertSqlValue { source, .. } =&gt; source.status_code(),
-            CreateSchema { source, .. } =&gt; source.status_code(),
 
             RegionQuery { source, .. } =&gt; source.status_code(),
             TableMutation { source, .. } =&gt; source.status_code(),

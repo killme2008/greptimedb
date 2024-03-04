@@ -139,6 +139,25 @@
 <a href="#138" id="138">138</a>
 <a href="#139" id="139">139</a>
 <a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
+<a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -194,25 +213,32 @@
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use </span><span class="kw">crate</span>::dialect::GreptimeDbDialect;
+    <span class="kw">use </span><span class="kw">crate</span>::parser::ParseOptions;
 
     <span class="attr">#[test]
     </span><span class="kw">pub fn </span>test_parse_truncate() {
         <span class="kw">let </span>sql = <span class="string">"TRUNCATE foo"</span>;
-        <span class="kw">let </span><span class="kw-2">mut </span>stmts = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
+        <span class="kw">let </span><span class="kw-2">mut </span>stmts =
+            ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}, ParseOptions::default())
+                .unwrap();
         <span class="macro">assert_eq!</span>(
             stmts.pop().unwrap(),
             Statement::TruncateTable(TruncateTable::new(ObjectName(<span class="macro">vec!</span>[Ident::new(<span class="string">"foo"</span>)])))
         );
 
         <span class="kw">let </span>sql = <span class="string">"TRUNCATE TABLE foo"</span>;
-        <span class="kw">let </span><span class="kw-2">mut </span>stmts = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
+        <span class="kw">let </span><span class="kw-2">mut </span>stmts =
+            ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}, ParseOptions::default())
+                .unwrap();
         <span class="macro">assert_eq!</span>(
             stmts.pop().unwrap(),
             Statement::TruncateTable(TruncateTable::new(ObjectName(<span class="macro">vec!</span>[Ident::new(<span class="string">"foo"</span>)])))
         );
 
         <span class="kw">let </span>sql = <span class="string">"TRUNCATE TABLE my_schema.foo"</span>;
-        <span class="kw">let </span><span class="kw-2">mut </span>stmts = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
+        <span class="kw">let </span><span class="kw-2">mut </span>stmts =
+            ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}, ParseOptions::default())
+                .unwrap();
         <span class="macro">assert_eq!</span>(
             stmts.pop().unwrap(),
             Statement::TruncateTable(TruncateTable::new(ObjectName(<span class="macro">vec!</span>[
@@ -222,7 +248,9 @@
         );
 
         <span class="kw">let </span>sql = <span class="string">"TRUNCATE my_schema.foo"</span>;
-        <span class="kw">let </span><span class="kw-2">mut </span>stmts = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
+        <span class="kw">let </span><span class="kw-2">mut </span>stmts =
+            ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}, ParseOptions::default())
+                .unwrap();
         <span class="macro">assert_eq!</span>(
             stmts.pop().unwrap(),
             Statement::TruncateTable(TruncateTable::new(ObjectName(<span class="macro">vec!</span>[
@@ -232,7 +260,9 @@
         );
 
         <span class="kw">let </span>sql = <span class="string">"TRUNCATE TABLE my_catalog.my_schema.foo"</span>;
-        <span class="kw">let </span><span class="kw-2">mut </span>stmts = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
+        <span class="kw">let </span><span class="kw-2">mut </span>stmts =
+            ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}, ParseOptions::default())
+                .unwrap();
         <span class="macro">assert_eq!</span>(
             stmts.pop().unwrap(),
             Statement::TruncateTable(TruncateTable::new(ObjectName(<span class="macro">vec!</span>[
@@ -243,14 +273,18 @@
         );
 
         <span class="kw">let </span>sql = <span class="string">"TRUNCATE drop"</span>;
-        <span class="kw">let </span><span class="kw-2">mut </span>stmts = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
+        <span class="kw">let </span><span class="kw-2">mut </span>stmts =
+            ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}, ParseOptions::default())
+                .unwrap();
         <span class="macro">assert_eq!</span>(
             stmts.pop().unwrap(),
             Statement::TruncateTable(TruncateTable::new(ObjectName(<span class="macro">vec!</span>[Ident::new(<span class="string">"drop"</span>)])))
         );
 
         <span class="kw">let </span>sql = <span class="string">"TRUNCATE `drop`"</span>;
-        <span class="kw">let </span><span class="kw-2">mut </span>stmts = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
+        <span class="kw">let </span><span class="kw-2">mut </span>stmts =
+            ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}, ParseOptions::default())
+                .unwrap();
         <span class="macro">assert_eq!</span>(
             stmts.pop().unwrap(),
             Statement::TruncateTable(TruncateTable::new(ObjectName(<span class="macro">vec!</span>[Ident::with_quote(
@@ -259,7 +293,9 @@
         );
 
         <span class="kw">let </span>sql = <span class="string">"TRUNCATE \"drop\""</span>;
-        <span class="kw">let </span><span class="kw-2">mut </span>stmts = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
+        <span class="kw">let </span><span class="kw-2">mut </span>stmts =
+            ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}, ParseOptions::default())
+                .unwrap();
         <span class="macro">assert_eq!</span>(
             stmts.pop().unwrap(),
             Statement::TruncateTable(TruncateTable::new(ObjectName(<span class="macro">vec!</span>[Ident::with_quote(
@@ -271,11 +307,13 @@
     <span class="attr">#[test]
     </span><span class="kw">pub fn </span>test_parse_invalid_truncate() {
         <span class="kw">let </span>sql = <span class="string">"TRUNCATE SCHEMA foo"</span>;
-        <span class="kw">let </span>result = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {});
+        <span class="kw">let </span>result =
+            ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}, ParseOptions::default());
         <span class="macro">assert!</span>(result.is_err(), <span class="string">"result is: {result:?}"</span>);
 
         <span class="kw">let </span>sql = <span class="string">"TRUNCATE"</span>;
-        <span class="kw">let </span>result = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {});
+        <span class="kw">let </span>result =
+            ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}, ParseOptions::default());
         <span class="macro">assert!</span>(result.is_err(), <span class="string">"result is: {result:?}"</span>);
     }
 }

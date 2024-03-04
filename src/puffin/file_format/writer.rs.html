@@ -107,8 +107,8 @@
     <span class="doccomment">/// Add a blob to the Puffin file
     </span><span class="kw">fn </span>add_blob&lt;R: std::io::Read&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, blob: Blob&lt;R&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;;
 
-    <span class="doccomment">/// Finish writing the Puffin file
-    </span><span class="kw">fn </span>finish(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;;
+    <span class="doccomment">/// Finish writing the Puffin file, returns the number of bytes written
+    </span><span class="kw">fn </span>finish(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;usize&gt;;
 }
 
 <span class="doccomment">/// The trait for writing Puffin files asynchronously
@@ -120,7 +120,7 @@
     <span class="doccomment">/// Add a blob to the Puffin file
     </span><span class="kw">async fn </span>add_blob&lt;R: futures::AsyncRead + Send&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, blob: Blob&lt;R&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;;
 
-    <span class="doccomment">/// Finish writing the Puffin file
-    </span><span class="kw">async fn </span>finish(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;;
+    <span class="doccomment">/// Finish writing the Puffin file, returns the number of bytes written
+    </span><span class="kw">async fn </span>finish(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;usize&gt;;
 }
 </code></pre></div></section></main></body></html>

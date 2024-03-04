@@ -134,6 +134,7 @@
 <a href="#133" id="133">133</a>
 <a href="#134" id="134">134</a>
 <a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -149,17 +150,17 @@
 // limitations under the License.
 
 </span><span class="kw">use </span>async_trait::async_trait;
-<span class="kw">use </span>common_error::ext::ErrorExt;
+<span class="kw">use </span>common_error::ext::{BoxedError, ErrorExt};
 <span class="kw">use </span>common_error::status_code::StatusCode;
 <span class="kw">use </span>common_meta::peer::Peer;
 <span class="kw">use </span>common_meta::RegionIdent;
 <span class="kw">use </span>common_telemetry::info;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
-<span class="kw">use </span>snafu::ensure;
+<span class="kw">use </span>snafu::{ensure, location, Location};
 
 <span class="kw">use </span><span class="kw">super</span>::deactivate_region::DeactivateRegion;
 <span class="kw">use super</span>::{RegionFailoverContext, State};
-<span class="kw">use </span><span class="kw">crate</span>::error::{RegionFailoverCandidatesNotFoundSnafu, <span class="prelude-ty">Result</span>, RetryLaterSnafu};
+<span class="kw">use </span><span class="kw">crate</span>::error::{<span class="self">self</span>, RegionFailoverCandidatesNotFoundSnafu, <span class="prelude-ty">Result</span>};
 <span class="kw">use </span><span class="kw">crate</span>::selector::SelectorOptions;
 
 <span class="attr">#[derive(Serialize, Deserialize, Debug)]
@@ -195,7 +196,7 @@
             </span>.iter()
             .filter_map(|p| {
                 <span class="kw">if </span>p.id != failed_region.datanode_id {
-                    <span class="prelude-val">Some</span>(p.clone().into())
+                    <span class="prelude-val">Some</span>(p.clone())
                 } <span class="kw">else </span>{
                     <span class="prelude-val">None
                 </span>}
@@ -229,10 +230,11 @@
             .<span class="kw">await
             </span>.map_err(|e| {
                 <span class="kw">if </span>e.status_code() == StatusCode::RuntimeResourcesExhausted {
-                    RetryLaterSnafu {
-                        reason: <span class="macro">format!</span>(<span class="string">"{e}"</span>),
+                    error::Error::RetryLaterWithSource {
+                        reason: <span class="macro">format!</span>(<span class="string">"Region failover aborted for {failed_region:?}"</span>),
+                        location: <span class="macro">location!</span>(),
+                        source: BoxedError::new(e),
                     }
-                    .build()
                 } <span class="kw">else </span>{
                     e
                 }

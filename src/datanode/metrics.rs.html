@@ -76,26 +76,26 @@
 <span class="macro">lazy_static! </span>{
     <span class="doccomment">/// The elapsed time of handling a request in the region_server.
     </span><span class="kw">pub static </span><span class="kw-2">ref </span>HANDLE_REGION_REQUEST_ELAPSED: HistogramVec = <span class="macro">register_histogram_vec!</span>(
-        <span class="string">"datanode_handle_region_request_elapsed"</span>,
+        <span class="string">"greptime_datanode_handle_region_request_elapsed"</span>,
         <span class="string">"datanode handle region request elapsed"</span>,
         <span class="kw-2">&amp;</span>[REGION_REQUEST_TYPE]
     )
     .unwrap();
     <span class="doccomment">/// The elapsed time since the last received heartbeat.
     </span><span class="kw">pub static </span><span class="kw-2">ref </span>LAST_RECEIVED_HEARTBEAT_ELAPSED: IntGauge = <span class="macro">register_int_gauge!</span>(
-        <span class="string">"last_received_heartbeat_lease_elapsed"</span>,
+        <span class="string">"greptime_last_received_heartbeat_lease_elapsed"</span>,
         <span class="string">"last received heartbeat lease elapsed"</span>,
     )
     .unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>LEASE_EXPIRED_REGION: IntGaugeVec = <span class="macro">register_int_gauge_vec!</span>(
-        <span class="string">"lease_expired_region"</span>,
+        <span class="string">"greptime_lease_expired_region"</span>,
         <span class="string">"lease expired region"</span>,
         <span class="kw-2">&amp;</span>[REGION_ID]
     )
     .unwrap();
     <span class="doccomment">/// The received region leases via heartbeat.
     </span><span class="kw">pub static </span><span class="kw-2">ref </span>HEARTBEAT_REGION_LEASES: IntGaugeVec = <span class="macro">register_int_gauge_vec!</span>(
-        <span class="string">"heartbeat_region_leases"</span>,
+        <span class="string">"greptime_heartbeat_region_leases"</span>,
         <span class="string">"received region leases via heartbeat"</span>,
         <span class="kw-2">&amp;</span>[REGION_ROLE]
     )

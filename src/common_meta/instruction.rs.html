@@ -302,6 +302,8 @@
 <a href="#301" id="301">301</a>
 <a href="#302" id="302">302</a>
 <a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -396,13 +398,15 @@
     }
 }
 
-<span class="attr">#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+<span class="attr">#[serde_with::serde_as]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 </span><span class="kw">pub struct </span>OpenRegion {
     <span class="kw">pub </span>region_ident: RegionIdent,
     <span class="kw">pub </span>region_storage_path: String,
     <span class="kw">pub </span>region_options: HashMap&lt;String, String&gt;,
     <span class="attr">#[serde(default)]
-    </span><span class="kw">pub </span>region_wal_options: HashMap&lt;String, String&gt;,
+    #[serde_as(<span class="kw">as </span>= <span class="string">"HashMap&lt;serde_with::DisplayFromStr, _&gt;"</span>)]
+    </span><span class="kw">pub </span>region_wal_options: HashMap&lt;RegionNumber, String&gt;,
     <span class="attr">#[serde(default)]
     </span><span class="kw">pub </span>skip_wal_replay: bool,
 }
@@ -412,7 +416,7 @@
         region_ident: RegionIdent,
         path: <span class="kw-2">&amp;</span>str,
         region_options: HashMap&lt;String, String&gt;,
-        region_wal_options: HashMap&lt;String, String&gt;,
+        region_wal_options: HashMap&lt;RegionNumber, String&gt;,
         skip_wal_replay: bool,
     ) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{

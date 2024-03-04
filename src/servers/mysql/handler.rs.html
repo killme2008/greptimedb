@@ -488,6 +488,20 @@
 <a href="#487" id="487">487</a>
 <a href="#488" id="488">488</a>
 <a href="#489" id="489">489</a>
+<a href="#490" id="490">490</a>
+<a href="#491" id="491">491</a>
+<a href="#492" id="492">492</a>
+<a href="#493" id="493">493</a>
+<a href="#494" id="494">494</a>
+<a href="#495" id="495">495</a>
+<a href="#496" id="496">496</a>
+<a href="#497" id="497">497</a>
+<a href="#498" id="498">498</a>
+<a href="#499" id="499">499</a>
+<a href="#500" id="500">500</a>
+<a href="#501" id="501">501</a>
+<a href="#502" id="502">502</a>
+<a href="#503" id="503">503</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -511,7 +525,7 @@
 <span class="kw">use </span>::auth::{Identity, Password, UserProviderRef};
 <span class="kw">use </span>async_trait::async_trait;
 <span class="kw">use </span>chrono::{NaiveDate, NaiveDateTime};
-<span class="kw">use </span>common_catalog::parse_catalog_and_schema_from_db_string;
+<span class="kw">use </span>common_catalog::parse_optional_catalog_and_schema_from_db_string;
 <span class="kw">use </span>common_error::ext::ErrorExt;
 <span class="kw">use </span>common_query::Output;
 <span class="kw">use </span>common_telemetry::{debug, error, logging, tracing, warn};
@@ -529,7 +543,7 @@
 <span class="kw">use </span>session::{Session, SessionRef};
 <span class="kw">use </span>snafu::{ensure, ResultExt};
 <span class="kw">use </span>sql::dialect::MySqlDialect;
-<span class="kw">use </span>sql::parser::ParserContext;
+<span class="kw">use </span>sql::parser::{ParseOptions, ParserContext};
 <span class="kw">use </span>sql::statements::statement::Statement;
 <span class="kw">use </span>tokio::io::AsyncWrite;
 
@@ -582,15 +596,17 @@
         }
     }
 
-    <span class="attr">#[tracing::instrument(skip_all)]
+    <span class="attr">#[tracing::instrument(skip_all, name = <span class="string">"mysql::do_query"</span>)]
     </span><span class="kw">async fn </span>do_query(<span class="kw-2">&amp;</span><span class="self">self</span>, query: <span class="kw-2">&amp;</span>str, query_ctx: QueryContextRef) -&gt; Vec&lt;<span class="prelude-ty">Result</span>&lt;Output&gt;&gt; {
         <span class="kw">if let </span><span class="prelude-val">Some</span>(output) =
             <span class="kw">crate</span>::mysql::federated::check(query, query_ctx.clone(), <span class="self">self</span>.session.clone())
         {
             <span class="macro">vec!</span>[<span class="prelude-val">Ok</span>(output)]
         } <span class="kw">else </span>{
-            <span class="self">self</span>.query_handler.do_query(query, query_ctx).<span class="kw">await
-        </span>}
+            <span class="kw">let </span>output = <span class="self">self</span>.query_handler.do_query(query, query_ctx.clone()).<span class="kw">await</span>;
+            query_ctx.update_session(<span class="kw-2">&amp;</span><span class="self">self</span>.session);
+            output
+        }
     }
 
     <span class="doccomment">/// Execute the logical plan and return the output
@@ -823,7 +839,8 @@
         <span class="kw">let _ </span>= guard.remove(<span class="kw-2">&amp;</span>stmt_id);
     }
 
-    <span class="kw">async fn </span>on_query&lt;<span class="lifetime">'a</span>&gt;(
+    <span class="attr">#[tracing::instrument(skip_all)]
+    </span><span class="kw">async fn </span>on_query&lt;<span class="lifetime">'a</span>&gt;(
         <span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="kw-2">mut </span><span class="self">self</span>,
         query: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str,
         writer: QueryResultWriter&lt;<span class="lifetime">'a</span>, W&gt;,
@@ -839,9 +856,14 @@
     }
 
     <span class="kw">async fn </span>on_init&lt;<span class="lifetime">'a</span>&gt;(<span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="kw-2">mut </span><span class="self">self</span>, database: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str, w: InitWriter&lt;<span class="lifetime">'a</span>, W&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="kw">let </span>(catalog, schema) = parse_catalog_and_schema_from_db_string(database);
+        <span class="kw">let </span>(catalog_from_db, schema) = parse_optional_catalog_and_schema_from_db_string(database);
+        <span class="kw">let </span>catalog = <span class="kw">if let </span><span class="prelude-val">Some</span>(catalog) = catalog_from_db {
+            catalog.to_owned()
+        } <span class="kw">else </span>{
+            <span class="self">self</span>.session.get_catalog()
+        };
 
-        <span class="kw">if </span>!<span class="self">self</span>.query_handler.is_valid_schema(catalog, schema).<span class="kw">await</span><span class="question-mark">? </span>{
+        <span class="kw">if </span>!<span class="self">self</span>.query_handler.is_valid_schema(<span class="kw-2">&amp;</span>catalog, schema).<span class="kw">await</span><span class="question-mark">? </span>{
             <span class="kw">return </span>w
                 .error(
                     ErrorKind::ER_WRONG_DB_NAME,
@@ -854,7 +876,10 @@
         <span class="kw">let </span>user_info = <span class="kw-2">&amp;</span><span class="self">self</span>.session.user_info();
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(schema_validator) = <span class="kw-2">&amp;</span><span class="self">self</span>.user_provider {
-            <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = schema_validator.authorize(catalog, schema, user_info).<span class="kw">await </span>{
+            <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = schema_validator
+                .authorize(<span class="kw-2">&amp;</span>catalog, schema, user_info)
+                .<span class="kw">await
+            </span>{
                 METRIC_AUTH_FAILURE
                     .with_label_values(<span class="kw-2">&amp;</span>[e.status_code().as_ref()])
                     .inc();
@@ -868,7 +893,9 @@
             }
         }
 
-        <span class="self">self</span>.session.set_catalog(catalog.into());
+        <span class="kw">if </span>catalog_from_db.is_some() {
+            <span class="self">self</span>.session.set_catalog(catalog)
+        }
         <span class="self">self</span>.session.set_schema(schema.into());
 
         w.ok().<span class="kw">await</span>.map_err(|e| e.into())
@@ -933,7 +960,8 @@
 }
 
 <span class="kw">async fn </span>validate_query(query: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;Statement&gt; {
-    <span class="kw">let </span>statement = ParserContext::create_with_dialect(query, <span class="kw-2">&amp;</span>MySqlDialect {});
+    <span class="kw">let </span>statement =
+        ParserContext::create_with_dialect(query, <span class="kw-2">&amp;</span>MySqlDialect {}, ParseOptions::default());
     <span class="kw">let </span><span class="kw-2">mut </span>statement = statement.map_err(|e| {
         InvalidPrepareStatementSnafu {
             err_msg: e.output_msg(),

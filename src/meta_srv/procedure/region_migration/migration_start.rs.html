@@ -283,6 +283,63 @@
 <a href="#282" id="282">282</a>
 <a href="#283" id="283">283</a>
 <a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
+<a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
+<a href="#308" id="308">308</a>
+<a href="#309" id="309">309</a>
+<a href="#310" id="310">310</a>
+<a href="#311" id="311">311</a>
+<a href="#312" id="312">312</a>
+<a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
+<a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
+<a href="#325" id="325">325</a>
+<a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
+<a href="#330" id="330">330</a>
+<a href="#331" id="331">331</a>
+<a href="#332" id="332">332</a>
+<a href="#333" id="333">333</a>
+<a href="#334" id="334">334</a>
+<a href="#335" id="335">335</a>
+<a href="#336" id="336">336</a>
+<a href="#337" id="337">337</a>
+<a href="#338" id="338">338</a>
+<a href="#339" id="339">339</a>
+<a href="#340" id="340">340</a>
+<a href="#341" id="341">341</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -303,9 +360,10 @@
 <span class="kw">use </span>common_meta::rpc::router::RegionRoute;
 <span class="kw">use </span>common_procedure::Status;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
-<span class="kw">use </span>snafu::OptionExt;
+<span class="kw">use </span>snafu::{OptionExt, ResultExt};
 <span class="kw">use </span>store_api::storage::RegionId;
 
+<span class="kw">use </span><span class="kw">super</span>::migration_abort::RegionMigrationAbort;
 <span class="kw">use </span><span class="kw">super</span>::migration_end::RegionMigrationEnd;
 <span class="kw">use </span><span class="kw">super</span>::open_candidate_region::OpenCandidateRegion;
 <span class="kw">use </span><span class="kw">super</span>::update_metadata::UpdateMetadata;
@@ -336,9 +394,18 @@
         <span class="kw">let </span>region_id = ctx.persistent_ctx.region_id;
         <span class="kw">let </span>region_route = <span class="self">self</span>.retrieve_region_route(ctx, region_id).<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="kw">let </span>to_peer = <span class="kw-2">&amp;</span>ctx.persistent_ctx.to_peer;
+        <span class="kw">let </span>from_peer = <span class="kw-2">&amp;</span>ctx.persistent_ctx.from_peer;
 
-        <span class="kw">if </span><span class="self">self</span>.check_leader_region_on_peer(<span class="kw-2">&amp;</span>region_route, to_peer)<span class="question-mark">? </span>{
-            <span class="prelude-val">Ok</span>((Box::new(RegionMigrationEnd), Status::Done))
+        <span class="kw">if </span><span class="self">self</span>.has_migrated(<span class="kw-2">&amp;</span>region_route, to_peer)<span class="question-mark">? </span>{
+            <span class="prelude-val">Ok</span>((Box::new(RegionMigrationEnd), Status::done()))
+        } <span class="kw">else if </span><span class="self">self</span>.invalid_leader_peer(<span class="kw-2">&amp;</span>region_route, from_peer)<span class="question-mark">? </span>{
+            <span class="prelude-val">Ok</span>((
+                Box::new(RegionMigrationAbort::new(<span class="kw-2">&amp;</span><span class="macro">format!</span>(
+                    <span class="string">"Invalid region leader peer: {from_peer:?}, expected: {:?}"</span>,
+                    region_route.leader_peer.as_ref().unwrap(),
+                ))),
+                Status::done(),
+            ))
         } <span class="kw">else if </span><span class="self">self</span>.check_candidate_region_on_peer(<span class="kw-2">&amp;</span>region_route, to_peer) {
             <span class="prelude-val">Ok</span>((Box::new(UpdateMetadata::Downgrade), Status::executing(<span class="bool-val">true</span>)))
         } <span class="kw">else </span>{
@@ -370,7 +437,10 @@
 
         <span class="kw">let </span>region_route = table_route
             .region_routes()
-            .iter()
+            .context(error::UnexpectedLogicalRouteTableSnafu {
+                err_msg: <span class="macro">format!</span>(<span class="string">"{self:?} is a non-physical TableRouteValue."</span>),
+            })<span class="question-mark">?
+            </span>.iter()
             .find(|route| route.region.id == region_id)
             .cloned()
             .context(error::UnexpectedSnafu {
@@ -394,16 +464,30 @@
         region_opened
     }
 
-    <span class="doccomment">/// Checks whether the leader region on region has been opened.
-    /// Returns true if it's been opened.
+    <span class="doccomment">/// Returns true if the region leader is not the `from_peer`.
     ///     
     /// Abort(non-retry):
     /// - Leader peer of RegionRoute is not found.
-    </span><span class="kw">fn </span>check_leader_region_on_peer(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        region_route: <span class="kw-2">&amp;</span>RegionRoute,
-        to_peer: <span class="kw-2">&amp;</span>Peer,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;bool&gt; {
+    </span><span class="kw">fn </span>invalid_leader_peer(<span class="kw-2">&amp;</span><span class="self">self</span>, region_route: <span class="kw-2">&amp;</span>RegionRoute, from_peer: <span class="kw-2">&amp;</span>Peer) -&gt; <span class="prelude-ty">Result</span>&lt;bool&gt; {
+        <span class="kw">let </span>region_id = region_route.region.id;
+
+        <span class="kw">let </span>is_invalid_leader_peer = region_route
+            .leader_peer
+            .as_ref()
+            .context(error::UnexpectedSnafu {
+                violated: <span class="macro">format!</span>(<span class="string">"Leader peer is not found in TableRoute({})"</span>, region_id),
+            })<span class="question-mark">?
+            </span>.id
+            != from_peer.id;
+        <span class="prelude-val">Ok</span>(is_invalid_leader_peer)
+    }
+
+    <span class="doccomment">/// Checks whether the region has been migrated.
+    /// Returns true if it's.
+    ///     
+    /// Abort(non-retry):
+    /// - Leader peer of RegionRoute is not found.
+    </span><span class="kw">fn </span>has_migrated(<span class="kw-2">&amp;</span><span class="self">self</span>, region_route: <span class="kw-2">&amp;</span>RegionRoute, to_peer: <span class="kw-2">&amp;</span>Peer) -&gt; <span class="prelude-ty">Result</span>&lt;bool&gt; {
         <span class="kw">let </span>region_id = region_route.region.id;
 
         <span class="kw">let </span>region_opened = region_route
@@ -489,6 +573,7 @@
         <span class="comment">// from_peer: 1
         // to_peer: 2
         </span><span class="kw">let </span>persistent_context = new_persistent_context();
+        <span class="kw">let </span>from_peer_id = persistent_context.from_peer.id;
         <span class="kw">let </span>to_peer = persistent_context.to_peer.clone();
         <span class="kw">let </span>region_id = persistent_context.region_id;
 
@@ -498,7 +583,7 @@
         <span class="kw">let </span>table_info = new_test_table_info(<span class="number">1024</span>, <span class="macro">vec!</span>[<span class="number">1</span>]).into();
         <span class="kw">let </span>region_routes = <span class="macro">vec!</span>[RegionRoute {
             region: Region::new_test(region_id),
-            leader_peer: <span class="prelude-val">Some</span>(Peer::empty(<span class="number">3</span>)),
+            leader_peer: <span class="prelude-val">Some</span>(Peer::empty(from_peer_id)),
             follower_peers: <span class="macro">vec!</span>[to_peer],
             ..Default::default()
         }];
@@ -548,6 +633,7 @@
         <span class="comment">// from_peer: 1
         // to_peer: 2
         </span><span class="kw">let </span>persistent_context = new_persistent_context();
+        <span class="kw">let </span>from_peer_id = persistent_context.from_peer.id;
         <span class="kw">let </span>region_id = persistent_context.region_id;
         <span class="kw">let </span>env = TestingEnv::new();
         <span class="kw">let </span><span class="kw-2">mut </span>ctx = env.context_factory().new_context(persistent_context);
@@ -555,7 +641,7 @@
         <span class="kw">let </span>table_info = new_test_table_info(<span class="number">1024</span>, <span class="macro">vec!</span>[<span class="number">1</span>]).into();
         <span class="kw">let </span>region_routes = <span class="macro">vec!</span>[RegionRoute {
             region: Region::new_test(region_id),
-            leader_peer: <span class="prelude-val">Some</span>(Peer::empty(<span class="number">3</span>)),
+            leader_peer: <span class="prelude-val">Some</span>(Peer::empty(from_peer_id)),
             ..Default::default()
         }];
 
@@ -565,6 +651,34 @@
         <span class="kw">let </span>(next, <span class="kw">_</span>) = state.next(<span class="kw-2">&amp;mut </span>ctx).<span class="kw">await</span>.unwrap();
 
         <span class="kw">let _ </span>= next.as_any().downcast_ref::&lt;OpenCandidateRegion&gt;().unwrap();
+    }
+
+    <span class="attr">#[tokio::test]
+    </span><span class="kw">async fn </span>test_next_migration_abort() {
+        <span class="kw">let </span><span class="kw-2">mut </span>state = Box::new(RegionMigrationStart);
+        <span class="comment">// from_peer: 1
+        // to_peer: 2
+        </span><span class="kw">let </span>persistent_context = new_persistent_context();
+        <span class="kw">let </span>region_id = persistent_context.region_id;
+        <span class="kw">let </span>env = TestingEnv::new();
+        <span class="kw">let </span><span class="kw-2">mut </span>ctx = env.context_factory().new_context(persistent_context);
+
+        <span class="kw">let </span>table_info = new_test_table_info(<span class="number">1024</span>, <span class="macro">vec!</span>[<span class="number">1</span>]).into();
+        <span class="kw">let </span>region_routes = <span class="macro">vec!</span>[RegionRoute {
+            region: Region::new_test(region_id),
+            leader_peer: <span class="prelude-val">Some</span>(Peer::empty(<span class="number">1024</span>)),
+            ..Default::default()
+        }];
+
+        env.create_physical_table_metadata(table_info, region_routes)
+            .<span class="kw">await</span>;
+
+        <span class="kw">let </span>(next, <span class="kw">_</span>) = state.next(<span class="kw-2">&amp;mut </span>ctx).<span class="kw">await</span>.unwrap();
+
+        <span class="kw">let _ </span>= next
+            .as_any()
+            .downcast_ref::&lt;RegionMigrationAbort&gt;()
+            .unwrap();
     }
 }
 </code></pre></div></section></main></body></html>

@@ -439,10 +439,6 @@
 <a href="#438" id="438">438</a>
 <a href="#439" id="439">439</a>
 <a href="#440" id="440">440</a>
-<a href="#441" id="441">441</a>
-<a href="#442" id="442">442</a>
-<a href="#443" id="443">443</a>
-<a href="#444" id="444">444</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -458,13 +454,12 @@
 // limitations under the License.
 
 </span><span class="kw">use </span>std::any::Any;
-<span class="kw">use </span>std::collections::HashMap;
 <span class="kw">use </span>std::time::Duration;
 
 <span class="kw">use </span>api::v1::meta::MailboxMessage;
-<span class="kw">use </span>common_meta::ddl::utils::region_storage_path;
 <span class="kw">use </span>common_meta::distributed_time_constants::MAILBOX_RTT_SECS;
 <span class="kw">use </span>common_meta::instruction::{Instruction, InstructionReply, OpenRegion, SimpleReply};
+<span class="kw">use </span>common_meta::key::datanode_table::RegionInfo;
 <span class="kw">use </span>common_meta::RegionIdent;
 <span class="kw">use </span>common_procedure::Status;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
@@ -503,26 +498,21 @@
     <span class="doccomment">/// Builds open region instructions
     ///
     /// Abort(non-retry):
-    /// - Table Info is not found.
+    /// - Datanode Table is not found.
     </span><span class="kw">async fn </span>build_open_region_instruction(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;mut </span>Context) -&gt; <span class="prelude-ty">Result</span>&lt;Instruction&gt; {
         <span class="kw">let </span>pc = <span class="kw-2">&amp;</span>ctx.persistent_ctx;
         <span class="kw">let </span>cluster_id = pc.cluster_id;
         <span class="kw">let </span>table_id = pc.region_id.table_id();
         <span class="kw">let </span>region_number = pc.region_id.region_number();
         <span class="kw">let </span>candidate_id = pc.to_peer.id;
+        <span class="kw">let </span>datanode_table_value = ctx.get_from_peer_datanode_table_value().<span class="kw">await</span><span class="question-mark">?</span>;
 
-        <span class="kw">let </span>table_info_value = ctx.get_table_info_value().<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="kw">let </span>table_info = <span class="kw-2">&amp;</span>table_info_value.table_info;
-
-        <span class="comment">// The region storage path is immutable after the region is created.
-        // Therefore, it's safe to store it in `VolatileContext` for future use.
-        </span><span class="kw">let </span>region_storage_path =
-            region_storage_path(<span class="kw-2">&amp;</span>table_info.catalog_name, <span class="kw-2">&amp;</span>table_info.schema_name);
-
-        <span class="kw">let </span>engine = table_info.meta.engine.clone();
-        <span class="kw">let </span>region_options: HashMap&lt;String, String&gt; = (<span class="kw-2">&amp;</span>table_info.meta.options).into();
-        <span class="comment">// TODO(niebayes): properly fetch or construct region wal options.
-        </span><span class="kw">let </span>region_wal_options = HashMap::new();
+        <span class="kw">let </span>RegionInfo {
+            region_storage_path,
+            region_options,
+            region_wal_options,
+            engine,
+        } = datanode_table_value.region_info.clone();
 
         <span class="kw">let </span>open_instruction = Instruction::OpenRegion(OpenRegion::new(
             RegionIdent {
@@ -630,6 +620,7 @@
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use </span>std::assert_matches::assert_matches;
+    <span class="kw">use </span>std::collections::HashMap;
 
     <span class="kw">use </span>common_catalog::consts::MITO2_ENGINE;
     <span class="kw">use </span>common_meta::key::table_route::TableRouteValue;
@@ -667,7 +658,7 @@
     }
 
     <span class="attr">#[tokio::test]
-    </span><span class="kw">async fn </span>test_table_info_is_not_found_error() {
+    </span><span class="kw">async fn </span>test_datanode_table_is_not_found_error() {
         <span class="kw">let </span>state = OpenCandidateRegion;
         <span class="kw">let </span>persistent_context = new_persistent_context();
         <span class="kw">let </span>env = TestingEnv::new();
@@ -678,7 +669,7 @@
             .<span class="kw">await
             </span>.unwrap_err();
 
-        <span class="macro">assert_matches!</span>(err, Error::TableInfoNotFound { .. });
+        <span class="macro">assert_matches!</span>(err, Error::DatanodeTableNotFound { .. });
         <span class="macro">assert!</span>(!err.is_retryable());
     }
 
@@ -833,7 +824,7 @@
 
         <span class="macro">assert_matches!</span>(err, Error::RetryLater { .. });
         <span class="macro">assert!</span>(err.is_retryable());
-        <span class="macro">assert!</span>(err.to_string().contains(<span class="string">"test mocked"</span>));
+        <span class="macro">assert!</span>(<span class="macro">format!</span>(<span class="string">"{err:?}"</span>).contains(<span class="string">"test mocked"</span>));
     }
 
     <span class="attr">#[tokio::test]
@@ -842,6 +833,7 @@
         <span class="comment">// from_peer: 1
         // to_peer: 2
         </span><span class="kw">let </span>persistent_context = new_persistent_context();
+        <span class="kw">let </span>from_peer_id = persistent_context.from_peer.id;
         <span class="kw">let </span>region_id = persistent_context.region_id;
         <span class="kw">let </span>to_peer_id = persistent_context.to_peer.id;
         <span class="kw">let </span><span class="kw-2">mut </span>env = TestingEnv::new();
@@ -850,7 +842,7 @@
         </span><span class="kw">let </span>table_info = new_test_table_info(<span class="number">1024</span>, <span class="macro">vec!</span>[<span class="number">1</span>]).into();
         <span class="kw">let </span>region_routes = <span class="macro">vec!</span>[RegionRoute {
             region: Region::new_test(persistent_context.region_id),
-            leader_peer: <span class="prelude-val">Some</span>(Peer::empty(<span class="number">3</span>)),
+            leader_peer: <span class="prelude-val">Some</span>(Peer::empty(from_peer_id)),
             ..Default::default()
         }];
 

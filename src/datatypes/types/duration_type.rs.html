@@ -240,7 +240,6 @@
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>snafu::OptionExt;
 
-<span class="kw">use </span><span class="kw">super</span>::LogicalPrimitiveType;
 <span class="kw">use </span><span class="kw">crate</span>::data_type::DataType;
 <span class="kw">use </span><span class="kw">crate</span>::duration::{
     DurationMicrosecond, DurationMillisecond, DurationNanosecond, DurationSecond,
@@ -249,6 +248,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::prelude::{
     ConcreteDataType, LogicalTypeId, MutableVector, ScalarVectorBuilder, Value, ValueRef, Vector,
 };
+<span class="kw">use </span><span class="kw">crate</span>::types::LogicalPrimitiveType;
 <span class="kw">use </span><span class="kw">crate</span>::vectors::{
     DurationMicrosecondVector, DurationMicrosecondVectorBuilder, DurationMillisecondVector,
     DurationMillisecondVectorBuilder, DurationNanosecondVector, DurationNanosecondVectorBuilder,

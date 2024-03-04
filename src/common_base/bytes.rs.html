@@ -451,7 +451,7 @@
         <span class="kw">let </span>bytes = StringBytes::from(hello.clone());
         <span class="macro">assert_eq!</span>(bytes.len(), hello.len());
 
-        <span class="kw">let </span>zero = <span class="string">""</span>.to_string();
+        <span class="kw">let </span>zero = String::default();
         <span class="kw">let </span>bytes = StringBytes::from(zero);
         <span class="macro">assert!</span>(bytes.is_empty());
     }

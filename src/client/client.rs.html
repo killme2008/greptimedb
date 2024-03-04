@@ -352,7 +352,7 @@
         <span class="self">self</span>.inner.set_peers(urls);
     }
 
-    <span class="kw">fn </span>find_channel(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(String, Channel)&gt; {
+    <span class="kw">pub fn </span>find_channel(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(String, Channel)&gt; {
         <span class="kw">let </span>addr = <span class="self">self
             </span>.inner
             .get_peer()

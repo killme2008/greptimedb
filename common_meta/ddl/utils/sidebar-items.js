@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["handle_operate_region_error","handle_retry_error","region_storage_path"]};
+window.SIDEBAR_ITEMS = {"fn":["add_peer_context_if_needed","check_and_get_physical_table_id","handle_retry_error","region_storage_path"]};

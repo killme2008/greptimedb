@@ -142,6 +142,25 @@
 <a href="#141" id="141">141</a>
 <a href="#142" id="142">142</a>
 <a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
+<a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
+<a href="#160" id="160">160</a>
+<a href="#161" id="161">161</a>
+<a href="#162" id="162">162</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -162,6 +181,7 @@
 
 <span class="kw">use </span>arrow_schema::DataType;
 <span class="kw">use </span>catalog::table_source::DfTableSourceProvider;
+<span class="kw">use </span>common_function::scalars::udf::create_udf;
 <span class="kw">use </span>common_query::logical_plan::create_aggregate_function;
 <span class="kw">use </span>datafusion::catalog::TableReference;
 <span class="kw">use </span>datafusion::error::Result <span class="kw">as </span>DfResult;
@@ -185,22 +205,27 @@
     session_state: SessionState,
     tables: HashMap&lt;String, Arc&lt;<span class="kw">dyn </span>TableSource&gt;&gt;,
     table_provider: DfTableSourceProvider,
+    query_ctx: QueryContextRef,
 }
 
 <span class="kw">impl </span>DfContextProviderAdapter {
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>try_new(
         engine_state: Arc&lt;QueryEngineState&gt;,
         session_state: SessionState,
-        df_stmt: <span class="kw-2">&amp;</span>DfStatement,
+        df_stmt: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>DfStatement&gt;,
         query_ctx: QueryContextRef,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
-        <span class="kw">let </span>table_names = session_state
-            .resolve_table_references(df_stmt)
-            .context(DataFusionSnafu)<span class="question-mark">?</span>;
+        <span class="kw">let </span>table_names = <span class="kw">if let </span><span class="prelude-val">Some</span>(df_stmt) = df_stmt {
+            session_state
+                .resolve_table_references(df_stmt)
+                .context(DataFusionSnafu)<span class="question-mark">?
+        </span>} <span class="kw">else </span>{
+            <span class="macro">vec!</span>[]
+        };
 
         <span class="kw">let </span><span class="kw-2">mut </span>table_provider = DfTableSourceProvider::new(
             engine_state.catalog_manager().clone(),
-            engine_state.disallow_cross_schema_query(),
+            engine_state.disallow_cross_catalog_query(),
             query_ctx.as_ref(),
         );
 
@@ -211,6 +236,7 @@
             session_state,
             tables,
             table_provider,
+            query_ctx,
         })
     }
 }
@@ -248,7 +274,19 @@
     }
 
     <span class="kw">fn </span>get_function_meta(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;Arc&lt;ScalarUDF&gt;&gt; {
-        <span class="self">self</span>.session_state.scalar_functions().get(name).cloned()
+        <span class="self">self</span>.engine_state.udf_function(name).map_or_else(
+            || <span class="self">self</span>.session_state.scalar_functions().get(name).cloned(),
+            |func| {
+                <span class="prelude-val">Some</span>(Arc::new(
+                    create_udf(
+                        func,
+                        <span class="self">self</span>.query_ctx.clone(),
+                        <span class="self">self</span>.engine_state.function_state(),
+                    )
+                    .into(),
+                ))
+            },
+        )
     }
 
     <span class="kw">fn </span>get_aggregate_meta(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;Arc&lt;AggregateUDF&gt;&gt; {

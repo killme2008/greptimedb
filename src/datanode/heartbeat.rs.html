@@ -727,7 +727,7 @@
     }
 
     <span class="kw">async fn </span>load_region_stats(region_server: <span class="kw-2">&amp;</span>RegionServer) -&gt; Vec&lt;RegionStat&gt; {
-        <span class="kw">let </span>regions = region_server.opened_regions();
+        <span class="kw">let </span>regions = region_server.reportable_regions();
 
         <span class="kw">let </span><span class="kw-2">mut </span>region_stats = Vec::new();
         <span class="kw">for </span>stat <span class="kw">in </span>regions {

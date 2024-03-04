@@ -30,6 +30,9 @@
 <a href="#29" id="29">29</a>
 <a href="#30" id="30">30</a>
 <a href="#31" id="31">31</a>
+<a href="#32" id="32">32</a>
+<a href="#33" id="33">33</a>
+<a href="#34" id="34">34</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -46,9 +49,11 @@
 
 </span><span class="kw">use </span>std::sync::Arc;
 <span class="kw">mod </span>date_add;
+<span class="kw">mod </span>date_format;
 <span class="kw">mod </span>date_sub;
 
 <span class="kw">use </span>date_add::DateAddFunction;
+<span class="kw">use </span>date_format::DateFormatFunction;
 <span class="kw">use </span>date_sub::DateSubFunction;
 
 <span class="kw">use </span><span class="kw">crate</span>::function_registry::FunctionRegistry;
@@ -59,6 +64,7 @@
     <span class="kw">pub fn </span>register(registry: <span class="kw-2">&amp;</span>FunctionRegistry) {
         registry.register(Arc::new(DateAddFunction));
         registry.register(Arc::new(DateSubFunction));
+        registry.register(Arc::new(DateFormatFunction));
     }
 }
 </code></pre></div></section></main></body></html>

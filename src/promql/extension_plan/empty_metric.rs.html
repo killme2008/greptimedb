@@ -605,8 +605,8 @@
             .map(|expr| {
                 physical_planner.create_physical_expr(
                     expr,
-                    <span class="kw-2">&amp;</span><span class="self">self</span>.result_schema,
-                    <span class="kw-2">&amp;</span>ArrowSchema::from(<span class="self">self</span>.result_schema.as_ref()),
+                    <span class="kw-2">&amp;</span><span class="self">self</span>.time_index_schema,
+                    <span class="kw-2">&amp;</span>ArrowSchema::from(<span class="self">self</span>.time_index_schema.as_ref()),
                     session_state,
                 )
             })

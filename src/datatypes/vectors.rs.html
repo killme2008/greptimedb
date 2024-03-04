@@ -442,6 +442,13 @@
 <a href="#441" id="441">441</a>
 <a href="#442" id="442">442</a>
 <a href="#443" id="443">443</a>
+<a href="#444" id="444">444</a>
+<a href="#445" id="445">445</a>
+<a href="#446" id="446">446</a>
+<a href="#447" id="447">447</a>
+<a href="#448" id="448">448</a>
+<a href="#449" id="449">449</a>
+<a href="#450" id="450">450</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -655,8 +662,15 @@
         });
     }
 
-    <span class="comment">// Push null to this mutable vector.
+    <span class="doccomment">/// Push null to this mutable vector.
     </span><span class="kw">fn </span>push_null(<span class="kw-2">&amp;mut </span><span class="self">self</span>);
+
+    <span class="doccomment">/// Push nulls to this mutable vector.
+    </span><span class="kw">fn </span>push_nulls(<span class="kw-2">&amp;mut </span><span class="self">self</span>, num_nulls: usize) {
+        <span class="kw">for _ in </span><span class="number">0</span>..num_nulls {
+            <span class="self">self</span>.push_null();
+        }
+    }
 
     <span class="doccomment">/// Extend this mutable vector by slice of `vector`.
     ///

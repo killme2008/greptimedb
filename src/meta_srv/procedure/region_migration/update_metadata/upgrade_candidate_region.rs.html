@@ -476,6 +476,20 @@
 <a href="#475" id="475">475</a>
 <a href="#476" id="476">476</a>
 <a href="#477" id="477">477</a>
+<a href="#478" id="478">478</a>
+<a href="#479" id="479">479</a>
+<a href="#480" id="480">480</a>
+<a href="#481" id="481">481</a>
+<a href="#482" id="482">482</a>
+<a href="#483" id="483">483</a>
+<a href="#484" id="484">484</a>
+<a href="#485" id="485">485</a>
+<a href="#486" id="486">486</a>
+<a href="#487" id="487">487</a>
+<a href="#488" id="488">488</a>
+<a href="#489" id="489">489</a>
+<a href="#490" id="490">490</a>
+<a href="#491" id="491">491</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -490,11 +504,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-</span><span class="kw">use </span>std::collections::HashMap;
-
-<span class="kw">use </span>common_meta::ddl::utils::region_storage_path;
+</span><span class="kw">use </span>common_error::ext::BoxedError;
 <span class="kw">use </span>common_meta::key::datanode_table::RegionInfo;
-<span class="kw">use </span>common_meta::rpc::router::RegionRoute;
+<span class="kw">use </span>common_meta::rpc::router::{region_distribution, RegionRoute};
 <span class="kw">use </span>common_telemetry::{info, warn};
 <span class="kw">use </span>snafu::{ensure, OptionExt, ResultExt};
 
@@ -511,7 +523,12 @@
         <span class="kw">let </span>region_id = ctx.region_id();
         <span class="kw">let </span>table_route_value = ctx.get_table_route_value().<span class="kw">await</span><span class="question-mark">?</span>.clone();
 
-        <span class="kw">let </span><span class="kw-2">mut </span>region_routes = table_route_value.region_routes().clone();
+        <span class="kw">let </span><span class="kw-2">mut </span>region_routes = table_route_value
+            .region_routes()
+            .context(error::UnexpectedLogicalRouteTableSnafu {
+                err_msg: <span class="macro">format!</span>(<span class="string">"{self:?} is a non-physical TableRouteValue."</span>),
+            })<span class="question-mark">?
+            </span>.clone();
         <span class="kw">let </span>region_route = region_routes
             .iter_mut()
             .find(|route| route.region.id == region_id)
@@ -559,7 +576,12 @@
         <span class="kw">let </span>region_id = ctx.region_id();
         <span class="kw">let </span>table_route_value = ctx.get_table_route_value().<span class="kw">await</span><span class="question-mark">?</span>.clone();
 
-        <span class="kw">let </span>region_routes = table_route_value.region_routes().clone();
+        <span class="kw">let </span>region_routes = table_route_value
+            .region_routes()
+            .context(error::UnexpectedLogicalRouteTableSnafu {
+                err_msg: <span class="macro">format!</span>(<span class="string">"{self:?} is a non-physical TableRouteValue."</span>),
+            })<span class="question-mark">?
+            </span>.clone();
         <span class="kw">let </span>region_route = region_routes
             .into_iter()
             .find(|route| route.region.id == region_id)
@@ -606,20 +628,21 @@
         }
 
         <span class="kw">let </span>region_routes = <span class="self">self</span>.build_upgrade_candidate_region_metadata(ctx).<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="kw">let </span>table_info_value = ctx.get_table_info_value().<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>datanode_table_value = ctx.get_from_peer_datanode_table_value().<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>RegionInfo {
+            region_storage_path,
+            region_options,
+            region_wal_options,
+            engine,
+        } = datanode_table_value.region_info.clone();
+        <span class="kw">let </span>table_route_value = ctx.get_table_route_value().<span class="kw">await</span><span class="question-mark">?</span>;
 
-        <span class="kw">let </span>table_info = <span class="kw-2">&amp;</span>table_info_value.table_info;
-        <span class="kw">let </span>region_storage_path =
-            region_storage_path(<span class="kw-2">&amp;</span>table_info.catalog_name, <span class="kw-2">&amp;</span>table_info.schema_name);
-        <span class="kw">let </span>engine = table_info.meta.engine.clone();
-        <span class="kw">let </span>region_options: HashMap&lt;String, String&gt; = (<span class="kw-2">&amp;</span>table_info.meta.options).into();
-
-        <span class="comment">// TODO(niebayes): properly fetch or construct region wal options.
-        </span><span class="kw">let </span>region_wal_options = HashMap::new();
-
-        <span class="comment">// No remote fetch.
-        </span><span class="kw">let </span>table_route_value = ctx.get_table_route_value().<span class="kw">await</span><span class="question-mark">?</span>;
-
+        <span class="kw">let </span>region_distribution = region_distribution(<span class="kw-2">&amp;</span>region_routes);
+        <span class="macro">info!</span>(
+            <span class="string">"Trying to update region routes to {:?} for table: {}"</span>,
+            region_distribution,
+            region_id.table_id()
+        );
         <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = table_metadata_manager
             .update_table_route(
                 region_id.table_id(),
@@ -637,13 +660,13 @@
             .<span class="kw">await
             </span>.context(error::TableMetadataManagerSnafu)
         {
-            <span class="macro">debug_assert!</span>(ctx.remove_table_route_value());
-            <span class="kw">return </span>error::RetryLaterSnafu {
-                    reason: <span class="macro">format!</span>(<span class="string">"Failed to update the table route during the upgrading candidate region, error: {err}"</span>)
-                }.fail();
+            ctx.remove_table_route_value();
+            <span class="kw">return </span><span class="prelude-val">Err</span>(BoxedError::new(err)).context(error::RetryLaterWithSourceSnafu {
+                reason: <span class="macro">format!</span>(<span class="string">"Failed to update the table route during the upgrading candidate region: {region_id}"</span>),
+            });
         };
 
-        <span class="macro">debug_assert!</span>(ctx.remove_table_route_value());
+        ctx.remove_table_route_value();
         <span class="comment">// Consumes the guard.
         </span>ctx.volatile_ctx.opening_region_guard.take();
 
@@ -659,6 +682,7 @@
     <span class="kw">use </span>common_meta::peer::Peer;
     <span class="kw">use </span>common_meta::region_keeper::MemoryRegionKeeper;
     <span class="kw">use </span>common_meta::rpc::router::{Region, RegionRoute, RegionStatus};
+    <span class="kw">use </span>common_time::util::current_time_millis;
     <span class="kw">use </span>store_api::storage::RegionId;
 
     <span class="kw">use </span><span class="kw">crate</span>::error::Error;
@@ -754,6 +778,7 @@
             leader_peer: <span class="prelude-val">Some</span>(Peer::empty(<span class="number">1</span>)),
             follower_peers: <span class="macro">vec!</span>[Peer::empty(<span class="number">2</span>), Peer::empty(<span class="number">3</span>)],
             leader_status: <span class="prelude-val">Some</span>(RegionStatus::Downgraded),
+            leader_down_since: <span class="prelude-val">Some</span>(current_time_millis()),
         }];
 
         env.create_physical_table_metadata(table_info, region_routes)
@@ -765,6 +790,7 @@
             </span>.unwrap();
 
         <span class="macro">assert!</span>(!new_region_routes[<span class="number">0</span>].is_leader_downgraded());
+        <span class="macro">assert!</span>(new_region_routes[<span class="number">0</span>].leader_down_since.is_none());
         <span class="macro">assert_eq!</span>(new_region_routes[<span class="number">0</span>].follower_peers, <span class="macro">vec!</span>[Peer::empty(<span class="number">3</span>)]);
         <span class="macro">assert_eq!</span>(new_region_routes[<span class="number">0</span>].leader_peer.as_ref().unwrap().id, <span class="number">2</span>);
     }
@@ -785,6 +811,7 @@
                 leader_peer: <span class="prelude-val">Some</span>(Peer::empty(<span class="number">1</span>)),
                 follower_peers: <span class="macro">vec!</span>[Peer::empty(<span class="number">5</span>), Peer::empty(<span class="number">3</span>)],
                 leader_status: <span class="prelude-val">Some</span>(RegionStatus::Downgraded),
+                leader_down_since: <span class="prelude-val">Some</span>(current_time_millis()),
             },
             RegionRoute {
                 region: Region::new_test(RegionId::new(table_id, <span class="number">2</span>)),
@@ -800,7 +827,8 @@
         <span class="kw">let </span>table_metadata_manager = env.table_metadata_manager();
         <span class="kw">let </span>original_table_route = table_metadata_manager
             .table_route_manager()
-            .get(table_id)
+            .table_route_storage()
+            .get_raw(table_id)
             .<span class="kw">await
             </span>.unwrap()
             .unwrap();
@@ -824,15 +852,12 @@
             .register(<span class="number">2</span>, RegionId::new(table_id, <span class="number">1</span>))
             .unwrap();
         ctx.volatile_ctx.opening_region_guard = <span class="prelude-val">Some</span>(guard);
-
         <span class="kw">let </span>err = state.upgrade_candidate_region(<span class="kw-2">&amp;mut </span>ctx).<span class="kw">await</span>.unwrap_err();
 
         <span class="macro">assert!</span>(ctx.volatile_ctx.table_route.is_none());
         <span class="macro">assert!</span>(ctx.volatile_ctx.opening_region_guard.is_some());
-        <span class="macro">assert_matches!</span>(err, Error::RetryLater { .. });
-
         <span class="macro">assert!</span>(err.is_retryable());
-        <span class="macro">assert!</span>(err.to_string().contains(<span class="string">"Failed to update the table route"</span>));
+        <span class="macro">assert!</span>(<span class="macro">format!</span>(<span class="string">"{err:?}"</span>).contains(<span class="string">"Failed to update the table route"</span>));
     }
 
     <span class="attr">#[tokio::test]
@@ -849,6 +874,7 @@
             leader_peer: <span class="prelude-val">Some</span>(leader_peer),
             follower_peers: <span class="macro">vec!</span>[Peer::empty(<span class="number">2</span>), Peer::empty(<span class="number">3</span>)],
             leader_status: <span class="prelude-val">None</span>,
+            leader_down_since: <span class="prelude-val">None</span>,
         }];
 
         env.create_physical_table_metadata(table_info, region_routes)
@@ -872,6 +898,7 @@
             leader_peer: <span class="prelude-val">Some</span>(candidate_peer),
             follower_peers: <span class="macro">vec!</span>[Peer::empty(<span class="number">2</span>), Peer::empty(<span class="number">3</span>)],
             leader_status: <span class="prelude-val">None</span>,
+            leader_down_since: <span class="prelude-val">None</span>,
         }];
 
         env.create_physical_table_metadata(table_info, region_routes)
@@ -895,6 +922,7 @@
             leader_peer: <span class="prelude-val">Some</span>(candidate_peer),
             follower_peers: <span class="macro">vec!</span>[Peer::empty(<span class="number">2</span>), Peer::empty(<span class="number">3</span>)],
             leader_status: <span class="prelude-val">Some</span>(RegionStatus::Downgraded),
+            leader_down_since: <span class="prelude-val">None</span>,
         }];
 
         env.create_physical_table_metadata(table_info, region_routes)
@@ -938,12 +966,12 @@
 
         <span class="kw">let </span>table_route = table_metadata_manager
             .table_route_manager()
+            .table_route_storage()
             .get(table_id)
             .<span class="kw">await
             </span>.unwrap()
-            .unwrap()
-            .into_inner();
-        <span class="kw">let </span>region_routes = table_route.region_routes();
+            .unwrap();
+        <span class="kw">let </span>region_routes = table_route.region_routes().unwrap();
 
         <span class="macro">assert!</span>(ctx.volatile_ctx.table_route.is_none());
         <span class="macro">assert!</span>(ctx.volatile_ctx.opening_region_guard.is_none());

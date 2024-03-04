@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["ddl","lock","router","store","util"],"struct":["KeyValue","ResponseHeader"]};
+window.SIDEBAR_ITEMS = {"mod":["ddl","lock","procedure","router","store","util"],"struct":["KeyValue","ResponseHeader"]};

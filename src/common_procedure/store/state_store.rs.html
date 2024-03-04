@@ -357,7 +357,7 @@
         <span class="kw">let </span><span class="kw-2">mut </span>lister = <span class="self">self
             </span>.store
             .lister_with(path)
-            .delimiter(<span class="string">""</span>)
+            .recursive(<span class="bool-val">true</span>)
             .<span class="kw">await
             </span>.map_err(|e| {
                 BoxedError::new(PlainError::new(

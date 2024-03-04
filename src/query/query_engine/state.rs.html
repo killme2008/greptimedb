@@ -216,6 +216,67 @@
 <a href="#215" id="215">215</a>
 <a href="#216" id="216">216</a>
 <a href="#217" id="217">217</a>
+<a href="#218" id="218">218</a>
+<a href="#219" id="219">219</a>
+<a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
+<a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
+<a href="#224" id="224">224</a>
+<a href="#225" id="225">225</a>
+<a href="#226" id="226">226</a>
+<a href="#227" id="227">227</a>
+<a href="#228" id="228">228</a>
+<a href="#229" id="229">229</a>
+<a href="#230" id="230">230</a>
+<a href="#231" id="231">231</a>
+<a href="#232" id="232">232</a>
+<a href="#233" id="233">233</a>
+<a href="#234" id="234">234</a>
+<a href="#235" id="235">235</a>
+<a href="#236" id="236">236</a>
+<a href="#237" id="237">237</a>
+<a href="#238" id="238">238</a>
+<a href="#239" id="239">239</a>
+<a href="#240" id="240">240</a>
+<a href="#241" id="241">241</a>
+<a href="#242" id="242">242</a>
+<a href="#243" id="243">243</a>
+<a href="#244" id="244">244</a>
+<a href="#245" id="245">245</a>
+<a href="#246" id="246">246</a>
+<a href="#247" id="247">247</a>
+<a href="#248" id="248">248</a>
+<a href="#249" id="249">249</a>
+<a href="#250" id="250">250</a>
+<a href="#251" id="251">251</a>
+<a href="#252" id="252">252</a>
+<a href="#253" id="253">253</a>
+<a href="#254" id="254">254</a>
+<a href="#255" id="255">255</a>
+<a href="#256" id="256">256</a>
+<a href="#257" id="257">257</a>
+<a href="#258" id="258">258</a>
+<a href="#259" id="259">259</a>
+<a href="#260" id="260">260</a>
+<a href="#261" id="261">261</a>
+<a href="#262" id="262">262</a>
+<a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -237,9 +298,13 @@
 <span class="kw">use </span>async_trait::async_trait;
 <span class="kw">use </span>catalog::CatalogManagerRef;
 <span class="kw">use </span>common_base::Plugins;
+<span class="kw">use </span>common_function::function::FunctionRef;
+<span class="kw">use </span>common_function::handlers::{ProcedureServiceHandlerRef, TableMutationHandlerRef};
 <span class="kw">use </span>common_function::scalars::aggregate::AggregateFunctionMetaRef;
+<span class="kw">use </span>common_function::state::FunctionState;
 <span class="kw">use </span>common_query::physical_plan::SessionContext;
 <span class="kw">use </span>common_query::prelude::ScalarUdf;
+<span class="kw">use </span>common_telemetry::warn;
 <span class="kw">use </span>datafusion::catalog::MemoryCatalogList;
 <span class="kw">use </span>datafusion::dataframe::DataFrame;
 <span class="kw">use </span>datafusion::error::Result <span class="kw">as </span>DfResult;
@@ -260,10 +325,11 @@
 <span class="kw">use </span><span class="kw">crate</span>::optimizer::order_hint::OrderHintRule;
 <span class="kw">use </span><span class="kw">crate</span>::optimizer::string_normalization::StringNormalizationRule;
 <span class="kw">use </span><span class="kw">crate</span>::optimizer::type_conversion::TypeConversionRule;
+<span class="kw">use </span><span class="kw">crate</span>::optimizer::ExtensionAnalyzerRule;
 <span class="kw">use </span><span class="kw">crate</span>::query_engine::options::QueryOptions;
 <span class="kw">use </span><span class="kw">crate</span>::range_select::planner::RangeSelectPlanner;
 <span class="kw">use </span><span class="kw">crate</span>::region_query::RegionQueryHandlerRef;
-<span class="kw">use </span><span class="kw">crate</span>::table_mutation::TableMutationHandlerRef;
+<span class="kw">use </span><span class="kw">crate</span>::QueryEngineContext;
 
 <span class="doccomment">/// Query engine global state
 </span><span class="comment">// TODO(yingwen): This QueryEngineState still relies on datafusion, maybe we can define a trait for it,
@@ -273,8 +339,10 @@
 </span><span class="kw">pub struct </span>QueryEngineState {
     df_context: SessionContext,
     catalog_manager: CatalogManagerRef,
-    table_mutation_handler: <span class="prelude-ty">Option</span>&lt;TableMutationHandlerRef&gt;,
+    function_state: Arc&lt;FunctionState&gt;,
+    udf_functions: Arc&lt;RwLock&lt;HashMap&lt;String, FunctionRef&gt;&gt;&gt;,
     aggregate_functions: Arc&lt;RwLock&lt;HashMap&lt;String, AggregateFunctionMetaRef&gt;&gt;&gt;,
+    extension_rules: Vec&lt;Arc&lt;<span class="kw">dyn </span>ExtensionAnalyzerRule + Send + Sync&gt;&gt;,
     plugins: Plugins,
 }
 
@@ -291,14 +359,18 @@
         catalog_list: CatalogManagerRef,
         region_query_handler: <span class="prelude-ty">Option</span>&lt;RegionQueryHandlerRef&gt;,
         table_mutation_handler: <span class="prelude-ty">Option</span>&lt;TableMutationHandlerRef&gt;,
+        procedure_service_handler: <span class="prelude-ty">Option</span>&lt;ProcedureServiceHandlerRef&gt;,
         with_dist_planner: bool,
         plugins: Plugins,
     ) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span>runtime_env = Arc::new(RuntimeEnv::default());
         <span class="kw">let </span>session_config = SessionConfig::new().with_create_default_catalog_and_schema(<span class="bool-val">false</span>);
-        <span class="comment">// Apply the type conversion rule first.
+        <span class="comment">// Apply extension rules
+        </span><span class="kw">let </span><span class="kw-2">mut </span>extension_rules = Vec::new();
+        <span class="comment">// The [`TypeConversionRule`] must be at first
+        </span>extension_rules.insert(<span class="number">0</span>, Arc::new(TypeConversionRule) <span class="kw">as _</span>);
+        <span class="comment">// Apply the datafusion rules
         </span><span class="kw">let </span><span class="kw-2">mut </span>analyzer = Analyzer::new();
-        analyzer.rules.insert(<span class="number">0</span>, Arc::new(TypeConversionRule));
         analyzer.rules.insert(<span class="number">0</span>, Arc::new(StringNormalizationRule));
         <span class="self">Self</span>::remove_analyzer_rule(<span class="kw-2">&amp;mut </span>analyzer.rules, CountWildcardRule {}.name());
         analyzer.rules.insert(<span class="number">0</span>, Arc::new(CountWildcardRule {}));
@@ -326,9 +398,14 @@
         <span class="self">Self </span>{
             df_context,
             catalog_manager: catalog_list,
-            table_mutation_handler,
+            function_state: Arc::new(FunctionState {
+                table_mutation_handler,
+                procedure_service_handler,
+            }),
             aggregate_functions: Arc::new(RwLock::new(HashMap::new())),
+            extension_rules,
             plugins,
+            udf_functions: Arc::new(RwLock::new(HashMap::new())),
         }
     }
 
@@ -336,18 +413,55 @@
         rules.retain(|rule| rule.name() != name);
     }
 
-    <span class="doccomment">/// Register a udf function
-    </span><span class="comment">// TODO(dennis): manage UDFs by ourself.
-    </span><span class="kw">pub fn </span>register_udf(<span class="kw-2">&amp;</span><span class="self">self</span>, udf: ScalarUdf) {
-        <span class="self">self</span>.df_context.register_udf(udf.into_df_udf());
+    <span class="doccomment">/// Optimize the logical plan by the extension anayzer rules.
+    </span><span class="kw">pub fn </span>optimize_by_extension_rules(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        plan: DfLogicalPlan,
+        context: <span class="kw-2">&amp;</span>QueryEngineContext,
+    ) -&gt; DfResult&lt;DfLogicalPlan&gt; {
+        <span class="self">self</span>.extension_rules
+            .iter()
+            .try_fold(plan, |acc_plan, rule| {
+                rule.analyze(acc_plan, context, <span class="self">self</span>.session_state().config_options())
+            })
     }
 
-    <span class="kw">pub fn </span>aggregate_function(<span class="kw-2">&amp;</span><span class="self">self</span>, function_name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;AggregateFunctionMetaRef&gt; {
+    <span class="doccomment">/// Register an udf function.
+    /// Will override if the function with same name is already registered.
+    </span><span class="kw">pub fn </span>register_function(<span class="kw-2">&amp;</span><span class="self">self</span>, func: FunctionRef) {
+        <span class="kw">let </span>name = func.name().to_string();
+        <span class="kw">let </span>x = <span class="self">self
+            </span>.udf_functions
+            .write()
+            .unwrap()
+            .insert(name.clone(), func);
+
+        <span class="kw">if </span>x.is_some() {
+            <span class="macro">warn!</span>(<span class="string">"Already registered udf function '{name}'"</span>);
+        }
+    }
+
+    <span class="doccomment">/// Retrieve the udf function by name
+    </span><span class="kw">pub fn </span>udf_function(<span class="kw-2">&amp;</span><span class="self">self</span>, function_name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;FunctionRef&gt; {
+        <span class="self">self</span>.udf_functions
+            .read()
+            .unwrap()
+            .get(function_name)
+            .cloned()
+    }
+
+    <span class="doccomment">/// Retrieve the aggregate function by name
+    </span><span class="kw">pub fn </span>aggregate_function(<span class="kw-2">&amp;</span><span class="self">self</span>, function_name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;AggregateFunctionMetaRef&gt; {
         <span class="self">self</span>.aggregate_functions
             .read()
             .unwrap()
             .get(function_name)
             .cloned()
+    }
+
+    <span class="doccomment">/// Register a [`ScalarUdf`].
+    </span><span class="kw">pub fn </span>register_udf(<span class="kw-2">&amp;</span><span class="self">self</span>, udf: ScalarUdf) {
+        <span class="self">self</span>.df_context.register_udf(udf.into());
     }
 
     <span class="doccomment">/// Register an aggregate function.
@@ -371,19 +485,27 @@
         </span>);
     }
 
-    <span class="attr">#[inline]
-    </span><span class="kw">pub fn </span>catalog_manager(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>CatalogManagerRef {
+    <span class="kw">pub fn </span>catalog_manager(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>CatalogManagerRef {
         <span class="kw-2">&amp;</span><span class="self">self</span>.catalog_manager
     }
 
-    <span class="attr">#[inline]
-    </span><span class="kw">pub fn </span>table_mutation_handler(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>TableMutationHandlerRef&gt; {
-        <span class="self">self</span>.table_mutation_handler.as_ref()
+    <span class="kw">pub fn </span>function_state(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Arc&lt;FunctionState&gt; {
+        <span class="self">self</span>.function_state.clone()
     }
 
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>disallow_cross_schema_query(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+    <span class="doccomment">/// Returns the [`TableMutationHandlerRef`] in state.
+    </span><span class="kw">pub fn </span>table_mutation_handler(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>TableMutationHandlerRef&gt; {
+        <span class="self">self</span>.function_state.table_mutation_handler.as_ref()
+    }
+
+    <span class="doccomment">/// Returns the [`ProcedureServiceHandlerRef`] in state.
+    </span><span class="kw">pub fn </span>procedure_service_handler(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>ProcedureServiceHandlerRef&gt; {
+        <span class="self">self</span>.function_state.procedure_service_handler.as_ref()
+    }
+
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>disallow_cross_catalog_query(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="self">self</span>.plugins
-            .map::&lt;QueryOptions, <span class="kw">_</span>, <span class="kw">_</span>&gt;(|x| x.disallow_cross_schema_query)
+            .map::&lt;QueryOptions, <span class="kw">_</span>, <span class="kw">_</span>&gt;(|x| x.disallow_cross_catalog_query)
             .unwrap_or(<span class="bool-val">false</span>)
     }
 

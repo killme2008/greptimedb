@@ -214,6 +214,12 @@
 <a href="#213" id="213">213</a>
 <a href="#214" id="214">214</a>
 <a href="#215" id="215">215</a>
+<a href="#216" id="216">216</a>
+<a href="#217" id="217">217</a>
+<a href="#218" id="218">218</a>
+<a href="#219" id="219">219</a>
+<a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -276,7 +282,13 @@
             <span class="kw">return</span>;
         }
 
-        <span class="kw">let </span><span class="kw-2">mut </span>region_ctxs = <span class="self">self</span>.prepare_region_write_ctx(write_requests);
+        <span class="comment">// Prepare write context.
+        </span><span class="kw">let </span><span class="kw-2">mut </span>region_ctxs = {
+            <span class="kw">let </span>_timer = WRITE_STAGE_ELAPSED
+                .with_label_values(<span class="kw-2">&amp;</span>[<span class="string">"prepare_ctx"</span>])
+                .start_timer();
+            <span class="self">self</span>.prepare_region_write_ctx(write_requests)
+        };
 
         <span class="comment">// Write to WAL.
         </span>{

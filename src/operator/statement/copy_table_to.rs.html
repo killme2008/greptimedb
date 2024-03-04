@@ -148,6 +148,14 @@
 <a href="#147" id="147">147</a>
 <a href="#148" id="148">148</a>
 <a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -182,9 +190,9 @@
 <span class="kw">use </span>query::plan::LogicalPlan;
 <span class="kw">use </span>session::context::QueryContextRef;
 <span class="kw">use </span>snafu::{OptionExt, ResultExt};
-<span class="kw">use </span>table::engine::TableReference;
 <span class="kw">use </span>table::requests::CopyTableRequest;
 <span class="kw">use </span>table::table::adapter::DfTableProviderAdapter;
+<span class="kw">use </span>table::table_reference::TableReference;
 
 <span class="kw">use </span><span class="kw">crate</span>::error::{<span class="self">self</span>, BuildDfLogicalPlanSnafu, ExecLogicalPlanSnafu, <span class="prelude-ty">Result</span>};
 <span class="kw">use </span><span class="kw">crate</span>::statement::StatementExecutor;
@@ -192,6 +200,9 @@
 <span class="comment">// The buffer size should be greater than 5MB (minimum multipart upload size).
 </span><span class="doccomment">/// Buffer size to flush data to object stores.
 </span><span class="kw">const </span>WRITE_BUFFER_THRESHOLD: ReadableSize = ReadableSize::mb(<span class="number">8</span>);
+
+<span class="doccomment">/// Default number of concurrent write, it only works on object store backend(e.g., S3).
+</span><span class="kw">const </span>WRITE_CONCURRENCY: usize = <span class="number">8</span>;
 
 <span class="kw">impl </span>StatementExecutor {
     <span class="kw">async fn </span>stream_to_file(
@@ -209,6 +220,7 @@
                 object_store,
                 path,
                 threshold,
+                WRITE_CONCURRENCY,
             )
             .<span class="kw">await
             </span>.context(error::WriteStreamToFileSnafu { path }),
@@ -217,6 +229,7 @@
                 object_store,
                 path,
                 threshold,
+                WRITE_CONCURRENCY,
             )
             .<span class="kw">await
             </span>.context(error::WriteStreamToFileSnafu { path }),
@@ -225,6 +238,7 @@
                 object_store,
                 path,
                 threshold,
+                WRITE_CONCURRENCY,
             )
             .<span class="kw">await
             </span>.context(error::WriteStreamToFileSnafu { path }),
@@ -261,15 +275,17 @@
         <span class="kw">let </span>table_provider = Arc::new(DfTableProviderAdapter::new(table));
         <span class="kw">let </span>table_source = Arc::new(DefaultTableSource::new(table_provider));
 
-        <span class="kw">let </span>plan = LogicalPlanBuilder::scan_with_filters(
+        <span class="kw">let </span><span class="kw-2">mut </span>builder = LogicalPlanBuilder::scan_with_filters(
             df_table_ref.to_owned_reference(),
             table_source,
             <span class="prelude-val">None</span>,
-            filters,
+            filters.clone(),
         )
-        .context(BuildDfLogicalPlanSnafu)<span class="question-mark">?
-        </span>.build()
         .context(BuildDfLogicalPlanSnafu)<span class="question-mark">?</span>;
+        <span class="kw">for </span>f <span class="kw">in </span>filters {
+            builder = builder.filter(f).context(BuildDfLogicalPlanSnafu)<span class="question-mark">?</span>;
+        }
+        <span class="kw">let </span>plan = builder.build().context(BuildDfLogicalPlanSnafu)<span class="question-mark">?</span>;
 
         <span class="kw">let </span>output = <span class="self">self
             </span>.query_engine
@@ -277,7 +293,7 @@
             .<span class="kw">await
             </span>.context(ExecLogicalPlanSnafu)<span class="question-mark">?</span>;
         <span class="kw">let </span>stream = <span class="kw">match </span>output {
-            Output::Stream(stream) =&gt; stream,
+            Output::Stream(stream, <span class="kw">_</span>) =&gt; stream,
             Output::RecordBatches(record_batches) =&gt; record_batches.as_stream(),
             <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
         };

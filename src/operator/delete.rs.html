@@ -357,7 +357,7 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         request: TableDeleteRequest,
         ctx: QueryContextRef,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;usize&gt; {
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;AffectedRows&gt; {
         <span class="kw">let </span>catalog = request.catalog_name.as_str();
         <span class="kw">let </span>schema = request.schema_name.as_str();
         <span class="kw">let </span>table = request.table_name.as_str();
@@ -402,8 +402,8 @@
             });
         <span class="kw">let </span>results = future::try_join_all(tasks).<span class="kw">await</span>.context(JoinTaskSnafu)<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>affected_rows = results.into_iter().sum::&lt;<span class="prelude-ty">Result</span>&lt;u64&gt;&gt;()<span class="question-mark">?</span>;
-        <span class="kw">crate</span>::metrics::DIST_DELETE_ROW_COUNT.inc_by(affected_rows);
+        <span class="kw">let </span>affected_rows = results.into_iter().sum::&lt;<span class="prelude-ty">Result</span>&lt;AffectedRows&gt;&gt;()<span class="question-mark">?</span>;
+        <span class="kw">crate</span>::metrics::DIST_DELETE_ROW_COUNT.inc_by(affected_rows <span class="kw">as </span>u64);
         <span class="prelude-val">Ok</span>(affected_rows)
     }
 

@@ -519,7 +519,7 @@
         <span class="kw">let </span><span class="kw-2">mut </span>opts: MetaSrvOptions = Options::load_layered_options(
             <span class="self">self</span>.config_file.as_deref(),
             <span class="self">self</span>.env_prefix.as_ref(),
-            <span class="prelude-val">None</span>,
+            MetaSrvOptions::env_list_keys(),
         )<span class="question-mark">?</span>;
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(dir) = <span class="kw-2">&amp;</span>cli_options.log_dir {

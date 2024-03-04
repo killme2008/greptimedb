@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["alive_datanodes","filter_datanodes","get_lease_prefix"]};
+window.SIDEBAR_ITEMS = {"fn":["alive_datanodes","build_lease_filter","filter_datanodes","get_lease_prefix","lookup_alive_datanode_peer"]};

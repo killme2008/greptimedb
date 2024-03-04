@@ -438,47 +438,6 @@
 <a href="#437" id="437">437</a>
 <a href="#438" id="438">438</a>
 <a href="#439" id="439">439</a>
-<a href="#440" id="440">440</a>
-<a href="#441" id="441">441</a>
-<a href="#442" id="442">442</a>
-<a href="#443" id="443">443</a>
-<a href="#444" id="444">444</a>
-<a href="#445" id="445">445</a>
-<a href="#446" id="446">446</a>
-<a href="#447" id="447">447</a>
-<a href="#448" id="448">448</a>
-<a href="#449" id="449">449</a>
-<a href="#450" id="450">450</a>
-<a href="#451" id="451">451</a>
-<a href="#452" id="452">452</a>
-<a href="#453" id="453">453</a>
-<a href="#454" id="454">454</a>
-<a href="#455" id="455">455</a>
-<a href="#456" id="456">456</a>
-<a href="#457" id="457">457</a>
-<a href="#458" id="458">458</a>
-<a href="#459" id="459">459</a>
-<a href="#460" id="460">460</a>
-<a href="#461" id="461">461</a>
-<a href="#462" id="462">462</a>
-<a href="#463" id="463">463</a>
-<a href="#464" id="464">464</a>
-<a href="#465" id="465">465</a>
-<a href="#466" id="466">466</a>
-<a href="#467" id="467">467</a>
-<a href="#468" id="468">468</a>
-<a href="#469" id="469">469</a>
-<a href="#470" id="470">470</a>
-<a href="#471" id="471">471</a>
-<a href="#472" id="472">472</a>
-<a href="#473" id="473">473</a>
-<a href="#474" id="474">474</a>
-<a href="#475" id="475">475</a>
-<a href="#476" id="476">476</a>
-<a href="#477" id="477">477</a>
-<a href="#478" id="478">478</a>
-<a href="#479" id="479">479</a>
-<a href="#480" id="480">480</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -496,12 +455,8 @@
 </span><span class="kw">use </span>std::collections::HashMap;
 
 <span class="kw">use </span>api::v1::region::region_request::Body <span class="kw">as </span>PbRegionRequest;
-<span class="kw">use </span>api::v1::region::{
-    CreateRequest <span class="kw">as </span>PbCreateRegionRequest, RegionColumnDef, RegionRequest, RegionRequestHeader,
-};
-<span class="kw">use </span>api::v1::{ColumnDef, SemanticType};
+<span class="kw">use </span>api::v1::region::{RegionRequest, RegionRequestHeader};
 <span class="kw">use </span>async_trait::async_trait;
-<span class="kw">use </span>common_config::WAL_OPTIONS_KEY;
 <span class="kw">use </span>common_error::ext::BoxedError;
 <span class="kw">use </span>common_procedure::error::{
     ExternalSnafu, FromJsonSnafu, <span class="prelude-ty">Result </span><span class="kw">as </span>ProcedureResult, ToJsonSnafu,
@@ -512,24 +467,24 @@
 <span class="kw">use </span>futures::future::join_all;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>snafu::{ensure, OptionExt, ResultExt};
-<span class="kw">use </span>store_api::metric_engine_consts::LOGICAL_TABLE_METADATA_KEY;
 <span class="kw">use </span>store_api::storage::{RegionId, RegionNumber};
 <span class="kw">use </span>strum::AsRefStr;
-<span class="kw">use </span>table::engine::TableReference;
 <span class="kw">use </span>table::metadata::{RawTableInfo, TableId};
+<span class="kw">use </span>table::table_reference::TableReference;
 
-<span class="kw">use </span><span class="kw">crate</span>::ddl::utils::{handle_operate_region_error, handle_retry_error, region_storage_path};
-<span class="kw">use </span><span class="kw">crate</span>::ddl::DdlContext;
+<span class="kw">use </span><span class="kw">crate</span>::ddl::create_table_template::{build_template, CreateRequestBuilder};
+<span class="kw">use </span><span class="kw">crate</span>::ddl::utils::{add_peer_context_if_needed, handle_retry_error, region_storage_path};
+<span class="kw">use </span><span class="kw">crate</span>::ddl::{DdlContext, TableMetadata, TableMetadataAllocatorContext};
 <span class="kw">use </span><span class="kw">crate</span>::error::{<span class="self">self</span>, <span class="prelude-ty">Result</span>, TableRouteNotFoundSnafu};
 <span class="kw">use </span><span class="kw">crate</span>::key::table_name::TableNameKey;
 <span class="kw">use </span><span class="kw">crate</span>::key::table_route::TableRouteValue;
-<span class="kw">use </span><span class="kw">crate</span>::metrics;
+<span class="kw">use </span><span class="kw">crate</span>::lock_key::TableNameLock;
 <span class="kw">use </span><span class="kw">crate</span>::region_keeper::OperatingRegionGuard;
 <span class="kw">use </span><span class="kw">crate</span>::rpc::ddl::CreateTableTask;
 <span class="kw">use </span><span class="kw">crate</span>::rpc::router::{
     find_leader_regions, find_leaders, operating_leader_regions, RegionRoute,
 };
-
+<span class="kw">use crate</span>::{metrics, ClusterId};
 <span class="kw">pub struct </span>CreateTableProcedure {
     <span class="kw">pub </span>context: DdlContext,
     <span class="kw">pub </span>creator: TableCreator,
@@ -538,16 +493,10 @@
 <span class="kw">impl </span>CreateTableProcedure {
     <span class="kw">pub const </span>TYPE_NAME: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str = <span class="string">"metasrv-procedure::CreateTable"</span>;
 
-    <span class="kw">pub fn </span>new(
-        cluster_id: u64,
-        task: CreateTableTask,
-        table_route: TableRouteValue,
-        region_wal_options: HashMap&lt;RegionNumber, String&gt;,
-        context: DdlContext,
-    ) -&gt; <span class="self">Self </span>{
+    <span class="kw">pub fn </span>new(cluster_id: ClusterId, task: CreateTableTask, context: DdlContext) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             context,
-            creator: TableCreator::new(cluster_id, task, table_route, region_wal_options),
+            creator: TableCreator::new(cluster_id, task),
         }
     }
 
@@ -559,7 +508,8 @@
             opening_regions: <span class="macro">vec!</span>[],
         };
 
-        <span class="kw">if let </span>TableRouteValue::Physical(x) = <span class="kw-2">&amp;</span>creator.data.table_route {
+        <span class="comment">// Only registers regions if the table route is allocated.
+        </span><span class="kw">if let </span><span class="prelude-val">Some</span>(TableRouteValue::Physical(x)) = <span class="kw-2">&amp;</span>creator.data.table_route {
             creator.opening_regions = creator
                 .register_opening_regions(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>x.region_routes)
                 .map_err(BoxedError::new)
@@ -569,44 +519,94 @@
         <span class="prelude-val">Ok</span>(CreateTableProcedure { context, creator })
     }
 
-    <span class="kw">pub fn </span>table_info(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>RawTableInfo {
+    <span class="kw">fn </span>table_info(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>RawTableInfo {
         <span class="kw-2">&amp;</span><span class="self">self</span>.creator.data.task.table_info
     }
 
-    <span class="kw">fn </span>table_id(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; TableId {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>table_id(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; TableId {
         <span class="self">self</span>.table_info().ident.table_id
     }
 
-    <span class="kw">pub fn </span>region_wal_options(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>HashMap&lt;RegionNumber, String&gt; {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.creator.data.region_wal_options
+    <span class="kw">fn </span>region_wal_options(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span>HashMap&lt;RegionNumber, String&gt;&gt; {
+        <span class="self">self</span>.creator
+            .data
+            .region_wal_options
+            .as_ref()
+            .context(error::UnexpectedSnafu {
+                err_msg: <span class="string">"region_wal_options is not allocated"</span>,
+            })
     }
 
-    <span class="doccomment">/// Checks whether the table exists.
-    </span><span class="kw">async fn </span>on_prepare(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Status&gt; {
+    <span class="kw">fn </span>table_route(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span>TableRouteValue&gt; {
+        <span class="self">self</span>.creator
+            .data
+            .table_route
+            .as_ref()
+            .context(error::UnexpectedSnafu {
+                err_msg: <span class="string">"table_route is not allocated"</span>,
+            })
+    }
+
+    <span class="attr">#[cfg(any(test, feature = <span class="string">"testing"</span>))]
+    </span><span class="kw">pub fn </span>set_allocated_metadata(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        table_id: TableId,
+        table_route: TableRouteValue,
+        region_wal_options: HashMap&lt;RegionNumber, String&gt;,
+    ) {
+        <span class="self">self</span>.creator
+            .set_allocated_metadata(table_id, table_route, region_wal_options)
+    }
+
+    <span class="doccomment">/// On the prepare step, it performs:
+    /// - Checks whether the table exists.
+    /// - Allocates the table id.
+    ///
+    /// Abort(non-retry):
+    /// - TableName exists and `create_if_not_exists` is false.
+    /// - Failed to allocate [TableMetadata].
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>on_prepare(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Status&gt; {
         <span class="kw">let </span>expr = <span class="kw-2">&amp;</span><span class="self">self</span>.creator.data.task.create_table;
-        <span class="kw">let </span>exist = <span class="self">self
+        <span class="kw">let </span>table_name_value = <span class="self">self
             </span>.context
             .table_metadata_manager
             .table_name_manager()
-            .exists(TableNameKey::new(
+            .get(TableNameKey::new(
                 <span class="kw-2">&amp;</span>expr.catalog_name,
                 <span class="kw-2">&amp;</span>expr.schema_name,
                 <span class="kw-2">&amp;</span>expr.table_name,
             ))
             .<span class="kw">await</span><span class="question-mark">?</span>;
 
-        <span class="kw">if </span>exist {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(value) = table_name_value {
             <span class="macro">ensure!</span>(
-                <span class="self">self</span>.creator.data.task.create_table.create_if_not_exists,
+                expr.create_if_not_exists,
                 error::TableAlreadyExistsSnafu {
                     table_name: <span class="self">self</span>.creator.data.table_ref().to_string(),
                 }
             );
 
-            <span class="kw">return </span><span class="prelude-val">Ok</span>(Status::Done);
+            <span class="kw">let </span>table_id = value.table_id();
+            <span class="kw">return </span><span class="prelude-val">Ok</span>(Status::done_with_output(table_id));
         }
 
         <span class="self">self</span>.creator.data.state = CreateTableState::DatanodeCreateRegions;
+        <span class="kw">let </span>TableMetadata {
+            table_id,
+            table_route,
+            region_wal_options,
+        } = <span class="self">self
+            </span>.context
+            .table_metadata_allocator
+            .create(
+                <span class="kw-2">&amp;</span>TableMetadataAllocatorContext {
+                    cluster_id: <span class="self">self</span>.creator.data.cluster_id,
+                },
+                <span class="kw-2">&amp;</span><span class="self">self</span>.creator.data.task,
+            )
+            .<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="self">self</span>.creator
+            .set_allocated_metadata(table_id, table_route, region_wal_options);
 
         <span class="prelude-val">Ok</span>(Status::executing(<span class="bool-val">true</span>))
     }
@@ -616,71 +616,24 @@
         physical_table_id: <span class="prelude-ty">Option</span>&lt;TableId&gt;,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;CreateRequestBuilder&gt; {
         <span class="kw">let </span>create_table_expr = <span class="kw-2">&amp;</span><span class="self">self</span>.creator.data.task.create_table;
-
-        <span class="kw">let </span>column_defs = create_table_expr
-            .column_defs
-            .iter()
-            .enumerate()
-            .map(|(i, c)| {
-                <span class="kw">let </span>semantic_type = <span class="kw">if </span>create_table_expr.time_index == c.name {
-                    SemanticType::Timestamp
-                } <span class="kw">else if </span>create_table_expr.primary_keys.contains(<span class="kw-2">&amp;</span>c.name) {
-                    SemanticType::Tag
-                } <span class="kw">else </span>{
-                    SemanticType::Field
-                };
-
-                RegionColumnDef {
-                    column_def: <span class="prelude-val">Some</span>(ColumnDef {
-                        name: c.name.clone(),
-                        data_type: c.data_type,
-                        is_nullable: c.is_nullable,
-                        default_constraint: c.default_constraint.clone(),
-                        semantic_type: semantic_type <span class="kw">as </span>i32,
-                        comment: String::new(),
-                        datatype_extension: c.datatype_extension.clone(),
-                    }),
-                    column_id: i <span class="kw">as </span>u32,
-                }
-            })
-            .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
-
-        <span class="kw">let </span>primary_key = create_table_expr
-            .primary_keys
-            .iter()
-            .map(|key| {
-                column_defs
-                    .iter()
-                    .find_map(|c| {
-                        c.column_def.as_ref().and_then(|x| {
-                            <span class="kw">if </span><span class="kw-2">&amp;</span>x.name == key {
-                                <span class="prelude-val">Some</span>(c.column_id)
-                            } <span class="kw">else </span>{
-                                <span class="prelude-val">None
-                            </span>}
-                        })
-                    })
-                    .context(error::PrimaryKeyNotFoundSnafu { key })
-            })
-            .collect::&lt;<span class="prelude-ty">Result</span>&lt;<span class="kw">_</span>&gt;&gt;()<span class="question-mark">?</span>;
-
-        <span class="kw">let </span>template = PbCreateRegionRequest {
-            region_id: <span class="number">0</span>,
-            engine: create_table_expr.engine.to_string(),
-            column_defs,
-            primary_key,
-            path: String::new(),
-            options: create_table_expr.table_options.clone(),
-        };
-
-        <span class="prelude-val">Ok</span>(CreateRequestBuilder {
-            template,
-            physical_table_id,
-        })
+        <span class="kw">let </span>template = build_template(create_table_expr)<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(CreateRequestBuilder::new(template, physical_table_id))
     }
 
-    <span class="kw">pub async fn </span>on_datanode_create_regions(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Status&gt; {
-        <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.creator.data.table_route {
+    <span class="doccomment">/// Creates regions on datanodes
+    ///
+    /// Abort(non-retry):
+    /// - Failed to create [CreateRequestBuilder].
+    /// - Failed to get the table route of physical table (for logical table).
+    ///
+    /// Retry:
+    /// - If the underlying servers returns one of the following [Code](tonic::status::Code):
+    ///   - [Code::Cancelled](tonic::status::Code::Cancelled)
+    ///   - [Code::DeadlineExceeded](tonic::status::Code::DeadlineExceeded)
+    ///   - [Code::Unavailable](tonic::status::Code::Unavailable)
+    </span><span class="kw">pub async fn </span>on_datanode_create_regions(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Status&gt; {
+        <span class="comment">// Safety: the table route must be allocated.
+        </span><span class="kw">match </span><span class="self">self</span>.table_route()<span class="question-mark">?</span>.clone() {
             TableRouteValue::Physical(x) =&gt; {
                 <span class="kw">let </span>region_routes = x.region_routes.clone();
                 <span class="kw">let </span>request_builder = <span class="self">self</span>.new_region_request_builder(<span class="prelude-val">None</span>)<span class="question-mark">?</span>;
@@ -693,12 +646,12 @@
                     </span>.context
                     .table_metadata_manager
                     .table_route_manager()
-                    .get(physical_table_id)
+                    .try_get_physical_table_route(physical_table_id)
                     .<span class="kw">await</span><span class="question-mark">?
                     </span>.context(TableRouteNotFoundSnafu {
                         table_id: physical_table_id,
                     })<span class="question-mark">?</span>;
-                <span class="kw">let </span>region_routes = physical_table_route.region_routes();
+                <span class="kw">let </span>region_routes = <span class="kw-2">&amp;</span>physical_table_route.region_routes;
 
                 <span class="kw">let </span>request_builder = <span class="self">self</span>.new_region_request_builder(<span class="prelude-val">Some</span>(physical_table_id))<span class="question-mark">?</span>;
 
@@ -712,22 +665,24 @@
         region_routes: <span class="kw-2">&amp;</span>[RegionRoute],
         request_builder: CreateRequestBuilder,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;Status&gt; {
-        <span class="comment">// Registers opening regions
-        </span><span class="kw">let </span>guards = <span class="self">self
-            </span>.creator
-            .register_opening_regions(<span class="kw-2">&amp;</span><span class="self">self</span>.context, region_routes)<span class="question-mark">?</span>;
-        <span class="kw">if </span>!guards.is_empty() {
-            <span class="self">self</span>.creator.opening_regions = guards;
+        <span class="comment">// Safety: the table_route must be allocated.
+        </span><span class="kw">if </span><span class="self">self</span>.table_route()<span class="question-mark">?</span>.is_physical() {
+            <span class="comment">// Registers opening regions
+            </span><span class="kw">let </span>guards = <span class="self">self
+                </span>.creator
+                .register_opening_regions(<span class="kw-2">&amp;</span><span class="self">self</span>.context, region_routes)<span class="question-mark">?</span>;
+            <span class="kw">if </span>!guards.is_empty() {
+                <span class="self">self</span>.creator.opening_regions = guards;
+            }
         }
 
         <span class="kw">let </span>create_table_data = <span class="kw-2">&amp;</span><span class="self">self</span>.creator.data;
-        <span class="kw">let </span>region_wal_options = <span class="kw-2">&amp;</span>create_table_data.region_wal_options;
-
+        <span class="comment">// Safety: the region_wal_options must be allocated
+        </span><span class="kw">let </span>region_wal_options = <span class="self">self</span>.region_wal_options()<span class="question-mark">?</span>;
         <span class="kw">let </span>create_table_expr = <span class="kw-2">&amp;</span>create_table_data.task.create_table;
         <span class="kw">let </span>catalog = <span class="kw-2">&amp;</span>create_table_expr.catalog_name;
         <span class="kw">let </span>schema = <span class="kw-2">&amp;</span>create_table_expr.schema_name;
         <span class="kw">let </span>storage_path = region_storage_path(catalog, schema);
-
         <span class="kw">let </span>leaders = find_leaders(region_routes);
         <span class="kw">let </span><span class="kw-2">mut </span>create_region_tasks = Vec::with_capacity(leaders.len());
 
@@ -738,10 +693,11 @@
             <span class="kw">let </span><span class="kw-2">mut </span>requests = Vec::with_capacity(regions.len());
             <span class="kw">for </span>region_number <span class="kw">in </span>regions {
                 <span class="kw">let </span>region_id = RegionId::new(<span class="self">self</span>.table_id(), region_number);
-                <span class="kw">let </span>create_region_request = request_builder
-                    .build_one(region_id, storage_path.clone(), region_wal_options)
-                    .<span class="kw">await</span><span class="question-mark">?</span>;
-
+                <span class="kw">let </span>create_region_request = request_builder.build_one(
+                    region_id,
+                    storage_path.clone(),
+                    region_wal_options,
+                )<span class="question-mark">?</span>;
                 requests.push(PbRegionRequest::Create(create_region_request));
             }
 
@@ -756,12 +712,11 @@
 
                 <span class="kw">let </span>datanode = datanode.clone();
                 <span class="kw">let </span>requester = requester.clone();
-
                 create_region_tasks.push(<span class="kw">async move </span>{
-                    <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = requester.handle(request).<span class="kw">await </span>{
-                        <span class="kw">return </span><span class="prelude-val">Err</span>(handle_operate_region_error(datanode)(err));
-                    }
-                    <span class="prelude-val">Ok</span>(())
+                    requester
+                        .handle(request)
+                        .<span class="kw">await
+                        </span>.map_err(add_peer_context_if_needed(datanode))
                 });
             }
         }
@@ -778,22 +733,25 @@
         </span><span class="prelude-val">Ok</span>(Status::executing(<span class="bool-val">false</span>))
     }
 
-    <span class="kw">async fn </span>on_create_metadata(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Status&gt; {
+    <span class="doccomment">/// Creates table metadata
+    ///
+    /// Abort(not-retry):
+    /// - Failed to create table metadata.
+    </span><span class="kw">async fn </span>on_create_metadata(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Status&gt; {
         <span class="kw">let </span>table_id = <span class="self">self</span>.table_id();
         <span class="kw">let </span>manager = <span class="kw-2">&amp;</span><span class="self">self</span>.context.table_metadata_manager;
 
         <span class="kw">let </span>raw_table_info = <span class="self">self</span>.table_info().clone();
-        <span class="kw">let </span>region_wal_options = <span class="self">self</span>.region_wal_options().clone();
+        <span class="comment">// Safety: the region_wal_options must be allocated.
+        </span><span class="kw">let </span>region_wal_options = <span class="self">self</span>.region_wal_options()<span class="question-mark">?</span>.clone();
+        <span class="comment">// Safety: the table_route must be allocated.
+        </span><span class="kw">let </span>table_route = <span class="self">self</span>.table_route()<span class="question-mark">?</span>.clone();
         manager
-            .create_table_metadata(
-                raw_table_info,
-                <span class="self">self</span>.creator.data.table_route.clone(),
-                region_wal_options,
-            )
+            .create_table_metadata(raw_table_info, table_route, region_wal_options)
             .<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="macro">info!</span>(<span class="string">"Created table metadata for table {table_id}"</span>);
 
-        <span class="prelude-val">Ok</span>(Status::Done)
+        <span class="prelude-val">Ok</span>(Status::done_with_output(table_id))
     }
 }
 
@@ -824,13 +782,12 @@
 
     <span class="kw">fn </span>lock_key(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; LockKey {
         <span class="kw">let </span>table_ref = <span class="kw-2">&amp;</span><span class="self">self</span>.creator.data.table_ref();
-        <span class="kw">let </span>key = common_catalog::format_full_table_name(
+
+        LockKey::single(TableNameLock::new(
             table_ref.catalog,
             table_ref.schema,
             table_ref.table,
-        );
-
-        LockKey::single(key)
+        ))
     }
 }
 
@@ -842,19 +799,14 @@
 }
 
 <span class="kw">impl </span>TableCreator {
-    <span class="kw">pub fn </span>new(
-        cluster_id: u64,
-        task: CreateTableTask,
-        table_route: TableRouteValue,
-        region_wal_options: HashMap&lt;RegionNumber, String&gt;,
-    ) -&gt; <span class="self">Self </span>{
+    <span class="kw">pub fn </span>new(cluster_id: u64, task: CreateTableTask) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             data: CreateTableData {
                 state: CreateTableState::Prepare,
                 cluster_id,
                 task,
-                table_route,
-                region_wal_options,
+                table_route: <span class="prelude-val">None</span>,
+                region_wal_options: <span class="prelude-val">None</span>,
             },
             opening_regions: <span class="macro">vec!</span>[],
         }
@@ -886,6 +838,17 @@
         }
         <span class="prelude-val">Ok</span>(opening_region_guards)
     }
+
+    <span class="kw">fn </span>set_allocated_metadata(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        table_id: TableId,
+        table_route: TableRouteValue,
+        region_wal_options: HashMap&lt;RegionNumber, String&gt;,
+    ) {
+        <span class="self">self</span>.data.task.table_info.ident.table_id = table_id;
+        <span class="self">self</span>.data.table_route = <span class="prelude-val">Some</span>(table_route);
+        <span class="self">self</span>.data.region_wal_options = <span class="prelude-val">Some</span>(region_wal_options);
+    }
 }
 
 <span class="attr">#[derive(Debug, Clone, Serialize, Deserialize, AsRefStr)]
@@ -902,61 +865,16 @@
 </span><span class="kw">pub struct </span>CreateTableData {
     <span class="kw">pub </span>state: CreateTableState,
     <span class="kw">pub </span>task: CreateTableTask,
-    table_route: TableRouteValue,
-    <span class="kw">pub </span>region_wal_options: HashMap&lt;RegionNumber, String&gt;,
-    <span class="kw">pub </span>cluster_id: u64,
+    <span class="doccomment">/// None stands for not allocated yet.
+    </span>table_route: <span class="prelude-ty">Option</span>&lt;TableRouteValue&gt;,
+    <span class="doccomment">/// None stands for not allocated yet.
+    </span><span class="kw">pub </span>region_wal_options: <span class="prelude-ty">Option</span>&lt;HashMap&lt;RegionNumber, String&gt;&gt;,
+    <span class="kw">pub </span>cluster_id: ClusterId,
 }
 
 <span class="kw">impl </span>CreateTableData {
     <span class="kw">fn </span>table_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; TableReference&lt;<span class="lifetime">'_</span>&gt; {
         <span class="self">self</span>.task.table_ref()
-    }
-}
-
-<span class="doccomment">/// Builder for [PbCreateRegionRequest].
-</span><span class="kw">pub struct </span>CreateRequestBuilder {
-    template: PbCreateRegionRequest,
-    <span class="doccomment">/// Optional. Only for metric engine.
-    </span>physical_table_id: <span class="prelude-ty">Option</span>&lt;TableId&gt;,
-}
-
-<span class="kw">impl </span>CreateRequestBuilder {
-    <span class="kw">pub fn </span>template(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>PbCreateRegionRequest {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.template
-    }
-
-    <span class="kw">async fn </span>build_one(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        region_id: RegionId,
-        storage_path: String,
-        region_wal_options: <span class="kw-2">&amp;</span>HashMap&lt;RegionNumber, String&gt;,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;PbCreateRegionRequest&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>request = <span class="self">self</span>.template.clone();
-
-        request.region_id = region_id.as_u64();
-        request.path = storage_path;
-        <span class="comment">// Stores the encoded wal options into the request options.
-        </span>region_wal_options
-            .get(<span class="kw-2">&amp;</span>region_id.region_number())
-            .and_then(|wal_options| {
-                request
-                    .options
-                    .insert(WAL_OPTIONS_KEY.to_string(), wal_options.clone())
-            });
-
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(physical_table_id) = <span class="self">self</span>.physical_table_id {
-            <span class="comment">// Logical table has the same region numbers with physical table, and they have a one-to-one mapping.
-            // For example, region 0 of logical table must resides with region 0 of physical table. So here we can
-            // simply concat the physical table id and the logical region number to get the physical region id.
-            </span><span class="kw">let </span>physical_region_id = RegionId::new(physical_table_id, region_id.region_number());
-
-            request.options.insert(
-                LOGICAL_TABLE_METADATA_KEY.to_string(),
-                physical_region_id.as_u64().to_string(),
-            );
-        }
-
-        <span class="prelude-val">Ok</span>(request)
     }
 }
 </code></pre></div></section></main></body></html>

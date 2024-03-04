@@ -117,6 +117,43 @@
 <a href="#116" id="116">116</a>
 <a href="#117" id="117">117</a>
 <a href="#118" id="118">118</a>
+<a href="#119" id="119">119</a>
+<a href="#120" id="120">120</a>
+<a href="#121" id="121">121</a>
+<a href="#122" id="122">122</a>
+<a href="#123" id="123">123</a>
+<a href="#124" id="124">124</a>
+<a href="#125" id="125">125</a>
+<a href="#126" id="126">126</a>
+<a href="#127" id="127">127</a>
+<a href="#128" id="128">128</a>
+<a href="#129" id="129">129</a>
+<a href="#130" id="130">130</a>
+<a href="#131" id="131">131</a>
+<a href="#132" id="132">132</a>
+<a href="#133" id="133">133</a>
+<a href="#134" id="134">134</a>
+<a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
+<a href="#137" id="137">137</a>
+<a href="#138" id="138">138</a>
+<a href="#139" id="139">139</a>
+<a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -233,6 +270,43 @@
         <span class="self">self</span>.physical_regions.remove(<span class="kw-2">&amp;</span>physical_region_id);
         <span class="self">self</span>.physical_columns.remove(<span class="kw-2">&amp;</span>physical_region_id);
         <span class="prelude-val">Ok</span>(())
+    }
+
+    <span class="doccomment">/// Remove all data that are related to the logical region id.
+    </span><span class="kw">pub fn </span>remove_logical_region(<span class="kw-2">&amp;mut </span><span class="self">self</span>, logical_region_id: RegionId) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        <span class="kw">let </span>physical_region_id = <span class="self">self</span>.logical_regions.remove(<span class="kw-2">&amp;</span>logical_region_id).context(
+            PhysicalRegionNotFoundSnafu {
+                region_id: logical_region_id,
+            },
+        )<span class="question-mark">?</span>;
+
+        <span class="self">self</span>.physical_regions
+            .get_mut(<span class="kw-2">&amp;</span>physical_region_id)
+            .unwrap() <span class="comment">// Safety: physical_region_id is got from physical_regions
+            </span>.remove(<span class="kw-2">&amp;</span>logical_region_id);
+
+        <span class="prelude-val">Ok</span>(())
+    }
+
+    <span class="doccomment">/// Check if a physical column exists.
+    </span><span class="kw">pub fn </span>is_physical_column_exist(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        physical_region_id: RegionId,
+        column_name: <span class="kw-2">&amp;</span>str,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;bool&gt; {
+        <span class="kw">let </span>data_region_id = to_data_region_id(physical_region_id);
+        <span class="kw">let </span>exist = <span class="self">self
+            </span>.physical_columns()
+            .get(<span class="kw-2">&amp;</span>data_region_id)
+            .context(PhysicalRegionNotFoundSnafu {
+                region_id: data_region_id,
+            })<span class="question-mark">?
+            </span>.contains(column_name);
+        <span class="prelude-val">Ok</span>(exist)
+    }
+
+    <span class="kw">pub fn </span>is_logical_region_exist(<span class="kw-2">&amp;</span><span class="self">self</span>, logical_region_id: RegionId) -&gt; bool {
+        <span class="self">self</span>.logical_regions().contains_key(<span class="kw-2">&amp;</span>logical_region_id)
     }
 }
 </code></pre></div></section></main></body></html>

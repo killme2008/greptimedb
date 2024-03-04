@@ -439,7 +439,7 @@
                 <span class="kw">let </span>login_info = LoginInfo::from_client_info(client);
 
                 <span class="comment">// do authenticate
-                </span><span class="kw">let </span>auth_result = <span class="self">self</span>.login_verifier.auth(<span class="kw-2">&amp;</span>login_info, pwd.password()).<span class="kw">await</span>;
+                </span><span class="kw">let </span>auth_result = <span class="self">self</span>.login_verifier.auth(<span class="kw-2">&amp;</span>login_info, <span class="kw-2">&amp;</span>pwd.password).<span class="kw">await</span>;
 
                 <span class="kw">if let </span><span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(user_info)) = auth_result {
                     <span class="self">self</span>.session.set_user_info(user_info);

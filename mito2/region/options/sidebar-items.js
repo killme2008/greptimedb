@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["CompactionOptions"],"fn":["options_map_to_value"],"mod":["prefix_twcs"],"struct":["RegionOptions","RegionOptionsWithoutEnum","TwcsOptions"]};
+window.SIDEBAR_ITEMS = {"constant":["DEFAULT_INDEX_SEGMENT_ROW_COUNT"],"enum":["CompactionOptions"],"fn":["deserialize_ignore_column_ids","options_map_to_value"],"mod":["prefix_inverted_index","prefix_twcs"],"struct":["IndexOptions","InvertedIndexOptions","RegionOptions","RegionOptionsWithoutEnum","TwcsOptions"]};

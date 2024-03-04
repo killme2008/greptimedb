@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["start_server"],"struct":["AcceptTask","BaseTcpServer"],"trait":["Server"],"type":["AbortableStream","ServerHandler","ServerHandlers"]};
+window.SIDEBAR_ITEMS = {"struct":["AcceptTask","BaseTcpServer","ServerHandlers"],"trait":["Server"],"type":["AbortableStream","ServerHandler"]};

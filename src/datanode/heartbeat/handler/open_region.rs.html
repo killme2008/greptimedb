@@ -52,8 +52,6 @@
 <a href="#51" id="51">51</a>
 <a href="#52" id="52">52</a>
 <a href="#53" id="53">53</a>
-<a href="#54" id="54">54</a>
-<a href="#55" id="55">55</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -70,6 +68,7 @@
 
 </span><span class="kw">use </span>common_error::ext::ErrorExt;
 <span class="kw">use </span>common_meta::instruction::{InstructionReply, OpenRegion, SimpleReply};
+<span class="kw">use </span>common_meta::wal_options_allocator::prepare_wal_options;
 <span class="kw">use </span>futures_util::future::BoxFuture;
 <span class="kw">use </span>store_api::path_utils::region_dir;
 <span class="kw">use </span>store_api::region_request::{RegionOpenRequest, RegionRequest};
@@ -82,15 +81,14 @@
         OpenRegion {
             region_ident,
             region_storage_path,
-            region_options,
+            <span class="kw-2">mut </span>region_options,
             region_wal_options,
             skip_wal_replay,
         }: OpenRegion,
     ) -&gt; BoxFuture&lt;<span class="lifetime">'static</span>, InstructionReply&gt; {
         Box::pin(<span class="kw">async move </span>{
             <span class="kw">let </span>region_id = <span class="self">Self</span>::region_ident_to_region_id(<span class="kw-2">&amp;</span>region_ident);
-            <span class="comment">// TODO(niebayes): extends region options with region_wal_options.
-            </span><span class="kw">let _ </span>= region_wal_options;
+            prepare_wal_options(<span class="kw-2">&amp;mut </span>region_options, region_id, <span class="kw-2">&amp;</span>region_wal_options);
             <span class="kw">let </span>request = RegionRequest::Open(RegionOpenRequest {
                 engine: region_ident.engine,
                 region_dir: region_dir(<span class="kw-2">&amp;</span>region_storage_path, region_id),
@@ -98,10 +96,8 @@
                 skip_wal_replay,
             });
             <span class="kw">let </span>result = <span class="self">self</span>.region_server.handle_request(region_id, request).<span class="kw">await</span>;
-
             <span class="kw">let </span>success = result.is_ok();
             <span class="kw">let </span>error = result.as_ref().map_err(|e| e.output_msg()).err();
-
             InstructionReply::OpenRegion(SimpleReply {
                 result: success,
                 error,

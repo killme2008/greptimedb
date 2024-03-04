@@ -615,6 +615,94 @@
 <a href="#614" id="614">614</a>
 <a href="#615" id="615">615</a>
 <a href="#616" id="616">616</a>
+<a href="#617" id="617">617</a>
+<a href="#618" id="618">618</a>
+<a href="#619" id="619">619</a>
+<a href="#620" id="620">620</a>
+<a href="#621" id="621">621</a>
+<a href="#622" id="622">622</a>
+<a href="#623" id="623">623</a>
+<a href="#624" id="624">624</a>
+<a href="#625" id="625">625</a>
+<a href="#626" id="626">626</a>
+<a href="#627" id="627">627</a>
+<a href="#628" id="628">628</a>
+<a href="#629" id="629">629</a>
+<a href="#630" id="630">630</a>
+<a href="#631" id="631">631</a>
+<a href="#632" id="632">632</a>
+<a href="#633" id="633">633</a>
+<a href="#634" id="634">634</a>
+<a href="#635" id="635">635</a>
+<a href="#636" id="636">636</a>
+<a href="#637" id="637">637</a>
+<a href="#638" id="638">638</a>
+<a href="#639" id="639">639</a>
+<a href="#640" id="640">640</a>
+<a href="#641" id="641">641</a>
+<a href="#642" id="642">642</a>
+<a href="#643" id="643">643</a>
+<a href="#644" id="644">644</a>
+<a href="#645" id="645">645</a>
+<a href="#646" id="646">646</a>
+<a href="#647" id="647">647</a>
+<a href="#648" id="648">648</a>
+<a href="#649" id="649">649</a>
+<a href="#650" id="650">650</a>
+<a href="#651" id="651">651</a>
+<a href="#652" id="652">652</a>
+<a href="#653" id="653">653</a>
+<a href="#654" id="654">654</a>
+<a href="#655" id="655">655</a>
+<a href="#656" id="656">656</a>
+<a href="#657" id="657">657</a>
+<a href="#658" id="658">658</a>
+<a href="#659" id="659">659</a>
+<a href="#660" id="660">660</a>
+<a href="#661" id="661">661</a>
+<a href="#662" id="662">662</a>
+<a href="#663" id="663">663</a>
+<a href="#664" id="664">664</a>
+<a href="#665" id="665">665</a>
+<a href="#666" id="666">666</a>
+<a href="#667" id="667">667</a>
+<a href="#668" id="668">668</a>
+<a href="#669" id="669">669</a>
+<a href="#670" id="670">670</a>
+<a href="#671" id="671">671</a>
+<a href="#672" id="672">672</a>
+<a href="#673" id="673">673</a>
+<a href="#674" id="674">674</a>
+<a href="#675" id="675">675</a>
+<a href="#676" id="676">676</a>
+<a href="#677" id="677">677</a>
+<a href="#678" id="678">678</a>
+<a href="#679" id="679">679</a>
+<a href="#680" id="680">680</a>
+<a href="#681" id="681">681</a>
+<a href="#682" id="682">682</a>
+<a href="#683" id="683">683</a>
+<a href="#684" id="684">684</a>
+<a href="#685" id="685">685</a>
+<a href="#686" id="686">686</a>
+<a href="#687" id="687">687</a>
+<a href="#688" id="688">688</a>
+<a href="#689" id="689">689</a>
+<a href="#690" id="690">690</a>
+<a href="#691" id="691">691</a>
+<a href="#692" id="692">692</a>
+<a href="#693" id="693">693</a>
+<a href="#694" id="694">694</a>
+<a href="#695" id="695">695</a>
+<a href="#696" id="696">696</a>
+<a href="#697" id="697">697</a>
+<a href="#698" id="698">698</a>
+<a href="#699" id="699">699</a>
+<a href="#700" id="700">700</a>
+<a href="#701" id="701">701</a>
+<a href="#702" id="702">702</a>
+<a href="#703" id="703">703</a>
+<a href="#704" id="704">704</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -634,21 +722,20 @@
 <span class="kw">use </span>std::sync::Arc;
 
 <span class="kw">use </span>common_base::readable_size::ReadableSize;
-<span class="kw">use </span>common_datasource::file_format::csv::{CsvConfigBuilder, CsvOpener};
-<span class="kw">use </span>common_datasource::file_format::json::JsonOpener;
-<span class="kw">use </span>common_datasource::file_format::orc::{
-    infer_orc_schema, new_orc_stream_reader, OrcArrowStreamReaderAdapter,
-};
+<span class="kw">use </span>common_datasource::file_format::csv::{CsvConfigBuilder, CsvFormat, CsvOpener};
+<span class="kw">use </span>common_datasource::file_format::json::{JsonFormat, JsonOpener};
+<span class="kw">use </span>common_datasource::file_format::orc::{infer_orc_schema, new_orc_stream_reader};
 <span class="kw">use </span>common_datasource::file_format::{FileFormat, Format};
 <span class="kw">use </span>common_datasource::lister::{Lister, Source};
 <span class="kw">use </span>common_datasource::object_store::{build_backend, parse_url};
 <span class="kw">use </span>common_datasource::util::find_dir_and_filename;
-<span class="kw">use </span>common_recordbatch::adapter::ParquetRecordBatchStreamAdapter;
+<span class="kw">use </span>common_recordbatch::adapter::RecordBatchStreamTypeAdapter;
 <span class="kw">use </span>common_recordbatch::DfSendableRecordBatchStream;
 <span class="kw">use </span>common_telemetry::{debug, tracing};
 <span class="kw">use </span>datafusion::datasource::listing::PartitionedFile;
 <span class="kw">use </span>datafusion::datasource::object_store::ObjectStoreUrl;
 <span class="kw">use </span>datafusion::datasource::physical_plan::{FileOpener, FileScanConfig, FileStream};
+<span class="kw">use </span>datafusion::parquet::arrow::arrow_reader::ArrowReaderMetadata;
 <span class="kw">use </span>datafusion::parquet::arrow::ParquetRecordBatchStreamBuilder;
 <span class="kw">use </span>datafusion::physical_plan::metrics::ExecutionPlanMetricsSet;
 <span class="kw">use </span>datatypes::arrow::compute::can_cast_types;
@@ -659,14 +746,48 @@
 <span class="kw">use </span>regex::Regex;
 <span class="kw">use </span>session::context::QueryContextRef;
 <span class="kw">use </span>snafu::ResultExt;
-<span class="kw">use </span>table::engine::TableReference;
 <span class="kw">use </span>table::requests::{CopyTableRequest, InsertRequest};
-<span class="kw">use </span>tokio::io::BufReader;
+<span class="kw">use </span>table::table_reference::TableReference;
 
 <span class="kw">use </span><span class="kw">crate</span>::error::{<span class="self">self</span>, IntoVectorsSnafu, <span class="prelude-ty">Result</span>};
 <span class="kw">use </span><span class="kw">crate</span>::statement::StatementExecutor;
 
 <span class="kw">const </span>DEFAULT_BATCH_SIZE: usize = <span class="number">8192</span>;
+<span class="kw">const </span>DEFAULT_READ_BUFFER: usize = <span class="number">256 </span>* <span class="number">1024</span>;
+
+<span class="kw">enum </span>FileMetadata {
+    Parquet {
+        schema: SchemaRef,
+        metadata: ArrowReaderMetadata,
+        path: String,
+    },
+    Orc {
+        schema: SchemaRef,
+        path: String,
+    },
+    Json {
+        schema: SchemaRef,
+        format: JsonFormat,
+        path: String,
+    },
+    Csv {
+        schema: SchemaRef,
+        format: CsvFormat,
+        path: String,
+    },
+}
+
+<span class="kw">impl </span>FileMetadata {
+    <span class="doccomment">/// Returns the [SchemaRef]
+    </span><span class="kw">pub fn </span>schema(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>SchemaRef {
+        <span class="kw">match </span><span class="self">self </span>{
+            FileMetadata::Parquet { schema, .. } =&gt; schema,
+            FileMetadata::Orc { schema, .. } =&gt; schema,
+            FileMetadata::Json { schema, .. } =&gt; schema,
+            FileMetadata::Csv { schema, .. } =&gt; schema,
+        }
+    }
+}
 
 <span class="kw">impl </span>StatementExecutor {
     <span class="kw">async fn </span>list_copy_from_entries(
@@ -699,49 +820,62 @@
         <span class="prelude-val">Ok</span>((object_store, entries))
     }
 
-    <span class="kw">async fn </span>infer_schema(
+    <span class="kw">async fn </span>collect_metadata(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        format: <span class="kw-2">&amp;</span>Format,
-        object_store: ObjectStore,
-        path: <span class="kw-2">&amp;</span>str,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;SchemaRef&gt; {
+        object_store: <span class="kw-2">&amp;</span>ObjectStore,
+        format: Format,
+        path: String,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;FileMetadata&gt; {
         <span class="kw">match </span>format {
-            Format::Csv(format) =&gt; <span class="prelude-val">Ok</span>(Arc::new(
-                format
-                    .infer_schema(<span class="kw-2">&amp;</span>object_store, path)
-                    .<span class="kw">await
-                    </span>.context(error::InferSchemaSnafu { path })<span class="question-mark">?</span>,
-            )),
-            Format::Json(format) =&gt; <span class="prelude-val">Ok</span>(Arc::new(
-                format
-                    .infer_schema(<span class="kw-2">&amp;</span>object_store, path)
-                    .<span class="kw">await
-                    </span>.context(error::InferSchemaSnafu { path })<span class="question-mark">?</span>,
-            )),
+            Format::Csv(format) =&gt; <span class="prelude-val">Ok</span>(FileMetadata::Csv {
+                schema: Arc::new(
+                    format
+                        .infer_schema(object_store, <span class="kw-2">&amp;</span>path)
+                        .<span class="kw">await
+                        </span>.context(error::InferSchemaSnafu { path: <span class="kw-2">&amp;</span>path })<span class="question-mark">?</span>,
+                ),
+                format,
+                path,
+            }),
+            Format::Json(format) =&gt; <span class="prelude-val">Ok</span>(FileMetadata::Json {
+                schema: Arc::new(
+                    format
+                        .infer_schema(object_store, <span class="kw-2">&amp;</span>path)
+                        .<span class="kw">await
+                        </span>.context(error::InferSchemaSnafu { path: <span class="kw-2">&amp;</span>path })<span class="question-mark">?</span>,
+                ),
+                format,
+                path,
+            }),
             Format::Parquet(<span class="kw">_</span>) =&gt; {
-                <span class="kw">let </span>reader = object_store
-                    .reader(path)
+                <span class="kw">let </span><span class="kw-2">mut </span>reader = object_store
+                    .reader(<span class="kw-2">&amp;</span>path)
                     .<span class="kw">await
-                    </span>.context(error::ReadObjectSnafu { path })<span class="question-mark">?</span>;
-
-                <span class="kw">let </span>buf_reader = BufReader::new(reader);
-
-                <span class="kw">let </span>builder = ParquetRecordBatchStreamBuilder::new(buf_reader)
+                    </span>.context(error::ReadObjectSnafu { path: <span class="kw-2">&amp;</span>path })<span class="question-mark">?</span>;
+                <span class="kw">let </span>metadata = ArrowReaderMetadata::load_async(<span class="kw-2">&amp;mut </span>reader, Default::default())
                     .<span class="kw">await
-                    </span>.context(error::ReadParquetSnafu)<span class="question-mark">?</span>;
-                <span class="prelude-val">Ok</span>(builder.schema().clone())
+                    </span>.context(error::ReadParquetMetadataSnafu)<span class="question-mark">?</span>;
+
+                <span class="prelude-val">Ok</span>(FileMetadata::Parquet {
+                    schema: metadata.schema().clone(),
+                    metadata,
+                    path,
+                })
             }
             Format::Orc(<span class="kw">_</span>) =&gt; {
                 <span class="kw">let </span>reader = object_store
-                    .reader(path)
+                    .reader(<span class="kw-2">&amp;</span>path)
                     .<span class="kw">await
-                    </span>.context(error::ReadObjectSnafu { path })<span class="question-mark">?</span>;
+                    </span>.context(error::ReadObjectSnafu { path: <span class="kw-2">&amp;</span>path })<span class="question-mark">?</span>;
 
                 <span class="kw">let </span>schema = infer_orc_schema(reader)
                     .<span class="kw">await
                     </span>.context(error::ReadOrcSnafu)<span class="question-mark">?</span>;
 
-                <span class="prelude-val">Ok</span>(Arc::new(schema))
+                <span class="prelude-val">Ok</span>(FileMetadata::Orc {
+                    schema: Arc::new(schema),
+                    path,
+                })
             }
         }
     }
@@ -775,79 +909,121 @@
 
     <span class="kw">async fn </span>build_read_stream(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        format: <span class="kw-2">&amp;</span>Format,
-        object_store: ObjectStore,
-        path: <span class="kw-2">&amp;</span>str,
-        schema: SchemaRef,
+        compat_schema: SchemaRef,
+        object_store: <span class="kw-2">&amp;</span>ObjectStore,
+        file_metadata: <span class="kw-2">&amp;</span>FileMetadata,
         projection: Vec&lt;usize&gt;,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;DfSendableRecordBatchStream&gt; {
-        <span class="kw">match </span>format {
-            Format::Csv(format) =&gt; {
+        <span class="kw">match </span>file_metadata {
+            FileMetadata::Csv {
+                format,
+                path,
+                schema,
+            } =&gt; {
+                <span class="kw">let </span>projected_schema = Arc::new(
+                    compat_schema
+                        .project(<span class="kw-2">&amp;</span>projection)
+                        .context(error::ProjectSchemaSnafu)<span class="question-mark">?</span>,
+                );
                 <span class="kw">let </span>csv_conf = CsvConfigBuilder::default()
                     .batch_size(DEFAULT_BATCH_SIZE)
                     .file_schema(schema.clone())
-                    .file_projection(<span class="prelude-val">Some</span>(projection))
+                    .file_projection(<span class="prelude-val">Some</span>(projection.clone()))
                     .build()
                     .context(error::BuildCsvConfigSnafu)<span class="question-mark">?</span>;
 
-                <span class="self">self</span>.build_file_stream(
-                    CsvOpener::new(csv_conf, object_store, format.compression_type),
-                    path,
-                    schema,
-                )
-                .<span class="kw">await
-            </span>}
-            Format::Json(format) =&gt; {
-                <span class="kw">let </span>projected_schema = Arc::new(
+                <span class="kw">let </span>stream = <span class="self">self
+                    </span>.build_file_stream(
+                        CsvOpener::new(csv_conf, object_store.clone(), format.compression_type),
+                        path,
+                        schema.clone(),
+                    )
+                    .<span class="kw">await</span><span class="question-mark">?</span>;
+
+                <span class="prelude-val">Ok</span>(Box::pin(RecordBatchStreamTypeAdapter::new(
+                    projected_schema,
+                    stream,
+                    <span class="prelude-val">Some</span>(projection),
+                )))
+            }
+            FileMetadata::Json {
+                format,
+                path,
+                schema,
+            } =&gt; {
+                <span class="kw">let </span>projected_file_schema = Arc::new(
                     schema
                         .project(<span class="kw-2">&amp;</span>projection)
                         .context(error::ProjectSchemaSnafu)<span class="question-mark">?</span>,
                 );
+                <span class="kw">let </span>projected_schema = Arc::new(
+                    compat_schema
+                        .project(<span class="kw-2">&amp;</span>projection)
+                        .context(error::ProjectSchemaSnafu)<span class="question-mark">?</span>,
+                );
+                <span class="kw">let </span>stream = <span class="self">self
+                    </span>.build_file_stream(
+                        JsonOpener::new(
+                            DEFAULT_BATCH_SIZE,
+                            projected_file_schema,
+                            object_store.clone(),
+                            format.compression_type,
+                        ),
+                        path,
+                        schema.clone(),
+                    )
+                    .<span class="kw">await</span><span class="question-mark">?</span>;
 
-                <span class="self">self</span>.build_file_stream(
-                    JsonOpener::new(
-                        DEFAULT_BATCH_SIZE,
-                        projected_schema,
-                        object_store,
-                        format.compression_type,
-                    ),
-                    path,
-                    schema,
-                )
-                .<span class="kw">await
-            </span>}
-            Format::Parquet(<span class="kw">_</span>) =&gt; {
-                <span class="kw">let </span>reader = object_store
-                    .reader(path)
-                    .<span class="kw">await
-                    </span>.context(error::ReadObjectSnafu { path })<span class="question-mark">?</span>;
-                <span class="kw">let </span>buf_reader = BufReader::new(reader);
-
-                <span class="kw">let </span>builder = ParquetRecordBatchStreamBuilder::new(buf_reader)
-                    .<span class="kw">await
-                    </span>.context(error::ReadParquetSnafu)<span class="question-mark">?</span>;
-
-                <span class="kw">let </span>upstream = builder
-                    .build()
-                    .context(error::BuildParquetRecordBatchStreamSnafu)<span class="question-mark">?</span>;
-
-                <span class="prelude-val">Ok</span>(Box::pin(ParquetRecordBatchStreamAdapter::new(
-                    schema,
-                    upstream,
+                <span class="prelude-val">Ok</span>(Box::pin(RecordBatchStreamTypeAdapter::new(
+                    projected_schema,
+                    stream,
                     <span class="prelude-val">Some</span>(projection),
                 )))
             }
-            Format::Orc(<span class="kw">_</span>) =&gt; {
+            FileMetadata::Parquet { metadata, path, .. } =&gt; {
                 <span class="kw">let </span>reader = object_store
-                    .reader(path)
+                    .reader_with(path)
+                    .buffer(DEFAULT_READ_BUFFER)
+                    .<span class="kw">await
+                    </span>.context(error::ReadObjectSnafu { path })<span class="question-mark">?</span>;
+                <span class="kw">let </span>builder =
+                    ParquetRecordBatchStreamBuilder::new_with_metadata(reader, metadata.clone());
+                <span class="kw">let </span>stream = builder
+                    .build()
+                    .context(error::BuildParquetRecordBatchStreamSnafu)<span class="question-mark">?</span>;
+
+                <span class="kw">let </span>projected_schema = Arc::new(
+                    compat_schema
+                        .project(<span class="kw-2">&amp;</span>projection)
+                        .context(error::ProjectSchemaSnafu)<span class="question-mark">?</span>,
+                );
+                <span class="prelude-val">Ok</span>(Box::pin(RecordBatchStreamTypeAdapter::new(
+                    projected_schema,
+                    stream,
+                    <span class="prelude-val">Some</span>(projection),
+                )))
+            }
+            FileMetadata::Orc { path, .. } =&gt; {
+                <span class="kw">let </span>reader = object_store
+                    .reader_with(path)
+                    .buffer(DEFAULT_READ_BUFFER)
                     .<span class="kw">await
                     </span>.context(error::ReadObjectSnafu { path })<span class="question-mark">?</span>;
                 <span class="kw">let </span>stream = new_orc_stream_reader(reader)
                     .<span class="kw">await
                     </span>.context(error::ReadOrcSnafu)<span class="question-mark">?</span>;
-                <span class="kw">let </span>stream = OrcArrowStreamReaderAdapter::new(schema, stream, <span class="prelude-val">Some</span>(projection));
 
-                <span class="prelude-val">Ok</span>(Box::pin(stream))
+                <span class="kw">let </span>projected_schema = Arc::new(
+                    compat_schema
+                        .project(<span class="kw-2">&amp;</span>projection)
+                        .context(error::ProjectSchemaSnafu)<span class="question-mark">?</span>,
+                );
+
+                <span class="prelude-val">Ok</span>(Box::pin(RecordBatchStreamTypeAdapter::new(
+                    projected_schema,
+                    stream,
+                    <span class="prelude-val">Some</span>(projection),
+                )))
             }
         }
     }
@@ -864,11 +1040,8 @@
             table: <span class="kw-2">&amp;</span>req.table_name,
         };
         <span class="kw">let </span>table = <span class="self">self</span>.get_table(<span class="kw-2">&amp;</span>table_ref).<span class="kw">await</span><span class="question-mark">?</span>;
-
         <span class="kw">let </span>format = Format::try_from(<span class="kw-2">&amp;</span>req.with).context(error::ParseFileFormatSnafu)<span class="question-mark">?</span>;
-
         <span class="kw">let </span>(object_store, entries) = <span class="self">self</span>.list_copy_from_entries(<span class="kw-2">&amp;</span>req).<span class="kw">await</span><span class="question-mark">?</span>;
-
         <span class="kw">let </span><span class="kw-2">mut </span>files = Vec::with_capacity(entries.len());
         <span class="kw">let </span>table_schema = table.schema().arrow_schema().clone();
 
@@ -877,12 +1050,13 @@
                 <span class="kw">continue</span>;
             }
             <span class="kw">let </span>path = entry.path();
-            <span class="kw">let </span>file_schema = <span class="self">self
-                </span>.infer_schema(<span class="kw-2">&amp;</span>format, object_store.clone(), path)
+            <span class="kw">let </span>file_metadata = <span class="self">self
+                </span>.collect_metadata(<span class="kw-2">&amp;</span>object_store, format, path.to_string())
                 .<span class="kw">await</span><span class="question-mark">?</span>;
-            <span class="kw">let </span>(file_schema_projection, table_schema_projection, compat_schema) =
-                generated_schema_projection_and_compatible_file_schema(<span class="kw-2">&amp;</span>file_schema, <span class="kw-2">&amp;</span>table_schema);
 
+            <span class="kw">let </span>file_schema = file_metadata.schema();
+            <span class="kw">let </span>(file_schema_projection, table_schema_projection, compat_schema) =
+                generated_schema_projection_and_compatible_file_schema(file_schema, <span class="kw-2">&amp;</span>table_schema);
             <span class="kw">let </span>projected_file_schema = Arc::new(
                 file_schema
                     .project(<span class="kw-2">&amp;</span>file_schema_projection)
@@ -893,25 +1067,24 @@
                     .project(<span class="kw-2">&amp;</span>table_schema_projection)
                     .context(error::ProjectSchemaSnafu)<span class="question-mark">?</span>,
             );
-
             ensure_schema_compatible(<span class="kw-2">&amp;</span>projected_file_schema, <span class="kw-2">&amp;</span>projected_table_schema)<span class="question-mark">?</span>;
 
             files.push((
                 Arc::new(compat_schema),
                 file_schema_projection,
                 projected_table_schema,
-                path,
+                file_metadata,
             ))
         }
 
         <span class="kw">let </span><span class="kw-2">mut </span>rows_inserted = <span class="number">0</span>;
-        <span class="kw">for </span>(schema, file_schema_projection, projected_table_schema, path) <span class="kw">in </span>files {
+        <span class="kw">for </span>(compat_schema, file_schema_projection, projected_table_schema, file_metadata) <span class="kw">in </span>files
+        {
             <span class="kw">let </span><span class="kw-2">mut </span>stream = <span class="self">self
                 </span>.build_read_stream(
-                    <span class="kw-2">&amp;</span>format,
-                    object_store.clone(),
-                    path,
-                    schema,
+                    compat_schema,
+                    <span class="kw-2">&amp;</span>object_store,
+                    <span class="kw-2">&amp;</span>file_metadata,
                     file_schema_projection,
                 )
                 .<span class="kw">await</span><span class="question-mark">?</span>;
@@ -996,7 +1169,10 @@
     }
 }
 
-<span class="doccomment">/// Allows the file schema is a subset of table
+<span class="doccomment">/// Generates a maybe compatible schema of the file schema.
+///
+/// If there is a field is found in table schema,
+/// copy the field data type to maybe compatible schema(`compatible_fields`).
 </span><span class="kw">fn </span>generated_schema_projection_and_compatible_file_schema(
     file: <span class="kw-2">&amp;</span>SchemaRef,
     table: <span class="kw-2">&amp;</span>SchemaRef,

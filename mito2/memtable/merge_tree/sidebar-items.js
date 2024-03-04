@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["DICTIONARY_SIZE_FACTOR"],"mod":["data","dedup","dict","merger","metrics","partition","shard","shard_builder","tree"],"struct":["MergeTreeConfig","MergeTreeMemtable","MergeTreeMemtableBuilder","PkId"],"type":["PkIndex","ShardId"]};

@@ -207,7 +207,7 @@
 
 </span><span class="kw">use </span>std::collections::HashSet;
 
-<span class="kw">use </span>api::v1::meta::Peer;
+<span class="kw">use </span>common_meta::peer::Peer;
 <span class="kw">use </span>snafu::ensure;
 
 <span class="kw">use </span><span class="kw">super</span>::weighted_choose::{WeightedChoose, WeightedItem};
@@ -285,7 +285,7 @@
 </span><span class="kw">mod </span>tests {
     <span class="kw">use </span>std::collections::HashSet;
 
-    <span class="kw">use </span>api::v1::meta::Peer;
+    <span class="kw">use </span>common_meta::peer::Peer;
 
     <span class="kw">use </span><span class="kw">crate</span>::selector::common::choose_peers;
     <span class="kw">use </span><span class="kw">crate</span>::selector::weighted_choose::{RandomWeightedChoose, WeightedItem};

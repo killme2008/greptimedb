@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["AccessLayer"],"type":["AccessLayerRef"]};
+window.SIDEBAR_ITEMS = {"fn":["clean_dir","new_fs_object_store"],"struct":["AccessLayer","SstWriteRequest"],"type":["AccessLayerRef"]};

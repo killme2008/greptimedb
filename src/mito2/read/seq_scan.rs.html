@@ -331,6 +331,19 @@
 <a href="#330" id="330">330</a>
 <a href="#331" id="331">331</a>
 <a href="#332" id="332">332</a>
+<a href="#333" id="333">333</a>
+<a href="#334" id="334">334</a>
+<a href="#335" id="335">335</a>
+<a href="#336" id="336">336</a>
+<a href="#337" id="337">337</a>
+<a href="#338" id="338">338</a>
+<a href="#339" id="339">339</a>
+<a href="#340" id="340">340</a>
+<a href="#341" id="341">341</a>
+<a href="#342" id="342">342</a>
+<a href="#343" id="343">343</a>
+<a href="#344" id="344">344</a>
+<a href="#345" id="345">345</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -354,7 +367,7 @@
 <span class="kw">use </span>common_error::ext::BoxedError;
 <span class="kw">use </span>common_recordbatch::error::ExternalSnafu;
 <span class="kw">use </span>common_recordbatch::{RecordBatch, RecordBatchStreamWrapper, SendableRecordBatchStream};
-<span class="kw">use </span>common_telemetry::{debug, error};
+<span class="kw">use </span>common_telemetry::{debug, error, tracing};
 <span class="kw">use </span>common_time::range::TimestampRange;
 <span class="kw">use </span>snafu::ResultExt;
 <span class="kw">use </span>table::predicate::Predicate;
@@ -372,6 +385,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::read::scan_region::ScanParallism;
 <span class="kw">use </span><span class="kw">crate</span>::read::{BatchReader, BoxedBatchReader, BoxedBatchStream, Source};
 <span class="kw">use </span><span class="kw">crate</span>::sst::file::FileHandle;
+<span class="kw">use </span><span class="kw">crate</span>::sst::index::applier::SstIndexApplierRef;
 
 <span class="doccomment">/// Scans a region and returns rows in a sorted sequence.
 ///
@@ -395,6 +409,8 @@
     </span>ignore_file_not_found: bool,
     <span class="doccomment">/// Parallelism to scan data.
     </span>parallelism: ScanParallism,
+    <span class="doccomment">/// Index applier.
+    </span>index_applier: <span class="prelude-ty">Option</span>&lt;SstIndexApplierRef&gt;,
 }
 
 <span class="kw">impl </span>SeqScan {
@@ -411,6 +427,7 @@
             cache_manager: <span class="prelude-val">None</span>,
             ignore_file_not_found: <span class="bool-val">false</span>,
             parallelism: ScanParallism::default(),
+            index_applier: <span class="prelude-val">None</span>,
         }
     }
 
@@ -460,6 +477,13 @@
     </span><span class="attr">#[must_use]
     </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>with_parallelism(<span class="kw-2">mut </span><span class="self">self</span>, parallelism: ScanParallism) -&gt; <span class="self">Self </span>{
         <span class="self">self</span>.parallelism = parallelism;
+        <span class="self">self
+    </span>}
+
+    <span class="doccomment">/// Sets index applier.
+    </span><span class="attr">#[must_use]
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>with_index_applier(<span class="kw-2">mut </span><span class="self">self</span>, index_applier: <span class="prelude-ty">Option</span>&lt;SstIndexApplierRef&gt;) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.index_applier = index_applier;
         <span class="self">self
     </span>}
 
@@ -535,7 +559,7 @@
     </span><span class="kw">async fn </span>build_sources(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;Source&gt;&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>sources = Vec::with_capacity(<span class="self">self</span>.memtables.len() + <span class="self">self</span>.files.len());
         <span class="kw">for </span>mem <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.memtables {
-            <span class="kw">let </span>iter = mem.iter(<span class="prelude-val">Some</span>(<span class="self">self</span>.mapper.column_ids()), <span class="self">self</span>.predicate.clone());
+            <span class="kw">let </span>iter = mem.iter(<span class="prelude-val">Some</span>(<span class="self">self</span>.mapper.column_ids()), <span class="self">self</span>.predicate.clone())<span class="question-mark">?</span>;
             sources.push(Source::Iter(iter));
         }
         <span class="kw">for </span>file <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.files {
@@ -546,6 +570,7 @@
                 .time_range(<span class="self">self</span>.time_range)
                 .projection(<span class="prelude-val">Some</span>(<span class="self">self</span>.mapper.column_ids().to_vec()))
                 .cache(<span class="self">self</span>.cache_manager.clone())
+                .index_applier(<span class="self">self</span>.index_applier.clone())
                 .build()
                 .<span class="kw">await</span>;
             <span class="kw">let </span>reader = <span class="kw">match </span>maybe_reader {
@@ -607,6 +632,7 @@
     }
 
     <span class="doccomment">/// Fetch a batch from the reader and convert it into a record batch.
+    </span><span class="attr">#[tracing::instrument(skip_all, level = <span class="string">"trace"</span>)]
     </span><span class="kw">async fn </span>fetch_record_batch(
         reader: <span class="kw-2">&amp;mut </span><span class="kw">dyn </span>BatchReader,
         mapper: <span class="kw-2">&amp;</span>ProjectionMapper,

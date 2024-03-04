@@ -165,6 +165,41 @@
 <a href="#164" id="164">164</a>
 <a href="#165" id="165">165</a>
 <a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
+<a href="#168" id="168">168</a>
+<a href="#169" id="169">169</a>
+<a href="#170" id="170">170</a>
+<a href="#171" id="171">171</a>
+<a href="#172" id="172">172</a>
+<a href="#173" id="173">173</a>
+<a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
+<a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
+<a href="#182" id="182">182</a>
+<a href="#183" id="183">183</a>
+<a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
+<a href="#186" id="186">186</a>
+<a href="#187" id="187">187</a>
+<a href="#188" id="188">188</a>
+<a href="#189" id="189">189</a>
+<a href="#190" id="190">190</a>
+<a href="#191" id="191">191</a>
+<a href="#192" id="192">192</a>
+<a href="#193" id="193">193</a>
+<a href="#194" id="194">194</a>
+<a href="#195" id="195">195</a>
+<a href="#196" id="196">196</a>
+<a href="#197" id="197">197</a>
+<a href="#198" id="198">198</a>
+<a href="#199" id="199">199</a>
+<a href="#200" id="200">200</a>
+<a href="#201" id="201">201</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -194,17 +229,11 @@
 <span class="doccomment">/// Magic bytes for this intermediate codec version
 </span><span class="kw">pub const </span>CODEC_V1_MAGIC: <span class="kw-2">&amp;</span>[u8; <span class="number">4</span>] = <span class="string">b"im01"</span>;
 
-<span class="doccomment">/// Codec for serializing and deserializing intermediate data for external sorting.
-///
-/// Binary format serialization. The item is laid out as follows:
-/// ```text
-/// [value len][value][bitmap len][bitmap]
-///     [8]     [?]       [8]       [?]
-/// ```
-</span><span class="kw">pub struct </span>IntermediateCodecV1;
+<span class="doccomment">/// Serializes items of external sorting intermediate files.
+</span><span class="kw">pub struct </span>IntermediateItemEncoderV1;
 
 <span class="doccomment">/// [`FramedWrite`] requires the [`Encoder`] trait to be implemented.
-</span><span class="kw">impl </span>Encoder <span class="kw">for </span>IntermediateCodecV1 {
+</span><span class="kw">impl </span>Encoder <span class="kw">for </span>IntermediateItemEncoderV1 {
     <span class="kw">type </span>Item&lt;<span class="lifetime">'a</span>&gt; = (Bytes, BitVec);
     <span class="kw">type </span>Error = Error;
 
@@ -221,8 +250,13 @@
     }
 }
 
+<span class="doccomment">/// Deserializes items of external sorting intermediate files.
+</span><span class="kw">pub struct </span>IntermediateItemDecoderV1 {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) bitmap_leading_zeros: u32,
+}
+
 <span class="doccomment">/// [`FramedRead`] requires the [`Decoder`] trait to be implemented.
-</span><span class="kw">impl </span>Decoder <span class="kw">for </span>IntermediateCodecV1 {
+</span><span class="kw">impl </span>Decoder <span class="kw">for </span>IntermediateItemDecoderV1 {
     <span class="kw">type </span>Item = (Bytes, BitVec);
     <span class="kw">type </span>Error = Error;
 
@@ -259,9 +293,11 @@
         </span><span class="kw">if </span>buf.len() &lt; bitmap_len {
             <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>);
         }
-        <span class="kw">let </span>bitmap_bytes = <span class="kw-2">&amp;</span>buf[..bitmap_len];
 
-        <span class="kw">let </span>item = (value_bytes.to_vec(), BitVec::from_slice(bitmap_bytes));
+        <span class="kw">let </span><span class="kw-2">mut </span>bitmap = BitVec::repeat(<span class="bool-val">false</span>, <span class="self">self</span>.bitmap_leading_zeros <span class="kw">as _</span>);
+        bitmap.extend_from_raw_slice(<span class="kw-2">&amp;</span>buf[..bitmap_len]);
+
+        <span class="kw">let </span>item = (value_bytes.to_vec(), bitmap);
 
         src.advance(U64_LENGTH * <span class="number">2 </span>+ value_len + bitmap_len);
         <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(item))
@@ -280,55 +316,89 @@
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
+    <span class="kw">use </span>common_base::bit_vec::prelude::{bitvec, Lsb0};
+
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_intermediate_codec_basic() {
-        <span class="kw">let </span><span class="kw-2">mut </span>codec = IntermediateCodecV1;
+        <span class="kw">let </span><span class="kw-2">mut </span>encoder = IntermediateItemEncoderV1;
         <span class="kw">let </span><span class="kw-2">mut </span>buf = BytesMut::new();
 
         <span class="kw">let </span>item = (<span class="string">b"hello"</span>.to_vec(), BitVec::from_slice(<span class="kw-2">&amp;</span>[<span class="number">0b10101010</span>]));
-        codec.encode(item.clone(), <span class="kw-2">&amp;mut </span>buf).unwrap();
-        <span class="macro">assert_eq!</span>(codec.decode(<span class="kw-2">&amp;mut </span>buf).unwrap().unwrap(), item);
-        <span class="macro">assert_eq!</span>(codec.decode(<span class="kw-2">&amp;mut </span>buf).unwrap(), <span class="prelude-val">None</span>);
+        encoder.encode(item.clone(), <span class="kw-2">&amp;mut </span>buf).unwrap();
+
+        <span class="kw">let </span><span class="kw-2">mut </span>decoder = IntermediateItemDecoderV1 {
+            bitmap_leading_zeros: <span class="number">0</span>,
+        };
+        <span class="macro">assert_eq!</span>(decoder.decode(<span class="kw-2">&amp;mut </span>buf).unwrap().unwrap(), item);
+        <span class="macro">assert_eq!</span>(decoder.decode(<span class="kw-2">&amp;mut </span>buf).unwrap(), <span class="prelude-val">None</span>);
 
         <span class="kw">let </span>item1 = (<span class="string">b"world"</span>.to_vec(), BitVec::from_slice(<span class="kw-2">&amp;</span>[<span class="number">0b01010101</span>]));
-        codec.encode(item.clone(), <span class="kw-2">&amp;mut </span>buf).unwrap();
-        codec.encode(item1.clone(), <span class="kw-2">&amp;mut </span>buf).unwrap();
-        <span class="macro">assert_eq!</span>(codec.decode(<span class="kw-2">&amp;mut </span>buf).unwrap().unwrap(), item);
-        <span class="macro">assert_eq!</span>(codec.decode(<span class="kw-2">&amp;mut </span>buf).unwrap().unwrap(), item1);
-        <span class="macro">assert_eq!</span>(codec.decode(<span class="kw-2">&amp;mut </span>buf).unwrap(), <span class="prelude-val">None</span>);
+        encoder.encode(item.clone(), <span class="kw-2">&amp;mut </span>buf).unwrap();
+        encoder.encode(item1.clone(), <span class="kw-2">&amp;mut </span>buf).unwrap();
+        <span class="macro">assert_eq!</span>(decoder.decode(<span class="kw-2">&amp;mut </span>buf).unwrap().unwrap(), item);
+        <span class="macro">assert_eq!</span>(decoder.decode(<span class="kw-2">&amp;mut </span>buf).unwrap().unwrap(), item1);
+        <span class="macro">assert_eq!</span>(decoder.decode(<span class="kw-2">&amp;mut </span>buf).unwrap(), <span class="prelude-val">None</span>);
         <span class="macro">assert!</span>(buf.is_empty());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_intermediate_codec_empty_item() {
-        <span class="kw">let </span><span class="kw-2">mut </span>codec = IntermediateCodecV1;
+        <span class="kw">let </span><span class="kw-2">mut </span>encoder = IntermediateItemEncoderV1;
         <span class="kw">let </span><span class="kw-2">mut </span>buf = BytesMut::new();
 
         <span class="kw">let </span>item = (<span class="string">b""</span>.to_vec(), BitVec::from_slice(<span class="kw-2">&amp;</span>[]));
-        codec.encode(item.clone(), <span class="kw-2">&amp;mut </span>buf).unwrap();
-        <span class="macro">assert_eq!</span>(codec.decode(<span class="kw-2">&amp;mut </span>buf).unwrap().unwrap(), item);
-        <span class="macro">assert_eq!</span>(codec.decode(<span class="kw-2">&amp;mut </span>buf).unwrap(), <span class="prelude-val">None</span>);
+        encoder.encode(item.clone(), <span class="kw-2">&amp;mut </span>buf).unwrap();
+
+        <span class="kw">let </span><span class="kw-2">mut </span>decoder = IntermediateItemDecoderV1 {
+            bitmap_leading_zeros: <span class="number">0</span>,
+        };
+        <span class="macro">assert_eq!</span>(decoder.decode(<span class="kw-2">&amp;mut </span>buf).unwrap().unwrap(), item);
+        <span class="macro">assert_eq!</span>(decoder.decode(<span class="kw-2">&amp;mut </span>buf).unwrap(), <span class="prelude-val">None</span>);
         <span class="macro">assert!</span>(buf.is_empty());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_intermediate_codec_partial() {
-        <span class="kw">let </span><span class="kw-2">mut </span>codec = IntermediateCodecV1;
+        <span class="kw">let </span><span class="kw-2">mut </span>encoder = IntermediateItemEncoderV1;
         <span class="kw">let </span><span class="kw-2">mut </span>buf = BytesMut::new();
 
         <span class="kw">let </span>item = (<span class="string">b"hello"</span>.to_vec(), BitVec::from_slice(<span class="kw-2">&amp;</span>[<span class="number">0b10101010</span>]));
-        codec.encode(item.clone(), <span class="kw-2">&amp;mut </span>buf).unwrap();
+        encoder.encode(item.clone(), <span class="kw-2">&amp;mut </span>buf).unwrap();
 
         <span class="kw">let </span>partial_length = U64_LENGTH + <span class="number">3</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>partial_bytes = buf.split_to(partial_length);
 
-        <span class="macro">assert_eq!</span>(codec.decode(<span class="kw-2">&amp;mut </span>partial_bytes).unwrap(), <span class="prelude-val">None</span>); <span class="comment">// not enough data
+        <span class="kw">let </span><span class="kw-2">mut </span>decoder = IntermediateItemDecoderV1 {
+            bitmap_leading_zeros: <span class="number">0</span>,
+        };
+        <span class="macro">assert_eq!</span>(decoder.decode(<span class="kw-2">&amp;mut </span>partial_bytes).unwrap(), <span class="prelude-val">None</span>); <span class="comment">// not enough data
         </span>partial_bytes.extend_from_slice(<span class="kw-2">&amp;</span>buf[..]);
-        <span class="macro">assert_eq!</span>(codec.decode(<span class="kw-2">&amp;mut </span>partial_bytes).unwrap().unwrap(), item);
-        <span class="macro">assert_eq!</span>(codec.decode(<span class="kw-2">&amp;mut </span>partial_bytes).unwrap(), <span class="prelude-val">None</span>);
+        <span class="macro">assert_eq!</span>(decoder.decode(<span class="kw-2">&amp;mut </span>partial_bytes).unwrap().unwrap(), item);
+        <span class="macro">assert_eq!</span>(decoder.decode(<span class="kw-2">&amp;mut </span>partial_bytes).unwrap(), <span class="prelude-val">None</span>);
         <span class="macro">assert!</span>(partial_bytes.is_empty());
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_intermediate_codec_prefix_zeros() {
+        <span class="kw">let </span><span class="kw-2">mut </span>encoder = IntermediateItemEncoderV1;
+        <span class="kw">let </span><span class="kw-2">mut </span>buf = BytesMut::new();
+
+        <span class="kw">let </span>item = (<span class="string">b"hello"</span>.to_vec(), <span class="macro">bitvec!</span>[u8, Lsb0; <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>]);
+        encoder.encode(item.clone(), <span class="kw-2">&amp;mut </span>buf).unwrap();
+
+        <span class="kw">let </span><span class="kw-2">mut </span>decoder = IntermediateItemDecoderV1 {
+            bitmap_leading_zeros: <span class="number">3</span>,
+        };
+        <span class="kw">let </span>decoded_item = decoder.decode(<span class="kw-2">&amp;mut </span>buf).unwrap().unwrap();
+        <span class="macro">assert_eq!</span>(decoded_item.<span class="number">0</span>, <span class="string">b"hello"</span>);
+        <span class="macro">assert_eq!</span>(
+            decoded_item.<span class="number">1</span>,
+            <span class="macro">bitvec!</span>[u8, Lsb0; <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>]
+        );
+        <span class="macro">assert_eq!</span>(decoder.decode(<span class="kw-2">&amp;mut </span>buf).unwrap(), <span class="prelude-val">None</span>);
+        <span class="macro">assert!</span>(buf.is_empty());
     }
 }
 </code></pre></div></section></main></body></html>

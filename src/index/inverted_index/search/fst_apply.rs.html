@@ -32,6 +32,9 @@
 <a href="#31" id="31">31</a>
 <a href="#32" id="32">32</a>
 <a href="#33" id="33">33</a>
+<a href="#34" id="34">34</a>
+<a href="#35" id="35">35</a>
+<a href="#36" id="36">36</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -64,5 +67,8 @@
     ///
     /// Returns a `Vec&lt;u64&gt;`, with each u64 being a value from the FstMap.
     </span><span class="kw">fn </span>apply(<span class="kw-2">&amp;</span><span class="self">self</span>, fst: <span class="kw-2">&amp;</span>FstMap) -&gt; Vec&lt;u64&gt;;
+
+    <span class="doccomment">/// Returns the memory usage of the applier.
+    </span><span class="kw">fn </span>memory_usage(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize;
 }
 </code></pre></div></section></main></body></html>

@@ -552,6 +552,15 @@
 <a href="#551" id="551">551</a>
 <a href="#552" id="552">552</a>
 <a href="#553" id="553">553</a>
+<a href="#554" id="554">554</a>
+<a href="#555" id="555">555</a>
+<a href="#556" id="556">556</a>
+<a href="#557" id="557">557</a>
+<a href="#558" id="558">558</a>
+<a href="#559" id="559">559</a>
+<a href="#560" id="560">560</a>
+<a href="#561" id="561">561</a>
+<a href="#562" id="562">562</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -590,6 +599,7 @@
 <span class="kw">use </span>store_api::storage::consts::ReservedColumnId;
 <span class="kw">use </span>store_api::storage::RegionId;
 
+<span class="kw">use </span><span class="kw">crate</span>::engine::options::set_index_options_for_data_region;
 <span class="kw">use </span><span class="kw">crate</span>::engine::MetricEngineInner;
 <span class="kw">use </span><span class="kw">crate</span>::error::{
     ConflictRegionOptionSnafu, CreateMitoRegionSnafu, InternalColumnOccupiedSnafu,
@@ -627,8 +637,7 @@
         <span class="kw">let </span>(data_region_id, metadata_region_id) = <span class="self">Self</span>::transform_region_id(region_id);
 
         <span class="comment">// create metadata region
-        </span><span class="kw">let </span>create_metadata_region_request =
-            <span class="self">self</span>.create_request_for_metadata_region(<span class="kw-2">&amp;</span>request.region_dir);
+        </span><span class="kw">let </span>create_metadata_region_request = <span class="self">self</span>.create_request_for_metadata_region(<span class="kw-2">&amp;</span>request);
         <span class="self">self</span>.mito
             .handle_request(
                 metadata_region_id,
@@ -662,8 +671,8 @@
         <span class="comment">// remember this table
         </span><span class="self">self</span>.state
             .write()
-            .<span class="kw">await
-            </span>.add_physical_region(data_region_id, physical_column_set);
+            .unwrap()
+            .add_physical_region(data_region_id, physical_column_set);
 
         <span class="prelude-val">Ok</span>(())
     }
@@ -709,7 +718,7 @@
         <span class="comment">// find new columns to add
         </span><span class="kw">let </span><span class="kw-2">mut </span>new_columns = <span class="macro">vec!</span>[];
         {
-            <span class="kw">let </span>state = <span class="kw-2">&amp;</span><span class="self">self</span>.state.read().<span class="kw">await</span>;
+            <span class="kw">let </span>state = <span class="kw-2">&amp;</span><span class="self">self</span>.state.read().unwrap();
             <span class="kw">let </span>physical_columns =
                 state
                     .physical_columns()
@@ -723,15 +732,18 @@
                 }
             }
         }
-        <span class="macro">info!</span>(<span class="string">"Found new columns {new_columns:?} to add to physical region {data_region_id}"</span>);
 
-        <span class="self">self</span>.add_columns_to_physical_data_region(
-            data_region_id,
-            metadata_region_id,
-            logical_region_id,
-            new_columns,
-        )
-        .<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">if </span>!new_columns.is_empty() {
+            <span class="macro">info!</span>(<span class="string">"Found new columns {new_columns:?} to add to physical region {data_region_id}"</span>);
+
+            <span class="self">self</span>.add_columns_to_physical_data_region(
+                data_region_id,
+                metadata_region_id,
+                logical_region_id,
+                new_columns,
+            )
+            .<span class="kw">await</span><span class="question-mark">?</span>;
+        }
 
         <span class="comment">// register logical region to metadata region
         </span><span class="self">self</span>.metadata_region
@@ -747,8 +759,8 @@
         // Safety: previous steps ensure the physical region exist
         </span><span class="self">self</span>.state
             .write()
-            .<span class="kw">await
-            </span>.add_logical_region(physical_region_id, logical_region_id);
+            .unwrap()
+            .add_logical_region(physical_region_id, logical_region_id);
         <span class="macro">info!</span>(<span class="string">"Created new logical region {logical_region_id} on physical region {data_region_id}"</span>);
         LOGICAL_REGION_COUNT.inc();
 
@@ -775,7 +787,7 @@
         }
 
         <span class="comment">// safety: previous step has checked this
-        </span><span class="self">self</span>.state.write().<span class="kw">await</span>.add_physical_columns(
+        </span><span class="self">self</span>.state.write().unwrap().add_physical_columns(
             data_region_id,
             new_columns
                 .iter()
@@ -841,7 +853,10 @@
     <span class="doccomment">/// Build [RegionCreateRequest] for metadata region
     ///
     /// This method will append [METADATA_REGION_SUBDIR] to the given `region_dir`.
-    </span><span class="kw">pub fn </span>create_request_for_metadata_region(<span class="kw-2">&amp;</span><span class="self">self</span>, region_dir: <span class="kw-2">&amp;</span>str) -&gt; RegionCreateRequest {
+    </span><span class="kw">pub fn </span>create_request_for_metadata_region(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        request: <span class="kw-2">&amp;</span>RegionCreateRequest,
+    ) -&gt; RegionCreateRequest {
         <span class="comment">// ts TIME INDEX DEFAULT 0
         </span><span class="kw">let </span>timestamp_column_metadata = ColumnMetadata {
             column_id: METADATA_SCHEMA_TIMESTAMP_COLUMN_INDEX <span class="kw">as _</span>,
@@ -878,7 +893,7 @@
         };
 
         <span class="comment">// concat region dir
-        </span><span class="kw">let </span>metadata_region_dir = join_dir(region_dir, METADATA_REGION_SUBDIR);
+        </span><span class="kw">let </span>metadata_region_dir = join_dir(<span class="kw-2">&amp;</span>request.region_dir, METADATA_REGION_SUBDIR);
 
         RegionCreateRequest {
             engine: MITO_ENGINE_NAME.to_string(),
@@ -888,7 +903,7 @@
                 value_column_metadata,
             ],
             primary_key: <span class="macro">vec!</span>[METADATA_SCHEMA_KEY_COLUMN_INDEX <span class="kw">as _</span>],
-            options: HashMap::new(),
+            options: request.options.clone(),
             region_dir: metadata_region_dir,
         }
     }
@@ -924,6 +939,9 @@
         data_region_request.column_metadatas.push(tsid_col);
         data_region_request.primary_key =
             <span class="macro">vec!</span>[ReservedColumnId::table_id(), ReservedColumnId::tsid()];
+
+        <span class="comment">// set index options
+        </span>set_index_options_for_data_region(<span class="kw-2">&amp;mut </span>data_region_request.options);
 
         data_region_request
     }
@@ -1086,7 +1104,7 @@
             ],
             primary_key: <span class="macro">vec!</span>[<span class="number">0</span>],
             options: HashMap::new(),
-            region_dir: <span class="string">"test_dir"</span>.to_string(),
+            region_dir: <span class="string">"/test_dir"</span>.to_string(),
         };
 
         <span class="kw">let </span>env = TestEnv::new().<span class="kw">await</span>;

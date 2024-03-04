@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["DATANODE_HTTP_SERVICE_NAME","OPEN_REGION_PARALLELISM","REGION_SERVER_SERVICE_NAME"],"fn":["open_all_regions"],"struct":["Datanode","DatanodeBuilder","ProcedureConfig"]};
+window.SIDEBAR_ITEMS = {"constant":["OPEN_REGION_PARALLELISM"],"fn":["open_all_regions"],"struct":["Datanode","DatanodeBuilder","ProcedureConfig"]};

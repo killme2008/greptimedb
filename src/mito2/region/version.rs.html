@@ -363,6 +363,13 @@
 <a href="#362" id="362">362</a>
 <a href="#363" id="363">363</a>
 <a href="#364" id="364">364</a>
+<a href="#365" id="365">365</a>
+<a href="#366" id="366">366</a>
+<a href="#367" id="367">367</a>
+<a href="#368" id="368">368</a>
+<a href="#369" id="369">369</a>
+<a href="#370" id="370">370</a>
+<a href="#371" id="371">371</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -394,6 +401,7 @@
 <span class="kw">use </span>store_api::metadata::RegionMetadataRef;
 <span class="kw">use </span>store_api::storage::SequenceNumber;
 
+<span class="kw">use </span><span class="kw">crate</span>::error::Result;
 <span class="kw">use </span><span class="kw">crate</span>::manifest::action::RegionEdit;
 <span class="kw">use </span><span class="kw">crate</span>::memtable::version::{MemtableVersion, MemtableVersionRef};
 <span class="kw">use </span><span class="kw">crate</span>::memtable::{MemtableBuilderRef, MemtableId, MemtableRef};
@@ -441,14 +449,16 @@
     }
 
     <span class="doccomment">/// Freezes the mutable memtable if it is not empty.
-    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>freeze_mutable(<span class="kw-2">&amp;</span><span class="self">self</span>, builder: <span class="kw-2">&amp;</span>MemtableBuilderRef) {
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>freeze_mutable(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="kw">let </span>version = <span class="self">self</span>.current().version;
         <span class="kw">if </span>version.memtables.mutable.is_empty() {
-            <span class="kw">return</span>;
+            <span class="kw">return </span><span class="prelude-val">Ok</span>(());
         }
-        <span class="kw">let </span>new_mutable = builder.build(<span class="kw-2">&amp;</span>version.metadata);
         <span class="comment">// Safety: Immutable memtable is None.
-        </span><span class="kw">let </span>new_memtables = version.memtables.freeze_mutable(new_mutable).unwrap();
+        </span><span class="kw">let </span>new_memtables = version
+            .memtables
+            .freeze_mutable(<span class="kw-2">&amp;</span>version.metadata)<span class="question-mark">?
+            </span>.unwrap();
         <span class="comment">// Create a new version with memtable switched.
         </span><span class="kw">let </span>new_version = Arc::new(
             VersionBuilder::from_version(version)
@@ -458,6 +468,8 @@
 
         <span class="kw">let </span><span class="kw-2">mut </span>version_data = <span class="self">self</span>.data.write().unwrap();
         version_data.version = new_version;
+
+        <span class="prelude-val">Ok</span>(())
     }
 
     <span class="doccomment">/// Apply edit to current version.
@@ -482,7 +494,8 @@
     <span class="doccomment">/// Mark all opened files as deleted and set the delete marker in [VersionControlData]
     </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>mark_dropped(<span class="kw-2">&amp;</span><span class="self">self</span>, memtable_builder: <span class="kw-2">&amp;</span>MemtableBuilderRef) {
         <span class="kw">let </span>version = <span class="self">self</span>.current().version;
-        <span class="kw">let </span>new_mutable = memtable_builder.build(<span class="kw-2">&amp;</span>version.metadata);
+        <span class="kw">let </span>new_mutable =
+            memtable_builder.build(version.memtables.next_memtable_id(), <span class="kw-2">&amp;</span>version.metadata);
 
         <span class="kw">let </span><span class="kw-2">mut </span>data = <span class="self">self</span>.data.write().unwrap();
         data.is_dropped = <span class="bool-val">true</span>;
@@ -498,8 +511,8 @@
     /// It replaces existing mutable memtable with a memtable that uses the
     /// new schema. Memtables of the version must be empty.
     </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>alter_schema(<span class="kw-2">&amp;</span><span class="self">self</span>, metadata: RegionMetadataRef, builder: <span class="kw-2">&amp;</span>MemtableBuilderRef) {
-        <span class="kw">let </span>new_mutable = builder.build(<span class="kw-2">&amp;</span>metadata);
         <span class="kw">let </span>version = <span class="self">self</span>.current().version;
+        <span class="kw">let </span>new_mutable = builder.build(version.memtables.next_memtable_id(), <span class="kw-2">&amp;</span>metadata);
         <span class="macro">debug_assert!</span>(version.memtables.mutable.is_empty());
         <span class="macro">debug_assert!</span>(version.memtables.immutables().is_empty());
         <span class="kw">let </span>new_version = Arc::new(
@@ -522,7 +535,8 @@
     ) {
         <span class="kw">let </span>version = <span class="self">self</span>.current().version;
 
-        <span class="kw">let </span>new_mutable = memtable_builder.build(<span class="kw-2">&amp;</span>version.metadata);
+        <span class="kw">let </span>new_mutable =
+            memtable_builder.build(version.memtables.next_memtable_id(), <span class="kw-2">&amp;</span>version.metadata);
         <span class="kw">let </span>new_version = Arc::new(
             VersionBuilder::new(version.metadata.clone(), new_mutable)
                 .flushed_entry_id(truncated_entry_id)

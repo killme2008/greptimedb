@@ -92,6 +92,95 @@
 <a href="#91" id="91">91</a>
 <a href="#92" id="92">92</a>
 <a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
+<a href="#104" id="104">104</a>
+<a href="#105" id="105">105</a>
+<a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
+<a href="#116" id="116">116</a>
+<a href="#117" id="117">117</a>
+<a href="#118" id="118">118</a>
+<a href="#119" id="119">119</a>
+<a href="#120" id="120">120</a>
+<a href="#121" id="121">121</a>
+<a href="#122" id="122">122</a>
+<a href="#123" id="123">123</a>
+<a href="#124" id="124">124</a>
+<a href="#125" id="125">125</a>
+<a href="#126" id="126">126</a>
+<a href="#127" id="127">127</a>
+<a href="#128" id="128">128</a>
+<a href="#129" id="129">129</a>
+<a href="#130" id="130">130</a>
+<a href="#131" id="131">131</a>
+<a href="#132" id="132">132</a>
+<a href="#133" id="133">133</a>
+<a href="#134" id="134">134</a>
+<a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
+<a href="#137" id="137">137</a>
+<a href="#138" id="138">138</a>
+<a href="#139" id="139">139</a>
+<a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
+<a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
+<a href="#160" id="160">160</a>
+<a href="#161" id="161">161</a>
+<a href="#162" id="162">162</a>
+<a href="#163" id="163">163</a>
+<a href="#164" id="164">164</a>
+<a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
+<a href="#168" id="168">168</a>
+<a href="#169" id="169">169</a>
+<a href="#170" id="170">170</a>
+<a href="#171" id="171">171</a>
+<a href="#172" id="172">172</a>
+<a href="#173" id="173">173</a>
+<a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
+<a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
+<a href="#182" id="182">182</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -107,21 +196,16 @@
 // limitations under the License.
 
 </span><span class="kw">use </span>futures::TryStreamExt;
+<span class="kw">use </span>opendal::layers::{LoggingLayer, TracingLayer};
 <span class="kw">use </span>opendal::{Entry, Lister};
 
-<span class="kw">pub async fn </span>collect(stream: Lister) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;Entry&gt;, opendal::Error&gt; {
+<span class="kw">use </span><span class="kw">crate</span>::layers::PrometheusMetricsLayer;
+<span class="kw">use </span><span class="kw">crate</span>::ObjectStore;
+
+<span class="doccomment">/// Collect all entries from the [Lister].
+</span><span class="kw">pub async fn </span>collect(stream: Lister) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;Entry&gt;, opendal::Error&gt; {
     stream.try_collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;().<span class="kw">await
 </span>}
-
-<span class="doccomment">/// Normalize a directory path, ensure it is ends with '/'
-</span><span class="kw">pub fn </span>normalize_dir(dir: <span class="kw-2">&amp;</span>str) -&gt; String {
-    <span class="kw">let </span><span class="kw-2">mut </span>dir = dir.to_string();
-    <span class="kw">if </span>!dir.ends_with(<span class="string">'/'</span>) {
-        dir.push(<span class="string">'/'</span>)
-    }
-
-    dir
-}
 
 <span class="doccomment">/// Join two paths and normalize the output dir.
 ///
@@ -133,8 +217,42 @@
 </span><span class="kw">pub fn </span>join_dir(parent: <span class="kw-2">&amp;</span>str, child: <span class="kw-2">&amp;</span>str) -&gt; String {
     <span class="comment">// Always adds a `/` to the output path.
     </span><span class="kw">let </span>output = <span class="macro">format!</span>(<span class="string">"{parent}/{child}/"</span>);
-    <span class="comment">// We call opendal's normalize_root which keep the last `/`.
-    </span>opendal::raw::normalize_root(<span class="kw-2">&amp;</span>output)
+    normalize_dir(<span class="kw-2">&amp;</span>output)
+}
+
+<span class="doccomment">/// Modified from the `opendal::raw::normalize_root`
+///
+/// # The different
+///
+/// It doesn't always append `/` ahead of the path,
+/// It only keeps `/` ahead if the original path starts with `/`.
+///
+/// Make sure the directory is normalized to style like `abc/def/`.
+///
+/// # Normalize Rules
+///
+/// - All whitespace will be trimmed: ` abc/def ` =&gt; `abc/def`
+/// - All leading / will be trimmed: `///abc` =&gt; `abc`
+/// - Internal // will be replaced by /: `abc///def` =&gt; `abc/def`
+/// - Empty path will be `/`: `` =&gt; `/`
+/// - **(Removed❗️)** ~~Add leading `/` if not starts with: `abc/` =&gt; `/abc/`~~
+/// - Add trailing `/` if not ends with: `/abc` =&gt; `/abc/`
+///
+/// Finally, we will got path like `/path/to/root/`.
+</span><span class="kw">pub fn </span>normalize_dir(v: <span class="kw-2">&amp;</span>str) -&gt; String {
+    <span class="kw">let </span>has_root = v.starts_with(<span class="string">'/'</span>);
+    <span class="kw">let </span><span class="kw-2">mut </span>v = v
+        .split(<span class="string">'/'</span>)
+        .filter(|v| !v.is_empty())
+        .collect::&lt;Vec&lt;<span class="kw-2">&amp;</span>str&gt;&gt;()
+        .join(<span class="string">"/"</span>);
+    <span class="kw">if </span>has_root {
+        v.insert(<span class="number">0</span>, <span class="string">'/'</span>);
+    }
+    <span class="kw">if </span>!v.ends_with(<span class="string">'/'</span>) {
+        v.push(<span class="string">'/'</span>)
+    }
+    v
 }
 
 <span class="doccomment">/// Push `child` to `parent` dir and normalize the output path.
@@ -143,7 +261,63 @@
 /// - Otherwise, it's a file path.
 </span><span class="kw">pub fn </span>join_path(parent: <span class="kw-2">&amp;</span>str, child: <span class="kw-2">&amp;</span>str) -&gt; String {
     <span class="kw">let </span>output = <span class="macro">format!</span>(<span class="string">"{parent}/{child}"</span>);
-    opendal::raw::normalize_path(<span class="kw-2">&amp;</span>output)
+    normalize_path(<span class="kw-2">&amp;</span>output)
+}
+
+<span class="doccomment">/// Make sure all operation are constructed by normalized path:
+///
+/// - Path endswith `/` means it's a dir path.
+/// - Otherwise, it's a file path.
+///
+/// # Normalize Rules
+///
+/// - All whitespace will be trimmed: ` abc/def ` =&gt; `abc/def`
+/// - Repeated leading / will be trimmed: `///abc` =&gt; `/abc`
+/// - Internal // will be replaced by /: `abc///def` =&gt; `abc/def`
+/// - Empty path will be `/`: `` =&gt; `/`
+</span><span class="kw">pub fn </span>normalize_path(path: <span class="kw-2">&amp;</span>str) -&gt; String {
+    <span class="comment">// - all whitespace has been trimmed.
+    </span><span class="kw">let </span>path = path.trim();
+
+    <span class="comment">// Fast line for empty path.
+    </span><span class="kw">if </span>path.is_empty() {
+        <span class="kw">return </span><span class="string">"/"</span>.to_string();
+    }
+
+    <span class="kw">let </span>has_leading = path.starts_with(<span class="string">'/'</span>);
+    <span class="kw">let </span>has_trailing = path.ends_with(<span class="string">'/'</span>);
+
+    <span class="kw">let </span><span class="kw-2">mut </span>p = path
+        .split(<span class="string">'/'</span>)
+        .filter(|v| !v.is_empty())
+        .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
+        .join(<span class="string">"/"</span>);
+
+    <span class="comment">// If path is not starting with `/` but it should
+    </span><span class="kw">if </span>!p.starts_with(<span class="string">'/'</span>) &amp;&amp; has_leading {
+        p.insert(<span class="number">0</span>, <span class="string">'/'</span>);
+    }
+
+    <span class="comment">// If path is not ending with `/` but it should
+    </span><span class="kw">if </span>!p.ends_with(<span class="string">'/'</span>) &amp;&amp; has_trailing {
+        p.push(<span class="string">'/'</span>);
+    }
+
+    p
+}
+
+<span class="doccomment">/// Attaches instrument layers to the object store.
+</span><span class="kw">pub fn </span>with_instrument_layers(object_store: ObjectStore) -&gt; ObjectStore {
+    object_store
+        .layer(
+            LoggingLayer::default()
+                <span class="comment">// Print the expected error only in DEBUG level.
+                // See https://docs.rs/opendal/latest/opendal/layers/struct.LoggingLayer.html#method.with_error_level
+                </span>.with_error_level(<span class="prelude-val">Some</span>(<span class="string">"debug"</span>))
+                .expect(<span class="string">"input error level must be valid"</span>),
+        )
+        .layer(TracingLayer)
+        .layer(PrometheusMetricsLayer)
 }
 
 <span class="attr">#[cfg(test)]
@@ -164,7 +338,7 @@
         <span class="macro">assert_eq!</span>(<span class="string">"/"</span>, join_dir(<span class="string">""</span>, <span class="string">"/"</span>));
         <span class="macro">assert_eq!</span>(<span class="string">"/"</span>, join_dir(<span class="string">"/"</span>, <span class="string">"/"</span>));
         <span class="macro">assert_eq!</span>(<span class="string">"/a/"</span>, join_dir(<span class="string">"/a"</span>, <span class="string">""</span>));
-        <span class="macro">assert_eq!</span>(<span class="string">"/a/b/c/"</span>, join_dir(<span class="string">"a/b"</span>, <span class="string">"c"</span>));
+        <span class="macro">assert_eq!</span>(<span class="string">"a/b/c/"</span>, join_dir(<span class="string">"a/b"</span>, <span class="string">"c"</span>));
         <span class="macro">assert_eq!</span>(<span class="string">"/a/b/c/"</span>, join_dir(<span class="string">"/a/b"</span>, <span class="string">"c"</span>));
         <span class="macro">assert_eq!</span>(<span class="string">"/a/b/c/"</span>, join_dir(<span class="string">"/a/b"</span>, <span class="string">"c/"</span>));
         <span class="macro">assert_eq!</span>(<span class="string">"/a/b/c/"</span>, join_dir(<span class="string">"/a/b"</span>, <span class="string">"/c/"</span>));
@@ -178,11 +352,15 @@
         <span class="macro">assert_eq!</span>(<span class="string">"/"</span>, join_path(<span class="string">""</span>, <span class="string">"/"</span>));
         <span class="macro">assert_eq!</span>(<span class="string">"/"</span>, join_path(<span class="string">"/"</span>, <span class="string">"/"</span>));
         <span class="macro">assert_eq!</span>(<span class="string">"a/"</span>, join_path(<span class="string">"a"</span>, <span class="string">""</span>));
+        <span class="macro">assert_eq!</span>(<span class="string">"/a"</span>, join_path(<span class="string">"/"</span>, <span class="string">"a"</span>));
         <span class="macro">assert_eq!</span>(<span class="string">"a/b/c.txt"</span>, join_path(<span class="string">"a/b"</span>, <span class="string">"c.txt"</span>));
-        <span class="macro">assert_eq!</span>(<span class="string">"a/b/c.txt"</span>, join_path(<span class="string">"/a/b"</span>, <span class="string">"c.txt"</span>));
-        <span class="macro">assert_eq!</span>(<span class="string">"a/b/c/"</span>, join_path(<span class="string">"/a/b"</span>, <span class="string">"c/"</span>));
-        <span class="macro">assert_eq!</span>(<span class="string">"a/b/c/"</span>, join_path(<span class="string">"/a/b"</span>, <span class="string">"/c/"</span>));
-        <span class="macro">assert_eq!</span>(<span class="string">"a/b/c.txt"</span>, join_path(<span class="string">"/a/b"</span>, <span class="string">"//c.txt"</span>));
+        <span class="macro">assert_eq!</span>(<span class="string">"/a/b/c.txt"</span>, join_path(<span class="string">"/a/b"</span>, <span class="string">"c.txt"</span>));
+        <span class="macro">assert_eq!</span>(<span class="string">"/a/b/c/"</span>, join_path(<span class="string">"/a/b"</span>, <span class="string">"c/"</span>));
+        <span class="macro">assert_eq!</span>(<span class="string">"/a/b/c/"</span>, join_path(<span class="string">"/a/b"</span>, <span class="string">"/c/"</span>));
+        <span class="macro">assert_eq!</span>(<span class="string">"/a/b/c.txt"</span>, join_path(<span class="string">"/a/b"</span>, <span class="string">"//c.txt"</span>));
+        <span class="macro">assert_eq!</span>(<span class="string">"abc/def"</span>, join_path(<span class="string">" abc"</span>, <span class="string">"/def "</span>));
+        <span class="macro">assert_eq!</span>(<span class="string">"/abc"</span>, join_path(<span class="string">"//"</span>, <span class="string">"/abc"</span>));
+        <span class="macro">assert_eq!</span>(<span class="string">"abc/def"</span>, join_path(<span class="string">"abc/"</span>, <span class="string">"//def"</span>));
     }
 }
 </code></pre></div></section></main></body></html>

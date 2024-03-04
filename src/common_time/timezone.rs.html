@@ -182,6 +182,51 @@
 <a href="#181" id="181">181</a>
 <a href="#182" id="182">182</a>
 <a href="#183" id="183">183</a>
+<a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
+<a href="#186" id="186">186</a>
+<a href="#187" id="187">187</a>
+<a href="#188" id="188">188</a>
+<a href="#189" id="189">189</a>
+<a href="#190" id="190">190</a>
+<a href="#191" id="191">191</a>
+<a href="#192" id="192">192</a>
+<a href="#193" id="193">193</a>
+<a href="#194" id="194">194</a>
+<a href="#195" id="195">195</a>
+<a href="#196" id="196">196</a>
+<a href="#197" id="197">197</a>
+<a href="#198" id="198">198</a>
+<a href="#199" id="199">199</a>
+<a href="#200" id="200">200</a>
+<a href="#201" id="201">201</a>
+<a href="#202" id="202">202</a>
+<a href="#203" id="203">203</a>
+<a href="#204" id="204">204</a>
+<a href="#205" id="205">205</a>
+<a href="#206" id="206">206</a>
+<a href="#207" id="207">207</a>
+<a href="#208" id="208">208</a>
+<a href="#209" id="209">209</a>
+<a href="#210" id="210">210</a>
+<a href="#211" id="211">211</a>
+<a href="#212" id="212">212</a>
+<a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
+<a href="#216" id="216">216</a>
+<a href="#217" id="217">217</a>
+<a href="#218" id="218">218</a>
+<a href="#219" id="219">219</a>
+<a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
+<a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
+<a href="#224" id="224">224</a>
+<a href="#225" id="225">225</a>
+<a href="#226" id="226">226</a>
+<a href="#227" id="227">227</a>
+<a href="#228" id="228">228</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -199,8 +244,8 @@
 </span><span class="kw">use </span>std::fmt::Display;
 <span class="kw">use </span>std::str::FromStr;
 
-<span class="kw">use </span>chrono::FixedOffset;
-<span class="kw">use </span>chrono_tz::Tz;
+<span class="kw">use </span>chrono::{FixedOffset, NaiveDateTime, TimeZone};
+<span class="kw">use </span>chrono_tz::{OffsetComponents, Tz};
 <span class="kw">use </span>once_cell::sync::OnceCell;
 <span class="kw">use </span>snafu::{OptionExt, ResultExt};
 
@@ -227,13 +272,18 @@
 <span class="attr">#[inline(always)]
 </span><span class="doccomment">/// If the `tz=Some(timezone)`, return `timezone` directly,
 /// or return current system timezone.
-</span><span class="kw">pub fn </span>get_timezone(tz: <span class="prelude-ty">Option</span>&lt;Timezone&gt;) -&gt; Timezone {
-    tz.unwrap_or_else(|| {
-        DEFAULT_TIMEZONE
-            .get()
-            .cloned()
-            .unwrap_or(Timezone::Named(Tz::UTC))
-    })
+</span><span class="kw">pub fn </span>get_timezone(tz: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>Timezone&gt;) -&gt; <span class="kw-2">&amp;</span>Timezone {
+    tz.unwrap_or_else(|| DEFAULT_TIMEZONE.get().unwrap_or(<span class="kw-2">&amp;</span>Timezone::Named(Tz::UTC)))
+}
+
+<span class="attr">#[inline(always)]
+</span><span class="doccomment">/// If the `tz = Some("") || None || Some(Invalid timezone)`, return system timezone,
+/// or return parsed `tz` as timezone.
+</span><span class="kw">pub fn </span>parse_timezone(tz: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;) -&gt; Timezone {
+    <span class="kw">match </span>tz {
+        <span class="prelude-val">None </span>| <span class="prelude-val">Some</span>(<span class="string">""</span>) =&gt; Timezone::Named(Tz::UTC),
+        <span class="prelude-val">Some</span>(tz) =&gt; Timezone::from_tz_string(tz).unwrap_or(Timezone::Named(Tz::UTC)),
+    }
 }
 
 <span class="attr">#[derive(Debug, Clone, PartialEq, Eq)]
@@ -287,6 +337,21 @@
             ParseTimezoneNameSnafu { raw: tz_string }.fail()
         }
     }
+
+    <span class="doccomment">/// Returns the number of seconds to add to convert from UTC to the local time.
+    </span><span class="kw">pub fn </span>local_minus_utc(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; i64 {
+        <span class="kw">match </span><span class="self">self </span>{
+            <span class="self">Self</span>::Offset(offset) =&gt; offset.local_minus_utc().into(),
+            <span class="self">Self</span>::Named(tz) =&gt; {
+                <span class="kw">let </span>datetime = NaiveDateTime::from_timestamp_opt(<span class="number">0</span>, <span class="number">0</span>).unwrap();
+                <span class="kw">let </span>datetime = tz.from_utc_datetime(<span class="kw-2">&amp;</span>datetime);
+                <span class="kw">let </span>utc_offset = datetime.offset().base_utc_offset();
+                <span class="kw">let </span>dst_offset = datetime.offset().dst_offset();
+                <span class="kw">let </span>total_offset = utc_offset + dst_offset;
+                total_offset.num_seconds()
+            }
+        }
+    }
 }
 
 <span class="kw">impl </span>Display <span class="kw">for </span>Timezone {
@@ -307,6 +372,31 @@
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_local_minus_utc() {
+        <span class="macro">assert_eq!</span>(
+            <span class="number">28800</span>,
+            Timezone::from_tz_string(<span class="string">"+8:00"</span>).unwrap().local_minus_utc()
+        );
+        <span class="macro">assert_eq!</span>(
+            <span class="number">28800</span>,
+            Timezone::from_tz_string(<span class="string">"Asia/Shanghai"</span>)
+                .unwrap()
+                .local_minus_utc()
+        );
+        <span class="macro">assert_eq!</span>(
+            -<span class="number">14400</span>,
+            Timezone::from_tz_string(<span class="string">"America/Aruba"</span>)
+                .unwrap()
+                .local_minus_utc()
+        );
+
+        <span class="macro">assert_eq!</span>(
+            -<span class="number">36000</span>,
+            Timezone::from_tz_string(<span class="string">"HST"</span>).unwrap().local_minus_utc()
+        );
+    }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_from_tz_string() {

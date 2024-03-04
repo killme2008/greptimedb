@@ -691,6 +691,34 @@
 <a href="#690" id="690">690</a>
 <a href="#691" id="691">691</a>
 <a href="#692" id="692">692</a>
+<a href="#693" id="693">693</a>
+<a href="#694" id="694">694</a>
+<a href="#695" id="695">695</a>
+<a href="#696" id="696">696</a>
+<a href="#697" id="697">697</a>
+<a href="#698" id="698">698</a>
+<a href="#699" id="699">699</a>
+<a href="#700" id="700">700</a>
+<a href="#701" id="701">701</a>
+<a href="#702" id="702">702</a>
+<a href="#703" id="703">703</a>
+<a href="#704" id="704">704</a>
+<a href="#705" id="705">705</a>
+<a href="#706" id="706">706</a>
+<a href="#707" id="707">707</a>
+<a href="#708" id="708">708</a>
+<a href="#709" id="709">709</a>
+<a href="#710" id="710">710</a>
+<a href="#711" id="711">711</a>
+<a href="#712" id="712">712</a>
+<a href="#713" id="713">713</a>
+<a href="#714" id="714">714</a>
+<a href="#715" id="715">715</a>
+<a href="#716" id="716">716</a>
+<a href="#717" id="717">717</a>
+<a href="#718" id="718">718</a>
+<a href="#719" id="719">719</a>
+<a href="#720" id="720">720</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -712,6 +740,7 @@
 <span class="kw">use </span>common_time::range::TimestampRange;
 <span class="kw">use </span>common_time::timestamp::TimeUnit;
 <span class="kw">use </span>common_time::Timestamp;
+<span class="kw">use </span>datafusion::common::ScalarValue;
 <span class="kw">use </span>datafusion::physical_optimizer::pruning::{PruningPredicate, PruningStatistics};
 <span class="kw">use </span>datafusion_common::ToDFSchema;
 <span class="kw">use </span>datafusion_expr::expr::InList;
@@ -727,6 +756,22 @@
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>stats;
 
+<span class="doccomment">/// Assert the scalar value is not utf8. Returns `None` if it's utf8.
+/// In theory, it should be converted to a timestamp scalar value by `TypeConversionRule`.
+</span><span class="macro">macro_rules! </span>return_none_if_utf8 {
+    (<span class="macro-nonterminal">$lit</span>: ident) =&gt; {
+        <span class="kw">if </span><span class="macro">matches!</span>(<span class="macro-nonterminal">$lit</span>, ScalarValue::Utf8(<span class="kw">_</span>)) {
+            <span class="macro">warn!</span>(
+                <span class="string">"Unexpected ScalarValue::Utf8 in time range predicate: {:?}. Maybe it's an implicit bug, please report it to https://github.com/GreptimeTeam/greptimedb/issues"</span>,
+                <span class="macro-nonterminal">$lit
+            </span>);
+
+            <span class="comment">// Make the predicate ineffective.
+            </span><span class="kw">return </span><span class="prelude-val">None</span>;
+        }
+    };
+}
+
 <span class="attr">#[derive(Debug, Clone)]
 </span><span class="kw">pub struct </span>Predicate {
     <span class="doccomment">/// logical exprs
@@ -739,6 +784,11 @@
     /// Returns error when failed to convert exprs.
     </span><span class="kw">pub fn </span>new(exprs: Vec&lt;Expr&gt;) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{ exprs }
+    }
+
+    <span class="doccomment">/// Returns the logical exprs.
+    </span><span class="kw">pub fn </span>exprs(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[Expr] {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.exprs
     }
 
     <span class="doccomment">/// Builds physical exprs according to provided schema.
@@ -970,7 +1020,9 @@
         <span class="kw">if </span>col.name != <span class="self">self</span>.ts_col_name {
             <span class="kw">return </span><span class="prelude-val">None</span>;
         }
-        scalar_value_to_timestamp(lit).map(|t| (t, reverse))
+
+        <span class="macro">return_none_if_utf8!</span>(lit);
+        scalar_value_to_timestamp(lit, <span class="prelude-val">None</span>).map(|t| (t, reverse))
     }
 
     <span class="kw">fn </span>extract_from_between_expr(
@@ -993,9 +1045,12 @@
 
         <span class="kw">match </span>(low, high) {
             (DfExpr::Literal(low), DfExpr::Literal(high)) =&gt; {
-                <span class="kw">let </span>low_opt =
-                    scalar_value_to_timestamp(low).and_then(|ts| ts.convert_to(<span class="self">self</span>.ts_col_unit));
-                <span class="kw">let </span>high_opt = scalar_value_to_timestamp(high)
+                <span class="macro">return_none_if_utf8!</span>(low);
+                <span class="macro">return_none_if_utf8!</span>(high);
+
+                <span class="kw">let </span>low_opt = scalar_value_to_timestamp(low, <span class="prelude-val">None</span>)
+                    .and_then(|ts| ts.convert_to(<span class="self">self</span>.ts_col_unit));
+                <span class="kw">let </span>high_opt = scalar_value_to_timestamp(high, <span class="prelude-val">None</span>)
                     .and_then(|ts| ts.convert_to_ceil(<span class="self">self</span>.ts_col_unit));
                 <span class="prelude-val">Some</span>(TimestampRange::new_inclusive(low_opt, high_opt))
             }
@@ -1026,7 +1081,8 @@
         <span class="kw">let </span><span class="kw-2">mut </span>init_range = TimestampRange::empty();
         <span class="kw">for </span>expr <span class="kw">in </span>list {
             <span class="kw">if let </span>DfExpr::Literal(scalar) = expr {
-                <span class="kw">if let </span><span class="prelude-val">Some</span>(timestamp) = scalar_value_to_timestamp(scalar) {
+                <span class="macro">return_none_if_utf8!</span>(scalar);
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(timestamp) = scalar_value_to_timestamp(scalar, <span class="prelude-val">None</span>) {
                     init_range = init_range.or(<span class="kw-2">&amp;</span>TimestampRange::single(timestamp))
                 } <span class="kw">else </span>{
                     <span class="comment">// TODO(hl): maybe we should raise an error here since cannot parse

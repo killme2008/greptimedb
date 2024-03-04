@@ -740,6 +740,53 @@
 <a href="#739" id="739">739</a>
 <a href="#740" id="740">740</a>
 <a href="#741" id="741">741</a>
+<a href="#742" id="742">742</a>
+<a href="#743" id="743">743</a>
+<a href="#744" id="744">744</a>
+<a href="#745" id="745">745</a>
+<a href="#746" id="746">746</a>
+<a href="#747" id="747">747</a>
+<a href="#748" id="748">748</a>
+<a href="#749" id="749">749</a>
+<a href="#750" id="750">750</a>
+<a href="#751" id="751">751</a>
+<a href="#752" id="752">752</a>
+<a href="#753" id="753">753</a>
+<a href="#754" id="754">754</a>
+<a href="#755" id="755">755</a>
+<a href="#756" id="756">756</a>
+<a href="#757" id="757">757</a>
+<a href="#758" id="758">758</a>
+<a href="#759" id="759">759</a>
+<a href="#760" id="760">760</a>
+<a href="#761" id="761">761</a>
+<a href="#762" id="762">762</a>
+<a href="#763" id="763">763</a>
+<a href="#764" id="764">764</a>
+<a href="#765" id="765">765</a>
+<a href="#766" id="766">766</a>
+<a href="#767" id="767">767</a>
+<a href="#768" id="768">768</a>
+<a href="#769" id="769">769</a>
+<a href="#770" id="770">770</a>
+<a href="#771" id="771">771</a>
+<a href="#772" id="772">772</a>
+<a href="#773" id="773">773</a>
+<a href="#774" id="774">774</a>
+<a href="#775" id="775">775</a>
+<a href="#776" id="776">776</a>
+<a href="#777" id="777">777</a>
+<a href="#778" id="778">778</a>
+<a href="#779" id="779">779</a>
+<a href="#780" id="780">780</a>
+<a href="#781" id="781">781</a>
+<a href="#782" id="782">782</a>
+<a href="#783" id="783">783</a>
+<a href="#784" id="784">784</a>
+<a href="#785" id="785">785</a>
+<a href="#786" id="786">786</a>
+<a href="#787" id="787">787</a>
+<a href="#788" id="788">788</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -761,26 +808,28 @@
 <span class="kw">use </span>std::sync::Arc;
 
 <span class="kw">use </span>common_telemetry::{error, info};
+<span class="kw">use </span>smallvec::SmallVec;
 <span class="kw">use </span>snafu::ResultExt;
 <span class="kw">use </span>store_api::storage::RegionId;
 <span class="kw">use </span>strum::IntoStaticStr;
 <span class="kw">use </span>tokio::sync::mpsc;
 
-<span class="kw">use </span><span class="kw">crate</span>::access_layer::AccessLayerRef;
+<span class="kw">use </span><span class="kw">crate</span>::access_layer::{AccessLayerRef, SstWriteRequest};
+<span class="kw">use </span><span class="kw">crate</span>::cache::CacheManagerRef;
 <span class="kw">use </span><span class="kw">crate</span>::config::MitoConfig;
 <span class="kw">use </span><span class="kw">crate</span>::error::{
     Error, FlushRegionSnafu, RegionClosedSnafu, RegionDroppedSnafu, RegionTruncatedSnafu, <span class="prelude-ty">Result</span>,
 };
-<span class="kw">use </span><span class="kw">crate</span>::memtable::MemtableBuilderRef;
 <span class="kw">use </span><span class="kw">crate</span>::metrics::{FLUSH_BYTES_TOTAL, FLUSH_ELAPSED, FLUSH_ERRORS_TOTAL, FLUSH_REQUESTS_TOTAL};
 <span class="kw">use </span><span class="kw">crate</span>::read::Source;
+<span class="kw">use </span><span class="kw">crate</span>::region::options::IndexOptions;
 <span class="kw">use </span><span class="kw">crate</span>::region::version::{VersionControlData, VersionControlRef, VersionRef};
 <span class="kw">use </span><span class="kw">crate</span>::request::{
     BackgroundNotify, FlushFailed, FlushFinished, OptionOutputTx, OutputTx, SenderDdlRequest,
     SenderWriteRequest, WorkerRequest,
 };
 <span class="kw">use </span><span class="kw">crate</span>::schedule::scheduler::{Job, SchedulerRef};
-<span class="kw">use </span><span class="kw">crate</span>::sst::file::{FileId, FileMeta};
+<span class="kw">use </span><span class="kw">crate</span>::sst::file::{FileId, FileMeta, IndexType};
 <span class="kw">use </span><span class="kw">crate</span>::sst::file_purger::FilePurgerRef;
 <span class="kw">use </span><span class="kw">crate</span>::sst::parquet::WriteOptions;
 <span class="kw">use </span><span class="kw">crate</span>::worker::WorkerListener;
@@ -937,11 +986,14 @@
     </span><span class="kw">pub</span>(<span class="kw">crate</span>) request_sender: mpsc::Sender&lt;WorkerRequest&gt;,
 
     <span class="kw">pub</span>(<span class="kw">crate</span>) access_layer: AccessLayerRef,
-    <span class="kw">pub</span>(<span class="kw">crate</span>) memtable_builder: MemtableBuilderRef,
     <span class="kw">pub</span>(<span class="kw">crate</span>) file_purger: FilePurgerRef,
     <span class="kw">pub</span>(<span class="kw">crate</span>) listener: WorkerListener,
     <span class="kw">pub</span>(<span class="kw">crate</span>) engine_config: Arc&lt;MitoConfig&gt;,
     <span class="kw">pub</span>(<span class="kw">crate</span>) row_group_size: <span class="prelude-ty">Option</span>&lt;usize&gt;,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) cache_manager: CacheManagerRef,
+
+    <span class="doccomment">/// Index options for the region.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) index_options: IndexOptions,
 }
 
 <span class="kw">impl </span>RegionFlushTask {
@@ -985,6 +1037,7 @@
     </span><span class="kw">async fn </span>do_flush(<span class="kw-2">&amp;mut </span><span class="self">self</span>, version_data: VersionControlData) {
         <span class="kw">let </span>timer = FLUSH_ELAPSED.with_label_values(<span class="kw-2">&amp;</span>[<span class="string">"total"</span>]).start_timer();
         <span class="self">self</span>.listener.on_flush_begin(<span class="self">self</span>.region_id).<span class="kw">await</span>;
+
         <span class="kw">let </span>worker_request = <span class="kw">match </span><span class="self">self</span>.flush_memtables(<span class="kw-2">&amp;</span>version_data.version).<span class="kw">await </span>{
             <span class="prelude-val">Ok</span>(file_metas) =&gt; {
                 <span class="kw">let </span>memtables_to_remove = version_data
@@ -994,6 +1047,7 @@
                     .iter()
                     .map(|m| m.id())
                     .collect();
+
                 <span class="kw">let </span>flush_finished = FlushFinished {
                     region_id: <span class="self">self</span>.region_id,
                     file_metas,
@@ -1039,10 +1093,10 @@
         <span class="kw">if let </span><span class="prelude-val">Some</span>(row_group_size) = <span class="self">self</span>.row_group_size {
             write_opts.row_group_size = row_group_size;
         }
+
         <span class="kw">let </span>memtables = version.memtables.immutables();
         <span class="kw">let </span><span class="kw-2">mut </span>file_metas = Vec::with_capacity(memtables.len());
         <span class="kw">let </span><span class="kw-2">mut </span>flushed_bytes = <span class="number">0</span>;
-
         <span class="kw">for </span>mem <span class="kw">in </span>memtables {
             <span class="kw">if </span>mem.is_empty() {
                 <span class="comment">// Skip empty memtables.
@@ -1050,24 +1104,56 @@
             }
 
             <span class="kw">let </span>file_id = FileId::random();
-            <span class="kw">let </span>iter = mem.iter(<span class="prelude-val">None</span>, <span class="prelude-val">None</span>);
+            <span class="kw">let </span>iter = mem.iter(<span class="prelude-val">None</span>, <span class="prelude-val">None</span>)<span class="question-mark">?</span>;
             <span class="kw">let </span>source = Source::Iter(iter);
-            <span class="kw">let </span><span class="kw-2">mut </span>writer = <span class="self">self
+            <span class="kw">let </span>create_inverted_index = <span class="self">self</span>.engine_config.inverted_index.create_on_flush.auto();
+            <span class="kw">let </span>mem_threshold_index_create = <span class="self">self
+                </span>.engine_config
+                .inverted_index
+                .mem_threshold_on_create
+                .map(|m| m.as_bytes() <span class="kw">as _</span>);
+            <span class="kw">let </span>index_write_buffer_size = <span class="prelude-val">Some</span>(
+                <span class="self">self</span>.engine_config
+                    .inverted_index
+                    .write_buffer_size
+                    .as_bytes() <span class="kw">as </span>usize,
+            );
+
+            <span class="comment">// Flush to level 0.
+            </span><span class="kw">let </span>write_request = SstWriteRequest {
+                file_id,
+                metadata: version.metadata.clone(),
+                source,
+                cache_manager: <span class="self">self</span>.cache_manager.clone(),
+                storage: version.options.storage.clone(),
+                create_inverted_index,
+                mem_threshold_index_create,
+                index_write_buffer_size,
+                index_options: <span class="self">self</span>.index_options.clone(),
+            };
+            <span class="kw">let </span><span class="prelude-val">Some</span>(sst_info) = <span class="self">self
                 </span>.access_layer
-                .write_sst(file_id, version.metadata.clone(), source);
-            <span class="kw">let </span><span class="prelude-val">Some</span>(sst_info) = writer.write_all(<span class="kw-2">&amp;</span>write_opts).<span class="kw">await</span><span class="question-mark">? </span><span class="kw">else </span>{
+                .write_sst(write_request, <span class="kw-2">&amp;</span>write_opts)
+                .<span class="kw">await</span><span class="question-mark">?
+            </span><span class="kw">else </span>{
                 <span class="comment">// No data written.
                 </span><span class="kw">continue</span>;
             };
 
             flushed_bytes += sst_info.file_size;
-            file_metas.push(FileMeta {
-                region_id: version.metadata.region_id,
+            <span class="kw">let </span>file_meta = FileMeta {
+                region_id: <span class="self">self</span>.region_id,
                 file_id,
                 time_range: sst_info.time_range,
                 level: <span class="number">0</span>,
                 file_size: sst_info.file_size,
-            });
+                available_indexes: sst_info
+                    .inverted_index_available
+                    .then(|| SmallVec::from_iter([IndexType::InvertedIndex]))
+                    .unwrap_or_default(),
+                index_file_size: sst_info.index_file_size,
+            };
+            file_metas.push(file_meta);
         }
 
         <span class="kw">if </span>!file_metas.is_empty() {
@@ -1076,8 +1162,8 @@
 
         <span class="kw">let </span>file_ids: Vec&lt;<span class="kw">_</span>&gt; = file_metas.iter().map(|f| f.file_id).collect();
         <span class="macro">info!</span>(
-            <span class="string">"Successfully flush memtables, region: {}, reason: {}, files: {:?}, cost: {:?}"</span>,
-            version.metadata.region_id,
+            <span class="string">"Successfully flush memtables, region: {}, reason: {}, files: {:?}, cost: {:?}s"</span>,
+            <span class="self">self</span>.region_id,
             <span class="self">self</span>.reason.as_str(),
             file_ids,
             timer.stop_and_record(),
@@ -1167,7 +1253,13 @@
         }
 
         <span class="comment">// Now we can flush the region directly.
-        </span>version_control.freeze_mutable(<span class="kw-2">&amp;</span>task.memtable_builder);
+        </span><span class="kw">if let </span><span class="prelude-val">Err</span>(e) = version_control.freeze_mutable() {
+            <span class="macro">error!</span>(e; <span class="string">"Failed to freeze the mutable memtable for region {}"</span>, region_id);
+
+            <span class="comment">// Remove from region status if we can't freeze the mutable memtable.
+            </span><span class="self">self</span>.region_status.remove(<span class="kw-2">&amp;</span>region_id);
+            <span class="kw">return </span><span class="prelude-val">Err</span>(e);
+        }
         <span class="comment">// Submit a flush job.
         </span><span class="kw">let </span>job = task.into_flush_job(version_control);
         <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = <span class="self">self</span>.scheduler.schedule(job) {
@@ -1394,6 +1486,7 @@
     <span class="kw">use </span>tokio::sync::oneshot;
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use </span><span class="kw">crate</span>::cache::CacheManager;
     <span class="kw">use </span><span class="kw">crate</span>::test_util::scheduler_util::SchedulerEnv;
     <span class="kw">use </span><span class="kw">crate</span>::test_util::version_util::VersionControlBuilder;
 
@@ -1452,7 +1545,7 @@
 
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>test_schedule_empty() {
-        <span class="kw">let </span>env = SchedulerEnv::new();
+        <span class="kw">let </span>env = SchedulerEnv::new().<span class="kw">await</span>;
         <span class="kw">let </span>(tx, _rx) = mpsc::channel(<span class="number">4</span>);
         <span class="kw">let </span><span class="kw-2">mut </span>scheduler = env.mock_flush_scheduler();
         <span class="kw">let </span>builder = VersionControlBuilder::new();
@@ -1465,11 +1558,12 @@
             senders: Vec::new(),
             request_sender: tx,
             access_layer: env.access_layer.clone(),
-            memtable_builder: builder.memtable_builder(),
             file_purger: builder.file_purger(),
             listener: WorkerListener::default(),
             engine_config: Arc::new(MitoConfig::default()),
             row_group_size: <span class="prelude-val">None</span>,
+            cache_manager: Arc::new(CacheManager::default()),
+            index_options: IndexOptions::default(),
         };
         task.push_sender(OptionOutputTx::from(output_tx));
         scheduler

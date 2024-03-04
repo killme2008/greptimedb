@@ -2349,6 +2349,46 @@
 <a href="#2348" id="2348">2348</a>
 <a href="#2349" id="2349">2349</a>
 <a href="#2350" id="2350">2350</a>
+<a href="#2351" id="2351">2351</a>
+<a href="#2352" id="2352">2352</a>
+<a href="#2353" id="2353">2353</a>
+<a href="#2354" id="2354">2354</a>
+<a href="#2355" id="2355">2355</a>
+<a href="#2356" id="2356">2356</a>
+<a href="#2357" id="2357">2357</a>
+<a href="#2358" id="2358">2358</a>
+<a href="#2359" id="2359">2359</a>
+<a href="#2360" id="2360">2360</a>
+<a href="#2361" id="2361">2361</a>
+<a href="#2362" id="2362">2362</a>
+<a href="#2363" id="2363">2363</a>
+<a href="#2364" id="2364">2364</a>
+<a href="#2365" id="2365">2365</a>
+<a href="#2366" id="2366">2366</a>
+<a href="#2367" id="2367">2367</a>
+<a href="#2368" id="2368">2368</a>
+<a href="#2369" id="2369">2369</a>
+<a href="#2370" id="2370">2370</a>
+<a href="#2371" id="2371">2371</a>
+<a href="#2372" id="2372">2372</a>
+<a href="#2373" id="2373">2373</a>
+<a href="#2374" id="2374">2374</a>
+<a href="#2375" id="2375">2375</a>
+<a href="#2376" id="2376">2376</a>
+<a href="#2377" id="2377">2377</a>
+<a href="#2378" id="2378">2378</a>
+<a href="#2379" id="2379">2379</a>
+<a href="#2380" id="2380">2380</a>
+<a href="#2381" id="2381">2381</a>
+<a href="#2382" id="2382">2382</a>
+<a href="#2383" id="2383">2383</a>
+<a href="#2384" id="2384">2384</a>
+<a href="#2385" id="2385">2385</a>
+<a href="#2386" id="2386">2386</a>
+<a href="#2387" id="2387">2387</a>
+<a href="#2388" id="2388">2388</a>
+<a href="#2389" id="2389">2389</a>
+<a href="#2390" id="2390">2390</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -2365,7 +2405,6 @@
 
 </span><span class="kw">use </span>std::cmp::Ordering;
 <span class="kw">use </span>std::fmt::{Display, Formatter};
-<span class="kw">use </span>std::str::FromStr;
 <span class="kw">use </span>std::sync::Arc;
 
 <span class="kw">use </span>arrow::datatypes::{DataType <span class="kw">as </span>ArrowDataType, Field};
@@ -2377,7 +2416,7 @@
 <span class="kw">use </span>common_time::interval::IntervalUnit;
 <span class="kw">use </span>common_time::time::Time;
 <span class="kw">use </span>common_time::timestamp::{TimeUnit, Timestamp};
-<span class="kw">use </span>common_time::{Duration, Interval};
+<span class="kw">use </span>common_time::{Duration, Interval, Timezone};
 <span class="kw">use </span>datafusion_common::ScalarValue;
 <span class="kw">pub use </span>ordered_float::OrderedFloat;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
@@ -2476,37 +2515,45 @@
     }
 }
 
-<span class="kw">impl </span>Value {
-    <span class="doccomment">/// Returns data type of the value.
-    ///
-    /// # Panics
-    /// Panics if the data type is not supported.
-    </span><span class="kw">pub fn </span>data_type(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; ConcreteDataType {
-        <span class="kw">match </span><span class="self">self </span>{
-            Value::Null =&gt; ConcreteDataType::null_datatype(),
-            Value::Boolean(<span class="kw">_</span>) =&gt; ConcreteDataType::boolean_datatype(),
-            Value::UInt8(<span class="kw">_</span>) =&gt; ConcreteDataType::uint8_datatype(),
-            Value::UInt16(<span class="kw">_</span>) =&gt; ConcreteDataType::uint16_datatype(),
-            Value::UInt32(<span class="kw">_</span>) =&gt; ConcreteDataType::uint32_datatype(),
-            Value::UInt64(<span class="kw">_</span>) =&gt; ConcreteDataType::uint64_datatype(),
-            Value::Int8(<span class="kw">_</span>) =&gt; ConcreteDataType::int8_datatype(),
-            Value::Int16(<span class="kw">_</span>) =&gt; ConcreteDataType::int16_datatype(),
-            Value::Int32(<span class="kw">_</span>) =&gt; ConcreteDataType::int32_datatype(),
-            Value::Int64(<span class="kw">_</span>) =&gt; ConcreteDataType::int64_datatype(),
-            Value::Float32(<span class="kw">_</span>) =&gt; ConcreteDataType::float32_datatype(),
-            Value::Float64(<span class="kw">_</span>) =&gt; ConcreteDataType::float64_datatype(),
-            Value::String(<span class="kw">_</span>) =&gt; ConcreteDataType::string_datatype(),
-            Value::Binary(<span class="kw">_</span>) =&gt; ConcreteDataType::binary_datatype(),
-            Value::Date(<span class="kw">_</span>) =&gt; ConcreteDataType::date_datatype(),
-            Value::DateTime(<span class="kw">_</span>) =&gt; ConcreteDataType::datetime_datatype(),
-            Value::Time(t) =&gt; ConcreteDataType::time_datatype(<span class="kw-2">*</span>t.unit()),
-            Value::Timestamp(v) =&gt; ConcreteDataType::timestamp_datatype(v.unit()),
-            Value::Interval(v) =&gt; ConcreteDataType::interval_datatype(v.unit()),
-            Value::List(list) =&gt; ConcreteDataType::list_datatype(list.datatype().clone()),
-            Value::Duration(d) =&gt; ConcreteDataType::duration_datatype(d.unit()),
-            Value::Decimal128(d) =&gt; ConcreteDataType::decimal128_datatype(d.precision(), d.scale()),
+<span class="macro">macro_rules! </span>define_data_type_func {
+    (<span class="macro-nonterminal">$</span><span class="kw">struct</span>: <span class="macro-nonterminal">ident</span>) =&gt; {
+        <span class="doccomment">/// Returns data type of the value.
+        ///
+        /// # Panics
+        /// Panics if the data type is not supported.
+        </span><span class="kw">pub fn </span>data_type(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; ConcreteDataType {
+            <span class="kw">match </span><span class="self">self </span>{
+                <span class="macro-nonterminal">$</span><span class="kw">struct</span><span class="macro-nonterminal">::Null </span>=&gt; ConcreteDataType::null_datatype(),
+                <span class="macro-nonterminal">$</span><span class="kw">struct</span><span class="macro-nonterminal">::Boolean</span>(<span class="kw">_</span>) =&gt; ConcreteDataType::boolean_datatype(),
+                <span class="macro-nonterminal">$</span><span class="kw">struct</span><span class="macro-nonterminal">::UInt8</span>(<span class="kw">_</span>) =&gt; ConcreteDataType::uint8_datatype(),
+                <span class="macro-nonterminal">$</span><span class="kw">struct</span><span class="macro-nonterminal">::UInt16</span>(<span class="kw">_</span>) =&gt; ConcreteDataType::uint16_datatype(),
+                <span class="macro-nonterminal">$</span><span class="kw">struct</span><span class="macro-nonterminal">::UInt32</span>(<span class="kw">_</span>) =&gt; ConcreteDataType::uint32_datatype(),
+                <span class="macro-nonterminal">$</span><span class="kw">struct</span><span class="macro-nonterminal">::UInt64</span>(<span class="kw">_</span>) =&gt; ConcreteDataType::uint64_datatype(),
+                <span class="macro-nonterminal">$</span><span class="kw">struct</span><span class="macro-nonterminal">::Int8</span>(<span class="kw">_</span>) =&gt; ConcreteDataType::int8_datatype(),
+                <span class="macro-nonterminal">$</span><span class="kw">struct</span><span class="macro-nonterminal">::Int16</span>(<span class="kw">_</span>) =&gt; ConcreteDataType::int16_datatype(),
+                <span class="macro-nonterminal">$</span><span class="kw">struct</span><span class="macro-nonterminal">::Int32</span>(<span class="kw">_</span>) =&gt; ConcreteDataType::int32_datatype(),
+                <span class="macro-nonterminal">$</span><span class="kw">struct</span><span class="macro-nonterminal">::Int64</span>(<span class="kw">_</span>) =&gt; ConcreteDataType::int64_datatype(),
+                <span class="macro-nonterminal">$</span><span class="kw">struct</span><span class="macro-nonterminal">::Float32</span>(<span class="kw">_</span>) =&gt; ConcreteDataType::float32_datatype(),
+                <span class="macro-nonterminal">$</span><span class="kw">struct</span><span class="macro-nonterminal">::Float64</span>(<span class="kw">_</span>) =&gt; ConcreteDataType::float64_datatype(),
+                <span class="macro-nonterminal">$</span><span class="kw">struct</span><span class="macro-nonterminal">::String</span>(<span class="kw">_</span>) =&gt; ConcreteDataType::string_datatype(),
+                <span class="macro-nonterminal">$</span><span class="kw">struct</span><span class="macro-nonterminal">::Binary</span>(<span class="kw">_</span>) =&gt; ConcreteDataType::binary_datatype(),
+                <span class="macro-nonterminal">$</span><span class="kw">struct</span><span class="macro-nonterminal">::Date</span>(<span class="kw">_</span>) =&gt; ConcreteDataType::date_datatype(),
+                <span class="macro-nonterminal">$</span><span class="kw">struct</span><span class="macro-nonterminal">::DateTime</span>(<span class="kw">_</span>) =&gt; ConcreteDataType::datetime_datatype(),
+                <span class="macro-nonterminal">$</span><span class="kw">struct</span><span class="macro-nonterminal">::Time</span>(t) =&gt; ConcreteDataType::time_datatype(<span class="kw-2">*</span>t.unit()),
+                <span class="macro-nonterminal">$</span><span class="kw">struct</span><span class="macro-nonterminal">::Timestamp</span>(v) =&gt; ConcreteDataType::timestamp_datatype(v.unit()),
+                <span class="macro-nonterminal">$</span><span class="kw">struct</span><span class="macro-nonterminal">::Interval</span>(v) =&gt; ConcreteDataType::interval_datatype(v.unit()),
+                <span class="macro-nonterminal">$</span><span class="kw">struct</span><span class="macro-nonterminal">::List</span>(list) =&gt; ConcreteDataType::list_datatype(list.datatype().clone()),
+                <span class="macro-nonterminal">$</span><span class="kw">struct</span><span class="macro-nonterminal">::Duration</span>(d) =&gt; ConcreteDataType::duration_datatype(d.unit()),
+                <span class="macro-nonterminal">$</span><span class="kw">struct</span><span class="macro-nonterminal">::Decimal128</span>(d) =&gt; {
+                    ConcreteDataType::decimal128_datatype(d.precision(), d.scale())
+                }
+            }
         }
-    }
+    };
+}
+
+<span class="kw">impl </span>Value {
+    <span class="macro">define_data_type_func!</span>(Value);
 
     <span class="doccomment">/// Returns true if this is a null value.
     </span><span class="kw">pub fn </span>is_null(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
@@ -2569,6 +2616,14 @@
         }
     }
 
+    <span class="doccomment">/// Cast Value to utf8 String. Return None if value is not a valid string data type.
+    </span><span class="kw">pub fn </span>as_string(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;String&gt; {
+        <span class="kw">match </span><span class="self">self </span>{
+            Value::String(bytes) =&gt; <span class="prelude-val">Some</span>(bytes.as_utf8().to_string()),
+            <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
+        }
+    }
+
     <span class="doccomment">/// Cast Value to Date. Return None if value is not a valid date data type.
     </span><span class="kw">pub fn </span>as_date(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Date&gt; {
         <span class="kw">match </span><span class="self">self </span>{
@@ -2590,6 +2645,17 @@
         <span class="kw">match </span><span class="self">self </span>{
             Value::Int64(v) =&gt; <span class="prelude-val">Some</span>(Time::new_millisecond(<span class="kw-2">*</span>v)),
             Value::Time(t) =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">*</span>t),
+            <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
+        }
+    }
+
+    <span class="doccomment">/// Cast Value to u64. Return None if value is not a valid uint64 data type.
+    </span><span class="kw">pub fn </span>as_u64(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u64&gt; {
+        <span class="kw">match </span><span class="self">self </span>{
+            Value::UInt8(v) =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">*</span>v <span class="kw">as _</span>),
+            Value::UInt16(v) =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">*</span>v <span class="kw">as _</span>),
+            Value::UInt32(v) =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">*</span>v <span class="kw">as _</span>),
+            Value::UInt64(v) =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">*</span>v),
             <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
         }
     }
@@ -2771,11 +2837,15 @@
     }
 }
 
-<span class="doccomment">/// Convert [ScalarValue] to [Timestamp].
+<span class="doccomment">/// Convert [`ScalarValue`] to [`Timestamp`].
+/// If it's `ScalarValue::Utf8`, try to parse it with the given timezone.
 /// Return `None` if given scalar value cannot be converted to a valid timestamp.
-</span><span class="kw">pub fn </span>scalar_value_to_timestamp(scalar: <span class="kw-2">&amp;</span>ScalarValue) -&gt; <span class="prelude-ty">Option</span>&lt;Timestamp&gt; {
+</span><span class="kw">pub fn </span>scalar_value_to_timestamp(
+    scalar: <span class="kw-2">&amp;</span>ScalarValue,
+    timezone: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>Timezone&gt;,
+) -&gt; <span class="prelude-ty">Option</span>&lt;Timestamp&gt; {
     <span class="kw">match </span>scalar {
-        ScalarValue::Utf8(<span class="prelude-val">Some</span>(s)) =&gt; <span class="kw">match </span>Timestamp::from_str(s) {
+        ScalarValue::Utf8(<span class="prelude-val">Some</span>(s)) =&gt; <span class="kw">match </span>Timestamp::from_str(s, timezone) {
             <span class="prelude-val">Ok</span>(t) =&gt; <span class="prelude-val">Some</span>(t),
             <span class="prelude-val">Err</span>(e) =&gt; {
                 <span class="macro">logging::error!</span>(e;<span class="string">"Failed to convert string literal {s} to timestamp"</span>);
@@ -3278,6 +3348,8 @@
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; ValueRef&lt;<span class="lifetime">'a</span>&gt; {
+    <span class="macro">define_data_type_func!</span>(ValueRef);
+
     <span class="doccomment">/// Returns true if this is null.
     </span><span class="kw">pub fn </span>is_null(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="macro">matches!</span>(<span class="self">self</span>, ValueRef::Null)
@@ -3481,6 +3553,14 @@
         <span class="kw">match </span><span class="self">self </span>{
             ListValueRef::Indexed { vector, idx } =&gt; vector.get(idx),
             ListValueRef::Ref { val } =&gt; Value::List(val.clone()),
+        }
+    }
+
+    <span class="doccomment">/// Returns the inner element's data type.
+    </span><span class="kw">fn </span>datatype(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; ConcreteDataType {
+        <span class="kw">match </span><span class="self">self </span>{
+            ListValueRef::Indexed { vector, .. } =&gt; vector.data_type(),
+            ListValueRef::Ref { val } =&gt; val.datatype().clone(),
         }
     }
 }

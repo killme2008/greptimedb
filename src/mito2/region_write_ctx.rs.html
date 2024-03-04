@@ -217,7 +217,6 @@
 <a href="#216" id="216">216</a>
 <a href="#217" id="217">217</a>
 <a href="#218" id="218">218</a>
-<a href="#219" id="219">219</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -236,7 +235,7 @@
 <span class="kw">use </span>std::sync::Arc;
 
 <span class="kw">use </span>api::v1::{Mutation, OpType, Rows, WalEntry};
-<span class="kw">use </span>common_config::wal::WalOptions;
+<span class="kw">use </span>common_wal::options::WalOptions;
 <span class="kw">use </span>snafu::ResultExt;
 <span class="kw">use </span>store_api::logstore::LogStore;
 <span class="kw">use </span>store_api::storage::{RegionId, SequenceNumber};
@@ -247,9 +246,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::request::OptionOutputTx;
 <span class="kw">use </span><span class="kw">crate</span>::wal::{EntryId, WalWriter};
 
-<span class="doccomment">/// Context to keep region metadata and buffer write requests.
-
-/// Notifier to notify write result on drop.
+<span class="doccomment">/// Notifier to notify write result on drop.
 </span><span class="kw">struct </span>WriteNotify {
     <span class="doccomment">/// Error to send to the waiter.
     </span>err: <span class="prelude-ty">Option</span>&lt;Arc&lt;Error&gt;&gt;,
@@ -387,6 +384,7 @@
             <span class="kw-2">&amp;</span><span class="self">self</span>.wal_entry,
             <span class="kw-2">&amp;</span><span class="self">self</span>.wal_options,
         )<span class="question-mark">?</span>;
+        <span class="self">self</span>.next_entry_id += <span class="number">1</span>;
         <span class="prelude-val">Ok</span>(())
     }
 

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["KafkaLogStore"]};
+window.SIDEBAR_ITEMS = {"fn":["check_termination"],"struct":["KafkaLogStore"]};

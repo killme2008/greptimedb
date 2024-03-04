@@ -192,6 +192,16 @@
 <a href="#191" id="191">191</a>
 <a href="#192" id="192">192</a>
 <a href="#193" id="193">193</a>
+<a href="#194" id="194">194</a>
+<a href="#195" id="195">195</a>
+<a href="#196" id="196">196</a>
+<a href="#197" id="197">197</a>
+<a href="#198" id="198">198</a>
+<a href="#199" id="199">199</a>
+<a href="#200" id="200">200</a>
+<a href="#201" id="201">201</a>
+<a href="#202" id="202">202</a>
+<a href="#203" id="203">203</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -340,6 +350,15 @@
         source: store_api::metadata::MetadataError,
         location: Location,
     },
+
+    <span class="attr">#[snafu(display(
+        <span class="string">"Physical region {} is busy, there are still some logical regions using it"</span>,
+        region_id
+    ))]
+    </span>PhysicalRegionBusy {
+        region_id: RegionId,
+        location: Location,
+    },
 }
 
 <span class="kw">pub type </span><span class="prelude-ty">Result</span>&lt;T, E = Error&gt; = std::result::Result&lt;T, E&gt;;
@@ -352,7 +371,8 @@
             InternalColumnOccupied { .. }
             | MissingRegionOption { .. }
             | ConflictRegionOption { .. }
-            | ColumnTypeMismatch { .. } =&gt; StatusCode::InvalidArguments,
+            | ColumnTypeMismatch { .. }
+            | PhysicalRegionBusy { .. } =&gt; StatusCode::InvalidArguments,
 
             ForbiddenPhysicalAlter { .. } =&gt; StatusCode::Unsupported,
 

@@ -602,7 +602,6 @@
 <span class="kw">use </span>common_decimal::Decimal128;
 <span class="kw">use </span>snafu::{OptionExt, ResultExt};
 
-<span class="kw">use super</span>::{MutableVector, Validity, Vector, VectorRef};
 <span class="kw">use </span><span class="kw">crate</span>::arrow::datatypes::DataType <span class="kw">as </span>ArrowDataType;
 <span class="kw">use </span><span class="kw">crate</span>::data_type::ConcreteDataType;
 <span class="kw">use </span><span class="kw">crate</span>::error::{
@@ -612,6 +611,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::serialize::Serializable;
 <span class="kw">use </span><span class="kw">crate</span>::value::{Value, ValueRef};
 <span class="kw">use </span><span class="kw">crate</span>::vectors;
+<span class="kw">use </span><span class="kw">crate</span>::vectors::{MutableVector, Validity, Vector, VectorRef};
 
 <span class="doccomment">/// Decimal128Vector is a vector keep i128 values with precision and scale.
 </span><span class="attr">#[derive(Debug, PartialEq)]

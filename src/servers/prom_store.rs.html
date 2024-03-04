@@ -786,6 +786,21 @@
 <a href="#785" id="785">785</a>
 <a href="#786" id="786">786</a>
 <a href="#787" id="787">787</a>
+<a href="#788" id="788">788</a>
+<a href="#789" id="789">789</a>
+<a href="#790" id="790">790</a>
+<a href="#791" id="791">791</a>
+<a href="#792" id="792">792</a>
+<a href="#793" id="793">793</a>
+<a href="#794" id="794">794</a>
+<a href="#795" id="795">795</a>
+<a href="#796" id="796">796</a>
+<a href="#797" id="797">797</a>
+<a href="#798" id="798">798</a>
+<a href="#799" id="799">799</a>
+<a href="#800" id="800">800</a>
+<a href="#801" id="801">801</a>
+<a href="#802" id="802">802</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -809,6 +824,7 @@
 <span class="kw">use </span>api::prom_store::remote::label_matcher::Type <span class="kw">as </span>MatcherType;
 <span class="kw">use </span>api::prom_store::remote::{Label, Query, Sample, TimeSeries, WriteRequest};
 <span class="kw">use </span>api::v1::RowInsertRequests;
+<span class="kw">use </span>common_query::prelude::{GREPTIME_TIMESTAMP, GREPTIME_VALUE};
 <span class="kw">use </span>common_recordbatch::{RecordBatch, RecordBatches};
 <span class="kw">use </span>common_time::timestamp::TimeUnit;
 <span class="kw">use </span>datafusion::prelude::{col, lit, regexp_match, Expr};
@@ -823,8 +839,6 @@
 <span class="kw">use </span><span class="kw">crate</span>::error::{<span class="self">self</span>, <span class="prelude-ty">Result</span>};
 <span class="kw">use </span><span class="kw">crate</span>::row_writer::{<span class="self">self</span>, MultiTableData};
 
-<span class="kw">pub const </span>TIMESTAMP_COLUMN_NAME: <span class="kw-2">&amp;</span>str = <span class="string">"greptime_timestamp"</span>;
-<span class="kw">pub const </span>FIELD_COLUMN_NAME: <span class="kw-2">&amp;</span>str = <span class="string">"greptime_value"</span>;
 <span class="kw">pub const </span>METRIC_NAME_LABEL: <span class="kw-2">&amp;</span>str = <span class="string">"__name__"</span>;
 
 <span class="doccomment">/// Metrics for push gateway protocol
@@ -861,9 +875,8 @@
 
     <span class="kw">let </span><span class="kw-2">mut </span>conditions = Vec::with_capacity(label_matches.len() + <span class="number">1</span>);
 
-    conditions
-        .push(col(TIMESTAMP_COLUMN_NAME).gt_eq(lit_timestamp_millisecond(start_timestamp_ms)));
-    conditions.push(col(TIMESTAMP_COLUMN_NAME).lt_eq(lit_timestamp_millisecond(end_timestamp_ms)));
+    conditions.push(col(GREPTIME_TIMESTAMP).gt_eq(lit_timestamp_millisecond(start_timestamp_ms)));
+    conditions.push(col(GREPTIME_TIMESTAMP).lt_eq(lit_timestamp_millisecond(end_timestamp_ms)));
 
     <span class="kw">for </span>m <span class="kw">in </span>label_matches {
         <span class="kw">let </span>name = <span class="kw-2">&amp;</span>m.name;
@@ -992,9 +1005,7 @@
         ));
 
         <span class="kw">for </span>(i, column_schema) <span class="kw">in </span>recordbatch.schema.column_schemas().iter().enumerate() {
-            <span class="kw">if </span>column_schema.name == FIELD_COLUMN_NAME
-                || column_schema.name == TIMESTAMP_COLUMN_NAME
-            {
+            <span class="kw">if </span>column_schema.name == GREPTIME_VALUE || column_schema.name == GREPTIME_TIMESTAMP {
                 <span class="kw">continue</span>;
             }
 
@@ -1027,7 +1038,7 @@
 }
 
 <span class="kw">fn </span>recordbatch_to_timeseries(table: <span class="kw-2">&amp;</span>str, recordbatch: RecordBatch) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;TimeSeries&gt;&gt; {
-    <span class="kw">let </span>ts_column = recordbatch.column_by_name(TIMESTAMP_COLUMN_NAME).context(
+    <span class="kw">let </span>ts_column = recordbatch.column_by_name(GREPTIME_TIMESTAMP).context(
         error::InvalidPromRemoteReadQueryResultSnafu {
             msg: <span class="string">"missing greptime_timestamp column in query result"</span>,
         },
@@ -1042,7 +1053,7 @@
         }
     );
 
-    <span class="kw">let </span>field_column = recordbatch.column_by_name(FIELD_COLUMN_NAME).context(
+    <span class="kw">let </span>field_column = recordbatch.column_by_name(GREPTIME_VALUE).context(
         error::InvalidPromRemoteReadQueryResultSnafu {
             msg: <span class="string">"missing greptime_value column in query result"</span>,
         },
@@ -1091,9 +1102,11 @@
 }
 
 <span class="kw">pub fn </span>to_grpc_row_insert_requests(request: WriteRequest) -&gt; <span class="prelude-ty">Result</span>&lt;(RowInsertRequests, usize)&gt; {
+    <span class="kw">let </span>_timer = <span class="kw">crate</span>::metrics::METRIC_HTTP_PROM_STORE_CONVERT_ELAPSED.start_timer();
+
     <span class="kw">let </span><span class="kw-2">mut </span>multi_table_data = MultiTableData::new();
 
-    <span class="kw">for </span>series <span class="kw">in </span><span class="kw-2">&amp;</span>request.timeseries {
+    <span class="kw">for </span>series <span class="kw">in </span>request.timeseries {
         <span class="kw">let </span>table_name = <span class="kw-2">&amp;</span>series
             .labels
             .iter()
@@ -1116,29 +1129,54 @@
             series.samples.len(),
         );
 
-        <span class="kw">for </span>Sample { value, timestamp } <span class="kw">in </span><span class="kw-2">&amp;</span>series.samples {
+        <span class="comment">// labels
+        </span><span class="kw">let </span>kvs = series.labels.into_iter().filter_map(|label| {
+            <span class="kw">if </span>label.name == METRIC_NAME_LABEL {
+                <span class="prelude-val">None
+            </span>} <span class="kw">else </span>{
+                <span class="prelude-val">Some</span>((label.name, label.value))
+            }
+        });
+
+        <span class="kw">if </span>series.samples.len() == <span class="number">1 </span>{
             <span class="kw">let </span><span class="kw-2">mut </span>one_row = table_data.alloc_one_row();
 
-            <span class="comment">// labels
-            </span><span class="kw">let </span>kvs = series.labels.iter().filter_map(|label| {
-                <span class="kw">if </span>label.name == METRIC_NAME_LABEL {
-                    <span class="prelude-val">None
-                </span>} <span class="kw">else </span>{
-                    <span class="prelude-val">Some</span>((label.name.to_string(), label.value.as_str()))
-                }
-            });
             row_writer::write_tags(table_data, kvs, <span class="kw-2">&amp;mut </span>one_row)<span class="question-mark">?</span>;
             <span class="comment">// value
-            </span>row_writer::write_f64(table_data, FIELD_COLUMN_NAME, <span class="kw-2">*</span>value, <span class="kw-2">&amp;mut </span>one_row)<span class="question-mark">?</span>;
+            </span>row_writer::write_f64(
+                table_data,
+                GREPTIME_VALUE,
+                series.samples[<span class="number">0</span>].value,
+                <span class="kw-2">&amp;mut </span>one_row,
+            )<span class="question-mark">?</span>;
             <span class="comment">// timestamp
             </span>row_writer::write_ts_millis(
                 table_data,
-                TIMESTAMP_COLUMN_NAME,
-                <span class="prelude-val">Some</span>(<span class="kw-2">*</span>timestamp),
+                GREPTIME_TIMESTAMP,
+                <span class="prelude-val">Some</span>(series.samples[<span class="number">0</span>].timestamp),
                 <span class="kw-2">&amp;mut </span>one_row,
             )<span class="question-mark">?</span>;
 
             table_data.add_row(one_row);
+        } <span class="kw">else </span>{
+            <span class="kw">for </span>Sample { value, timestamp } <span class="kw">in </span><span class="kw-2">&amp;</span>series.samples {
+                <span class="kw">let </span><span class="kw-2">mut </span>one_row = table_data.alloc_one_row();
+
+                <span class="comment">// labels
+                </span><span class="kw">let </span>kvs = kvs.clone();
+                row_writer::write_tags(table_data, kvs, <span class="kw-2">&amp;mut </span>one_row)<span class="question-mark">?</span>;
+                <span class="comment">// value
+                </span>row_writer::write_f64(table_data, GREPTIME_VALUE, <span class="kw-2">*</span>value, <span class="kw-2">&amp;mut </span>one_row)<span class="question-mark">?</span>;
+                <span class="comment">// timestamp
+                </span>row_writer::write_ts_millis(
+                    table_data,
+                    GREPTIME_TIMESTAMP,
+                    <span class="prelude-val">Some</span>(<span class="kw-2">*</span>timestamp),
+                    <span class="kw-2">&amp;mut </span>one_row,
+                )<span class="question-mark">?</span>;
+
+                table_data.add_row(one_row);
+            }
         }
     }
 
@@ -1282,15 +1320,11 @@
 
         <span class="kw">let </span>schema = Arc::new(Schema::new(<span class="macro">vec!</span>[
             ColumnSchema::new(
-                TIMESTAMP_COLUMN_NAME,
+                GREPTIME_TIMESTAMP,
                 ConcreteDataType::timestamp_millisecond_datatype(),
                 <span class="bool-val">true</span>,
             ),
-            ColumnSchema::new(
-                FIELD_COLUMN_NAME,
-                ConcreteDataType::float64_datatype(),
-                <span class="bool-val">true</span>,
-            ),
+            ColumnSchema::new(GREPTIME_VALUE, ConcreteDataType::float64_datatype(), <span class="bool-val">true</span>),
             ColumnSchema::new(<span class="string">"instance"</span>, ConcreteDataType::string_datatype(), <span class="bool-val">true</span>),
             ColumnSchema::new(<span class="string">"job"</span>, ConcreteDataType::string_datatype(), <span class="bool-val">true</span>),
         ]));
@@ -1489,15 +1523,11 @@
     </span><span class="kw">fn </span>test_recordbatches_to_timeseries() {
         <span class="kw">let </span>schema = Arc::new(Schema::new(<span class="macro">vec!</span>[
             ColumnSchema::new(
-                TIMESTAMP_COLUMN_NAME,
+                GREPTIME_TIMESTAMP,
                 ConcreteDataType::timestamp_millisecond_datatype(),
                 <span class="bool-val">true</span>,
             ),
-            ColumnSchema::new(
-                FIELD_COLUMN_NAME,
-                ConcreteDataType::float64_datatype(),
-                <span class="bool-val">true</span>,
-            ),
+            ColumnSchema::new(GREPTIME_VALUE, ConcreteDataType::float64_datatype(), <span class="bool-val">true</span>),
             ColumnSchema::new(<span class="string">"instance"</span>, ConcreteDataType::string_datatype(), <span class="bool-val">true</span>),
         ]));
 

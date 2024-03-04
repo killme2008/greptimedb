@@ -785,6 +785,17 @@
 <a href="#784" id="784">784</a>
 <a href="#785" id="785">785</a>
 <a href="#786" id="786">786</a>
+<a href="#787" id="787">787</a>
+<a href="#788" id="788">788</a>
+<a href="#789" id="789">789</a>
+<a href="#790" id="790">790</a>
+<a href="#791" id="791">791</a>
+<a href="#792" id="792">792</a>
+<a href="#793" id="793">793</a>
+<a href="#794" id="794">794</a>
+<a href="#795" id="795">795</a>
+<a href="#796" id="796">796</a>
+<a href="#797" id="797">797</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -815,6 +826,7 @@
 <span class="kw">use </span>common_meta::key::datanode_table::DatanodeTableKey;
 <span class="kw">use </span>common_meta::key::TableMetadataManagerRef;
 <span class="kw">use </span>common_meta::kv_backend::ResettableKvBackendRef;
+<span class="kw">use </span>common_meta::lock_key::{RegionLock, TableLock};
 <span class="kw">use </span>common_meta::{ClusterId, RegionIdent};
 <span class="kw">use </span>common_procedure::error::{
     Error <span class="kw">as </span>ProcedureError, FromJsonSnafu, <span class="prelude-ty">Result </span><span class="kw">as </span>ProcedureResult, ToJsonSnafu,
@@ -827,13 +839,12 @@
 <span class="kw">use </span>failover_start::RegionFailoverStart;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>snafu::ResultExt;
-<span class="kw">use </span>store_api::storage::RegionNumber;
+<span class="kw">use </span>store_api::storage::{RegionId, RegionNumber};
 <span class="kw">use </span>table::metadata::TableId;
 
-<span class="kw">use </span><span class="kw">crate</span>::error::{Error, RegisterProcedureLoaderSnafu, <span class="prelude-ty">Result</span>, TableMetadataManagerSnafu};
+<span class="kw">use </span><span class="kw">crate</span>::error::{RegisterProcedureLoaderSnafu, <span class="prelude-ty">Result</span>, TableMetadataManagerSnafu};
 <span class="kw">use </span><span class="kw">crate</span>::lock::DistLockRef;
 <span class="kw">use </span><span class="kw">crate</span>::metasrv::{SelectorContext, SelectorRef};
-<span class="kw">use </span><span class="kw">crate</span>::procedure::utils::region_lock_key;
 <span class="kw">use </span><span class="kw">crate</span>::service::mailbox::MailboxRef;
 
 <span class="kw">const </span>OPEN_REGION_MESSAGE_TIMEOUT: Duration = Duration::from_secs(<span class="number">30</span>);
@@ -1144,7 +1155,7 @@
             .next(<span class="kw-2">&amp;</span><span class="self">self</span>.context, <span class="kw-2">&amp;</span><span class="self">self</span>.node.failed_region)
             .<span class="kw">await
             </span>.map_err(|e| {
-                <span class="kw">if </span><span class="macro">matches!</span>(e, Error::RetryLater { .. }) {
+                <span class="kw">if </span>e.is_retryable() {
                     ProcedureError::retry_later(e)
                 } <span class="kw">else </span>{
                     ProcedureError::external(e)
@@ -1159,8 +1170,17 @@
 
     <span class="kw">fn </span>lock_key(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; LockKey {
         <span class="kw">let </span>region_ident = <span class="kw-2">&amp;</span><span class="self">self</span>.node.failed_region;
-        <span class="kw">let </span>region_key = region_lock_key(region_ident.table_id, region_ident.region_number);
-        LockKey::single(region_key)
+        <span class="comment">// TODO(weny): acquires the catalog, schema read locks.
+        </span><span class="kw">let </span>lock_key = <span class="macro">vec!</span>[
+            TableLock::Read(region_ident.table_id).into(),
+            RegionLock::Write(RegionId::new(
+                region_ident.table_id,
+                region_ident.region_number,
+            ))
+            .into(),
+        ];
+
+        LockKey::new(lock_key)
     }
 }
 
@@ -1170,12 +1190,13 @@
     <span class="kw">use </span>std::sync::Mutex;
 
     <span class="kw">use </span>api::v1::meta::mailbox_message::Payload;
-    <span class="kw">use </span>api::v1::meta::{HeartbeatResponse, MailboxMessage, Peer, RequestHeader};
+    <span class="kw">use </span>api::v1::meta::{HeartbeatResponse, MailboxMessage, RequestHeader};
     <span class="kw">use </span>common_catalog::consts::{DEFAULT_CATALOG_NAME, DEFAULT_SCHEMA_NAME};
     <span class="kw">use </span>common_meta::ddl::utils::region_storage_path;
     <span class="kw">use </span>common_meta::instruction::{Instruction, InstructionReply, OpenRegion, SimpleReply};
     <span class="kw">use </span>common_meta::key::TableMetadataManager;
     <span class="kw">use </span>common_meta::kv_backend::memory::MemoryKvBackend;
+    <span class="kw">use </span>common_meta::peer::Peer;
     <span class="kw">use </span>common_meta::sequence::SequenceBuilder;
     <span class="kw">use </span>common_meta::DatanodeId;
     <span class="kw">use </span>common_procedure::{BoxedProcedure, ProcedureId};
@@ -1309,7 +1330,7 @@
                 <span class="kw">let </span>nodes = (<span class="number">1</span>..=region_distribution.len())
                     .map(|id| Peer {
                         id: id <span class="kw">as </span>u64,
-                        addr: <span class="string">""</span>.to_string(),
+                        addr: String::default(),
                     })
                     .collect();
                 Arc::new(RandomNodeSelector { nodes })
@@ -1528,7 +1549,7 @@
             peers: Arc::new(Mutex::new(<span class="macro">vec!</span>[
                 <span class="prelude-val">Some</span>(Peer {
                     id: <span class="number">42</span>,
-                    addr: <span class="string">""</span>.to_string(),
+                    addr: String::default(),
                 }),
                 <span class="prelude-val">None</span>,
             ])),
@@ -1557,7 +1578,8 @@
 
         <span class="kw">let </span>result = procedure.execute(<span class="kw-2">&amp;</span>ctx).<span class="kw">await</span>;
         <span class="macro">assert!</span>(result.is_err());
-        <span class="macro">assert!</span>(result.unwrap_err().is_retry_later());
+        <span class="kw">let </span>err = result.unwrap_err();
+        <span class="macro">assert!</span>(err.is_retry_later(), <span class="string">"err: {:?}"</span>, err);
         <span class="macro">assert_eq!</span>(
             <span class="string">r#"{"region_failover_state":"RegionFailoverStart","failover_candidate":null}"#</span>,
             serde_json::to_string(<span class="kw-2">&amp;</span>procedure.node.state).unwrap()

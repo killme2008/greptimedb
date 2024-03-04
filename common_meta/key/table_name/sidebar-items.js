@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["TableNameKey","TableNameManager","TableNameValue"]};
+window.SIDEBAR_ITEMS = {"fn":["table_decoder"],"struct":["TableNameKey","TableNameManager","TableNameValue"]};

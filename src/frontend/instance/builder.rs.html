@@ -149,6 +149,22 @@
 <a href="#148" id="148">148</a>
 <a href="#149" id="149">149</a>
 <a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
+<a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
+<a href="#160" id="160">160</a>
+<a href="#161" id="161">161</a>
+<a href="#162" id="162">162</a>
+<a href="#163" id="163">163</a>
+<a href="#164" id="164">164</a>
+<a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -163,21 +179,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-</span><span class="kw">use </span>std::collections::HashMap;
-<span class="kw">use </span>std::sync::Arc;
+</span><span class="kw">use </span>std::sync::Arc;
 
 <span class="kw">use </span>catalog::kvbackend::KvBackendCatalogManager;
 <span class="kw">use </span>common_base::Plugins;
 <span class="kw">use </span>common_meta::cache_invalidator::{CacheInvalidatorRef, DummyCacheInvalidator};
 <span class="kw">use </span>common_meta::datanode_manager::DatanodeManagerRef;
-<span class="kw">use </span>common_meta::ddl::DdlTaskExecutorRef;
+<span class="kw">use </span>common_meta::ddl::ProcedureExecutorRef;
+<span class="kw">use </span>common_meta::key::TableMetadataManager;
 <span class="kw">use </span>common_meta::kv_backend::KvBackendRef;
 <span class="kw">use </span>operator::delete::Deleter;
 <span class="kw">use </span>operator::insert::Inserter;
+<span class="kw">use </span>operator::procedure::ProcedureServiceOperator;
+<span class="kw">use </span>operator::request::Requester;
 <span class="kw">use </span>operator::statement::StatementExecutor;
 <span class="kw">use </span>operator::table::TableMutationOperator;
 <span class="kw">use </span>partition::manager::PartitionRuleManager;
 <span class="kw">use </span>query::QueryEngineFactory;
+<span class="kw">use </span>servers::server::ServerHandlers;
 
 <span class="kw">use </span><span class="kw">crate</span>::error::Result;
 <span class="kw">use </span><span class="kw">crate</span>::heartbeat::HeartbeatTask;
@@ -185,12 +204,13 @@
 <span class="kw">use </span><span class="kw">crate</span>::instance::{Instance, StatementExecutorRef};
 <span class="kw">use </span><span class="kw">crate</span>::script::ScriptExecutor;
 
-<span class="kw">pub struct </span>FrontendBuilder {
+<span class="doccomment">/// The frontend [`Instance`] builder.
+</span><span class="kw">pub struct </span>FrontendBuilder {
     kv_backend: KvBackendRef,
     cache_invalidator: <span class="prelude-ty">Option</span>&lt;CacheInvalidatorRef&gt;,
     datanode_manager: DatanodeManagerRef,
     plugins: <span class="prelude-ty">Option</span>&lt;Plugins&gt;,
-    ddl_task_executor: DdlTaskExecutorRef,
+    procedure_executor: ProcedureExecutorRef,
     heartbeat_task: <span class="prelude-ty">Option</span>&lt;HeartbeatTask&gt;,
 }
 
@@ -198,14 +218,14 @@
     <span class="kw">pub fn </span>new(
         kv_backend: KvBackendRef,
         datanode_manager: DatanodeManagerRef,
-        ddl_task_executor: DdlTaskExecutorRef,
+        procedure_executor: ProcedureExecutorRef,
     ) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             kv_backend,
             cache_invalidator: <span class="prelude-val">None</span>,
             datanode_manager,
             plugins: <span class="prelude-val">None</span>,
-            ddl_task_executor,
+            procedure_executor,
             heartbeat_task: <span class="prelude-val">None</span>,
         }
     }
@@ -254,18 +274,29 @@
         ));
         <span class="kw">let </span>deleter = Arc::new(Deleter::new(
             catalog_manager.clone(),
+            partition_manager.clone(),
+            datanode_manager.clone(),
+        ));
+        <span class="kw">let </span>requester = Arc::new(Requester::new(
+            catalog_manager.clone(),
             partition_manager,
             datanode_manager.clone(),
         ));
         <span class="kw">let </span>table_mutation_handler = Arc::new(TableMutationOperator::new(
             inserter.clone(),
             deleter.clone(),
+            requester,
+        ));
+
+        <span class="kw">let </span>procedure_service_handler = Arc::new(ProcedureServiceOperator::new(
+            <span class="self">self</span>.procedure_executor.clone(),
         ));
 
         <span class="kw">let </span>query_engine = QueryEngineFactory::new_with_plugins(
             catalog_manager.clone(),
             <span class="prelude-val">Some</span>(region_query_handler.clone()),
             <span class="prelude-val">Some</span>(table_mutation_handler),
+            <span class="prelude-val">Some</span>(procedure_service_handler),
             <span class="bool-val">true</span>,
             plugins.clone(),
         )
@@ -277,8 +308,8 @@
         <span class="kw">let </span>statement_executor = Arc::new(StatementExecutor::new(
             catalog_manager.clone(),
             query_engine.clone(),
-            <span class="self">self</span>.ddl_task_executor,
-            kv_backend,
+            <span class="self">self</span>.procedure_executor,
+            kv_backend.clone(),
             catalog_manager.clone(),
             inserter.clone(),
         ));
@@ -291,11 +322,12 @@
             statement_executor,
             query_engine,
             plugins,
-            servers: Arc::new(HashMap::new()),
+            servers: ServerHandlers::default(),
             heartbeat_task: <span class="self">self</span>.heartbeat_task,
             inserter,
             deleter,
             export_metrics_task: <span class="prelude-val">None</span>,
+            table_metadata_manager: Arc::new(TableMetadataManager::new(kv_backend)),
         })
     }
 }

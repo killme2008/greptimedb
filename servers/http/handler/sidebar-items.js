@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["config","health","metrics","promql","sql","sql_docs","status","validate_schema"],"struct":["HealthQuery","HealthResponse","PromqlQuery","SqlQuery","StatusResponse"]};
+window.SIDEBAR_ITEMS = {"fn":["collect_into_maps","collect_plan_metrics","config","from_output","health","metrics","promql","sql","sql_docs","status","validate_schema"],"struct":["HealthQuery","HealthResponse","PromqlQuery","SqlQuery","StatusResponse"]};

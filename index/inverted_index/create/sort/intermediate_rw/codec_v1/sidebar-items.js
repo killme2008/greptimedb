@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["CODEC_V1_MAGIC","U64_LENGTH"],"struct":["IntermediateCodecV1"]};
+window.SIDEBAR_ITEMS = {"constant":["CODEC_V1_MAGIC","U64_LENGTH"],"struct":["IntermediateItemDecoderV1","IntermediateItemEncoderV1"]};

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["GRPC_SERVER"],"mod":["database","flight","greptime_handler","prom_query_gateway","region_server"],"struct":["GrpcServer","GrpcServerConfig","HealthCheckHandler"],"type":["TonicResult"]};
+window.SIDEBAR_ITEMS = {"constant":["GRPC_SERVER"],"mod":["authorize","builder","database","flight","greptime_handler","otlp","prom_query_gateway","region_server"],"struct":["GrpcServer","GrpcServerConfig","HealthCheckHandler"],"type":["TonicResult"]};

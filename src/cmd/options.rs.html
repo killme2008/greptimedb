@@ -309,8 +309,8 @@
 
 </span><span class="kw">use </span>clap::ArgMatches;
 <span class="kw">use </span>common_config::KvBackendConfig;
-<span class="kw">use </span>common_meta::wal::WalConfig <span class="kw">as </span>MetaSrvWalConfig;
 <span class="kw">use </span>common_telemetry::logging::{LoggingOptions, TracingOptions};
+<span class="kw">use </span>common_wal::config::MetaSrvWalConfig;
 <span class="kw">use </span>config::{Config, Environment, File, FileFormat};
 <span class="kw">use </span>datanode::config::{DatanodeOptions, ProcedureConfig};
 <span class="kw">use </span>frontend::error::{<span class="prelude-ty">Result </span><span class="kw">as </span>FeResult, TomlFormatSnafu};
@@ -468,8 +468,8 @@
 </span><span class="kw">mod </span>tests {
     <span class="kw">use </span>std::io::Write;
 
-    <span class="kw">use </span>common_config::WalConfig;
     <span class="kw">use </span>common_test_util::temp_dir::create_named_temp_file;
+    <span class="kw">use </span>common_wal::config::DatanodeWalConfig;
     <span class="kw">use </span>datanode::config::{DatanodeOptions, ObjectStoreConfig};
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
@@ -576,7 +576,7 @@
                 );
 
                 <span class="comment">// Should be the values from config file, not environment variables.
-                </span><span class="kw">let </span>WalConfig::RaftEngine(raft_engine_config) = opts.wal <span class="kw">else </span>{
+                </span><span class="kw">let </span>DatanodeWalConfig::RaftEngine(raft_engine_config) = opts.wal <span class="kw">else </span>{
                     <span class="macro">unreachable!</span>()
                 };
                 <span class="macro">assert_eq!</span>(raft_engine_config.dir.unwrap(), <span class="string">"/tmp/greptimedb/wal"</span>);

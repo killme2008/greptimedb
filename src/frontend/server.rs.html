@@ -205,6 +205,81 @@
 <a href="#204" id="204">204</a>
 <a href="#205" id="205">205</a>
 <a href="#206" id="206">206</a>
+<a href="#207" id="207">207</a>
+<a href="#208" id="208">208</a>
+<a href="#209" id="209">209</a>
+<a href="#210" id="210">210</a>
+<a href="#211" id="211">211</a>
+<a href="#212" id="212">212</a>
+<a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
+<a href="#216" id="216">216</a>
+<a href="#217" id="217">217</a>
+<a href="#218" id="218">218</a>
+<a href="#219" id="219">219</a>
+<a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
+<a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
+<a href="#224" id="224">224</a>
+<a href="#225" id="225">225</a>
+<a href="#226" id="226">226</a>
+<a href="#227" id="227">227</a>
+<a href="#228" id="228">228</a>
+<a href="#229" id="229">229</a>
+<a href="#230" id="230">230</a>
+<a href="#231" id="231">231</a>
+<a href="#232" id="232">232</a>
+<a href="#233" id="233">233</a>
+<a href="#234" id="234">234</a>
+<a href="#235" id="235">235</a>
+<a href="#236" id="236">236</a>
+<a href="#237" id="237">237</a>
+<a href="#238" id="238">238</a>
+<a href="#239" id="239">239</a>
+<a href="#240" id="240">240</a>
+<a href="#241" id="241">241</a>
+<a href="#242" id="242">242</a>
+<a href="#243" id="243">243</a>
+<a href="#244" id="244">244</a>
+<a href="#245" id="245">245</a>
+<a href="#246" id="246">246</a>
+<a href="#247" id="247">247</a>
+<a href="#248" id="248">248</a>
+<a href="#249" id="249">249</a>
+<a href="#250" id="250">250</a>
+<a href="#251" id="251">251</a>
+<a href="#252" id="252">252</a>
+<a href="#253" id="253">253</a>
+<a href="#254" id="254">254</a>
+<a href="#255" id="255">255</a>
+<a href="#256" id="256">256</a>
+<a href="#257" id="257">257</a>
+<a href="#258" id="258">258</a>
+<a href="#259" id="259">259</a>
+<a href="#260" id="260">260</a>
+<a href="#261" id="261">261</a>
+<a href="#262" id="262">262</a>
+<a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -225,114 +300,189 @@
 <span class="kw">use </span>auth::UserProviderRef;
 <span class="kw">use </span>common_base::Plugins;
 <span class="kw">use </span>common_runtime::Builder <span class="kw">as </span>RuntimeBuilder;
-<span class="kw">use </span>servers::error::InternalIoSnafu;
+<span class="kw">use </span>servers::grpc::builder::GrpcServerBuilder;
+<span class="kw">use </span>servers::grpc::greptime_handler::GreptimeRequestHandler;
 <span class="kw">use </span>servers::grpc::{GrpcServer, GrpcServerConfig};
-<span class="kw">use </span>servers::http::HttpServerBuilder;
+<span class="kw">use </span>servers::http::{HttpServer, HttpServerBuilder};
 <span class="kw">use </span>servers::metrics_handler::MetricsHandler;
 <span class="kw">use </span>servers::mysql::server::{MysqlServer, MysqlSpawnConfig, MysqlSpawnRef};
 <span class="kw">use </span>servers::opentsdb::OpentsdbServer;
 <span class="kw">use </span>servers::postgres::PostgresServer;
 <span class="kw">use </span>servers::query_handler::grpc::ServerGrpcQueryHandlerAdapter;
 <span class="kw">use </span>servers::query_handler::sql::ServerSqlQueryHandlerAdapter;
-<span class="kw">use </span>servers::server::{Server, ServerHandler, ServerHandlers};
+<span class="kw">use </span>servers::server::{Server, ServerHandlers};
+<span class="kw">use </span>servers::tls::{maybe_watch_tls_config, ReloadableTlsServerConfig};
 <span class="kw">use </span>snafu::ResultExt;
 
 <span class="kw">use </span><span class="kw">crate</span>::error::{<span class="self">self</span>, <span class="prelude-ty">Result</span>, StartServerSnafu};
 <span class="kw">use </span><span class="kw">crate</span>::frontend::{FrontendOptions, TomlSerializable};
 <span class="kw">use </span><span class="kw">crate</span>::instance::FrontendInstance;
+<span class="kw">use </span><span class="kw">crate</span>::service_config::GrpcOptions;
 
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct </span>Services;
+<span class="kw">pub struct </span>Services&lt;T, U&gt;
+<span class="kw">where
+    </span>T: Into&lt;FrontendOptions&gt; + TomlSerializable + Clone,
+    U: FrontendInstance,
+{
+    opts: T,
+    instance: Arc&lt;U&gt;,
+    grpc_server_builder: <span class="prelude-ty">Option</span>&lt;GrpcServerBuilder&gt;,
+    http_server_builder: <span class="prelude-ty">Option</span>&lt;HttpServerBuilder&gt;,
+    plugins: Plugins,
+}
 
-<span class="kw">impl </span>Services {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>build&lt;T, U&gt;(
-        opts: T,
-        instance: Arc&lt;U&gt;,
-        plugins: Plugins,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;ServerHandlers&gt;
-    <span class="kw">where
-        </span>T: Into&lt;FrontendOptions&gt; + TomlSerializable,
-        U: FrontendInstance,
-    {
+<span class="kw">impl</span>&lt;T, U&gt; Services&lt;T, U&gt;
+<span class="kw">where
+    </span>T: Into&lt;FrontendOptions&gt; + TomlSerializable + Clone,
+    U: FrontendInstance,
+{
+    <span class="kw">pub fn </span>new(opts: T, instance: Arc&lt;U&gt;, plugins: Plugins) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            opts,
+            instance,
+            grpc_server_builder: <span class="prelude-val">None</span>,
+            http_server_builder: <span class="prelude-val">None</span>,
+            plugins,
+        }
+    }
+
+    <span class="kw">pub fn </span>grpc_server_builder(<span class="kw-2">&amp;</span><span class="self">self</span>, opts: <span class="kw-2">&amp;</span>GrpcOptions) -&gt; <span class="prelude-ty">Result</span>&lt;GrpcServerBuilder&gt; {
+        <span class="kw">let </span>grpc_runtime = Arc::new(
+            RuntimeBuilder::default()
+                .worker_threads(opts.runtime_size)
+                .thread_name(<span class="string">"grpc-handlers"</span>)
+                .build()
+                .context(error::RuntimeResourceSnafu)<span class="question-mark">?</span>,
+        );
+
+        <span class="kw">let </span>grpc_config = GrpcServerConfig {
+            max_recv_message_size: opts.max_recv_message_size.as_bytes() <span class="kw">as </span>usize,
+            max_send_message_size: opts.max_send_message_size.as_bytes() <span class="kw">as </span>usize,
+        };
+
+        <span class="prelude-val">Ok</span>(GrpcServerBuilder::new(grpc_config, grpc_runtime))
+    }
+
+    <span class="kw">pub fn </span>http_server_builder(<span class="kw-2">&amp;</span><span class="self">self</span>, opts: <span class="kw-2">&amp;</span>FrontendOptions) -&gt; HttpServerBuilder {
+        <span class="kw">let </span><span class="kw-2">mut </span>builder = HttpServerBuilder::new(opts.http.clone()).with_sql_handler(
+            ServerSqlQueryHandlerAdapter::arc(<span class="self">self</span>.instance.clone()),
+            <span class="prelude-val">Some</span>(<span class="self">self</span>.instance.clone()),
+        );
+
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(user_provider) = <span class="self">self</span>.plugins.get::&lt;UserProviderRef&gt;() {
+            builder = builder.with_user_provider(user_provider);
+        }
+
+        <span class="kw">if </span>opts.opentsdb.enable {
+            builder = builder.with_opentsdb_handler(<span class="self">self</span>.instance.clone());
+        }
+
+        <span class="kw">if </span>opts.influxdb.enable {
+            builder = builder.with_influxdb_handler(<span class="self">self</span>.instance.clone());
+        }
+
+        <span class="kw">if </span>opts.prom_store.enable {
+            builder = builder
+                .with_prom_handler(<span class="self">self</span>.instance.clone(), opts.prom_store.with_metric_engine)
+                .with_prometheus_handler(<span class="self">self</span>.instance.clone());
+        }
+
+        <span class="kw">if </span>opts.otlp.enable {
+            builder = builder.with_otlp_handler(<span class="self">self</span>.instance.clone());
+        }
+        builder
+    }
+
+    <span class="kw">pub fn </span>with_grpc_server_builder(<span class="self">self</span>, builder: GrpcServerBuilder) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            grpc_server_builder: <span class="prelude-val">Some</span>(builder),
+            ..<span class="self">self
+        </span>}
+    }
+
+    <span class="kw">pub fn </span>with_http_server_builder(<span class="self">self</span>, builder: HttpServerBuilder) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            http_server_builder: <span class="prelude-val">Some</span>(builder),
+            ..<span class="self">self
+        </span>}
+    }
+
+    <span class="kw">fn </span>build_grpc_server(<span class="kw-2">&amp;mut </span><span class="self">self</span>, opts: <span class="kw-2">&amp;</span>FrontendOptions) -&gt; <span class="prelude-ty">Result</span>&lt;GrpcServer&gt; {
+        <span class="kw">let </span>builder = <span class="kw">if let </span><span class="prelude-val">Some</span>(builder) = <span class="self">self</span>.grpc_server_builder.take() {
+            builder
+        } <span class="kw">else </span>{
+            <span class="self">self</span>.grpc_server_builder(<span class="kw-2">&amp;</span>opts.grpc)<span class="question-mark">?
+        </span>};
+
+        <span class="kw">let </span>user_provider = <span class="self">self</span>.plugins.get::&lt;UserProviderRef&gt;();
+
+        <span class="kw">let </span>greptime_request_handler = GreptimeRequestHandler::new(
+            ServerGrpcQueryHandlerAdapter::arc(<span class="self">self</span>.instance.clone()),
+            user_provider.clone(),
+            builder.runtime().clone(),
+        );
+
+        <span class="kw">let </span>grpc_server = builder
+            .database_handler(greptime_request_handler.clone())
+            .prometheus_handler(<span class="self">self</span>.instance.clone(), user_provider.clone())
+            .otlp_handler(<span class="self">self</span>.instance.clone(), user_provider)
+            .flight_handler(Arc::new(greptime_request_handler))
+            .build();
+        <span class="prelude-val">Ok</span>(grpc_server)
+    }
+
+    <span class="kw">fn </span>build_http_server(<span class="kw-2">&amp;mut </span><span class="self">self</span>, opts: <span class="kw-2">&amp;</span>FrontendOptions, toml: String) -&gt; <span class="prelude-ty">Result</span>&lt;HttpServer&gt; {
+        <span class="kw">let </span>builder = <span class="kw">if let </span><span class="prelude-val">Some</span>(builder) = <span class="self">self</span>.http_server_builder.take() {
+            builder
+        } <span class="kw">else </span>{
+            <span class="self">self</span>.http_server_builder(opts)
+        };
+
+        <span class="kw">let </span>http_server = builder
+            .with_metrics_handler(MetricsHandler)
+            .with_plugins(<span class="self">self</span>.plugins.clone())
+            .with_greptime_config_options(toml)
+            .build();
+        <span class="prelude-val">Ok</span>(http_server)
+    }
+
+    <span class="kw">pub async fn </span>build(<span class="kw-2">mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;ServerHandlers&gt; {
+        <span class="kw">let </span>opts = <span class="self">self</span>.opts.clone();
+        <span class="kw">let </span>instance = <span class="self">self</span>.instance.clone();
+
         <span class="kw">let </span>toml = opts.to_toml()<span class="question-mark">?</span>;
         <span class="kw">let </span>opts: FrontendOptions = opts.into();
-        <span class="kw">let </span><span class="kw-2">mut </span>result = Vec::&lt;ServerHandler&gt;::with_capacity(plugins.len());
-        <span class="kw">let </span>user_provider = plugins.get::&lt;UserProviderRef&gt;();
+
+        <span class="kw">let </span>handlers = ServerHandlers::default();
+
+        <span class="kw">let </span>user_provider = <span class="self">self</span>.plugins.get::&lt;UserProviderRef&gt;();
 
         {
             <span class="comment">// Always init GRPC server
-            </span><span class="kw">let </span>opts = <span class="kw-2">&amp;</span>opts.grpc;
-            <span class="kw">let </span>grpc_addr = parse_addr(<span class="kw-2">&amp;</span>opts.addr)<span class="question-mark">?</span>;
-
-            <span class="kw">let </span>grpc_runtime = Arc::new(
-                RuntimeBuilder::default()
-                    .worker_threads(opts.runtime_size)
-                    .thread_name(<span class="string">"grpc-handlers"</span>)
-                    .build()
-                    .context(error::RuntimeResourceSnafu)<span class="question-mark">?</span>,
-            );
-
-            <span class="kw">let </span>grpc_config = GrpcServerConfig {
-                max_recv_message_size: opts.max_recv_message_size.as_bytes() <span class="kw">as </span>usize,
-                max_send_message_size: opts.max_send_message_size.as_bytes() <span class="kw">as </span>usize,
-            };
-            <span class="kw">let </span>grpc_server = GrpcServer::new(
-                <span class="prelude-val">Some</span>(grpc_config),
-                <span class="prelude-val">Some</span>(ServerGrpcQueryHandlerAdapter::arc(instance.clone())),
-                <span class="prelude-val">Some</span>(instance.clone()),
-                <span class="prelude-val">None</span>,
-                <span class="prelude-val">None</span>,
-                user_provider.clone(),
-                grpc_runtime,
-            );
-
-            result.push((Box::new(grpc_server), grpc_addr));
+            </span><span class="kw">let </span>grpc_addr = parse_addr(<span class="kw-2">&amp;</span>opts.grpc.addr)<span class="question-mark">?</span>;
+            <span class="kw">let </span>grpc_server = <span class="self">self</span>.build_grpc_server(<span class="kw-2">&amp;</span>opts)<span class="question-mark">?</span>;
+            handlers.insert((Box::new(grpc_server), grpc_addr)).<span class="kw">await</span>;
         }
 
         {
             <span class="comment">// Always init HTTP server
             </span><span class="kw">let </span>http_options = <span class="kw-2">&amp;</span>opts.http;
             <span class="kw">let </span>http_addr = parse_addr(<span class="kw-2">&amp;</span>http_options.addr)<span class="question-mark">?</span>;
-
-            <span class="kw">let </span><span class="kw-2">mut </span>http_server_builder = HttpServerBuilder::new(http_options.clone());
-            <span class="kw">let _ </span>= http_server_builder
-                .with_sql_handler(ServerSqlQueryHandlerAdapter::arc(instance.clone()))
-                .with_grpc_handler(ServerGrpcQueryHandlerAdapter::arc(instance.clone()));
-
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(user_provider) = user_provider.clone() {
-                <span class="kw">let _ </span>= http_server_builder.with_user_provider(user_provider);
-            }
-
-            <span class="kw">if </span>opts.opentsdb.enable {
-                <span class="kw">let _ </span>= http_server_builder.with_opentsdb_handler(instance.clone());
-            }
-
-            <span class="kw">if </span>opts.influxdb.enable {
-                <span class="kw">let _ </span>= http_server_builder.with_influxdb_handler(instance.clone());
-            }
-
-            <span class="kw">if </span>opts.prom_store.enable {
-                <span class="kw">let _ </span>= http_server_builder
-                    .with_prom_handler(instance.clone())
-                    .with_prometheus_handler(instance.clone());
-            }
-
-            <span class="kw">if </span>opts.otlp.enable {
-                <span class="kw">let _ </span>= http_server_builder.with_otlp_handler(instance.clone());
-            }
-
-            <span class="kw">let </span>http_server = http_server_builder
-                .with_metrics_handler(MetricsHandler)
-                .with_script_handler(instance.clone())
-                .with_plugins(plugins)
-                .with_greptime_config_options(toml)
-                .build();
-            result.push((Box::new(http_server), http_addr));
+            <span class="kw">let </span>http_server = <span class="self">self</span>.build_http_server(<span class="kw-2">&amp;</span>opts, toml)<span class="question-mark">?</span>;
+            handlers.insert((Box::new(http_server), http_addr)).<span class="kw">await</span>;
         }
 
         <span class="kw">if </span>opts.mysql.enable {
             <span class="comment">// Init MySQL server
             </span><span class="kw">let </span>opts = <span class="kw-2">&amp;</span>opts.mysql;
             <span class="kw">let </span>mysql_addr = parse_addr(<span class="kw-2">&amp;</span>opts.addr)<span class="question-mark">?</span>;
+
+            <span class="kw">let </span>tls_server_config = Arc::new(
+                ReloadableTlsServerConfig::try_new(opts.tls.clone()).context(StartServerSnafu)<span class="question-mark">?</span>,
+            );
+
+            <span class="comment">// will not watch if watch is disabled in tls option
+            </span>maybe_watch_tls_config(tls_server_config.clone()).context(StartServerSnafu)<span class="question-mark">?</span>;
 
             <span class="kw">let </span>mysql_io_runtime = Arc::new(
                 RuntimeBuilder::default()
@@ -349,21 +499,23 @@
                 )),
                 Arc::new(MysqlSpawnConfig::new(
                     opts.tls.should_force_tls(),
-                    opts.tls
-                        .setup()
-                        .context(InternalIoSnafu)
-                        .context(StartServerSnafu)<span class="question-mark">?
-                        </span>.map(Arc::new),
+                    tls_server_config,
                     opts.reject_no_database.unwrap_or(<span class="bool-val">false</span>),
                 )),
             );
-            result.push((mysql_server, mysql_addr));
+            handlers.insert((mysql_server, mysql_addr)).<span class="kw">await</span>;
         }
 
         <span class="kw">if </span>opts.postgres.enable {
             <span class="comment">// Init PosgresSQL Server
             </span><span class="kw">let </span>opts = <span class="kw-2">&amp;</span>opts.postgres;
             <span class="kw">let </span>pg_addr = parse_addr(<span class="kw-2">&amp;</span>opts.addr)<span class="question-mark">?</span>;
+
+            <span class="kw">let </span>tls_server_config = Arc::new(
+                ReloadableTlsServerConfig::try_new(opts.tls.clone()).context(StartServerSnafu)<span class="question-mark">?</span>,
+            );
+
+            maybe_watch_tls_config(tls_server_config.clone()).context(StartServerSnafu)<span class="question-mark">?</span>;
 
             <span class="kw">let </span>pg_io_runtime = Arc::new(
                 RuntimeBuilder::default()
@@ -375,12 +527,13 @@
 
             <span class="kw">let </span>pg_server = Box::new(PostgresServer::new(
                 ServerSqlQueryHandlerAdapter::arc(instance.clone()),
-                opts.tls.clone(),
+                opts.tls.should_force_tls(),
+                tls_server_config,
                 pg_io_runtime,
                 user_provider.clone(),
             )) <span class="kw">as </span>Box&lt;<span class="kw">dyn </span>Server&gt;;
 
-            result.push((pg_server, pg_addr));
+            handlers.insert((pg_server, pg_addr)).<span class="kw">await</span>;
         }
 
         <span class="kw">if </span>opts.opentsdb.enable {
@@ -398,13 +551,10 @@
 
             <span class="kw">let </span>server = OpentsdbServer::create_server(instance.clone(), io_runtime);
 
-            result.push((server, addr));
+            handlers.insert((server, addr)).<span class="kw">await</span>;
         }
 
-        <span class="prelude-val">Ok</span>(result
-            .into_iter()
-            .map(|(server, addr)| (server.name().to_string(), (server, addr)))
-            .collect())
+        <span class="prelude-val">Ok</span>(handlers)
     }
 }
 

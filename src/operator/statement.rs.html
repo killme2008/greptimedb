@@ -325,6 +325,67 @@
 <a href="#324" id="324">324</a>
 <a href="#325" id="325">325</a>
 <a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
+<a href="#330" id="330">330</a>
+<a href="#331" id="331">331</a>
+<a href="#332" id="332">332</a>
+<a href="#333" id="333">333</a>
+<a href="#334" id="334">334</a>
+<a href="#335" id="335">335</a>
+<a href="#336" id="336">336</a>
+<a href="#337" id="337">337</a>
+<a href="#338" id="338">338</a>
+<a href="#339" id="339">339</a>
+<a href="#340" id="340">340</a>
+<a href="#341" id="341">341</a>
+<a href="#342" id="342">342</a>
+<a href="#343" id="343">343</a>
+<a href="#344" id="344">344</a>
+<a href="#345" id="345">345</a>
+<a href="#346" id="346">346</a>
+<a href="#347" id="347">347</a>
+<a href="#348" id="348">348</a>
+<a href="#349" id="349">349</a>
+<a href="#350" id="350">350</a>
+<a href="#351" id="351">351</a>
+<a href="#352" id="352">352</a>
+<a href="#353" id="353">353</a>
+<a href="#354" id="354">354</a>
+<a href="#355" id="355">355</a>
+<a href="#356" id="356">356</a>
+<a href="#357" id="357">357</a>
+<a href="#358" id="358">358</a>
+<a href="#359" id="359">359</a>
+<a href="#360" id="360">360</a>
+<a href="#361" id="361">361</a>
+<a href="#362" id="362">362</a>
+<a href="#363" id="363">363</a>
+<a href="#364" id="364">364</a>
+<a href="#365" id="365">365</a>
+<a href="#366" id="366">366</a>
+<a href="#367" id="367">367</a>
+<a href="#368" id="368">368</a>
+<a href="#369" id="369">369</a>
+<a href="#370" id="370">370</a>
+<a href="#371" id="371">371</a>
+<a href="#372" id="372">372</a>
+<a href="#373" id="373">373</a>
+<a href="#374" id="374">374</a>
+<a href="#375" id="375">375</a>
+<a href="#376" id="376">376</a>
+<a href="#377" id="377">377</a>
+<a href="#378" id="378">378</a>
+<a href="#379" id="379">379</a>
+<a href="#380" id="380">380</a>
+<a href="#381" id="381">381</a>
+<a href="#382" id="382">382</a>
+<a href="#383" id="383">383</a>
+<a href="#384" id="384">384</a>
+<a href="#385" id="385">385</a>
+<a href="#386" id="386">386</a>
+<a href="#387" id="387">387</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -339,7 +400,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-</span><span class="kw">mod </span>backup;
+</span><span class="kw">mod </span>copy_database;
 <span class="kw">mod </span>copy_table_from;
 <span class="kw">mod </span>copy_table_to;
 <span class="kw">mod </span>ddl;
@@ -348,48 +409,47 @@
 <span class="kw">mod </span>show;
 <span class="kw">mod </span>tql;
 
-<span class="kw">use </span>std::str::FromStr;
 <span class="kw">use </span>std::sync::Arc;
 
 <span class="kw">use </span>catalog::CatalogManagerRef;
 <span class="kw">use </span>common_error::ext::BoxedError;
 <span class="kw">use </span>common_meta::cache_invalidator::CacheInvalidatorRef;
-<span class="kw">use </span>common_meta::ddl::DdlTaskExecutorRef;
+<span class="kw">use </span>common_meta::ddl::ProcedureExecutorRef;
 <span class="kw">use </span>common_meta::key::{TableMetadataManager, TableMetadataManagerRef};
 <span class="kw">use </span>common_meta::kv_backend::KvBackendRef;
 <span class="kw">use </span>common_meta::table_name::TableName;
 <span class="kw">use </span>common_query::Output;
 <span class="kw">use </span>common_telemetry::tracing;
 <span class="kw">use </span>common_time::range::TimestampRange;
-<span class="kw">use </span>common_time::Timestamp;
+<span class="kw">use </span>common_time::{Timestamp, Timezone};
 <span class="kw">use </span>partition::manager::{PartitionRuleManager, PartitionRuleManagerRef};
 <span class="kw">use </span>query::parser::QueryStatement;
 <span class="kw">use </span>query::plan::LogicalPlan;
 <span class="kw">use </span>query::QueryEngineRef;
 <span class="kw">use </span>session::context::QueryContextRef;
+<span class="kw">use </span>session::table_name::table_idents_to_full_name;
 <span class="kw">use </span>snafu::{OptionExt, ResultExt};
-<span class="kw">use </span>sql::statements::copy::{CopyDatabaseArgument, CopyTable, CopyTableArgument};
+<span class="kw">use </span>sql::statements::copy::{CopyDatabase, CopyDatabaseArgument, CopyTable, CopyTableArgument};
 <span class="kw">use </span>sql::statements::statement::Statement;
 <span class="kw">use </span>sql::statements::OptionMap;
 <span class="kw">use </span>sql::util::format_raw_object_name;
-<span class="kw">use </span>sqlparser::ast::ObjectName;
-<span class="kw">use </span>table::engine::TableReference;
+<span class="kw">use </span>sqlparser::ast::{Expr, ObjectName, Value};
 <span class="kw">use </span>table::requests::{CopyDatabaseRequest, CopyDirection, CopyTableRequest};
+<span class="kw">use </span>table::table_reference::TableReference;
 <span class="kw">use </span>table::TableRef;
 
 <span class="kw">use </span><span class="kw">crate</span>::error::{
-    <span class="self">self</span>, CatalogSnafu, ExecLogicalPlanSnafu, ExternalSnafu, InvalidSqlSnafu, PlanStatementSnafu,
-    <span class="prelude-ty">Result</span>, TableNotFoundSnafu,
+    <span class="self">self</span>, CatalogSnafu, ExecLogicalPlanSnafu, ExternalSnafu, InvalidSqlSnafu, NotSupportedSnafu,
+    PlanStatementSnafu, <span class="prelude-ty">Result</span>, TableNotFoundSnafu,
 };
 <span class="kw">use </span><span class="kw">crate</span>::insert::InserterRef;
-<span class="kw">use </span><span class="kw">crate</span>::statement::backup::{COPY_DATABASE_TIME_END_KEY, COPY_DATABASE_TIME_START_KEY};
-<span class="kw">use </span><span class="kw">crate</span>::table::table_idents_to_full_name;
+<span class="kw">use </span><span class="kw">crate</span>::statement::copy_database::{COPY_DATABASE_TIME_END_KEY, COPY_DATABASE_TIME_START_KEY};
 
 <span class="attr">#[derive(Clone)]
 </span><span class="kw">pub struct </span>StatementExecutor {
     catalog_manager: CatalogManagerRef,
     query_engine: QueryEngineRef,
-    ddl_executor: DdlTaskExecutorRef,
+    procedure_executor: ProcedureExecutorRef,
     table_metadata_manager: TableMetadataManagerRef,
     partition_manager: PartitionRuleManagerRef,
     cache_invalidator: CacheInvalidatorRef,
@@ -400,7 +460,7 @@
     <span class="kw">pub fn </span>new(
         catalog_manager: CatalogManagerRef,
         query_engine: QueryEngineRef,
-        ddl_task_executor: DdlTaskExecutorRef,
+        procedure_executor: ProcedureExecutorRef,
         kv_backend: KvBackendRef,
         cache_invalidator: CacheInvalidatorRef,
         inserter: InserterRef,
@@ -408,7 +468,7 @@
         <span class="self">Self </span>{
             catalog_manager,
             query_engine,
-            ddl_executor: ddl_task_executor,
+            procedure_executor,
             table_metadata_manager: Arc::new(TableMetadataManager::new(kv_backend.clone())),
             partition_manager: Arc::new(PartitionRuleManager::new(kv_backend)),
             cache_invalidator,
@@ -458,13 +518,31 @@
                 }
             }
 
-            Statement::Copy(sql::statements::copy::Copy::CopyDatabase(arg)) =&gt; {
-                <span class="self">self</span>.copy_database(to_copy_database_request(arg, <span class="kw-2">&amp;</span>query_ctx)<span class="question-mark">?</span>)
-                    .<span class="kw">await
-            </span>}
+            Statement::Copy(sql::statements::copy::Copy::CopyDatabase(copy_database)) =&gt; {
+                <span class="kw">match </span>copy_database {
+                    CopyDatabase::To(arg) =&gt; {
+                        <span class="self">self</span>.copy_database_to(
+                            to_copy_database_request(arg, <span class="kw-2">&amp;</span>query_ctx)<span class="question-mark">?</span>,
+                            query_ctx.clone(),
+                        )
+                        .<span class="kw">await
+                    </span>}
+                    CopyDatabase::From(arg) =&gt; {
+                        <span class="self">self</span>.copy_database_from(
+                            to_copy_database_request(arg, <span class="kw-2">&amp;</span>query_ctx)<span class="question-mark">?</span>,
+                            query_ctx,
+                        )
+                        .<span class="kw">await
+                    </span>}
+                }
+            }
 
             Statement::CreateTable(stmt) =&gt; {
                 <span class="kw">let _ </span>= <span class="self">self</span>.create_table(stmt, query_ctx).<span class="kw">await</span><span class="question-mark">?</span>;
+                <span class="prelude-val">Ok</span>(Output::AffectedRows(<span class="number">0</span>))
+            }
+            Statement::CreateTableLike(stmt) =&gt; {
+                <span class="kw">let _ </span>= <span class="self">self</span>.create_table_like(stmt, query_ctx).<span class="kw">await</span><span class="question-mark">?</span>;
                 <span class="prelude-val">Ok</span>(Output::AffectedRows(<span class="number">0</span>))
             }
             Statement::CreateExternalTable(stmt) =&gt; {
@@ -474,7 +552,7 @@
             Statement::Alter(alter_table) =&gt; <span class="self">self</span>.alter_table(alter_table, query_ctx).<span class="kw">await</span>,
             Statement::DropTable(stmt) =&gt; {
                 <span class="kw">let </span>(catalog, schema, table) =
-                    table_idents_to_full_name(stmt.table_name(), query_ctx)
+                    table_idents_to_full_name(stmt.table_name(), <span class="kw-2">&amp;</span>query_ctx)
                         .map_err(BoxedError::new)
                         .context(error::ExternalSnafu)<span class="question-mark">?</span>;
                 <span class="kw">let </span>table_name = TableName::new(catalog, schema, table);
@@ -482,13 +560,12 @@
             </span>}
             Statement::TruncateTable(stmt) =&gt; {
                 <span class="kw">let </span>(catalog, schema, table) =
-                    table_idents_to_full_name(stmt.table_name(), query_ctx)
+                    table_idents_to_full_name(stmt.table_name(), <span class="kw-2">&amp;</span>query_ctx)
                         .map_err(BoxedError::new)
                         .context(error::ExternalSnafu)<span class="question-mark">?</span>;
                 <span class="kw">let </span>table_name = TableName::new(catalog, schema, table);
                 <span class="self">self</span>.truncate_table(table_name).<span class="kw">await
             </span>}
-
             Statement::CreateDatabase(stmt) =&gt; {
                 <span class="self">self</span>.create_database(
                     query_ctx.current_catalog(),
@@ -497,10 +574,9 @@
                 )
                 .<span class="kw">await
             </span>}
-
             Statement::ShowCreateTable(show) =&gt; {
                 <span class="kw">let </span>(catalog, schema, table) =
-                    table_idents_to_full_name(<span class="kw-2">&amp;</span>show.table_name, query_ctx.clone())
+                    table_idents_to_full_name(<span class="kw-2">&amp;</span>show.table_name, <span class="kw-2">&amp;</span>query_ctx)
                         .map_err(BoxedError::new)
                         .context(error::ExternalSnafu)<span class="question-mark">?</span>;
 
@@ -515,6 +591,20 @@
                 <span class="self">self</span>.show_create_table(table_name, table_ref, query_ctx)
                     .<span class="kw">await
             </span>}
+            Statement::SetVariables(set_var) =&gt; {
+                <span class="kw">let </span>var_name = set_var.variable.to_string().to_uppercase();
+                <span class="kw">match </span>var_name.as_str() {
+                    <span class="string">"TIMEZONE" </span>| <span class="string">"TIME_ZONE" </span>=&gt; set_timezone(set_var.value, query_ctx)<span class="question-mark">?</span>,
+                    <span class="kw">_ </span>=&gt; {
+                        <span class="kw">return </span>NotSupportedSnafu {
+                            feat: <span class="macro">format!</span>(<span class="string">"Unsupported set variable {}"</span>, var_name),
+                        }
+                        .fail()
+                    }
+                }
+                <span class="prelude-val">Ok</span>(Output::AffectedRows(<span class="number">0</span>))
+            }
+            Statement::ShowVariables(show_variable) =&gt; <span class="self">self</span>.show_variable(show_variable, query_ctx),
         }
     }
 
@@ -555,6 +645,33 @@
     }
 }
 
+<span class="kw">fn </span>set_timezone(exprs: Vec&lt;Expr&gt;, ctx: QueryContextRef) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="kw">let </span>tz_expr = exprs.first().context(NotSupportedSnafu {
+        feat: <span class="string">"No timezone find in set variable statement"</span>,
+    })<span class="question-mark">?</span>;
+    <span class="kw">match </span>tz_expr {
+        Expr::Value(Value::SingleQuotedString(tz)) | Expr::Value(Value::DoubleQuotedString(tz)) =&gt; {
+            <span class="kw">match </span>Timezone::from_tz_string(tz.as_str()) {
+                <span class="prelude-val">Ok</span>(timezone) =&gt; ctx.set_timezone(timezone),
+                <span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; {
+                    <span class="kw">return </span>NotSupportedSnafu {
+                        feat: <span class="macro">format!</span>(<span class="string">"Invalid timezone expr {} in set variable statement"</span>, tz),
+                    }
+                    .fail()
+                }
+            }
+            <span class="prelude-val">Ok</span>(())
+        }
+        expr =&gt; NotSupportedSnafu {
+            feat: <span class="macro">format!</span>(
+                <span class="string">"Unsupported timezone expr {} in set variable statement"</span>,
+                expr
+            ),
+        }
+        .fail(),
+    }
+}
+
 <span class="kw">fn </span>to_copy_table_request(stmt: CopyTable, query_ctx: QueryContextRef) -&gt; <span class="prelude-ty">Result</span>&lt;CopyTableRequest&gt; {
     <span class="kw">let </span>direction = <span class="kw">match </span>stmt {
         CopyTable::To(<span class="kw">_</span>) =&gt; CopyDirection::Export,
@@ -571,9 +688,10 @@
         CopyTable::To(arg) =&gt; arg,
         CopyTable::From(arg) =&gt; arg,
     };
-    <span class="kw">let </span>(catalog_name, schema_name, table_name) = table_idents_to_full_name(<span class="kw-2">&amp;</span>table_name, query_ctx)
-        .map_err(BoxedError::new)
-        .context(ExternalSnafu)<span class="question-mark">?</span>;
+    <span class="kw">let </span>(catalog_name, schema_name, table_name) =
+        table_idents_to_full_name(<span class="kw-2">&amp;</span>table_name, <span class="kw-2">&amp;</span>query_ctx)
+            .map_err(BoxedError::new)
+            .context(ExternalSnafu)<span class="question-mark">?</span>;
 
     <span class="kw">let </span>pattern = with
         .get(common_datasource::file_format::FILE_PATTERN)
@@ -603,8 +721,8 @@
         .map_err(BoxedError::new)
         .context(ExternalSnafu)<span class="question-mark">?</span>;
 
-    <span class="kw">let </span>start_timestamp = extract_timestamp(<span class="kw-2">&amp;</span>arg.with, COPY_DATABASE_TIME_START_KEY)<span class="question-mark">?</span>;
-    <span class="kw">let </span>end_timestamp = extract_timestamp(<span class="kw-2">&amp;</span>arg.with, COPY_DATABASE_TIME_END_KEY)<span class="question-mark">?</span>;
+    <span class="kw">let </span>start_timestamp = extract_timestamp(<span class="kw-2">&amp;</span>arg.with, COPY_DATABASE_TIME_START_KEY, query_ctx)<span class="question-mark">?</span>;
+    <span class="kw">let </span>end_timestamp = extract_timestamp(<span class="kw-2">&amp;</span>arg.with, COPY_DATABASE_TIME_END_KEY, query_ctx)<span class="question-mark">?</span>;
 
     <span class="kw">let </span>time_range = <span class="kw">match </span>(start_timestamp, end_timestamp) {
         (<span class="prelude-val">Some</span>(start), <span class="prelude-val">Some</span>(end)) =&gt; TimestampRange::new(start, end),
@@ -624,10 +742,14 @@
 }
 
 <span class="doccomment">/// Extracts timestamp from a [HashMap&lt;String, String&gt;] with given key.
-</span><span class="kw">fn </span>extract_timestamp(map: <span class="kw-2">&amp;</span>OptionMap, key: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;Timestamp&gt;&gt; {
+</span><span class="kw">fn </span>extract_timestamp(
+    map: <span class="kw-2">&amp;</span>OptionMap,
+    key: <span class="kw-2">&amp;</span>str,
+    query_ctx: <span class="kw-2">&amp;</span>QueryContextRef,
+) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;Timestamp&gt;&gt; {
     map.get(key)
         .map(|v| {
-            Timestamp::from_str(v)
+            Timestamp::from_str(v, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>query_ctx.timezone()))
                 .map_err(|<span class="kw">_</span>| error::InvalidCopyParameterSnafu { key, value: v }.build())
         })
         .transpose()

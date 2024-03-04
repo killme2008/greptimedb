@@ -369,6 +369,30 @@
 <a href="#368" id="368">368</a>
 <a href="#369" id="369">369</a>
 <a href="#370" id="370">370</a>
+<a href="#371" id="371">371</a>
+<a href="#372" id="372">372</a>
+<a href="#373" id="373">373</a>
+<a href="#374" id="374">374</a>
+<a href="#375" id="375">375</a>
+<a href="#376" id="376">376</a>
+<a href="#377" id="377">377</a>
+<a href="#378" id="378">378</a>
+<a href="#379" id="379">379</a>
+<a href="#380" id="380">380</a>
+<a href="#381" id="381">381</a>
+<a href="#382" id="382">382</a>
+<a href="#383" id="383">383</a>
+<a href="#384" id="384">384</a>
+<a href="#385" id="385">385</a>
+<a href="#386" id="386">386</a>
+<a href="#387" id="387">387</a>
+<a href="#388" id="388">388</a>
+<a href="#389" id="389">389</a>
+<a href="#390" id="390">390</a>
+<a href="#391" id="391">391</a>
+<a href="#392" id="392">392</a>
+<a href="#393" id="393">393</a>
+<a href="#394" id="394">394</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -409,6 +433,14 @@
     </span>ListSchemas {
         location: Location,
         catalog: String,
+        source: BoxedError,
+    },
+
+    <span class="attr">#[snafu(display(<span class="string">"Failed to list {}.{}'s tables"</span>, catalog, schema))]
+    </span>ListTables {
+        location: Location,
+        catalog: String,
+        schema: String,
         source: BoxedError,
     },
 
@@ -527,6 +559,12 @@
         location: Location,
     },
 
+    <span class="attr">#[snafu(display(<span class="string">"Failed to find table partitions"</span>))]
+    </span>FindPartitions { source: partition::error::Error },
+
+    <span class="attr">#[snafu(display(<span class="string">"Failed to find region routes"</span>))]
+    </span>FindRegionRoutes { source: partition::error::Error },
+
     <span class="attr">#[snafu(display(<span class="string">"Failed to read system catalog table records"</span>))]
     </span>ReadSystemCatalog {
         location: Location,
@@ -608,6 +646,12 @@
         source: common_meta::error::Error,
         location: Location,
     },
+
+    <span class="attr">#[snafu(display(<span class="string">"Get null from table cache, key: {}"</span>, key))]
+    </span>TableCacheNotGet { key: String, location: Location },
+
+    <span class="attr">#[snafu(display(<span class="string">"Failed to get table cache, err: {}"</span>, err_msg))]
+    </span>GetTableCache { err_msg: String },
 }
 
 <span class="kw">pub type </span><span class="prelude-ty">Result</span>&lt;T&gt; = std::result::Result&lt;T, Error&gt;;
@@ -617,10 +661,13 @@
         <span class="kw">match </span><span class="self">self </span>{
             Error::InvalidKey { .. }
             | Error::SchemaNotFound { .. }
-            | Error::TableNotFound { .. }
             | Error::CatalogNotFound { .. }
+            | Error::FindPartitions { .. }
+            | Error::FindRegionRoutes { .. }
             | Error::InvalidEntryType { .. }
             | Error::ParallelOpenTable { .. } =&gt; StatusCode::Unexpected,
+
+            Error::TableNotFound { .. } =&gt; StatusCode::TableNotFound,
 
             Error::SystemCatalog { .. }
             | Error::EmptyValue { .. }
@@ -641,9 +688,9 @@
                 StatusCode::InvalidArguments
             }
 
-            Error::ListCatalogs { source, .. } | Error::ListSchemas { source, .. } =&gt; {
-                source.status_code()
-            }
+            Error::ListCatalogs { source, .. }
+            | Error::ListSchemas { source, .. }
+            | Error::ListTables { source, .. } =&gt; source.status_code(),
 
             Error::OpenSystemCatalog { source, .. }
             | Error::CreateSystemCatalog { source, .. }
@@ -665,6 +712,7 @@
             Error::QueryAccessDenied { .. } =&gt; StatusCode::AccessDenied,
             Error::Datafusion { .. } =&gt; StatusCode::EngineExecuteQuery,
             Error::TableMetadataManager { source, .. } =&gt; source.status_code(),
+            Error::TableCacheNotGet { .. } | Error::GetTableCache { .. } =&gt; StatusCode::Internal,
         }
     }
 
@@ -704,7 +752,7 @@
         <span class="macro">assert_eq!</span>(
             StatusCode::StorageUnavailable,
             Error::SystemCatalog {
-                msg: <span class="string">""</span>.to_string(),
+                msg: String::default(),
                 location: Location::generate(),
             }
             .status_code()

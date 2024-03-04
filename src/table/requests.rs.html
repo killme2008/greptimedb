@@ -399,24 +399,6 @@
 <a href="#398" id="398">398</a>
 <a href="#399" id="399">399</a>
 <a href="#400" id="400">400</a>
-<a href="#401" id="401">401</a>
-<a href="#402" id="402">402</a>
-<a href="#403" id="403">403</a>
-<a href="#404" id="404">404</a>
-<a href="#405" id="405">405</a>
-<a href="#406" id="406">406</a>
-<a href="#407" id="407">407</a>
-<a href="#408" id="408">408</a>
-<a href="#409" id="409">409</a>
-<a href="#410" id="410">410</a>
-<a href="#411" id="411">411</a>
-<a href="#412" id="412">412</a>
-<a href="#413" id="413">413</a>
-<a href="#414" id="414">414</a>
-<a href="#415" id="415">415</a>
-<a href="#416" id="416">416</a>
-<a href="#417" id="417">417</a>
-<a href="#418" id="418">418</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -447,10 +429,10 @@
 <span class="kw">use </span>store_api::metric_engine_consts::{LOGICAL_TABLE_METADATA_KEY, PHYSICAL_TABLE_METADATA_KEY};
 <span class="kw">use </span>store_api::storage::RegionNumber;
 
-<span class="kw">use </span><span class="kw">crate</span>::engine::TableReference;
 <span class="kw">use </span><span class="kw">crate</span>::error;
 <span class="kw">use </span><span class="kw">crate</span>::error::ParseTableOptionSnafu;
 <span class="kw">use </span><span class="kw">crate</span>::metadata::{TableId, TableVersion};
+<span class="kw">use </span><span class="kw">crate</span>::table_reference::TableReference;
 
 <span class="kw">pub const </span>FILE_TABLE_META_KEY: <span class="kw-2">&amp;</span>str = <span class="string">"__private.file_table_meta"</span>;
 <span class="kw">pub const </span>FILE_TABLE_LOCATION_KEY: <span class="kw-2">&amp;</span>str = <span class="string">"location"</span>;
@@ -705,20 +687,14 @@
 </span><span class="kw">pub struct </span>FlushTableRequest {
     <span class="kw">pub </span>catalog_name: String,
     <span class="kw">pub </span>schema_name: String,
-    <span class="kw">pub </span>table_name: <span class="prelude-ty">Option</span>&lt;String&gt;,
-    <span class="kw">pub </span>region_number: <span class="prelude-ty">Option</span>&lt;RegionNumber&gt;,
-    <span class="doccomment">/// Wait until the flush is done.
-    </span><span class="kw">pub </span>wait: <span class="prelude-ty">Option</span>&lt;bool&gt;,
+    <span class="kw">pub </span>table_name: String,
 }
 
 <span class="attr">#[derive(Debug, Clone, Default)]
 </span><span class="kw">pub struct </span>CompactTableRequest {
     <span class="kw">pub </span>catalog_name: String,
     <span class="kw">pub </span>schema_name: String,
-    <span class="kw">pub </span>table_name: <span class="prelude-ty">Option</span>&lt;String&gt;,
-    <span class="kw">pub </span>region_number: <span class="prelude-ty">Option</span>&lt;RegionNumber&gt;,
-    <span class="doccomment">/// Wait until the compaction is done.
-    </span><span class="kw">pub </span>wait: <span class="prelude-ty">Option</span>&lt;bool&gt;,
+    <span class="kw">pub </span>table_name: String,
 }
 
 <span class="doccomment">/// Truncate table request
@@ -738,18 +714,6 @@
             table: <span class="kw-2">&amp;</span><span class="self">self</span>.table_name,
         }
     }
-}
-
-<span class="attr">#[macro_export]
-</span><span class="macro">macro_rules! </span>meter_insert_request {
-    (<span class="macro-nonterminal">$req</span>: expr) =&gt; {
-        <span class="macro">meter_macros::write_meter!</span>(
-            <span class="macro-nonterminal">$req</span>.catalog_name.to_string(),
-            <span class="macro-nonterminal">$req</span>.schema_name.to_string(),
-            <span class="macro-nonterminal">$req</span>.table_name.to_string(),
-            <span class="macro-nonterminal">$req
-        </span>);
-    };
 }
 
 <span class="kw">pub fn </span>valid_table_option(key: <span class="kw-2">&amp;</span>str) -&gt; bool {

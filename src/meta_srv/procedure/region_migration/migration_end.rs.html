@@ -64,7 +64,7 @@
 #[typetag::serde]
 </span><span class="kw">impl </span>State <span class="kw">for </span>RegionMigrationEnd {
     <span class="kw">async fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw">_</span>: <span class="kw-2">&amp;mut </span>Context) -&gt; <span class="prelude-ty">Result</span>&lt;(Box&lt;<span class="kw">dyn </span>State&gt;, Status)&gt; {
-        <span class="prelude-val">Ok</span>((Box::new(RegionMigrationEnd), Status::Done))
+        <span class="prelude-val">Ok</span>((Box::new(RegionMigrationEnd), Status::done()))
     }
 
     <span class="kw">fn </span>as_any(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="kw">dyn </span>Any {

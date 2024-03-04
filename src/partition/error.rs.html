@@ -148,6 +148,14 @@
 <a href="#147" id="147">147</a>
 <a href="#148" id="148">148</a>
 <a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -269,6 +277,13 @@
         region_id: RegionId,
         location: Location,
     },
+
+    <span class="attr">#[snafu(display(<span class="string">"Unexpected table route type: {}"</span>, err_msg))]
+    </span>UnexpectedLogicalRouteTable {
+        location: Location,
+        err_msg: String,
+        source: common_meta::error::Error,
+    },
 }
 
 <span class="kw">impl </span>ErrorExt <span class="kw">for </span>Error {
@@ -288,6 +303,7 @@
             Error::FindDatanode { .. } =&gt; StatusCode::InvalidArguments,
             Error::TableRouteManager { source, .. } =&gt; source.status_code(),
             Error::MissingDefaultValue { .. } =&gt; StatusCode::Internal,
+            Error::UnexpectedLogicalRouteTable { source, .. } =&gt; source.status_code(),
         }
     }
 

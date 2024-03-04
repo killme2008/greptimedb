@@ -142,6 +142,20 @@
 <a href="#141" id="141">141</a>
 <a href="#142" id="142">142</a>
 <a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -207,6 +221,12 @@
     <span class="kw">pub </span>table_name: ObjectName,
 }
 
+<span class="doccomment">/// SQL structure for `SHOW VARIABLES xxx`.
+</span><span class="attr">#[derive(Debug, Clone, PartialEq, Eq, Visit, VisitMut)]
+</span><span class="kw">pub struct </span>ShowVariables {
+    <span class="kw">pub </span>variable: ObjectName,
+}
+
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use </span>std::assert_matches::assert_matches;
@@ -215,7 +235,7 @@
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use </span><span class="kw">crate</span>::dialect::GreptimeDbDialect;
-    <span class="kw">use </span><span class="kw">crate</span>::parser::ParserContext;
+    <span class="kw">use </span><span class="kw">crate</span>::parser::{ParseOptions, ParserContext};
     <span class="kw">use </span><span class="kw">crate</span>::statements::statement::Statement;
 
     <span class="attr">#[test]
@@ -249,7 +269,9 @@
     <span class="attr">#[test]
     </span><span class="kw">pub fn </span>test_show_database() {
         <span class="kw">let </span>sql = <span class="string">"SHOW DATABASES"</span>;
-        <span class="kw">let </span>stmts = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
+        <span class="kw">let </span>stmts =
+            ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}, ParseOptions::default())
+                .unwrap();
         <span class="macro">assert_eq!</span>(<span class="number">1</span>, stmts.len());
         <span class="macro">assert_matches!</span>(<span class="kw-2">&amp;</span>stmts[<span class="number">0</span>], Statement::ShowDatabases { .. });
         <span class="kw">match </span><span class="kw-2">&amp;</span>stmts[<span class="number">0</span>] {
@@ -266,7 +288,8 @@
     </span><span class="kw">pub fn </span>test_show_create_table() {
         <span class="kw">let </span>sql = <span class="string">"SHOW CREATE TABLE test"</span>;
         <span class="kw">let </span>stmts: Vec&lt;Statement&gt; =
-            ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
+            ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}, ParseOptions::default())
+                .unwrap();
         <span class="macro">assert_eq!</span>(<span class="number">1</span>, stmts.len());
         <span class="macro">assert_matches!</span>(<span class="kw-2">&amp;</span>stmts[<span class="number">0</span>], Statement::ShowCreateTable { .. });
         <span class="kw">match </span><span class="kw-2">&amp;</span>stmts[<span class="number">0</span>] {
@@ -282,7 +305,12 @@
     <span class="attr">#[test]
     </span><span class="kw">pub fn </span>test_show_create_missing_table_name() {
         <span class="kw">let </span>sql = <span class="string">"SHOW CREATE TABLE"</span>;
-        <span class="macro">assert!</span>(ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).is_err());
+        <span class="macro">assert!</span>(ParserContext::create_with_dialect(
+            sql,
+            <span class="kw-2">&amp;</span>GreptimeDbDialect {},
+            ParseOptions::default()
+        )
+        .is_err());
     }
 }
 </code></pre></div></section></main></body></html>

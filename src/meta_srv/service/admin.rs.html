@@ -322,6 +322,12 @@
 <a href="#321" id="321">321</a>
 <a href="#322" id="322">322</a>
 <a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
+<a href="#325" id="325">325</a>
+<a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -416,6 +422,12 @@
     <span class="kw">let </span>router = router
         .route(<span class="string">"/route"</span>, handler.clone())
         .route(<span class="string">"/route/help"</span>, handler);
+
+    <span class="kw">let </span>handler = region_migration::SubmitRegionMigrationTaskHandler {
+        region_migration_manager: meta_srv.region_migration_manager().clone(),
+        meta_peer_client: meta_srv.meta_peer_client().clone(),
+    };
+    <span class="kw">let </span>router = router.route(<span class="string">"/region-migration"</span>, handler);
 
     <span class="kw">let </span>router = Router::nest(<span class="string">"/admin"</span>, router);
 

@@ -96,23 +96,6 @@
 <a href="#95" id="95">95</a>
 <a href="#96" id="96">96</a>
 <a href="#97" id="97">97</a>
-<a href="#98" id="98">98</a>
-<a href="#99" id="99">99</a>
-<a href="#100" id="100">100</a>
-<a href="#101" id="101">101</a>
-<a href="#102" id="102">102</a>
-<a href="#103" id="103">103</a>
-<a href="#104" id="104">104</a>
-<a href="#105" id="105">105</a>
-<a href="#106" id="106">106</a>
-<a href="#107" id="107">107</a>
-<a href="#108" id="108">108</a>
-<a href="#109" id="109">109</a>
-<a href="#110" id="110">110</a>
-<a href="#111" id="111">111</a>
-<a href="#112" id="112">112</a>
-<a href="#113" id="113">113</a>
-<a href="#114" id="114">114</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -131,13 +114,11 @@
 <span class="kw">use </span>common_query::Output;
 <span class="kw">use </span>common_telemetry::tracing;
 <span class="kw">use </span>partition::manager::PartitionInfo;
-<span class="kw">use </span>partition::partition::PartitionBound;
 <span class="kw">use </span>session::context::QueryContextRef;
 <span class="kw">use </span>snafu::ResultExt;
-<span class="kw">use </span>sql::ast::{Ident, Value <span class="kw">as </span>SqlValue};
-<span class="kw">use </span>sql::statements::create::{PartitionEntry, Partitions};
-<span class="kw">use </span>sql::statements::show::{ShowDatabases, ShowTables};
-<span class="kw">use </span>sql::{statements, MAXVALUE};
+<span class="kw">use </span>sql::ast::Ident;
+<span class="kw">use </span>sql::statements::create::Partitions;
+<span class="kw">use </span>sql::statements::show::{ShowDatabases, ShowTables, ShowVariables};
 <span class="kw">use </span>table::TableRef;
 
 <span class="kw">use </span><span class="kw">crate</span>::error::{<span class="self">self</span>, ExecuteStatementSnafu, <span class="prelude-ty">Result</span>};
@@ -150,7 +131,7 @@
         stmt: ShowDatabases,
         query_ctx: QueryContextRef,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;Output&gt; {
-        query::sql::show_databases(stmt, <span class="self">self</span>.catalog_manager.clone(), query_ctx)
+        query::sql::show_databases(stmt, <span class="kw-2">&amp;</span><span class="self">self</span>.query_engine, <span class="kw-2">&amp;</span><span class="self">self</span>.catalog_manager, query_ctx)
             .<span class="kw">await
             </span>.context(ExecuteStatementSnafu)
     }
@@ -161,7 +142,7 @@
         stmt: ShowTables,
         query_ctx: QueryContextRef,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;Output&gt; {
-        query::sql::show_tables(stmt, <span class="self">self</span>.catalog_manager.clone(), query_ctx)
+        query::sql::show_tables(stmt, <span class="kw-2">&amp;</span><span class="self">self</span>.query_engine, <span class="kw-2">&amp;</span><span class="self">self</span>.catalog_manager, query_ctx)
             .<span class="kw">await
             </span>.context(ExecuteStatementSnafu)
     }
@@ -186,9 +167,14 @@
         query::sql::show_create_table(table, partitions, query_ctx)
             .context(error::ExecuteStatementSnafu)
     }
+
+    <span class="attr">#[tracing::instrument(skip_all)]
+    </span><span class="kw">pub fn </span>show_variable(<span class="kw-2">&amp;</span><span class="self">self</span>, stmt: ShowVariables, query_ctx: QueryContextRef) -&gt; <span class="prelude-ty">Result</span>&lt;Output&gt; {
+        query::sql::show_variable(stmt, query_ctx).context(error::ExecuteStatementSnafu)
+    }
 }
 
-<span class="kw">fn </span>create_partitions_stmt(partitions: Vec&lt;PartitionInfo&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;Partitions&gt;&gt; {
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>create_partitions_stmt(partitions: Vec&lt;PartitionInfo&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;Partitions&gt;&gt; {
     <span class="kw">if </span>partitions.is_empty() {
         <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>);
     }
@@ -200,31 +186,11 @@
         .map(|name| name[..].into())
         .collect();
 
-    <span class="kw">let </span>entries = partitions
-        .into_iter()
-        .map(|info| {
-            <span class="comment">// Generated the partition name from id
-            </span><span class="kw">let </span>name = <span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">"r{}"</span>, info.id.region_number());
-            <span class="kw">let </span>bounds = info.partition.partition_bounds();
-            <span class="kw">let </span>value_list = bounds
-                .iter()
-                .map(|b| <span class="kw">match </span>b {
-                    PartitionBound::Value(v) =&gt; statements::value_to_sql_value(v)
-                        .with_context(|<span class="kw">_</span>| error::ConvertSqlValueSnafu { value: v.clone() }),
-                    PartitionBound::MaxValue =&gt; <span class="prelude-val">Ok</span>(SqlValue::Number(MAXVALUE.to_string(), <span class="bool-val">false</span>)),
-                })
-                .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;&gt;()<span class="question-mark">?</span>;
+    <span class="comment">// TODO(ruihang): convert partition info back to partition expr
 
-            <span class="prelude-val">Ok</span>(PartitionEntry {
-                name: name[..].into(),
-                value_list,
-            })
-        })
-        .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;&gt;()<span class="question-mark">?</span>;
-
-    <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(Partitions {
+    </span><span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(Partitions {
         column_list,
-        entries,
+        exprs: <span class="macro">vec!</span>[],
     }))
 }
 </code></pre></div></section></main></body></html>

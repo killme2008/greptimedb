@@ -109,6 +109,28 @@
 <a href="#108" id="108">108</a>
 <a href="#109" id="109">109</a>
 <a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
+<a href="#116" id="116">116</a>
+<a href="#117" id="117">117</a>
+<a href="#118" id="118">118</a>
+<a href="#119" id="119">119</a>
+<a href="#120" id="120">120</a>
+<a href="#121" id="121">121</a>
+<a href="#122" id="122">122</a>
+<a href="#123" id="123">123</a>
+<a href="#124" id="124">124</a>
+<a href="#125" id="125">125</a>
+<a href="#126" id="126">126</a>
+<a href="#127" id="127">127</a>
+<a href="#128" id="128">128</a>
+<a href="#129" id="129">129</a>
+<a href="#130" id="130">130</a>
+<a href="#131" id="131">131</a>
+<a href="#132" id="132">132</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -123,16 +145,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-</span><span class="kw">mod </span>aggr_func;
+</span><span class="kw">mod </span>admin_fn;
+<span class="kw">mod </span>aggr_func;
 <span class="kw">mod </span>print_caller;
 <span class="kw">mod </span>range_fn;
 <span class="kw">mod </span>stack_trace_debug;
-
+<span class="kw">mod </span>utils;
 <span class="kw">use </span>aggr_func::{impl_aggr_func_type_store, impl_as_aggr_func_creator};
 <span class="kw">use </span>print_caller::process_print_caller;
 <span class="kw">use </span>proc_macro::TokenStream;
 <span class="kw">use </span>range_fn::process_range_fn;
 <span class="kw">use </span>syn::{parse_macro_input, DeriveInput};
+
+<span class="kw">use </span><span class="kw">crate</span>::admin_fn::process_admin_fn;
 
 <span class="doccomment">/// Make struct implemented trait [AggrFuncTypeStore], which is necessary when writing UDAF.
 /// This derive macro is expect to be used along with attribute macro [macro@as_aggr_func_creator].
@@ -177,6 +202,25 @@
 </span><span class="attr">#[proc_macro_attribute]
 </span><span class="kw">pub fn </span>range_fn(args: TokenStream, input: TokenStream) -&gt; TokenStream {
     process_range_fn(args, input)
+}
+
+<span class="doccomment">/// Attribute macro to convert a normal function to SQL administration function. The annotated function
+/// should accept:
+///    - `&amp;ProcedureServiceHandlerRef` or `&amp;TableMutationHandlerRef` as the first argument,
+///    - `&amp;QueryContextRef` as the second argument, and
+///    - `&amp;[ValueRef&lt;'_&gt;]` as the third argument which is SQL function input values in each row.
+/// Return type must be `common_query::error::Result&lt;Value&gt;`.
+///
+/// # Example see `common/function/src/system/procedure_state.rs`.
+///
+/// # Arguments
+/// - `name`: The name of the generated `Function` implementation.
+/// - `ret`: The return type of the generated SQL function, it will be transformed into `ConcreteDataType::{ret}_datatype()` result.
+/// - `display_name`: The display name of the generated SQL function.
+/// - `sig_fn`: the function to returns `Signature` of generated `Function`.
+</span><span class="attr">#[proc_macro_attribute]
+</span><span class="kw">pub fn </span>admin_fn(args: TokenStream, input: TokenStream) -&gt; TokenStream {
+    process_admin_fn(args, input)
 }
 
 <span class="doccomment">/// Attribute macro to print the caller to the annotated function.

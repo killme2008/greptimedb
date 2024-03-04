@@ -515,6 +515,18 @@
 <a href="#514" id="514">514</a>
 <a href="#515" id="515">515</a>
 <a href="#516" id="516">516</a>
+<a href="#517" id="517">517</a>
+<a href="#518" id="518">518</a>
+<a href="#519" id="519">519</a>
+<a href="#520" id="520">520</a>
+<a href="#521" id="521">521</a>
+<a href="#522" id="522">522</a>
+<a href="#523" id="523">523</a>
+<a href="#524" id="524">524</a>
+<a href="#525" id="525">525</a>
+<a href="#526" id="526">526</a>
+<a href="#527" id="527">527</a>
+<a href="#528" id="528">528</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -529,8 +541,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-</span><span class="kw">mod </span>output;
-<span class="kw">mod </span>picker;
+</span><span class="kw">mod </span>picker;
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>test_util;
 <span class="kw">mod </span>twcs;
@@ -539,7 +550,6 @@
 <span class="kw">use </span>std::sync::Arc;
 <span class="kw">use </span>std::time::Instant;
 
-<span class="kw">use </span>common_base::readable_size::ReadableSize;
 <span class="kw">use </span>common_telemetry::{debug, error};
 <span class="kw">pub use </span>picker::CompactionPickerRef;
 <span class="kw">use </span>snafu::ResultExt;
@@ -547,6 +557,7 @@
 <span class="kw">use </span>tokio::sync::mpsc::{<span class="self">self</span>, Sender};
 
 <span class="kw">use </span><span class="kw">crate</span>::access_layer::AccessLayerRef;
+<span class="kw">use </span><span class="kw">crate</span>::cache::CacheManagerRef;
 <span class="kw">use </span><span class="kw">crate</span>::compaction::twcs::TwcsPicker;
 <span class="kw">use </span><span class="kw">crate</span>::config::MitoConfig;
 <span class="kw">use </span><span class="kw">crate</span>::error::{
@@ -561,6 +572,7 @@
 
 <span class="doccomment">/// Region compaction request.
 </span><span class="kw">pub struct </span>CompactionRequest {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) engine_config: Arc&lt;MitoConfig&gt;,
     <span class="kw">pub</span>(<span class="kw">crate</span>) current_version: VersionRef,
     <span class="kw">pub</span>(<span class="kw">crate</span>) access_layer: AccessLayerRef,
     <span class="doccomment">/// Sender to send notification to the region worker.
@@ -570,8 +582,7 @@
     <span class="kw">pub</span>(<span class="kw">crate</span>) file_purger: FilePurgerRef,
     <span class="doccomment">/// Start time of compaction task.
     </span><span class="kw">pub</span>(<span class="kw">crate</span>) start_time: Instant,
-    <span class="doccomment">/// Buffering threshold while writing SST files.
-    </span><span class="kw">pub</span>(<span class="kw">crate</span>) sst_write_buffer_size: ReadableSize,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) cache_manager: CacheManagerRef,
 }
 
 <span class="kw">impl </span>CompactionRequest {
@@ -605,14 +616,20 @@
     </span>region_status: HashMap&lt;RegionId, CompactionStatus&gt;,
     <span class="doccomment">/// Request sender of the worker that this scheduler belongs to.
     </span>request_sender: Sender&lt;WorkerRequest&gt;,
+    cache_manager: CacheManagerRef,
 }
 
 <span class="kw">impl </span>CompactionScheduler {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new(scheduler: SchedulerRef, request_sender: Sender&lt;WorkerRequest&gt;) -&gt; <span class="self">Self </span>{
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new(
+        scheduler: SchedulerRef,
+        request_sender: Sender&lt;WorkerRequest&gt;,
+        cache_manager: CacheManagerRef,
+    ) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             scheduler,
             region_status: HashMap::new(),
             request_sender,
+            cache_manager,
         }
     }
 
@@ -639,8 +656,12 @@
             access_layer.clone(),
             file_purger.clone(),
         );
-        <span class="kw">let </span>request =
-            status.new_compaction_request(<span class="self">self</span>.request_sender.clone(), waiter, engine_config);
+        <span class="kw">let </span>request = status.new_compaction_request(
+            <span class="self">self</span>.request_sender.clone(),
+            waiter,
+            engine_config,
+            <span class="self">self</span>.cache_manager.clone(),
+        );
         <span class="self">self</span>.region_status.insert(region_id, status);
         <span class="self">self</span>.schedule_compaction_request(request)
     }
@@ -659,6 +680,7 @@
             <span class="self">self</span>.request_sender.clone(),
             OptionOutputTx::none(),
             engine_config,
+            <span class="self">self</span>.cache_manager.clone(),
         );
         <span class="comment">// Try to schedule next compaction task for this region.
         </span><span class="kw">if let </span><span class="prelude-val">Err</span>(e) = <span class="self">self</span>.schedule_compaction_request(request) {
@@ -831,17 +853,19 @@
         request_sender: Sender&lt;WorkerRequest&gt;,
         waiter: OptionOutputTx,
         engine_config: Arc&lt;MitoConfig&gt;,
+        cache_manager: CacheManagerRef,
     ) -&gt; CompactionRequest {
         <span class="kw">let </span>current_version = <span class="self">self</span>.version_control.current().version;
         <span class="kw">let </span>start_time = Instant::now();
         <span class="kw">let </span><span class="kw-2">mut </span>req = CompactionRequest {
+            engine_config,
             current_version,
             access_layer: <span class="self">self</span>.access_layer.clone(),
             request_sender: request_sender.clone(),
             waiters: Vec::new(),
             file_purger: <span class="self">self</span>.file_purger.clone(),
             start_time,
-            sst_write_buffer_size: engine_config.sst_write_buffer_size,
+            cache_manager,
         };
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(pending) = <span class="self">self</span>.pending_compaction.take() {
@@ -866,7 +890,7 @@
 
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>test_schedule_empty() {
-        <span class="kw">let </span>env = SchedulerEnv::new();
+        <span class="kw">let </span>env = SchedulerEnv::new().<span class="kw">await</span>;
         <span class="kw">let </span>(tx, _rx) = mpsc::channel(<span class="number">4</span>);
         <span class="kw">let </span><span class="kw-2">mut </span>scheduler = env.mock_compaction_scheduler(tx);
         <span class="kw">let </span><span class="kw-2">mut </span>builder = VersionControlBuilder::new();
@@ -935,7 +959,7 @@
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>test_schedule_on_finished() {
         <span class="kw">let </span>job_scheduler = Arc::new(VecScheduler::default());
-        <span class="kw">let </span>env = SchedulerEnv::new().scheduler(job_scheduler.clone());
+        <span class="kw">let </span>env = SchedulerEnv::new().<span class="kw">await</span>.scheduler(job_scheduler.clone());
         <span class="kw">let </span>(tx, _rx) = mpsc::channel(<span class="number">4</span>);
         <span class="kw">let </span><span class="kw-2">mut </span>scheduler = env.mock_compaction_scheduler(tx);
         <span class="kw">let </span><span class="kw-2">mut </span>builder = VersionControlBuilder::new();

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["DEFAULT_VALUE"],"struct":["BuildFunction"]};
+window.SIDEBAR_ITEMS = {"struct":["BuildFunction"]};

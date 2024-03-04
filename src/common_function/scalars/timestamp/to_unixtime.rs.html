@@ -339,7 +339,6 @@
 // limitations under the License.
 
 </span><span class="kw">use </span>std::fmt;
-<span class="kw">use </span>std::str::FromStr;
 <span class="kw">use </span>std::sync::Arc;
 
 <span class="kw">use </span>common_query::error::{InvalidFuncArgsSnafu, <span class="prelude-ty">Result</span>, UnsupportedInputDataTypeSnafu};
@@ -357,16 +356,17 @@
 
 <span class="kw">const </span>NAME: <span class="kw-2">&amp;</span>str = <span class="string">"to_unixtime"</span>;
 
-<span class="kw">fn </span>convert_to_seconds(arg: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;i64&gt; {
-    <span class="kw">if let </span><span class="prelude-val">Ok</span>(dt) = DateTime::from_str(arg) {
+<span class="kw">fn </span>convert_to_seconds(arg: <span class="kw-2">&amp;</span>str, func_ctx: <span class="kw-2">&amp;</span>FunctionContext) -&gt; <span class="prelude-ty">Option</span>&lt;i64&gt; {
+    <span class="kw">let </span>timezone = <span class="kw-2">&amp;</span>func_ctx.query_ctx.timezone();
+    <span class="kw">if let </span><span class="prelude-val">Ok</span>(dt) = DateTime::from_str(arg, <span class="prelude-val">Some</span>(timezone)) {
         <span class="kw">return </span><span class="prelude-val">Some</span>(dt.val() / <span class="number">1000</span>);
     }
 
-    <span class="kw">if let </span><span class="prelude-val">Ok</span>(ts) = Timestamp::from_str(arg) {
+    <span class="kw">if let </span><span class="prelude-val">Ok</span>(ts) = Timestamp::from_str(arg, <span class="prelude-val">Some</span>(timezone)) {
         <span class="kw">return </span><span class="prelude-val">Some</span>(ts.split().<span class="number">0</span>);
     }
 
-    <span class="kw">if let </span><span class="prelude-val">Ok</span>(date) = Date::from_str(arg) {
+    <span class="kw">if let </span><span class="prelude-val">Ok</span>(date) = Date::from_str(arg, <span class="prelude-val">Some</span>(timezone)) {
         <span class="kw">return </span><span class="prelude-val">Some</span>(date.to_secs());
     }
 
@@ -418,7 +418,7 @@
         )
     }
 
-    <span class="kw">fn </span>eval(<span class="kw-2">&amp;</span><span class="self">self</span>, _func_ctx: FunctionContext, columns: <span class="kw-2">&amp;</span>[VectorRef]) -&gt; <span class="prelude-ty">Result</span>&lt;VectorRef&gt; {
+    <span class="kw">fn </span>eval(<span class="kw-2">&amp;</span><span class="self">self</span>, func_ctx: FunctionContext, columns: <span class="kw-2">&amp;</span>[VectorRef]) -&gt; <span class="prelude-ty">Result</span>&lt;VectorRef&gt; {
         <span class="macro">ensure!</span>(
             columns.len() == <span class="number">1</span>,
             InvalidFuncArgsSnafu {
@@ -434,7 +434,7 @@
         <span class="kw">match </span>columns[<span class="number">0</span>].data_type() {
             ConcreteDataType::String(<span class="kw">_</span>) =&gt; <span class="prelude-val">Ok</span>(Arc::new(Int64Vector::from(
                 (<span class="number">0</span>..vector.len())
-                    .map(|i| convert_to_seconds(<span class="kw-2">&amp;</span>vector.get(i).to_string()))
+                    .map(|i| convert_to_seconds(<span class="kw-2">&amp;</span>vector.get(i).to_string(), <span class="kw-2">&amp;</span>func_ctx))
                     .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;(),
             ))),
             ConcreteDataType::Int64(<span class="kw">_</span>) | ConcreteDataType::Int32(<span class="kw">_</span>) =&gt; {

@@ -219,6 +219,8 @@
 <a href="#218" id="218">218</a>
 <a href="#219" id="219">219</a>
 <a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
+<a href="#222" id="222">222</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -414,13 +416,15 @@
     store: ObjectStore,
     path: <span class="kw-2">&amp;</span>str,
     threshold: usize,
+    concurrency: usize,
     encoder_factory: U,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;usize&gt; {
     <span class="kw">let </span>buffer = SharedBuffer::with_capacity(threshold);
     <span class="kw">let </span>encoder = encoder_factory(buffer.clone());
     <span class="kw">let </span><span class="kw-2">mut </span>writer = LazyBufferedWriter::new(threshold, buffer, encoder, path, |path| <span class="kw">async </span>{
         store
-            .writer(<span class="kw-2">&amp;</span>path)
+            .writer_with(<span class="kw-2">&amp;</span>path)
+            .concurrent(concurrency)
             .<span class="kw">await
             </span>.context(error::WriteObjectSnafu { path })
     });

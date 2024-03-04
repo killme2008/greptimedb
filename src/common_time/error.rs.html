@@ -107,6 +107,16 @@
 <a href="#106" id="106">106</a>
 <a href="#107" id="107">107</a>
 <a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
+<a href="#116" id="116">116</a>
+<a href="#117" id="117">117</a>
+<a href="#118" id="118">118</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -177,6 +187,14 @@
 
     <span class="attr">#[snafu(display(<span class="string">"Invalid timezone string {raw}"</span>))]
     </span>ParseTimezoneName { raw: String, location: Location },
+
+    <span class="attr">#[snafu(display(<span class="string">"Failed to format, pattern: {}"</span>, pattern))]
+    </span>Format {
+        pattern: String,
+        <span class="attr">#[snafu(source)]
+        </span>error: std::fmt::Error,
+        location: Location,
+    },
 }
 
 <span class="kw">impl </span>ErrorExt <span class="kw">for </span>Error {
@@ -185,6 +203,7 @@
             Error::ParseDateStr { .. }
             | Error::ParseTimestamp { .. }
             | Error::InvalidTimezoneOffset { .. }
+            | Error::Format { .. }
             | Error::ParseOffsetStr { .. }
             | Error::ParseTimezoneName { .. } =&gt; StatusCode::InvalidArguments,
             Error::TimestampOverflow { .. } =&gt; StatusCode::Internal,
@@ -202,6 +221,7 @@
     <span class="kw">fn </span>location_opt(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;common_error::snafu::Location&gt; {
         <span class="kw">match </span><span class="self">self </span>{
             Error::ParseTimestamp { location, .. }
+            | Error::Format { location, .. }
             | Error::TimestampOverflow { location, .. }
             | Error::ArithmeticOverflow { location, .. } =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">*</span>location),
             Error::ParseDateStr { .. }

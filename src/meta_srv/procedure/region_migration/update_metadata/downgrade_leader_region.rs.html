@@ -254,6 +254,8 @@
 <a href="#253" id="253">253</a>
 <a href="#254" id="254">254</a>
 <a href="#255" id="255">255</a>
+<a href="#256" id="256">256</a>
+<a href="#257" id="257">257</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -268,7 +270,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-</span><span class="kw">use </span>common_meta::rpc::router::RegionStatus;
+</span><span class="kw">use </span>common_error::ext::BoxedError;
+<span class="kw">use </span>common_meta::rpc::router::RegionStatus;
 <span class="kw">use </span>snafu::ResultExt;
 
 <span class="kw">use </span><span class="kw">crate</span>::error::{<span class="self">self</span>, <span class="prelude-ty">Result</span>};
@@ -316,13 +319,15 @@
             .<span class="kw">await
             </span>.context(error::TableMetadataManagerSnafu)
         {
-            <span class="macro">debug_assert!</span>(ctx.remove_table_route_value());
-            <span class="kw">return </span>error::RetryLaterSnafu {
-                reason: <span class="macro">format!</span>(<span class="string">"Failed to update the table route during the downgrading leader region, error: {err}"</span>)
-            }.fail();
+            ctx.remove_table_route_value();
+            <span class="kw">return </span><span class="prelude-val">Err</span>(BoxedError::new(err)).context(error::RetryLaterWithSourceSnafu {
+                reason: <span class="macro">format!</span>(
+                    <span class="string">"Failed to update the table route during the downgrading leader region, region_id: {region_id}, from_peer_id: {from_peer_id}"
+                </span>),
+            });
         }
 
-        <span class="macro">debug_assert!</span>(ctx.remove_table_route_value());
+        ctx.remove_table_route_value();
 
         <span class="prelude-val">Ok</span>(())
     }
@@ -398,7 +403,8 @@
         <span class="kw">let </span>table_metadata_manager = env.table_metadata_manager();
         <span class="kw">let </span>original_table_route = table_metadata_manager
             .table_route_manager()
-            .get(table_id)
+            .table_route_storage()
+            .get_raw(table_id)
             .<span class="kw">await
             </span>.unwrap()
             .unwrap();
@@ -419,13 +425,9 @@
         </span>ctx.volatile_ctx.table_route = <span class="prelude-val">Some</span>(original_table_route);
 
         <span class="kw">let </span>err = state.downgrade_leader_region(<span class="kw-2">&amp;mut </span>ctx).<span class="kw">await</span>.unwrap_err();
-
         <span class="macro">assert!</span>(ctx.volatile_ctx.table_route.is_none());
-
-        <span class="macro">assert_matches!</span>(err, Error::RetryLater { .. });
-
         <span class="macro">assert!</span>(err.is_retryable());
-        <span class="macro">assert!</span>(err.to_string().contains(<span class="string">"Failed to update the table route"</span>));
+        <span class="macro">assert!</span>(<span class="macro">format!</span>(<span class="string">"{err:?}"</span>).contains(<span class="string">"Failed to update the table route"</span>));
     }
 
     <span class="attr">#[tokio::test]
@@ -458,14 +460,15 @@
 
         <span class="kw">let </span>latest_table_route = table_metadata_manager
             .table_route_manager()
+            .table_route_storage()
             .get(table_id)
             .<span class="kw">await
             </span>.unwrap()
             .unwrap();
 
         <span class="comment">// It should remain unchanged.
-        </span><span class="macro">assert_eq!</span>(latest_table_route.version(), <span class="number">0</span>);
-        <span class="macro">assert!</span>(!latest_table_route.region_routes()[<span class="number">0</span>].is_leader_downgraded());
+        </span><span class="macro">assert_eq!</span>(latest_table_route.version().unwrap(), <span class="number">0</span>);
+        <span class="macro">assert!</span>(!latest_table_route.region_routes().unwrap()[<span class="number">0</span>].is_leader_downgraded());
         <span class="macro">assert!</span>(ctx.volatile_ctx.table_route.is_none());
     }
 
@@ -500,12 +503,13 @@
 
         <span class="kw">let </span>latest_table_route = table_metadata_manager
             .table_route_manager()
+            .table_route_storage()
             .get(table_id)
             .<span class="kw">await
             </span>.unwrap()
             .unwrap();
 
-        <span class="macro">assert!</span>(latest_table_route.region_routes()[<span class="number">0</span>].is_leader_downgraded());
+        <span class="macro">assert!</span>(latest_table_route.region_routes().unwrap()[<span class="number">0</span>].is_leader_downgraded());
         <span class="macro">assert!</span>(ctx.volatile_ctx.table_route.is_none());
     }
 }

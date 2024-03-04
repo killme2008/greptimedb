@@ -146,9 +146,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-</span><span class="kw">use </span>std::str::FromStr;
-
-<span class="kw">use </span>arrow::datatypes::{DataType <span class="kw">as </span>ArrowDataType, Date64Type};
+</span><span class="kw">use </span>arrow::datatypes::{DataType <span class="kw">as </span>ArrowDataType, Date64Type};
 <span class="kw">use </span>common_time::DateTime;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>snafu::OptionExt;
@@ -188,7 +186,9 @@
         <span class="kw">match </span>from {
             Value::Int64(v) =&gt; <span class="prelude-val">Some</span>(Value::DateTime(DateTime::from(v))),
             Value::Timestamp(v) =&gt; v.to_chrono_datetime().map(|d| Value::DateTime(d.into())),
-            Value::String(v) =&gt; DateTime::from_str(v.as_utf8()).map(Value::DateTime).ok(),
+            Value::String(v) =&gt; DateTime::from_str_system(v.as_utf8())
+                .map(Value::DateTime)
+                .ok(),
             <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
         }
     }
@@ -253,15 +253,15 @@
         <span class="kw">let </span>dt = ConcreteDataType::datetime_datatype().try_cast(val).unwrap();
         <span class="macro">assert_eq!</span>(
             dt,
-            Value::DateTime(DateTime::from_str(<span class="string">"1970-01-01 00:00:00+0800"</span>).unwrap())
+            Value::DateTime(DateTime::from_str_system(<span class="string">"1970-01-01 00:00:00+0800"</span>).unwrap())
         );
 
         <span class="comment">// cast from Timestamp
-        </span><span class="kw">let </span>val = Value::Timestamp(Timestamp::from_str(<span class="string">"2020-09-08 21:42:29+0800"</span>).unwrap());
+        </span><span class="kw">let </span>val = Value::Timestamp(Timestamp::from_str_utc(<span class="string">"2020-09-08 21:42:29+0800"</span>).unwrap());
         <span class="kw">let </span>dt = ConcreteDataType::datetime_datatype().try_cast(val).unwrap();
         <span class="macro">assert_eq!</span>(
             dt,
-            Value::DateTime(DateTime::from_str(<span class="string">"2020-09-08 21:42:29+0800"</span>).unwrap())
+            Value::DateTime(DateTime::from_str_system(<span class="string">"2020-09-08 21:42:29+0800"</span>).unwrap())
         );
     }
 }

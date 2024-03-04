@@ -275,8 +275,6 @@
 <a href="#274" id="274">274</a>
 <a href="#275" id="275">275</a>
 <a href="#276" id="276">276</a>
-<a href="#277" id="277">277</a>
-<a href="#278" id="278">278</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -291,9 +289,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-</span><span class="kw">use </span>std::str::FromStr;
-
-<span class="kw">use </span>arrow::datatypes::{
+</span><span class="kw">use </span>arrow::datatypes::{
     DataType <span class="kw">as </span>ArrowDataType, TimeUnit <span class="kw">as </span>ArrowTimeUnit,
     TimestampMicrosecondType <span class="kw">as </span>ArrowTimestampMicrosecondType,
     TimestampMillisecondType <span class="kw">as </span>ArrowTimestampMillisecondType,
@@ -411,7 +407,7 @@
                 <span class="kw">fn </span>try_cast(<span class="kw-2">&amp;</span><span class="self">self</span>, from: Value)-&gt; <span class="prelude-ty">Option</span>&lt;Value&gt;{
                     <span class="kw">match </span>from {
                         Value::Timestamp(v) =&gt; v.convert_to(TimeUnit::<span class="macro-nonterminal">$unit</span>).map(Value::Timestamp),
-                        Value::String(v) =&gt; Timestamp::from_str(v.as_utf8()).map(Value::Timestamp).ok(),
+                        Value::String(v) =&gt; Timestamp::from_str_utc(v.as_utf8()).map(Value::Timestamp).ok(),
                         Value::Int64(v) =&gt; <span class="prelude-val">Some</span>(Value::Timestamp(Timestamp::new(v, TimeUnit::<span class="macro-nonterminal">$unit</span>))),
                         Value::DateTime(v) =&gt; Timestamp::new_second(v.val()).convert_to(TimeUnit::<span class="macro-nonterminal">$unit</span>).map(Value::Timestamp),
                         Value::Date(v) =&gt; Timestamp::new_second(v.to_secs()).convert_to(TimeUnit::<span class="macro-nonterminal">$unit</span>).map(Value::Timestamp),
@@ -538,7 +534,7 @@
         <span class="macro">assert_eq!</span>(ts, Value::Timestamp(Timestamp::new_second(<span class="number">1234567</span>)));
 
         <span class="comment">// Date -&gt; TimestampMillisecond
-        </span><span class="kw">let </span>d = Value::Date(Date::from_str(<span class="string">"1970-01-01"</span>).unwrap());
+        </span><span class="kw">let </span>d = Value::Date(Date::from_str_utc(<span class="string">"1970-01-01"</span>).unwrap());
         <span class="kw">let </span>ts = ConcreteDataType::timestamp_millisecond_datatype()
             .try_cast(d)
             .unwrap();

@@ -322,6 +322,11 @@
 <a href="#321" id="321">321</a>
 <a href="#322" id="322">322</a>
 <a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
+<a href="#325" id="325">325</a>
+<a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -341,13 +346,14 @@
 
 <span class="kw">use </span>api::v1::meta::MailboxMessage;
 <span class="kw">use </span>async_trait::async_trait;
-<span class="kw">use </span>common_meta::ddl::utils::region_storage_path;
 <span class="kw">use </span>common_meta::instruction::{Instruction, InstructionReply, OpenRegion, SimpleReply};
+<span class="kw">use </span>common_meta::key::datanode_table::{DatanodeTableKey, RegionInfo};
 <span class="kw">use </span>common_meta::peer::Peer;
 <span class="kw">use </span>common_meta::RegionIdent;
 <span class="kw">use </span>common_telemetry::{debug, info};
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>snafu::{OptionExt, ResultExt};
+<span class="kw">use </span>store_api::storage::RegionNumber;
 
 <span class="kw">use </span><span class="kw">super</span>::update_metadata::UpdateRegionMetadata;
 <span class="kw">use super</span>::{RegionFailoverContext, State};
@@ -368,7 +374,7 @@
     <span class="comment">// An `None` option stands for uninitialized.
     </span>region_storage_path: <span class="prelude-ty">Option</span>&lt;String&gt;,
     region_options: <span class="prelude-ty">Option</span>&lt;HashMap&lt;String, String&gt;&gt;,
-    region_wal_options: <span class="prelude-ty">Option</span>&lt;HashMap&lt;String, String&gt;&gt;,
+    region_wal_options: <span class="prelude-ty">Option</span>&lt;HashMap&lt;RegionNumber, String&gt;&gt;,
 }
 
 <span class="kw">impl </span>ActivateRegion {
@@ -389,27 +395,31 @@
         timeout: Duration,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;MailboxReceiver&gt; {
         <span class="kw">let </span>table_id = failed_region.table_id;
-        <span class="kw">let </span>table_info = ctx
+        <span class="comment">// Retrieves the wal options from failed datanode table value.
+        </span><span class="kw">let </span>datanode_table_value = ctx
             .table_metadata_manager
-            .table_info_manager()
-            .get(table_id)
+            .datanode_table_manager()
+            .get(<span class="kw-2">&amp;</span>DatanodeTableKey::new(failed_region.datanode_id, table_id))
             .<span class="kw">await
             </span>.context(error::TableMetadataManagerSnafu)<span class="question-mark">?
-            </span>.context(error::TableInfoNotFoundSnafu { table_id })<span class="question-mark">?
-            </span>.into_inner()
-            .table_info;
-
-        <span class="kw">let </span>region_storage_path =
-            region_storage_path(<span class="kw-2">&amp;</span>table_info.catalog_name, <span class="kw-2">&amp;</span>table_info.schema_name);
+            </span>.context(error::DatanodeTableNotFoundSnafu {
+                table_id,
+                datanode_id: failed_region.datanode_id,
+            })<span class="question-mark">?</span>;
 
         <span class="kw">let </span>candidate_ident = RegionIdent {
             datanode_id: <span class="self">self</span>.candidate.id,
             ..failed_region.clone()
         };
         <span class="macro">info!</span>(<span class="string">"Activating region: {candidate_ident:?}"</span>);
-        <span class="kw">let </span>region_options: HashMap&lt;String, String&gt; = (<span class="kw-2">&amp;</span>table_info.meta.options).into();
-        <span class="comment">// TODO(niebayes): properly fetch or construct region wal options.
-        </span><span class="kw">let </span>region_wal_options = HashMap::new();
+
+        <span class="kw">let </span>RegionInfo {
+            region_storage_path,
+            region_options,
+            region_wal_options,
+            ..
+        } = datanode_table_value.region_info;
+
         <span class="kw">let </span>instruction = Instruction::OpenRegion(OpenRegion::new(
             candidate_ident.clone(),
             <span class="kw-2">&amp;</span>region_storage_path,

@@ -362,6 +362,7 @@
 <a href="#361" id="361">361</a>
 <a href="#362" id="362">362</a>
 <a href="#363" id="363">363</a>
+<a href="#364" id="364">364</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -378,7 +379,7 @@
 
 </span><span class="kw">use </span>common_error::ext::ErrorExt;
 <span class="kw">use </span>common_meta::instruction::{InstructionReply, UpgradeRegion, UpgradeRegionReply};
-<span class="kw">use </span>common_telemetry::warn;
+<span class="kw">use </span>common_telemetry::{info, warn};
 <span class="kw">use </span>futures_util::future::BoxFuture;
 <span class="kw">use </span>store_api::region_request::{RegionCatchupRequest, RegionRequest};
 
@@ -420,6 +421,7 @@
                 .try_register(
                     region_id,
                     Box::pin(<span class="kw">async move </span>{
+                        <span class="macro">info!</span>(<span class="string">"Executing region: {region_id} catchup to: last entry id {last_entry_id:?}"</span>);
                         region_server_moved
                             .handle_request(
                                 region_id,

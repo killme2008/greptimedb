@@ -496,6 +496,11 @@
 <a href="#495" id="495">495</a>
 <a href="#496" id="496">496</a>
 <a href="#497" id="497">497</a>
+<a href="#498" id="498">498</a>
+<a href="#499" id="499">499</a>
+<a href="#500" id="500">500</a>
+<a href="#501" id="501">501</a>
+<a href="#502" id="502">502</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -522,6 +527,11 @@
 
     <span class="kw">async fn </span>txn(<span class="kw-2">&amp;</span><span class="self">self</span>, _txn: Txn) -&gt; <span class="prelude-ty">Result</span>&lt;TxnResponse, <span class="self">Self</span>::Error&gt; {
         <span class="macro">unimplemented!</span>(<span class="string">"txn is not implemented"</span>)
+    }
+
+    <span class="doccomment">/// Maximum number of operations permitted in a transaction.
+    </span><span class="kw">fn </span>max_txn_size(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+        usize::MAX
     }
 }
 

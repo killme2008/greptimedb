@@ -253,7 +253,7 @@
 
 </span><span class="kw">use </span>std::collections::HashMap;
 
-<span class="kw">use </span>api::v1::meta::Peer;
+<span class="kw">use </span>common_meta::peer::Peer;
 <span class="kw">use </span>itertools::{Itertools, MinMaxResult};
 
 <span class="kw">use </span><span class="kw">crate</span>::keys::{StatKey, StatValue};
@@ -331,7 +331,7 @@
 </span><span class="kw">mod </span>tests {
     <span class="kw">use </span>std::collections::HashMap;
 
-    <span class="kw">use </span>api::v1::meta::Peer;
+    <span class="kw">use </span>common_meta::peer::Peer;
     <span class="kw">use </span>store_api::region_engine::RegionRole;
     <span class="kw">use </span>store_api::storage::RegionId;
 

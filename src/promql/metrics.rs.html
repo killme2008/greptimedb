@@ -41,6 +41,6 @@
 <span class="macro">lazy_static! </span>{
     <span class="doccomment">/// Counter for the number of series processed per query.
     </span><span class="kw">pub static </span><span class="kw-2">ref </span>PROMQL_SERIES_COUNT: Histogram =
-        <span class="macro">register_histogram!</span>(<span class="string">"promql_series_count"</span>, <span class="string">"promql series count"</span>).unwrap();
+        <span class="macro">register_histogram!</span>(<span class="string">"greptime_promql_series_count"</span>, <span class="string">"promql series count"</span>).unwrap();
 }
 </code></pre></div></section></main></body></html>

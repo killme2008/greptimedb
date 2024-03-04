@@ -136,7 +136,6 @@
 <a href="#135" id="135">135</a>
 <a href="#136" id="136">136</a>
 <a href="#137" id="137">137</a>
-<a href="#138" id="138">138</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -168,19 +167,20 @@
 <span class="kw">use </span><span class="kw">crate</span>::error::Result;
 <span class="kw">use </span><span class="kw">crate</span>::query_handler::sql::ServerSqlQueryHandlerRef;
 <span class="kw">use </span><span class="kw">crate</span>::server::{AbortableStream, BaseTcpServer, Server};
-<span class="kw">use </span><span class="kw">crate</span>::tls::TlsOption;
+<span class="kw">use </span><span class="kw">crate</span>::tls::ReloadableTlsServerConfig;
 
 <span class="kw">pub struct </span>PostgresServer {
     base_server: BaseTcpServer,
     make_handler: Arc&lt;MakePostgresServerHandler&gt;,
-    tls: TlsOption,
+    tls_server_config: Arc&lt;ReloadableTlsServerConfig&gt;,
 }
 
 <span class="kw">impl </span>PostgresServer {
     <span class="doccomment">/// Creates a new Postgres server with provided query_handler and async runtime
     </span><span class="kw">pub fn </span>new(
         query_handler: ServerSqlQueryHandlerRef,
-        tls: TlsOption,
+        force_tls: bool,
+        tls_server_config: Arc&lt;ReloadableTlsServerConfig&gt;,
         io_runtime: Arc&lt;Runtime&gt;,
         user_provider: <span class="prelude-ty">Option</span>&lt;UserProviderRef&gt;,
     ) -&gt; PostgresServer {
@@ -188,14 +188,14 @@
             MakePostgresServerHandlerBuilder::default()
                 .query_handler(query_handler.clone())
                 .user_provider(user_provider.clone())
-                .force_tls(tls.should_force_tls())
+                .force_tls(force_tls)
                 .build()
                 .unwrap(),
         );
         PostgresServer {
             base_server: BaseTcpServer::create_server(<span class="string">"Postgres"</span>, io_runtime),
             make_handler,
-            tls,
+            tls_server_config,
         }
     }
 
@@ -203,12 +203,16 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         io_runtime: Arc&lt;Runtime&gt;,
         accepting_stream: AbortableStream,
-        tls_acceptor: <span class="prelude-ty">Option</span>&lt;Arc&lt;TlsAcceptor&gt;&gt;,
     ) -&gt; <span class="kw">impl </span>Future&lt;Output = ()&gt; {
         <span class="kw">let </span>handler_maker = <span class="self">self</span>.make_handler.clone();
+        <span class="kw">let </span>tls_server_config = <span class="self">self</span>.tls_server_config.clone();
         accepting_stream.for_each(<span class="kw">move </span>|tcp_stream| {
             <span class="kw">let </span>io_runtime = io_runtime.clone();
-            <span class="kw">let </span>tls_acceptor = tls_acceptor.clone();
+
+            <span class="kw">let </span>tls_acceptor = tls_server_config
+                .get_server_config()
+                .map(|server_config| Arc::new(TlsAcceptor::from(server_config)));
+
             <span class="kw">let </span>handler_maker = handler_maker.clone();
 
             <span class="kw">async move </span>{
@@ -258,14 +262,8 @@
     <span class="kw">async fn </span>start(<span class="kw-2">&amp;</span><span class="self">self</span>, listening: SocketAddr) -&gt; <span class="prelude-ty">Result</span>&lt;SocketAddr&gt; {
         <span class="kw">let </span>(stream, addr) = <span class="self">self</span>.base_server.bind(listening).<span class="kw">await</span><span class="question-mark">?</span>;
 
-        <span class="macro">debug!</span>(<span class="string">"Starting PostgreSQL with TLS option: {:?}"</span>, <span class="self">self</span>.tls);
-        <span class="kw">let </span>tls_acceptor = <span class="self">self
-            </span>.tls
-            .setup()<span class="question-mark">?
-            </span>.map(|server_conf| Arc::new(TlsAcceptor::from(Arc::new(server_conf))));
-
         <span class="kw">let </span>io_runtime = <span class="self">self</span>.base_server.io_runtime();
-        <span class="kw">let </span>join_handle = common_runtime::spawn_read(<span class="self">self</span>.accept(io_runtime, stream, tls_acceptor));
+        <span class="kw">let </span>join_handle = common_runtime::spawn_read(<span class="self">self</span>.accept(io_runtime, stream));
 
         <span class="self">self</span>.base_server.start_with(join_handle).<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(addr)

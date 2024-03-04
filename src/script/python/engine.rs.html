@@ -557,6 +557,14 @@
 <a href="#556" id="556">556</a>
 <a href="#557" id="557">557</a>
 <a href="#558" id="558">558</a>
+<a href="#559" id="559">559</a>
+<a href="#560" id="560">560</a>
+<a href="#561" id="561">561</a>
+<a href="#562" id="562">562</a>
+<a href="#563" id="563">563</a>
+<a href="#564" id="564">564</a>
+<a href="#565" id="565">565</a>
+<a href="#566" id="566">566</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -595,7 +603,6 @@
 <span class="kw">use </span>futures::Stream;
 <span class="kw">use </span>query::parser::{QueryLanguageParser, QueryStatement};
 <span class="kw">use </span>query::QueryEngineRef;
-<span class="kw">use </span>session::context::QueryContextBuilder;
 <span class="kw">use </span>snafu::{ensure, ResultExt};
 <span class="kw">use </span>sql::statements::statement::Statement;
 
@@ -710,19 +717,25 @@
 
     <span class="kw">fn </span>eval(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        _func_ctx: common_function::function::FunctionContext,
+        func_ctx: common_function::function::FunctionContext,
         columns: <span class="kw-2">&amp;</span>[datatypes::vectors::VectorRef],
     ) -&gt; common_query::error::Result&lt;datatypes::vectors::VectorRef&gt; {
         <span class="comment">// FIXME(discord9): exec_parsed require a RecordBatch(basically a Vector+Schema), where schema can't pop out from nowhere, right?
         </span><span class="kw">let </span>schema = <span class="self">self</span>.fake_schema(columns);
         <span class="kw">let </span>columns = columns.to_vec();
         <span class="kw">let </span>rb = <span class="prelude-val">Some</span>(RecordBatch::new(schema, columns).context(UdfTempRecordBatchSnafu)<span class="question-mark">?</span>);
-        <span class="kw">let </span>res = exec_parsed(<span class="kw-2">&amp;</span><span class="self">self</span>.copr, <span class="kw-2">&amp;</span>rb, <span class="kw-2">&amp;</span>HashMap::new()).map_err(|err| {
-            PyUdfSnafu {
-                msg: <span class="macro">format!</span>(<span class="string">"{err:#?}"</span>),
-            }
-            .build()
-        })<span class="question-mark">?</span>;
+
+        <span class="kw">let </span>res = exec_parsed(
+            <span class="kw-2">&amp;</span><span class="self">self</span>.copr,
+            <span class="kw-2">&amp;</span>rb,
+            <span class="kw-2">&amp;</span>HashMap::new(),
+            <span class="kw-2">&amp;</span>EvalContext {
+                query_ctx: func_ctx.query_ctx.clone(),
+            },
+        )
+        .map_err(BoxedError::new)
+        .context(common_query::error::ExecuteSnafu)<span class="question-mark">?</span>;
+
         <span class="kw">let </span>len = res.columns().len();
         <span class="kw">if </span>len == <span class="number">0 </span>{
             <span class="kw">return </span>PyUdfSnafu {
@@ -765,6 +778,7 @@
     copr: CoprocessorRef,
     ret_schema: SchemaRef,
     params: HashMap&lt;String, String&gt;,
+    eval_ctx: EvalContext,
 }
 
 <span class="kw">impl </span>CoprStream {
@@ -772,6 +786,7 @@
         stream: SendableRecordBatchStream,
         copr: CoprocessorRef,
         params: HashMap&lt;String, String&gt;,
+        eval_ctx: EvalContext,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>schema = <span class="macro">vec!</span>[];
         <span class="kw">for </span>(ty, name) <span class="kw">in </span>copr.return_types.iter().zip(<span class="kw-2">&amp;</span>copr.deco_args.ret_names) {
@@ -797,6 +812,7 @@
             copr,
             ret_schema,
             params,
+            eval_ctx,
         })
     }
 }
@@ -815,9 +831,10 @@
         <span class="kw">match </span>Pin::new(<span class="kw-2">&amp;mut </span><span class="self">self</span>.stream).poll_next(cx) {
             Poll::Pending =&gt; Poll::Pending,
             Poll::Ready(<span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(recordbatch))) =&gt; {
-                <span class="kw">let </span>batch = exec_parsed(<span class="kw-2">&amp;</span><span class="self">self</span>.copr, <span class="kw-2">&amp;</span><span class="prelude-val">Some</span>(recordbatch), <span class="kw-2">&amp;</span><span class="self">self</span>.params)
-                    .map_err(BoxedError::new)
-                    .context(ExternalSnafu)<span class="question-mark">?</span>;
+                <span class="kw">let </span>batch =
+                    exec_parsed(<span class="kw-2">&amp;</span><span class="self">self</span>.copr, <span class="kw-2">&amp;</span><span class="prelude-val">Some</span>(recordbatch), <span class="kw-2">&amp;</span><span class="self">self</span>.params, <span class="kw-2">&amp;</span><span class="self">self</span>.eval_ctx)
+                        .map_err(BoxedError::new)
+                        .context(ExternalSnafu)<span class="question-mark">?</span>;
                 Poll::Ready(<span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(batch)))
             }
             Poll::Ready(other) =&gt; Poll::Ready(other),
@@ -842,36 +859,35 @@
         <span class="self">self
     </span>}
 
-    <span class="kw">async fn </span>execute(<span class="kw-2">&amp;</span><span class="self">self</span>, params: HashMap&lt;String, String&gt;, _ctx: EvalContext) -&gt; <span class="prelude-ty">Result</span>&lt;Output&gt; {
+    <span class="kw">async fn </span>execute(<span class="kw-2">&amp;</span><span class="self">self</span>, params: HashMap&lt;String, String&gt;, ctx: EvalContext) -&gt; <span class="prelude-ty">Result</span>&lt;Output&gt; {
         <span class="kw">if let </span><span class="prelude-val">Some</span>(sql) = <span class="kw-2">&amp;</span><span class="self">self</span>.copr.deco_args.sql {
-            <span class="kw">let </span>stmt = QueryLanguageParser::parse_sql(sql).unwrap();
+            <span class="kw">let </span>stmt = QueryLanguageParser::parse_sql(sql, <span class="kw-2">&amp;</span>ctx.query_ctx).unwrap();
             <span class="macro">ensure!</span>(
                 <span class="macro">matches!</span>(stmt, QueryStatement::Sql(Statement::Query { .. })),
                 error::UnsupportedSqlSnafu { sql }
             );
-            <span class="kw">let </span>ctx = QueryContextBuilder::default().build();
             <span class="kw">let </span>plan = <span class="self">self
                 </span>.query_engine
                 .planner()
-                .plan(stmt, ctx.clone())
+                .plan(stmt, ctx.query_ctx.clone())
                 .<span class="kw">await
                 </span>.context(DatabaseQuerySnafu)<span class="question-mark">?</span>;
             <span class="kw">let </span>res = <span class="self">self
                 </span>.query_engine
-                .execute(plan, ctx)
+                .execute(plan, ctx.query_ctx.clone())
                 .<span class="kw">await
                 </span>.context(DatabaseQuerySnafu)<span class="question-mark">?</span>;
             <span class="kw">let </span>copr = <span class="self">self</span>.copr.clone();
             <span class="kw">match </span>res {
-                Output::Stream(stream) =&gt; <span class="prelude-val">Ok</span>(Output::Stream(Box::pin(CoprStream::try_new(
-                    stream, copr, params,
+                Output::Stream(stream, <span class="kw">_</span>) =&gt; <span class="prelude-val">Ok</span>(Output::new_stream(Box::pin(CoprStream::try_new(
+                    stream, copr, params, ctx,
                 )<span class="question-mark">?</span>))),
                 <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
             }
         } <span class="kw">else </span>{
             <span class="kw">let </span>copr = <span class="self">self</span>.copr.clone();
             <span class="kw">let </span>params = params.clone();
-            <span class="kw">let </span>batch = spawn_blocking_script(<span class="kw">move </span>|| exec_parsed(<span class="kw-2">&amp;</span>copr, <span class="kw-2">&amp;</span><span class="prelude-val">None</span>, <span class="kw-2">&amp;</span>params))
+            <span class="kw">let </span>batch = spawn_blocking_script(<span class="kw">move </span>|| exec_parsed(<span class="kw-2">&amp;</span>copr, <span class="kw-2">&amp;</span><span class="prelude-val">None</span>, <span class="kw-2">&amp;</span>params, <span class="kw-2">&amp;</span>ctx))
                 .<span class="kw">await
                 </span>.context(TokioJoinSnafu)<span class="question-mark">??</span>;
             <span class="kw">let </span>batches = RecordBatches::try_new(batch.schema.clone(), <span class="macro">vec!</span>[batch]).unwrap();
@@ -936,7 +952,7 @@
         <span class="kw">let </span>catalog_manager =
             MemoryCatalogManager::new_with_table(NumbersTable::table(NUMBERS_TABLE_ID));
         <span class="kw">let </span>query_engine =
-            QueryEngineFactory::new(catalog_manager, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="bool-val">false</span>).query_engine();
+            QueryEngineFactory::new(catalog_manager, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="bool-val">false</span>).query_engine();
 
         PyEngine::new(query_engine.clone())
     }
@@ -962,7 +978,7 @@ def test(number) -&gt; vector[u32]:
             .<span class="kw">await
             </span>.unwrap();
         <span class="kw">let </span>res = common_recordbatch::util::collect_batches(<span class="kw">match </span>output {
-            Output::Stream(s) =&gt; s,
+            Output::Stream(s, <span class="kw">_</span>) =&gt; s,
             <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
         })
         .<span class="kw">await
@@ -1023,7 +1039,7 @@ def test(number) -&gt; vector[u32]:
             .<span class="kw">await
             </span>.unwrap();
         <span class="kw">let </span>res = common_recordbatch::util::collect_batches(<span class="kw">match </span>_output {
-            Output::Stream(s) =&gt; s,
+            Output::Stream(s, <span class="kw">_</span>) =&gt; s,
             <span class="kw">_ </span>=&gt; <span class="macro">todo!</span>(),
         })
         .<span class="kw">await
@@ -1055,7 +1071,7 @@ def test(a, b, c) -&gt; vector[f64]:
             .<span class="kw">await
             </span>.unwrap();
         <span class="kw">match </span>output {
-            Output::Stream(stream) =&gt; {
+            Output::Stream(stream, <span class="kw">_</span>) =&gt; {
                 <span class="kw">let </span>numbers = util::collect(stream).<span class="kw">await</span>.unwrap();
 
                 <span class="macro">assert_eq!</span>(<span class="number">1</span>, numbers.len());
@@ -1093,7 +1109,7 @@ def test(a) -&gt; vector[i64]:
             .<span class="kw">await
             </span>.unwrap();
         <span class="kw">match </span>output {
-            Output::Stream(stream) =&gt; {
+            Output::Stream(stream, <span class="kw">_</span>) =&gt; {
                 <span class="kw">let </span>numbers = util::collect(stream).<span class="kw">await</span>.unwrap();
 
                 <span class="macro">assert_eq!</span>(<span class="number">1</span>, numbers.len());

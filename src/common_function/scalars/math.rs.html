@@ -82,6 +82,9 @@
 <a href="#81" id="81">81</a>
 <a href="#82" id="82">82</a>
 <a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -96,7 +99,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-</span><span class="kw">mod </span>pow;
+</span><span class="kw">mod </span>modulo;
+<span class="kw">mod </span>pow;
 <span class="kw">mod </span>rate;
 
 <span class="kw">use </span>std::fmt;
@@ -114,11 +118,13 @@
 
 <span class="kw">use </span><span class="kw">crate</span>::function::{Function, FunctionContext};
 <span class="kw">use </span><span class="kw">crate</span>::function_registry::FunctionRegistry;
+<span class="kw">use </span><span class="kw">crate</span>::scalars::math::modulo::ModuloFunction;
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct </span>MathFunction;
 
 <span class="kw">impl </span>MathFunction {
     <span class="kw">pub fn </span>register(registry: <span class="kw-2">&amp;</span>FunctionRegistry) {
+        registry.register(Arc::new(ModuloFunction));
         registry.register(Arc::new(PowFunction));
         registry.register(Arc::new(RateFunction));
         registry.register(Arc::new(RangeFunction))

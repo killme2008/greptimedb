@@ -188,52 +188,6 @@
 <a href="#187" id="187">187</a>
 <a href="#188" id="188">188</a>
 <a href="#189" id="189">189</a>
-<a href="#190" id="190">190</a>
-<a href="#191" id="191">191</a>
-<a href="#192" id="192">192</a>
-<a href="#193" id="193">193</a>
-<a href="#194" id="194">194</a>
-<a href="#195" id="195">195</a>
-<a href="#196" id="196">196</a>
-<a href="#197" id="197">197</a>
-<a href="#198" id="198">198</a>
-<a href="#199" id="199">199</a>
-<a href="#200" id="200">200</a>
-<a href="#201" id="201">201</a>
-<a href="#202" id="202">202</a>
-<a href="#203" id="203">203</a>
-<a href="#204" id="204">204</a>
-<a href="#205" id="205">205</a>
-<a href="#206" id="206">206</a>
-<a href="#207" id="207">207</a>
-<a href="#208" id="208">208</a>
-<a href="#209" id="209">209</a>
-<a href="#210" id="210">210</a>
-<a href="#211" id="211">211</a>
-<a href="#212" id="212">212</a>
-<a href="#213" id="213">213</a>
-<a href="#214" id="214">214</a>
-<a href="#215" id="215">215</a>
-<a href="#216" id="216">216</a>
-<a href="#217" id="217">217</a>
-<a href="#218" id="218">218</a>
-<a href="#219" id="219">219</a>
-<a href="#220" id="220">220</a>
-<a href="#221" id="221">221</a>
-<a href="#222" id="222">222</a>
-<a href="#223" id="223">223</a>
-<a href="#224" id="224">224</a>
-<a href="#225" id="225">225</a>
-<a href="#226" id="226">226</a>
-<a href="#227" id="227">227</a>
-<a href="#228" id="228">228</a>
-<a href="#229" id="229">229</a>
-<a href="#230" id="230">230</a>
-<a href="#231" id="231">231</a>
-<a href="#232" id="232">232</a>
-<a href="#233" id="233">233</a>
-<a href="#234" id="234">234</a>
-<a href="#235" id="235">235</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -248,21 +202,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-</span><span class="kw">use </span>std::collections::HashMap;
-
-<span class="kw">use </span>proc_macro::TokenStream;
-<span class="kw">use </span>proc_macro2::Span;
+</span><span class="kw">use </span>proc_macro::TokenStream;
 <span class="kw">use </span>quote::quote;
-<span class="kw">use </span>syn::punctuated::Punctuated;
 <span class="kw">use </span>syn::spanned::Spanned;
-<span class="kw">use </span>syn::token::Comma;
 <span class="kw">use </span>syn::{
-    parse_macro_input, Attribute, AttributeArgs, FnArg, Ident, ItemFn, Meta, MetaNameValue,
-    NestedMeta, Signature, Type, TypeReference, Visibility,
+    parse_macro_input, Attribute, AttributeArgs, Ident, ItemFn, Signature, Type, TypeReference,
+    Visibility,
 };
 
-<span class="doccomment">/// Internal util macro to early return on error.
-</span><span class="macro">macro_rules! </span>ok {
+<span class="kw">use </span><span class="kw">crate</span>::utils::{extract_arg_map, extract_input_types, get_ident};
+
+<span class="macro">macro_rules! </span>ok {
     (<span class="macro-nonterminal">$item</span>:expr) =&gt; {
         <span class="kw">match </span><span class="macro-nonterminal">$item </span>{
             <span class="prelude-val">Ok</span>(item) =&gt; item,
@@ -323,48 +273,6 @@
     result.extend(calc_fn_code);
     result.extend(input_fn_code);
     result
-}
-
-<span class="doccomment">/// Extract a String &lt;-&gt; Ident map from the attribute args.
-</span><span class="kw">fn </span>extract_arg_map(args: Vec&lt;NestedMeta&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;HashMap&lt;String, Ident&gt;, syn::Error&gt; {
-    args.into_iter()
-        .map(|meta| {
-            <span class="kw">if let </span>NestedMeta::Meta(Meta::NameValue(MetaNameValue { path, lit, .. })) = meta {
-                <span class="kw">let </span>name = path.get_ident().unwrap().to_string();
-                <span class="kw">let </span>ident = <span class="kw">match </span>lit {
-                    syn::Lit::Str(lit_str) =&gt; lit_str.parse::&lt;Ident&gt;(),
-                    <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(syn::Error::new(
-                        lit.span(),
-                        <span class="string">"Unexpected attribute format. Expected `name = \"value\"`"</span>,
-                    )),
-                }<span class="question-mark">?</span>;
-                <span class="prelude-val">Ok</span>((name, ident))
-            } <span class="kw">else </span>{
-                <span class="prelude-val">Err</span>(syn::Error::new(
-                    meta.span(),
-                    <span class="string">"Unexpected attribute format. Expected `name = \"value\"`"</span>,
-                ))
-            }
-        })
-        .collect::&lt;<span class="prelude-ty">Result</span>&lt;HashMap&lt;String, Ident&gt;, syn::Error&gt;&gt;()
-}
-
-<span class="doccomment">/// Helper function to get an Ident from the previous arg map.
-</span><span class="kw">fn </span>get_ident(map: <span class="kw-2">&amp;</span>HashMap&lt;String, Ident&gt;, key: <span class="kw-2">&amp;</span>str, span: Span) -&gt; <span class="prelude-ty">Result</span>&lt;Ident, syn::Error&gt; {
-    map.get(key)
-        .cloned()
-        .ok_or_else(|| syn::Error::new(span, <span class="macro">format!</span>(<span class="string">"Expect attribute {key} but not found"</span>)))
-}
-
-<span class="doccomment">/// Extract the argument list from the annotated function.
-</span><span class="kw">fn </span>extract_input_types(inputs: <span class="kw-2">&amp;</span>Punctuated&lt;FnArg, Comma&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;Type&gt;, syn::Error&gt; {
-    inputs
-        .iter()
-        .map(|arg| <span class="kw">match </span>arg {
-            FnArg::Receiver(receiver) =&gt; <span class="prelude-val">Err</span>(syn::Error::new(receiver.span(), <span class="string">"expected bool"</span>)),
-            FnArg::Typed(pat_type) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span>pat_type.ty.clone()),
-        })
-        .collect()
 }
 
 <span class="kw">fn </span>build_struct(
@@ -450,7 +358,7 @@
 
                 #( <span class="kw">let </span>#range_array_names = RangeArray::try_new(extract_array(<span class="kw-2">&amp;</span>input[#param_numbers])<span class="question-mark">?</span>.to_data().into())<span class="question-mark">?</span>; )*
 
-                <span class="comment">// TODO(ruihang): add ensure!() 
+                <span class="comment">// TODO(ruihang): add ensure!()
 
                 </span><span class="kw">let </span><span class="kw-2">mut </span>result_array = Vec::new();
                 <span class="kw">for </span>index <span class="kw">in </span><span class="number">0</span>..#first_range_array_name.len(){

@@ -255,6 +255,75 @@
 <a href="#254" id="254">254</a>
 <a href="#255" id="255">255</a>
 <a href="#256" id="256">256</a>
+<a href="#257" id="257">257</a>
+<a href="#258" id="258">258</a>
+<a href="#259" id="259">259</a>
+<a href="#260" id="260">260</a>
+<a href="#261" id="261">261</a>
+<a href="#262" id="262">262</a>
+<a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
+<a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
+<a href="#308" id="308">308</a>
+<a href="#309" id="309">309</a>
+<a href="#310" id="310">310</a>
+<a href="#311" id="311">311</a>
+<a href="#312" id="312">312</a>
+<a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
+<a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
+<a href="#325" id="325">325</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -282,6 +351,10 @@
 <span class="kw">use </span><span class="kw">crate</span>::statements::statement::Statement;
 <span class="kw">use </span><span class="kw">crate</span>::statements::transform_statements;
 
+<span class="doccomment">/// SQL Parser options.
+</span><span class="attr">#[derive(Clone, Debug, Default)]
+</span><span class="kw">pub struct </span>ParseOptions {}
+
 <span class="doccomment">/// GrepTime SQL parser context, a simple wrapper for Datafusion SQL parser.
 </span><span class="kw">pub struct </span>ParserContext&lt;<span class="lifetime">'a</span>&gt; {
     <span class="kw">pub</span>(<span class="kw">crate</span>) parser: Parser&lt;<span class="lifetime">'a</span>&gt;,
@@ -290,7 +363,11 @@
 
 <span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; ParserContext&lt;<span class="lifetime">'a</span>&gt; {
     <span class="doccomment">/// Parses SQL with given dialect
-    </span><span class="kw">pub fn </span>create_with_dialect(sql: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str, dialect: <span class="kw-2">&amp;</span><span class="kw">dyn </span>Dialect) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;Statement&gt;&gt; {
+    </span><span class="kw">pub fn </span>create_with_dialect(
+        sql: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str,
+        dialect: <span class="kw-2">&amp;</span><span class="kw">dyn </span>Dialect,
+        _opts: ParseOptions,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;Statement&gt;&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>stmts: Vec&lt;Statement&gt; = Vec::new();
 
         <span class="kw">let </span>parser = Parser::new(dialect)
@@ -321,6 +398,26 @@
         transform_statements(<span class="kw-2">&amp;mut </span>stmts)<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(stmts)
+    }
+
+    <span class="kw">pub fn </span>parse_table_name(sql: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str, dialect: <span class="kw-2">&amp;</span><span class="kw">dyn </span>Dialect) -&gt; <span class="prelude-ty">Result</span>&lt;ObjectName&gt; {
+        <span class="kw">let </span>parser = Parser::new(dialect)
+            .with_options(ParserOptions::new().with_trailing_commas(<span class="bool-val">true</span>))
+            .try_with_sql(sql)
+            .context(SyntaxSnafu)<span class="question-mark">?</span>;
+        ParserContext { parser, sql }.intern_parse_table_name()
+    }
+
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>intern_parse_table_name(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;ObjectName&gt; {
+        <span class="kw">let </span>raw_table_name = <span class="self">self
+            </span>.parser
+            .parse_object_name()
+            .context(error::UnexpectedSnafu {
+                sql: <span class="self">self</span>.sql,
+                expected: <span class="string">"a table name"</span>,
+                actual: <span class="self">self</span>.parser.peek_token().to_string(),
+            })<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(<span class="self">Self</span>::canonicalize_object_name(raw_table_name))
     }
 
     <span class="kw">pub fn </span>parse_function(sql: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str, dialect: <span class="kw-2">&amp;</span><span class="kw">dyn </span>Dialect) -&gt; <span class="prelude-ty">Result</span>&lt;Expr&gt; {
@@ -373,6 +470,8 @@
                     Keyword::COPY =&gt; <span class="self">self</span>.parse_copy(),
 
                     Keyword::TRUNCATE =&gt; <span class="self">self</span>.parse_truncate(),
+
+                    Keyword::SET =&gt; <span class="self">self</span>.parse_set_variables(),
 
                     Keyword::NoKeyword
                         <span class="kw">if </span>w.value.to_uppercase() == tql_parser::TQL &amp;&amp; w.quote_style.is_none() =&gt;
@@ -462,10 +561,14 @@
     <span class="kw">use </span><span class="kw">crate</span>::statements::sql_data_type_to_concrete_data_type;
 
     <span class="kw">fn </span>test_timestamp_precision(sql: <span class="kw-2">&amp;</span>str, expected_type: ConcreteDataType) {
-        <span class="kw">match </span>ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {})
-            .unwrap()
-            .pop()
-            .unwrap()
+        <span class="kw">match </span>ParserContext::create_with_dialect(
+            sql,
+            <span class="kw-2">&amp;</span>GreptimeDbDialect {},
+            ParseOptions::default(),
+        )
+        .unwrap()
+        .pop()
+        .unwrap()
         {
             Statement::CreateTable(CreateTable { columns, .. }) =&gt; {
                 <span class="kw">let </span>ts_col = columns.first().unwrap();
@@ -509,6 +612,41 @@
             <span class="string">"create table demo (ts timestamp(1) time index, cnt int);"</span>,
             ConcreteDataType::timestamp_millisecond_datatype(),
         );
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">pub fn </span>test_parse_table_name() {
+        <span class="kw">let </span>table_name = <span class="string">"a.b.c"</span>;
+
+        <span class="kw">let </span>object_name =
+            ParserContext::parse_table_name(table_name, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
+
+        <span class="macro">assert_eq!</span>(object_name.<span class="number">0</span>.len(), <span class="number">3</span>);
+        <span class="macro">assert_eq!</span>(object_name.to_string(), table_name);
+
+        <span class="kw">let </span>table_name = <span class="string">"a.b"</span>;
+
+        <span class="kw">let </span>object_name =
+            ParserContext::parse_table_name(table_name, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
+
+        <span class="macro">assert_eq!</span>(object_name.<span class="number">0</span>.len(), <span class="number">2</span>);
+        <span class="macro">assert_eq!</span>(object_name.to_string(), table_name);
+
+        <span class="kw">let </span>table_name = <span class="string">"Test.\"public-test\""</span>;
+
+        <span class="kw">let </span>object_name =
+            ParserContext::parse_table_name(table_name, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
+
+        <span class="macro">assert_eq!</span>(object_name.<span class="number">0</span>.len(), <span class="number">2</span>);
+        <span class="macro">assert_eq!</span>(object_name.to_string(), table_name.to_ascii_lowercase());
+
+        <span class="kw">let </span>table_name = <span class="string">"HelloWorld"</span>;
+
+        <span class="kw">let </span>object_name =
+            ParserContext::parse_table_name(table_name, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
+
+        <span class="macro">assert_eq!</span>(object_name.<span class="number">0</span>.len(), <span class="number">1</span>);
+        <span class="macro">assert_eq!</span>(object_name.to_string(), table_name.to_ascii_lowercase());
     }
 }
 </code></pre></div></section></main></body></html>

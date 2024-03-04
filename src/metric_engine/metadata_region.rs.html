@@ -652,6 +652,78 @@
 <a href="#651" id="651">651</a>
 <a href="#652" id="652">652</a>
 <a href="#653" id="653">653</a>
+<a href="#654" id="654">654</a>
+<a href="#655" id="655">655</a>
+<a href="#656" id="656">656</a>
+<a href="#657" id="657">657</a>
+<a href="#658" id="658">658</a>
+<a href="#659" id="659">659</a>
+<a href="#660" id="660">660</a>
+<a href="#661" id="661">661</a>
+<a href="#662" id="662">662</a>
+<a href="#663" id="663">663</a>
+<a href="#664" id="664">664</a>
+<a href="#665" id="665">665</a>
+<a href="#666" id="666">666</a>
+<a href="#667" id="667">667</a>
+<a href="#668" id="668">668</a>
+<a href="#669" id="669">669</a>
+<a href="#670" id="670">670</a>
+<a href="#671" id="671">671</a>
+<a href="#672" id="672">672</a>
+<a href="#673" id="673">673</a>
+<a href="#674" id="674">674</a>
+<a href="#675" id="675">675</a>
+<a href="#676" id="676">676</a>
+<a href="#677" id="677">677</a>
+<a href="#678" id="678">678</a>
+<a href="#679" id="679">679</a>
+<a href="#680" id="680">680</a>
+<a href="#681" id="681">681</a>
+<a href="#682" id="682">682</a>
+<a href="#683" id="683">683</a>
+<a href="#684" id="684">684</a>
+<a href="#685" id="685">685</a>
+<a href="#686" id="686">686</a>
+<a href="#687" id="687">687</a>
+<a href="#688" id="688">688</a>
+<a href="#689" id="689">689</a>
+<a href="#690" id="690">690</a>
+<a href="#691" id="691">691</a>
+<a href="#692" id="692">692</a>
+<a href="#693" id="693">693</a>
+<a href="#694" id="694">694</a>
+<a href="#695" id="695">695</a>
+<a href="#696" id="696">696</a>
+<a href="#697" id="697">697</a>
+<a href="#698" id="698">698</a>
+<a href="#699" id="699">699</a>
+<a href="#700" id="700">700</a>
+<a href="#701" id="701">701</a>
+<a href="#702" id="702">702</a>
+<a href="#703" id="703">703</a>
+<a href="#704" id="704">704</a>
+<a href="#705" id="705">705</a>
+<a href="#706" id="706">706</a>
+<a href="#707" id="707">707</a>
+<a href="#708" id="708">708</a>
+<a href="#709" id="709">709</a>
+<a href="#710" id="710">710</a>
+<a href="#711" id="711">711</a>
+<a href="#712" id="712">712</a>
+<a href="#713" id="713">713</a>
+<a href="#714" id="714">714</a>
+<a href="#715" id="715">715</a>
+<a href="#716" id="716">716</a>
+<a href="#717" id="717">717</a>
+<a href="#718" id="718">718</a>
+<a href="#719" id="719">719</a>
+<a href="#720" id="720">720</a>
+<a href="#721" id="721">721</a>
+<a href="#722" id="722">722</a>
+<a href="#723" id="723">723</a>
+<a href="#724" id="724">724</a>
+<a href="#725" id="725">725</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -683,7 +755,7 @@
     METADATA_SCHEMA_VALUE_COLUMN_NAME,
 };
 <span class="kw">use </span>store_api::region_engine::RegionEngine;
-<span class="kw">use </span>store_api::region_request::RegionPutRequest;
+<span class="kw">use </span>store_api::region_request::{RegionDeleteRequest, RegionPutRequest};
 <span class="kw">use </span>store_api::storage::{RegionId, ScanRequest};
 
 <span class="kw">use </span><span class="kw">crate</span>::error::{
@@ -764,6 +836,34 @@
         )
         .<span class="kw">await
     </span>}
+
+    <span class="doccomment">/// Remove a registered logical region from metadata.
+    ///
+    /// This method doesn't check if the previous key exists.
+    </span><span class="kw">pub async fn </span>remove_logical_region(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        physical_region_id: RegionId,
+        logical_region_id: RegionId,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        <span class="comment">// concat region key
+        </span><span class="kw">let </span>region_id = utils::to_metadata_region_id(physical_region_id);
+        <span class="kw">let </span>region_key = <span class="self">Self</span>::concat_region_key(logical_region_id);
+
+        <span class="comment">// concat column keys
+        </span><span class="kw">let </span>logical_columns = <span class="self">self
+            </span>.logical_columns(physical_region_id, logical_region_id)
+            .<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>column_keys = logical_columns
+            .into_iter()
+            .map(|(col, <span class="kw">_</span>)| <span class="self">Self</span>::concat_column_key(logical_region_id, <span class="kw-2">&amp;</span>col))
+            .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
+
+        <span class="comment">// remove region key and column keys
+        </span>column_keys.push(region_key);
+        <span class="self">self</span>.delete(region_id, <span class="kw-2">&amp;</span>column_keys).<span class="kw">await</span><span class="question-mark">?</span>;
+
+        <span class="prelude-val">Ok</span>(())
+    }
 
     <span class="doccomment">/// Check if the given logical region exists.
     </span><span class="kw">pub async fn </span>is_logical_region_exists(
@@ -855,13 +955,11 @@
         <span class="macro">format!</span>(<span class="string">"{COLUMN_PREFIX}{}_"</span>, region_id.as_u64())
     }
 
-    <span class="attr">#[allow(dead_code)]
-    </span><span class="kw">pub fn </span>parse_region_key(key: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt; {
+    <span class="kw">pub fn </span>parse_region_key(key: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt; {
         key.strip_prefix(REGION_PREFIX)
     }
 
     <span class="doccomment">/// Parse column key to (logical_region_id, column_name)
-    </span><span class="attr">#[allow(dead_code)]
     </span><span class="kw">pub fn </span>parse_column_key(key: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;(RegionId, String)&gt;&gt; {
         <span class="kw">if let </span><span class="prelude-val">Some</span>(stripped) = key.strip_prefix(COLUMN_PREFIX) {
             <span class="kw">let </span><span class="kw-2">mut </span>iter = stripped.split(<span class="string">'_'</span>);
@@ -897,7 +995,6 @@
 <span class="comment">// simulate to `KvBackend`
 //
 // methods in this block assume the given region id is transformed.
-</span><span class="attr">#[allow(unused_variables)]
 </span><span class="kw">impl </span>MetadataRegion {
     <span class="doccomment">/// Put if not exist, return if this put operation is successful (error other
     /// than "key already exist" will be wrapped in [Err]).
@@ -1008,6 +1105,20 @@
         <span class="prelude-val">Ok</span>(result)
     }
 
+    <span class="doccomment">/// Delete the given keys. For performance consideration, this method
+    /// doesn't check if those keys exist or not.
+    </span><span class="kw">async fn </span>delete(<span class="kw-2">&amp;</span><span class="self">self</span>, region_id: RegionId, keys: <span class="kw-2">&amp;</span>[String]) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        <span class="kw">let </span>delete_request = <span class="self">Self</span>::build_delete_request(keys);
+        <span class="self">self</span>.mito
+            .handle_request(
+                region_id,
+                store_api::region_request::RegionRequest::Delete(delete_request),
+            )
+            .<span class="kw">await
+            </span>.context(MitoWriteOperationSnafu)<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(())
+    }
+
     <span class="doccomment">/// Builds a [ScanRequest] to read metadata for a given key.
     /// The request will contains a EQ filter on the key column.
     ///
@@ -1062,6 +1173,39 @@
         };
 
         RegionPutRequest { rows }
+    }
+
+    <span class="kw">fn </span>build_delete_request(keys: <span class="kw-2">&amp;</span>[String]) -&gt; RegionDeleteRequest {
+        <span class="kw">let </span>cols = <span class="macro">vec!</span>[
+            ColumnSchema {
+                column_name: METADATA_SCHEMA_TIMESTAMP_COLUMN_NAME.to_string(),
+                datatype: ColumnDataType::TimestampMillisecond <span class="kw">as _</span>,
+                semantic_type: SemanticType::Timestamp <span class="kw">as _</span>,
+                ..Default::default()
+            },
+            ColumnSchema {
+                column_name: METADATA_SCHEMA_KEY_COLUMN_NAME.to_string(),
+                datatype: ColumnDataType::String <span class="kw">as _</span>,
+                semantic_type: SemanticType::Tag <span class="kw">as _</span>,
+                ..Default::default()
+            },
+        ];
+        <span class="kw">let </span>rows = keys
+            .iter()
+            .map(|key| Row {
+                values: <span class="macro">vec!</span>[
+                    Value {
+                        value_data: <span class="prelude-val">Some</span>(ValueData::TimestampMillisecondValue(<span class="number">0</span>)),
+                    },
+                    Value {
+                        value_data: <span class="prelude-val">Some</span>(ValueData::StringValue(key.to_string())),
+                    },
+                ],
+            })
+            .collect();
+        <span class="kw">let </span>rows = Rows { schema: cols, rows };
+
+        RegionDeleteRequest { rows }
     }
 }
 

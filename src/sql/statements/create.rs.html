@@ -344,6 +344,22 @@
 <a href="#343" id="343">343</a>
 <a href="#344" id="344">344</a>
 <a href="#345" id="345">345</a>
+<a href="#346" id="346">346</a>
+<a href="#347" id="347">347</a>
+<a href="#348" id="348">348</a>
+<a href="#349" id="349">349</a>
+<a href="#350" id="350">350</a>
+<a href="#351" id="351">351</a>
+<a href="#352" id="352">352</a>
+<a href="#353" id="353">353</a>
+<a href="#354" id="354">354</a>
+<a href="#355" id="355">355</a>
+<a href="#356" id="356">356</a>
+<a href="#357" id="357">357</a>
+<a href="#358" id="358">358</a>
+<a href="#359" id="359">359</a>
+<a href="#360" id="360">360</a>
+<a href="#361" id="361">361</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -362,6 +378,7 @@
 
 <span class="kw">use </span>common_catalog::consts::FILE_ENGINE;
 <span class="kw">use </span>itertools::Itertools;
+<span class="kw">use </span>sqlparser::ast::Expr;
 <span class="kw">use </span>sqlparser_derive::{Visit, VisitMut};
 
 <span class="kw">use </span><span class="kw">crate</span>::ast::{ColumnDef, Ident, ObjectName, SqlOption, TableConstraint, Value <span class="kw">as </span>SqlValue};
@@ -442,7 +459,7 @@
         <span class="kw">if let </span><span class="prelude-val">Some</span>(partitions) = <span class="kw-2">&amp;</span><span class="self">self</span>.partitions {
             <span class="macro">format!</span>(<span class="string">"{}\n"</span>, partitions)
         } <span class="kw">else </span>{
-            <span class="string">""</span>.to_string()
+            String::default()
         }
     }
 
@@ -458,7 +475,7 @@
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>format_options(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
         <span class="kw">if </span><span class="self">self</span>.options.is_empty() {
-            <span class="string">""</span>.to_string()
+            String::default()
         } <span class="kw">else </span>{
             <span class="kw">let </span>options: Vec&lt;<span class="kw-2">&amp;</span>SqlOption&gt; = <span class="self">self</span>.options.iter().sorted().collect();
             <span class="kw">let </span>options = <span class="macro">format_list_indent!</span>(options);
@@ -474,7 +491,7 @@
 <span class="attr">#[derive(Debug, PartialEq, Eq, Clone, Visit, VisitMut)]
 </span><span class="kw">pub struct </span>Partitions {
     <span class="kw">pub </span>column_list: Vec&lt;Ident&gt;,
-    <span class="kw">pub </span>entries: Vec&lt;PartitionEntry&gt;,
+    <span class="kw">pub </span>exprs: Vec&lt;Expr&gt;,
 }
 
 <span class="kw">impl </span>Partitions {
@@ -508,9 +525,9 @@
         <span class="kw">if </span>!<span class="self">self</span>.column_list.is_empty() {
             <span class="macro">write!</span>(
                 f,
-                <span class="string">"PARTITION BY RANGE COLUMNS ({}) (\n{}\n)"</span>,
+                <span class="string">"PARTITION ON COLUMNS ({}) (\n{}\n)"</span>,
                 <span class="macro">format_list_comma!</span>(<span class="self">self</span>.column_list),
-                <span class="macro">format_list_indent!</span>(<span class="self">self</span>.entries),
+                <span class="macro">format_list_indent!</span>(<span class="self">self</span>.exprs),
             )
         } <span class="kw">else </span>{
             <span class="macro">write!</span>(f, <span class="string">""</span>)
@@ -564,11 +581,19 @@
     <span class="kw">pub </span>engine: String,
 }
 
+<span class="attr">#[derive(Debug, PartialEq, Eq, Clone, Visit, VisitMut)]
+</span><span class="kw">pub struct </span>CreateTableLike {
+    <span class="doccomment">/// Table name
+    </span><span class="kw">pub </span>table_name: ObjectName,
+    <span class="doccomment">/// The table that is designated to be imitated by `Like`
+    </span><span class="kw">pub </span>source_name: ObjectName,
+}
+
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use </span><span class="kw">crate</span>::dialect::GreptimeDbDialect;
     <span class="kw">use </span><span class="kw">crate</span>::error::Error::InvalidTableOption;
-    <span class="kw">use </span><span class="kw">crate</span>::parser::ParserContext;
+    <span class="kw">use </span><span class="kw">crate</span>::parser::{ParseOptions, ParserContext};
     <span class="kw">use </span><span class="kw">crate</span>::statements::statement::Statement;
 
     <span class="attr">#[test]
@@ -579,17 +604,18 @@
                              cpu double default 0,
                              memory double,
                              TIME INDEX (ts),
-                             PRIMARY KEY(ts, host)
+                             PRIMARY KEY(host)
                        )
-                       PARTITION BY RANGE COLUMNS (ts) (
-                         PARTITION r0 VALUES LESS THAN (5),
-                         PARTITION r1 VALUES LESS THAN (9),
-                         PARTITION r2 VALUES LESS THAN (MAXVALUE),
+                       PARTITION ON COLUMNS (host) (
+                            host = 'a',
+                            host &gt; 'a',
                        )
                        engine=mito
                        with(regions=1, ttl='7d', storage='File');
          "</span>;
-        <span class="kw">let </span>result = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
+        <span class="kw">let </span>result =
+            ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}, ParseOptions::default())
+                .unwrap();
         <span class="macro">assert_eq!</span>(<span class="number">1</span>, result.len());
 
         <span class="kw">match </span><span class="kw-2">&amp;</span>result[<span class="number">0</span>] {
@@ -603,12 +629,11 @@ CREATE TABLE IF NOT EXISTS demo (
   cpu DOUBLE DEFAULT 0,
   memory DOUBLE,
   TIME INDEX (ts),
-  PRIMARY KEY (ts, host)
+  PRIMARY KEY (host)
 )
-PARTITION BY RANGE COLUMNS (ts) (
-  PARTITION r0 VALUES LESS THAN (5),
-  PARTITION r1 VALUES LESS THAN (9),
-  PARTITION r2 VALUES LESS THAN (MAXVALUE)
+PARTITION ON COLUMNS (host) (
+  host = 'a',
+  host &gt; 'a'
 )
 ENGINE=mito
 WITH(
@@ -619,8 +644,12 @@ WITH(
                     <span class="kw-2">&amp;</span>new_sql
                 );
 
-                <span class="kw">let </span>new_result =
-                    ParserContext::create_with_dialect(<span class="kw-2">&amp;</span>new_sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
+                <span class="kw">let </span>new_result = ParserContext::create_with_dialect(
+                    <span class="kw-2">&amp;</span>new_sql,
+                    <span class="kw-2">&amp;</span>GreptimeDbDialect {},
+                    ParseOptions::default(),
+                )
+                .unwrap();
                 <span class="macro">assert_eq!</span>(result, new_result);
             }
             <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
@@ -638,7 +667,9 @@ WITH(
             PRIMARY KEY(ts, host)
             );
         "</span>;
-        <span class="kw">let </span>result = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
+        <span class="kw">let </span>result =
+            ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}, ParseOptions::default())
+                .unwrap();
         <span class="macro">assert_eq!</span>(<span class="number">1</span>, result.len());
 
         <span class="kw">match </span><span class="kw-2">&amp;</span>result[<span class="number">0</span>] {
@@ -659,8 +690,12 @@ ENGINE=mito
                     <span class="kw-2">&amp;</span>new_sql
                 );
 
-                <span class="kw">let </span>new_result =
-                    ParserContext::create_with_dialect(<span class="kw-2">&amp;</span>new_sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
+                <span class="kw">let </span>new_result = ParserContext::create_with_dialect(
+                    <span class="kw-2">&amp;</span>new_sql,
+                    <span class="kw-2">&amp;</span>GreptimeDbDialect {},
+                    ParseOptions::default(),
+                )
+                .unwrap();
                 <span class="macro">assert_eq!</span>(result, new_result);
             }
             <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
@@ -675,17 +710,14 @@ ENGINE=mito
             cpu double default 0,
             memory double,
             TIME INDEX (ts),
-            PRIMARY KEY(ts, host)
+            PRIMARY KEY(host)
       )
-      PARTITION BY RANGE COLUMNS (ts) (
-        PARTITION r0 VALUES LESS THAN (5),
-        PARTITION r1 VALUES LESS THAN (9),
-        PARTITION r2 VALUES LESS THAN (MAXVALUE),
-      )
+      PARTITION ON COLUMNS (host) ()
       engine=mito
       with(regions=1, ttl='7d', hello='world');
 "</span>;
-        <span class="kw">let </span>result = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {});
+        <span class="kw">let </span>result =
+            ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}, ParseOptions::default());
         <span class="macro">assert!</span>(<span class="macro">matches!</span>(result, <span class="prelude-val">Err</span>(InvalidTableOption { .. })))
     }
 }

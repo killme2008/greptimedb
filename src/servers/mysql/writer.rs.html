@@ -298,6 +298,7 @@
 <a href="#297" id="297">297</a>
 <a href="#298" id="298">298</a>
 <a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -381,7 +382,7 @@
         // a local variable.
         </span><span class="kw">match </span>output {
             <span class="prelude-val">Ok</span>(output) =&gt; <span class="kw">match </span>output {
-                Output::Stream(stream) =&gt; {
+                Output::Stream(stream, <span class="kw">_</span>) =&gt; {
                     <span class="kw">let </span>query_result = QueryResult {
                         schema: stream.schema(),
                         stream,
@@ -494,10 +495,10 @@
                     Value::Date(v) =&gt; row_writer.write_col(v.to_chrono_date())<span class="question-mark">?</span>,
                     <span class="comment">// convert datetime and timestamp to timezone of current connection
                     </span>Value::DateTime(v) =&gt; row_writer.write_col(
-                        v.to_chrono_datetime_with_timezone(<span class="prelude-val">Some</span>(query_context.timezone())),
+                        v.to_chrono_datetime_with_timezone(<span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>query_context.timezone())),
                     )<span class="question-mark">?</span>,
                     Value::Timestamp(v) =&gt; row_writer.write_col(
-                        v.to_chrono_datetime_with_timezone(<span class="prelude-val">Some</span>(query_context.timezone())),
+                        v.to_chrono_datetime_with_timezone(<span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>query_context.timezone())),
                     )<span class="question-mark">?</span>,
                     Value::Interval(v) =&gt; row_writer.write_col(v.to_iso8601_string())<span class="question-mark">?</span>,
                     Value::Duration(v) =&gt; row_writer.write_col(v.to_std_duration())<span class="question-mark">?</span>,
@@ -510,7 +511,7 @@
                         })
                     }
                     Value::Time(v) =&gt; row_writer
-                        .write_col(v.to_timezone_aware_string(<span class="prelude-val">Some</span>(query_context.timezone())))<span class="question-mark">?</span>,
+                        .write_col(v.to_timezone_aware_string(<span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>query_context.timezone())))<span class="question-mark">?</span>,
                     Value::Decimal128(v) =&gt; row_writer.write_col(v.to_string())<span class="question-mark">?</span>,
                 }
             }
@@ -565,8 +566,9 @@
         ConcreteDataType::Interval(<span class="kw">_</span>) =&gt; <span class="prelude-val">Ok</span>(ColumnType::MYSQL_TYPE_VARCHAR),
         ConcreteDataType::Duration(<span class="kw">_</span>) =&gt; <span class="prelude-val">Ok</span>(ColumnType::MYSQL_TYPE_TIME),
         ConcreteDataType::Decimal128(<span class="kw">_</span>) =&gt; <span class="prelude-val">Ok</span>(ColumnType::MYSQL_TYPE_DECIMAL),
-        <span class="kw">_ </span>=&gt; error::InternalSnafu {
-            err_msg: <span class="macro">format!</span>(<span class="string">"not implemented for column datatype {:?}"</span>, data_type),
+        <span class="kw">_ </span>=&gt; error::UnsupportedDataTypeSnafu {
+            data_type,
+            reason: <span class="string">"not implemented"</span>,
         }
         .fail(),
     };
@@ -584,7 +586,7 @@
 
         <span class="comment">// TODO(LFC): Currently "table" and "colflags" are not relevant in MySQL server
         //   implementation, will revisit them again in the future.
-        </span>table: <span class="string">""</span>.to_string(),
+        </span>table: String::default(),
         colflags,
     })
 }

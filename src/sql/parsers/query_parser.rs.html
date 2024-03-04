@@ -57,6 +57,9 @@
 <a href="#56" id="56">56</a>
 <a href="#57" id="57">57</a>
 <a href="#58" id="58">58</a>
+<a href="#59" id="59">59</a>
+<a href="#60" id="60">60</a>
+<a href="#61" id="61">61</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -92,7 +95,7 @@
     <span class="kw">use </span>common_error::ext::ErrorExt;
 
     <span class="kw">use </span><span class="kw">crate</span>::dialect::GreptimeDbDialect;
-    <span class="kw">use </span><span class="kw">crate</span>::parser::ParserContext;
+    <span class="kw">use </span><span class="kw">crate</span>::parser::{ParseOptions, ParserContext};
 
     <span class="attr">#[test]
     </span><span class="kw">pub fn </span>test_parse_query() {
@@ -101,13 +104,16 @@
            WHERE a &gt; b AND b &lt; 100 \
            ORDER BY a DESC, b"</span>;
 
-        <span class="kw">let _ </span>= ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}).unwrap();
+        <span class="kw">let _ </span>=
+            ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}, ParseOptions::default())
+                .unwrap();
     }
 
     <span class="attr">#[test]
     </span><span class="kw">pub fn </span>test_parse_invalid_query() {
         <span class="kw">let </span>sql = <span class="string">"SELECT * FROM table_1 WHERE"</span>;
-        <span class="kw">let </span>result = ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {});
+        <span class="kw">let </span>result =
+            ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}, ParseOptions::default());
         <span class="macro">assert!</span>(result.is_err());
         <span class="macro">assert!</span>(result
             .unwrap_err()

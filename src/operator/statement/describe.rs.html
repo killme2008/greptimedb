@@ -68,6 +68,7 @@
 <span class="kw">use </span>common_query::Output;
 <span class="kw">use </span>common_telemetry::tracing;
 <span class="kw">use </span>session::context::QueryContextRef;
+<span class="kw">use </span>session::table_name::table_idents_to_full_name;
 <span class="kw">use </span>snafu::{OptionExt, ResultExt};
 <span class="kw">use </span>sql::statements::describe::DescribeTable;
 <span class="kw">use </span>sql::util::format_raw_object_name;
@@ -76,7 +77,6 @@
     CatalogSnafu, DescribeStatementSnafu, ExternalSnafu, <span class="prelude-ty">Result</span>, TableNotFoundSnafu,
 };
 <span class="kw">use </span><span class="kw">crate</span>::statement::StatementExecutor;
-<span class="kw">use </span><span class="kw">crate</span>::table::table_idents_to_full_name;
 
 <span class="kw">impl </span>StatementExecutor {
     <span class="attr">#[tracing::instrument(skip_all)]
@@ -85,7 +85,7 @@
         stmt: DescribeTable,
         query_ctx: QueryContextRef,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;Output&gt; {
-        <span class="kw">let </span>(catalog, schema, table) = table_idents_to_full_name(stmt.name(), query_ctx)
+        <span class="kw">let </span>(catalog, schema, table) = table_idents_to_full_name(stmt.name(), <span class="kw-2">&amp;</span>query_ctx)
             .map_err(BoxedError::new)
             .context(ExternalSnafu)<span class="question-mark">?</span>;
 

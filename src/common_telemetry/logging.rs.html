@@ -252,6 +252,13 @@
 <a href="#251" id="251">251</a>
 <a href="#252" id="252">252</a>
 <a href="#253" id="253">253</a>
+<a href="#254" id="254">254</a>
+<a href="#255" id="255">255</a>
+<a href="#256" id="256">256</a>
+<a href="#257" id="257">257</a>
+<a href="#258" id="258">258</a>
+<a href="#259" id="259">259</a>
+<a href="#260" id="260">260</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -386,27 +393,34 @@
     <span class="comment">// Enable log compatible layer to convert log record to tracing span.
     </span>LogTracer::init().expect(<span class="string">"log tracer must be valid"</span>);
 
-    <span class="kw">let </span>stdout_logging_layer = <span class="kw">if </span>opts.append_stdout {
+    <span class="comment">// stdout log layer.
+    </span><span class="kw">let </span>stdout_logging_layer = <span class="kw">if </span>opts.append_stdout {
         <span class="kw">let </span>(stdout_writer, stdout_guard) = tracing_appender::non_blocking(std::io::stdout());
         guards.push(stdout_guard);
 
-        <span class="prelude-val">Some</span>(Layer::new().with_writer(stdout_writer))
+        <span class="prelude-val">Some</span>(
+            Layer::new()
+                .with_writer(stdout_writer)
+                .with_ansi(atty::is(atty::Stream::Stdout)),
+        )
     } <span class="kw">else </span>{
         <span class="prelude-val">None
     </span>};
 
-    <span class="comment">// JSON log layer.
+    <span class="comment">// file log layer.
     </span><span class="kw">let </span>rolling_appender = RollingFileAppender::new(Rotation::HOURLY, dir, app_name);
     <span class="kw">let </span>(rolling_writer, rolling_writer_guard) = tracing_appender::non_blocking(rolling_appender);
-    <span class="kw">let </span>file_logging_layer = Layer::new().with_writer(rolling_writer);
+    <span class="kw">let </span>file_logging_layer = Layer::new().with_writer(rolling_writer).with_ansi(<span class="bool-val">false</span>);
     guards.push(rolling_writer_guard);
 
-    <span class="comment">// error JSON log layer.
+    <span class="comment">// error file log layer.
     </span><span class="kw">let </span>err_rolling_appender =
         RollingFileAppender::new(Rotation::HOURLY, dir, <span class="macro">format!</span>(<span class="string">"{}-{}"</span>, app_name, <span class="string">"err"</span>));
     <span class="kw">let </span>(err_rolling_writer, err_rolling_writer_guard) =
         tracing_appender::non_blocking(err_rolling_appender);
-    <span class="kw">let </span>err_file_logging_layer = Layer::new().with_writer(err_rolling_writer);
+    <span class="kw">let </span>err_file_logging_layer = Layer::new()
+        .with_writer(err_rolling_writer)
+        .with_ansi(<span class="bool-val">false</span>);
     guards.push(err_rolling_writer_guard);
 
     <span class="comment">// resolve log level settings from:

@@ -750,6 +750,16 @@
 <a href="#749" id="749">749</a>
 <a href="#750" id="750">750</a>
 <a href="#751" id="751">751</a>
+<a href="#752" id="752">752</a>
+<a href="#753" id="753">753</a>
+<a href="#754" id="754">754</a>
+<a href="#755" id="755">755</a>
+<a href="#756" id="756">756</a>
+<a href="#757" id="757">757</a>
+<a href="#758" id="758">758</a>
+<a href="#759" id="759">759</a>
+<a href="#760" id="760">760</a>
+<a href="#761" id="761">761</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -770,28 +780,29 @@
 <span class="kw">use </span>async_trait::async_trait;
 <span class="kw">use </span>clap::Parser;
 <span class="kw">use </span>common_catalog::consts::MIN_USER_TABLE_ID;
-<span class="kw">use </span>common_config::wal::StandaloneWalConfig;
 <span class="kw">use </span>common_config::{metadata_store_dir, KvBackendConfig};
 <span class="kw">use </span>common_meta::cache_invalidator::DummyCacheInvalidator;
 <span class="kw">use </span>common_meta::datanode_manager::DatanodeManagerRef;
-<span class="kw">use </span>common_meta::ddl::{DdlTaskExecutorRef, TableMetadataAllocatorRef};
+<span class="kw">use </span>common_meta::ddl::table_meta::{TableMetadataAllocator, TableMetadataAllocatorRef};
+<span class="kw">use </span>common_meta::ddl::ProcedureExecutorRef;
 <span class="kw">use </span>common_meta::ddl_manager::DdlManager;
 <span class="kw">use </span>common_meta::key::{TableMetadataManager, TableMetadataManagerRef};
 <span class="kw">use </span>common_meta::kv_backend::KvBackendRef;
 <span class="kw">use </span>common_meta::region_keeper::MemoryRegionKeeper;
 <span class="kw">use </span>common_meta::sequence::SequenceBuilder;
-<span class="kw">use </span>common_meta::wal::{WalOptionsAllocator, WalOptionsAllocatorRef};
+<span class="kw">use </span>common_meta::wal_options_allocator::{WalOptionsAllocator, WalOptionsAllocatorRef};
 <span class="kw">use </span>common_procedure::ProcedureManagerRef;
 <span class="kw">use </span>common_telemetry::info;
 <span class="kw">use </span>common_telemetry::logging::LoggingOptions;
 <span class="kw">use </span>common_time::timezone::set_default_timezone;
+<span class="kw">use </span>common_wal::config::StandaloneWalConfig;
 <span class="kw">use </span>datanode::config::{DatanodeOptions, ProcedureConfig, RegionEngineConfig, StorageConfig};
 <span class="kw">use </span>datanode::datanode::{Datanode, DatanodeBuilder};
 <span class="kw">use </span>file_engine::config::EngineConfig <span class="kw">as </span>FileEngineConfig;
 <span class="kw">use </span>frontend::frontend::FrontendOptions;
 <span class="kw">use </span>frontend::instance::builder::FrontendBuilder;
-<span class="kw">use </span>frontend::instance::standalone::StandaloneTableMetadataAllocator;
 <span class="kw">use </span>frontend::instance::{FrontendInstance, Instance <span class="kw">as </span>FeInstance, StandaloneDatanodeManager};
+<span class="kw">use </span>frontend::server::Services;
 <span class="kw">use </span>frontend::service_config::{
     GrpcOptions, InfluxdbOptions, MysqlOptions, OpentsdbOptions, PostgresOptions, PromStoreOptions,
 };
@@ -868,6 +879,12 @@
     <span class="doccomment">/// Options for different store engines.
     </span><span class="kw">pub </span>region_engine: Vec&lt;RegionEngineConfig&gt;,
     <span class="kw">pub </span>export_metrics: ExportMetricsOption,
+}
+
+<span class="kw">impl </span>StandaloneOptions {
+    <span class="kw">pub fn </span>env_list_keys() -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'static </span>[<span class="kw-2">&amp;</span><span class="lifetime">'static </span>str]&gt; {
+        <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>[<span class="string">"wal.broker_endpoints"</span>])
+    }
 }
 
 <span class="kw">impl </span>Default <span class="kw">for </span>StandaloneOptions {
@@ -958,6 +975,10 @@
             .<span class="kw">await
             </span>.context(StartWalOptionsAllocatorSnafu)<span class="question-mark">?</span>;
 
+        plugins::start_frontend_plugins(<span class="self">self</span>.frontend.plugins().clone())
+            .<span class="kw">await
+            </span>.context(StartFrontendSnafu)<span class="question-mark">?</span>;
+
         <span class="self">self</span>.frontend.start().<span class="kw">await</span>.context(StartFrontendSnafu)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
@@ -1019,7 +1040,7 @@
         <span class="kw">let </span>opts: StandaloneOptions = Options::load_layered_options(
             <span class="self">self</span>.config_file.as_deref(),
             <span class="self">self</span>.env_prefix.as_ref(),
-            <span class="prelude-val">None</span>,
+            StandaloneOptions::env_list_keys(),
         )<span class="question-mark">?</span>;
 
         <span class="self">self</span>.convert_options(cli_options, opts)
@@ -1113,20 +1134,18 @@
     #[allow(unused_variables)]
     #[allow(clippy::diverging_sub_expression)]
     </span><span class="kw">async fn </span>build(<span class="self">self</span>, opts: MixOptions) -&gt; <span class="prelude-ty">Result</span>&lt;Instance&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>fe_opts = opts.frontend.clone();
+        <span class="macro">info!</span>(<span class="string">"Standalone start command: {:#?}"</span>, <span class="self">self</span>);
+        <span class="macro">info!</span>(<span class="string">"Building standalone instance with {opts:#?}"</span>);
+
+        <span class="kw">let </span><span class="kw-2">mut </span>fe_opts = opts.frontend;
         <span class="attr">#[allow(clippy::unnecessary_mut_passed)]
         </span><span class="kw">let </span>fe_plugins = plugins::setup_frontend_plugins(<span class="kw-2">&amp;mut </span>fe_opts) <span class="comment">// mut ref is MUST, DO NOT change it
             </span>.<span class="kw">await
             </span>.context(StartFrontendSnafu)<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>dn_opts = opts.datanode.clone();
+        <span class="kw">let </span>dn_opts = opts.datanode;
 
-        <span class="macro">info!</span>(<span class="string">"Standalone start command: {:#?}"</span>, <span class="self">self</span>);
-
-        <span class="macro">info!</span>(<span class="string">"Building standalone instance with {opts:#?}"</span>);
-
-        set_default_timezone(opts.frontend.default_timezone.as_deref())
-            .context(InitTimezoneSnafu)<span class="question-mark">?</span>;
+        set_default_timezone(fe_opts.default_timezone.as_deref()).context(InitTimezoneSnafu)<span class="question-mark">?</span>;
 
         <span class="comment">// Ensure the data_home directory exists.
         </span>fs::create_dir_all(path::Path::new(<span class="kw-2">&amp;</span>opts.data_home)).context(CreateDirSnafu {
@@ -1158,13 +1177,18 @@
             opts.wal_meta.clone(),
             kv_backend.clone(),
         ));
-        <span class="kw">let </span>table_meta_allocator = Arc::new(StandaloneTableMetadataAllocator::new(
+
+        <span class="kw">let </span>table_metadata_manager =
+            <span class="self">Self</span>::create_table_metadata_manager(kv_backend.clone()).<span class="kw">await</span><span class="question-mark">?</span>;
+
+        <span class="kw">let </span>table_meta_allocator = Arc::new(TableMetadataAllocator::new(
             table_id_sequence,
             wal_options_allocator.clone(),
+            table_metadata_manager.table_name_manager().clone(),
         ));
 
         <span class="kw">let </span>ddl_task_executor = <span class="self">Self</span>::create_ddl_task_executor(
-            kv_backend.clone(),
+            table_metadata_manager,
             procedure_manager.clone(),
             datanode_manager.clone(),
             table_meta_allocator,
@@ -1172,19 +1196,18 @@
         .<span class="kw">await</span><span class="question-mark">?</span>;
 
         <span class="kw">let </span><span class="kw-2">mut </span>frontend = FrontendBuilder::new(kv_backend, datanode_manager, ddl_task_executor)
-            .with_plugin(fe_plugins)
+            .with_plugin(fe_plugins.clone())
             .try_build()
             .<span class="kw">await
             </span>.context(StartFrontendSnafu)<span class="question-mark">?</span>;
 
-        frontend
-            .build_export_metrics_task(<span class="kw-2">&amp;</span>opts.frontend.export_metrics)
-            .context(StartFrontendSnafu)<span class="question-mark">?</span>;
-
-        frontend
-            .build_servers(opts)
+        <span class="kw">let </span>servers = Services::new(fe_opts.clone(), Arc::new(frontend.clone()), fe_plugins)
+            .build()
             .<span class="kw">await
             </span>.context(StartFrontendSnafu)<span class="question-mark">?</span>;
+        frontend
+            .build_servers(fe_opts, servers)
+            .context(StartFrontendSnafu)<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(Instance {
             datanode,
@@ -1195,15 +1218,12 @@
     }
 
     <span class="kw">pub async fn </span>create_ddl_task_executor(
-        kv_backend: KvBackendRef,
+        table_metadata_manager: TableMetadataManagerRef,
         procedure_manager: ProcedureManagerRef,
         datanode_manager: DatanodeManagerRef,
         table_meta_allocator: TableMetadataAllocatorRef,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;DdlTaskExecutorRef&gt; {
-        <span class="kw">let </span>table_metadata_manager =
-            <span class="self">Self</span>::create_table_metadata_manager(kv_backend.clone()).<span class="kw">await</span><span class="question-mark">?</span>;
-
-        <span class="kw">let </span>ddl_task_executor: DdlTaskExecutorRef = Arc::new(
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;ProcedureExecutorRef&gt; {
+        <span class="kw">let </span>procedure_executor: ProcedureExecutorRef = Arc::new(
             DdlManager::try_new(
                 procedure_manager,
                 datanode_manager,
@@ -1215,10 +1235,10 @@
             .context(InitDdlManagerSnafu)<span class="question-mark">?</span>,
         );
 
-        <span class="prelude-val">Ok</span>(ddl_task_executor)
+        <span class="prelude-val">Ok</span>(procedure_executor)
     }
 
-    <span class="kw">async fn </span>create_table_metadata_manager(
+    <span class="kw">pub async fn </span>create_table_metadata_manager(
         kv_backend: KvBackendRef,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;TableMetadataManagerRef&gt; {
         <span class="kw">let </span>table_metadata_manager = Arc::new(TableMetadataManager::new(kv_backend));
@@ -1240,8 +1260,8 @@
 
     <span class="kw">use </span>auth::{Identity, Password, UserProviderRef};
     <span class="kw">use </span>common_base::readable_size::ReadableSize;
-    <span class="kw">use </span>common_config::WalConfig;
     <span class="kw">use </span>common_test_util::temp_dir::create_named_temp_file;
+    <span class="kw">use </span>common_wal::config::DatanodeWalConfig;
     <span class="kw">use </span>datanode::config::{FileConfig, GcsConfig};
     <span class="kw">use </span>servers::Mode;
 
@@ -1348,7 +1368,7 @@
         <span class="macro">assert_eq!</span>(<span class="prelude-val">None</span>, fe_opts.mysql.reject_no_database);
         <span class="macro">assert!</span>(fe_opts.influxdb.enable);
 
-        <span class="kw">let </span>WalConfig::RaftEngine(raft_engine_config) = dn_opts.wal <span class="kw">else </span>{
+        <span class="kw">let </span>DatanodeWalConfig::RaftEngine(raft_engine_config) = dn_opts.wal <span class="kw">else </span>{
             <span class="macro">unreachable!</span>()
         };
         <span class="macro">assert_eq!</span>(<span class="string">"/tmp/greptimedb/test/wal"</span>, raft_engine_config.dir.unwrap());

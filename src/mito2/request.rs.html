@@ -1231,12 +1231,6 @@
 <a href="#1230" id="1230">1230</a>
 <a href="#1231" id="1231">1231</a>
 <a href="#1232" id="1232">1232</a>
-<a href="#1233" id="1233">1233</a>
-<a href="#1234" id="1234">1234</a>
-<a href="#1235" id="1235">1235</a>
-<a href="#1236" id="1236">1236</a>
-<a href="#1237" id="1237">1237</a>
-<a href="#1238" id="1238">1238</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -1282,6 +1276,7 @@
     CompactRegionSnafu, ConvertColumnDataTypeSnafu, CreateDefaultSnafu, Error, FillDefaultSnafu,
     FlushRegionSnafu, InvalidRequestSnafu, <span class="prelude-ty">Result</span>,
 };
+<span class="kw">use </span><span class="kw">crate</span>::manifest::action::RegionEdit;
 <span class="kw">use </span><span class="kw">crate</span>::memtable::MemtableId;
 <span class="kw">use </span><span class="kw">crate</span>::metrics::COMPACTION_ELAPSED_TOTAL;
 <span class="kw">use </span><span class="kw">crate</span>::sst::file::FileMeta;
@@ -1484,6 +1479,10 @@
     </span><span class="kw">fn </span>fill_column(<span class="kw-2">&amp;mut </span><span class="self">self</span>, column: <span class="kw-2">&amp;</span>ColumnMetadata) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="comment">// Need to add a default value for this column.
         </span><span class="kw">let </span>proto_value = <span class="self">self</span>.column_default_value(column)<span class="question-mark">?</span>;
+
+        <span class="kw">if </span>proto_value.value_data.is_none() {
+            <span class="kw">return </span><span class="prelude-val">Ok</span>(());
+        }
 
         <span class="comment">// Insert default value to each row.
         </span><span class="kw">for </span>row <span class="kw">in </span><span class="kw-2">&amp;mut </span><span class="self">self</span>.rows.rows {
@@ -1725,6 +1724,13 @@
 
     <span class="doccomment">/// Notify a worker to stop.
     </span>Stop,
+
+    <span class="doccomment">/// Use [RegionEdit] to edit a region directly.
+    </span>EditRegion {
+        region_id: RegionId,
+        edit: RegionEdit,
+        tx: Sender&lt;<span class="prelude-ty">Result</span>&lt;()&gt;&gt;,
+    },
 }
 
 <span class="kw">impl </span>WorkerRequest {
@@ -1890,8 +1896,7 @@
         <span class="comment">// Clean flushed files.
         </span><span class="kw">for </span>file <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.file_metas {
             <span class="self">self</span>.file_purger.send_request(PurgeRequest {
-                region_id: file.region_id,
-                file_id: file.file_id,
+                file_meta: file.clone(),
             });
         }
     }
@@ -1946,14 +1951,12 @@
             }));
         }
         <span class="kw">for </span>file <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.compacted_files {
-            <span class="kw">let </span>file_id = file.file_id;
             <span class="macro">warn!</span>(
                 <span class="string">"Cleaning region {} compaction output file: {}"</span>,
-                <span class="self">self</span>.region_id, file_id
+                <span class="self">self</span>.region_id, file.file_id
             );
             <span class="self">self</span>.file_purger.send_request(PurgeRequest {
-                region_id: <span class="self">self</span>.region_id,
-                file_id,
+                file_meta: file.clone(),
             });
         }
     }
@@ -2223,16 +2226,13 @@
         request.fill_missing_columns(<span class="kw-2">&amp;</span>metadata).unwrap();
 
         <span class="kw">let </span>expect_rows = Rows {
-            schema: <span class="macro">vec!</span>[
-                new_column_schema(
-                    <span class="string">"ts"</span>,
-                    ColumnDataType::TimestampMillisecond,
-                    SemanticType::Timestamp,
-                ),
-                new_column_schema(<span class="string">"k0"</span>, ColumnDataType::Int64, SemanticType::Tag),
-            ],
+            schema: <span class="macro">vec!</span>[new_column_schema(
+                <span class="string">"ts"</span>,
+                ColumnDataType::TimestampMillisecond,
+                SemanticType::Timestamp,
+            )],
             rows: <span class="macro">vec!</span>[Row {
-                values: <span class="macro">vec!</span>[ts_ms_value(<span class="number">1</span>), Value { value_data: <span class="prelude-val">None </span>}],
+                values: <span class="macro">vec!</span>[ts_ms_value(<span class="number">1</span>)],
             }],
         };
         <span class="macro">assert_eq!</span>(expect_rows, request.rows);
@@ -2338,17 +2338,11 @@
                     ColumnDataType::TimestampMillisecond,
                     SemanticType::Timestamp,
                 ),
-                new_column_schema(<span class="string">"f0"</span>, ColumnDataType::Int64, SemanticType::Field),
                 new_column_schema(<span class="string">"f1"</span>, ColumnDataType::Int64, SemanticType::Field),
             ],
             <span class="comment">// Column f1 is not nullable and we use 0 for padding.
             </span>rows: <span class="macro">vec!</span>[Row {
-                values: <span class="macro">vec!</span>[
-                    i64_value(<span class="number">100</span>),
-                    ts_ms_value(<span class="number">1</span>),
-                    Value { value_data: <span class="prelude-val">None </span>},
-                    i64_value(<span class="number">0</span>),
-                ],
+                values: <span class="macro">vec!</span>[i64_value(<span class="number">100</span>), ts_ms_value(<span class="number">1</span>), i64_value(<span class="number">0</span>)],
             }],
         };
         <span class="macro">assert_eq!</span>(expect_rows, request.rows);
@@ -2407,17 +2401,11 @@
                     ColumnDataType::TimestampMillisecond,
                     SemanticType::Timestamp,
                 ),
-                new_column_schema(<span class="string">"f0"</span>, ColumnDataType::Int64, SemanticType::Field),
                 new_column_schema(<span class="string">"f1"</span>, ColumnDataType::Int64, SemanticType::Field),
             ],
             <span class="comment">// Column f1 is not nullable and we use 0 for padding.
             </span>rows: <span class="macro">vec!</span>[Row {
-                values: <span class="macro">vec!</span>[
-                    i64_value(<span class="number">100</span>),
-                    ts_ms_value(<span class="number">1</span>),
-                    Value { value_data: <span class="prelude-val">None </span>},
-                    i64_value(<span class="number">0</span>),
-                ],
+                values: <span class="macro">vec!</span>[i64_value(<span class="number">100</span>), ts_ms_value(<span class="number">1</span>), i64_value(<span class="number">0</span>)],
             }],
         };
         <span class="macro">assert_eq!</span>(expect_rows, request.rows);

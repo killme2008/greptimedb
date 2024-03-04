@@ -304,6 +304,23 @@
 <a href="#303" id="303">303</a>
 <a href="#304" id="304">304</a>
 <a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
+<a href="#308" id="308">308</a>
+<a href="#309" id="309">309</a>
+<a href="#310" id="310">310</a>
+<a href="#311" id="311">311</a>
+<a href="#312" id="312">312</a>
+<a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
+<a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -319,6 +336,7 @@
 // limitations under the License.
 
 </span><span class="kw">use </span>std::collections::HashSet;
+<span class="kw">use </span>std::mem::size_of;
 
 <span class="kw">use </span>snafu::{ensure, ResultExt};
 
@@ -340,6 +358,11 @@
 <span class="kw">impl </span>FstApplier <span class="kw">for </span>KeysFstApplier {
     <span class="kw">fn </span>apply(<span class="kw-2">&amp;</span><span class="self">self</span>, fst: <span class="kw-2">&amp;</span>FstMap) -&gt; Vec&lt;u64&gt; {
         <span class="self">self</span>.keys.iter().filter_map(|k| fst.get(k)).collect()
+    }
+
+    <span class="kw">fn </span>memory_usage(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+        <span class="self">self</span>.keys.capacity() * size_of::&lt;Bytes&gt;()
+            + <span class="self">self</span>.keys.iter().map(|k| k.capacity()).sum::&lt;usize&gt;()
     }
 }
 
@@ -607,6 +630,17 @@
         ];
         <span class="kw">let </span>result = KeysFstApplier::try_from(predicates);
         <span class="macro">assert!</span>(<span class="macro">matches!</span>(result, <span class="prelude-val">Err</span>(Error::ParseRegex { .. })));
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_keys_fst_applier_memory_usage() {
+        <span class="kw">let </span>applier = KeysFstApplier { keys: <span class="macro">vec!</span>[] };
+        <span class="macro">assert_eq!</span>(applier.memory_usage(), <span class="number">0</span>);
+
+        <span class="kw">let </span>applier = KeysFstApplier {
+            keys: <span class="macro">vec!</span>[b(<span class="string">"foo"</span>), b(<span class="string">"bar"</span>)],
+        };
+        <span class="macro">assert_eq!</span>(applier.memory_usage(), <span class="number">2 </span>* size_of::&lt;Bytes&gt;() + <span class="number">6</span>);
     }
 }
 </code></pre></div></section></main></body></html>

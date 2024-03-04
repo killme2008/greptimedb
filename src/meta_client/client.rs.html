@@ -831,6 +831,52 @@
 <a href="#830" id="830">830</a>
 <a href="#831" id="831">831</a>
 <a href="#832" id="832">832</a>
+<a href="#833" id="833">833</a>
+<a href="#834" id="834">834</a>
+<a href="#835" id="835">835</a>
+<a href="#836" id="836">836</a>
+<a href="#837" id="837">837</a>
+<a href="#838" id="838">838</a>
+<a href="#839" id="839">839</a>
+<a href="#840" id="840">840</a>
+<a href="#841" id="841">841</a>
+<a href="#842" id="842">842</a>
+<a href="#843" id="843">843</a>
+<a href="#844" id="844">844</a>
+<a href="#845" id="845">845</a>
+<a href="#846" id="846">846</a>
+<a href="#847" id="847">847</a>
+<a href="#848" id="848">848</a>
+<a href="#849" id="849">849</a>
+<a href="#850" id="850">850</a>
+<a href="#851" id="851">851</a>
+<a href="#852" id="852">852</a>
+<a href="#853" id="853">853</a>
+<a href="#854" id="854">854</a>
+<a href="#855" id="855">855</a>
+<a href="#856" id="856">856</a>
+<a href="#857" id="857">857</a>
+<a href="#858" id="858">858</a>
+<a href="#859" id="859">859</a>
+<a href="#860" id="860">860</a>
+<a href="#861" id="861">861</a>
+<a href="#862" id="862">862</a>
+<a href="#863" id="863">863</a>
+<a href="#864" id="864">864</a>
+<a href="#865" id="865">865</a>
+<a href="#866" id="866">866</a>
+<a href="#867" id="867">867</a>
+<a href="#868" id="868">868</a>
+<a href="#869" id="869">869</a>
+<a href="#870" id="870">870</a>
+<a href="#871" id="871">871</a>
+<a href="#872" id="872">872</a>
+<a href="#873" id="873">873</a>
+<a href="#874" id="874">874</a>
+<a href="#875" id="875">875</a>
+<a href="#876" id="876">876</a>
+<a href="#877" id="877">877</a>
+<a href="#878" id="878">878</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -846,29 +892,32 @@
 // limitations under the License.
 
 </span><span class="kw">mod </span>ask_leader;
-<span class="kw">mod </span>ddl;
 <span class="kw">mod </span>heartbeat;
 <span class="kw">mod </span>load_balance;
 <span class="kw">mod </span>lock;
+<span class="kw">mod </span>procedure;
 
 <span class="kw">mod </span>store;
 
 <span class="kw">use </span>api::v1::meta::Role;
 <span class="kw">use </span>common_error::ext::BoxedError;
 <span class="kw">use </span>common_grpc::channel_manager::{ChannelConfig, ChannelManager};
-<span class="kw">use </span>common_meta::ddl::{DdlTaskExecutor, ExecutorContext};
+<span class="kw">use </span>common_meta::ddl::{ExecutorContext, ProcedureExecutor};
 <span class="kw">use </span>common_meta::error::{<span class="self">self </span><span class="kw">as </span>meta_error, <span class="prelude-ty">Result </span><span class="kw">as </span>MetaResult};
 <span class="kw">use </span>common_meta::rpc::ddl::{SubmitDdlTaskRequest, SubmitDdlTaskResponse};
 <span class="kw">use </span>common_meta::rpc::lock::{LockRequest, LockResponse, UnlockRequest};
+<span class="kw">use </span>common_meta::rpc::procedure::{
+    MigrateRegionRequest, MigrateRegionResponse, ProcedureStateResponse,
+};
 <span class="kw">use </span>common_meta::rpc::store::{
     BatchDeleteRequest, BatchDeleteResponse, BatchGetRequest, BatchGetResponse, BatchPutRequest,
     BatchPutResponse, CompareAndPutRequest, CompareAndPutResponse, DeleteRangeRequest,
     DeleteRangeResponse, PutRequest, PutResponse, RangeRequest, RangeResponse,
 };
 <span class="kw">use </span>common_telemetry::info;
-<span class="kw">use </span>ddl::Client <span class="kw">as </span>DdlClient;
 <span class="kw">use </span>heartbeat::Client <span class="kw">as </span>HeartbeatClient;
 <span class="kw">use </span>lock::Client <span class="kw">as </span>LockClient;
+<span class="kw">use </span>procedure::Client <span class="kw">as </span>ProcedureClient;
 <span class="kw">use </span>snafu::{OptionExt, ResultExt};
 <span class="kw">use </span>store::Client <span class="kw">as </span>StoreClient;
 
@@ -889,7 +938,7 @@
     enable_router: bool,
     enable_store: bool,
     enable_lock: bool,
-    enable_ddl: bool,
+    enable_procedure: bool,
     channel_manager: <span class="prelude-ty">Option</span>&lt;ChannelManager&gt;,
     ddl_channel_manager: <span class="prelude-ty">Option</span>&lt;ChannelManager&gt;,
     heartbeat_channel_manager: <span class="prelude-ty">Option</span>&lt;ChannelManager&gt;,
@@ -932,9 +981,9 @@
         </span>}
     }
 
-    <span class="kw">pub fn </span>enable_ddl(<span class="self">self</span>) -&gt; <span class="self">Self </span>{
+    <span class="kw">pub fn </span>enable_procedure(<span class="self">self</span>) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            enable_ddl: <span class="bool-val">true</span>,
+            enable_procedure: <span class="bool-val">true</span>,
             ..<span class="self">self
         </span>}
     }
@@ -988,9 +1037,9 @@
         <span class="kw">if </span><span class="self">self</span>.enable_lock {
             client.lock = <span class="prelude-val">Some</span>(LockClient::new(<span class="self">self</span>.id, <span class="self">self</span>.role, mgr.clone()));
         }
-        <span class="kw">if </span><span class="self">self</span>.enable_ddl {
+        <span class="kw">if </span><span class="self">self</span>.enable_procedure {
             <span class="kw">let </span>mgr = <span class="self">self</span>.ddl_channel_manager.unwrap_or(mgr);
-            client.ddl = <span class="prelude-val">Some</span>(DdlClient::new(
+            client.procedure = <span class="prelude-val">Some</span>(ProcedureClient::new(
                 <span class="self">self</span>.id,
                 <span class="self">self</span>.role,
                 mgr,
@@ -1009,17 +1058,39 @@
     heartbeat: <span class="prelude-ty">Option</span>&lt;HeartbeatClient&gt;,
     store: <span class="prelude-ty">Option</span>&lt;StoreClient&gt;,
     lock: <span class="prelude-ty">Option</span>&lt;LockClient&gt;,
-    ddl: <span class="prelude-ty">Option</span>&lt;DdlClient&gt;,
+    procedure: <span class="prelude-ty">Option</span>&lt;ProcedureClient&gt;,
 }
 
 <span class="attr">#[async_trait::async_trait]
-</span><span class="kw">impl </span>DdlTaskExecutor <span class="kw">for </span>MetaClient {
+</span><span class="kw">impl </span>ProcedureExecutor <span class="kw">for </span>MetaClient {
     <span class="kw">async fn </span>submit_ddl_task(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         _ctx: <span class="kw-2">&amp;</span>ExecutorContext,
         request: SubmitDdlTaskRequest,
     ) -&gt; MetaResult&lt;SubmitDdlTaskResponse&gt; {
         <span class="self">self</span>.submit_ddl_task(request)
+            .<span class="kw">await
+            </span>.map_err(BoxedError::new)
+            .context(meta_error::ExternalSnafu)
+    }
+
+    <span class="kw">async fn </span>migrate_region(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        _ctx: <span class="kw-2">&amp;</span>ExecutorContext,
+        request: MigrateRegionRequest,
+    ) -&gt; MetaResult&lt;MigrateRegionResponse&gt; {
+        <span class="self">self</span>.migrate_region(request)
+            .<span class="kw">await
+            </span>.map_err(BoxedError::new)
+            .context(meta_error::ExternalSnafu)
+    }
+
+    <span class="kw">async fn </span>query_procedure_state(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        _ctx: <span class="kw-2">&amp;</span>ExecutorContext,
+        pid: <span class="kw-2">&amp;</span>str,
+    ) -&gt; MetaResult&lt;ProcedureStateResponse&gt; {
+        <span class="self">self</span>.query_procedure_state(pid)
             .<span class="kw">await
             </span>.map_err(BoxedError::new)
             .context(meta_error::ExternalSnafu)
@@ -1061,7 +1132,7 @@
             client.start(urls.clone()).<span class="kw">await</span><span class="question-mark">?</span>;
             <span class="macro">info!</span>(<span class="string">"Lock client started"</span>);
         }
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(client) = <span class="kw-2">&amp;mut </span><span class="self">self</span>.ddl {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(client) = <span class="kw-2">&amp;mut </span><span class="self">self</span>.procedure {
             client.start(urls).<span class="kw">await</span><span class="question-mark">?</span>;
             <span class="macro">info!</span>(<span class="string">"DDL client started"</span>);
         }
@@ -1161,12 +1232,33 @@
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">pub async fn </span>submit_ddl_task(
+    <span class="doccomment">/// Query the procedure state by its id.
+    </span><span class="kw">pub async fn </span>query_procedure_state(<span class="kw-2">&amp;</span><span class="self">self</span>, pid: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;ProcedureStateResponse&gt; {
+        <span class="self">self</span>.procedure_client()<span class="question-mark">?</span>.query_procedure_state(pid).<span class="kw">await
+    </span>}
+
+    <span class="doccomment">/// Submit a region migration task.
+    </span><span class="kw">pub async fn </span>migrate_region(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        request: MigrateRegionRequest,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;MigrateRegionResponse&gt; {
+        <span class="self">self</span>.procedure_client()<span class="question-mark">?
+            </span>.migrate_region(
+                request.region_id,
+                request.from_peer,
+                request.to_peer,
+                request.replay_timeout,
+            )
+            .<span class="kw">await
+    </span>}
+
+    <span class="doccomment">/// Submit a DDL task
+    </span><span class="kw">pub async fn </span>submit_ddl_task(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         req: SubmitDdlTaskRequest,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;SubmitDdlTaskResponse&gt; {
         <span class="kw">let </span>res = <span class="self">self
-            </span>.ddl_client()<span class="question-mark">?
+            </span>.procedure_client()<span class="question-mark">?
             </span>.submit_ddl_task(req.try_into().context(error::ConvertMetaRequestSnafu)<span class="question-mark">?</span>)
             .<span class="kw">await</span><span class="question-mark">?
             </span>.try_into()
@@ -1197,8 +1289,8 @@
     }
 
     <span class="attr">#[inline]
-    </span><span class="kw">pub fn </span>ddl_client(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;DdlClient&gt; {
-        <span class="self">self</span>.ddl
+    </span><span class="kw">pub fn </span>procedure_client(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;ProcedureClient&gt; {
+        <span class="self">self</span>.procedure
             .clone()
             .context(error::NotStartedSnafu { name: <span class="string">"ddl_client" </span>})
     }

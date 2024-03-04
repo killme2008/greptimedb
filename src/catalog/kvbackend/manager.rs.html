@@ -283,6 +283,118 @@
 <a href="#282" id="282">282</a>
 <a href="#283" id="283">283</a>
 <a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
+<a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
+<a href="#308" id="308">308</a>
+<a href="#309" id="309">309</a>
+<a href="#310" id="310">310</a>
+<a href="#311" id="311">311</a>
+<a href="#312" id="312">312</a>
+<a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
+<a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
+<a href="#325" id="325">325</a>
+<a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
+<a href="#330" id="330">330</a>
+<a href="#331" id="331">331</a>
+<a href="#332" id="332">332</a>
+<a href="#333" id="333">333</a>
+<a href="#334" id="334">334</a>
+<a href="#335" id="335">335</a>
+<a href="#336" id="336">336</a>
+<a href="#337" id="337">337</a>
+<a href="#338" id="338">338</a>
+<a href="#339" id="339">339</a>
+<a href="#340" id="340">340</a>
+<a href="#341" id="341">341</a>
+<a href="#342" id="342">342</a>
+<a href="#343" id="343">343</a>
+<a href="#344" id="344">344</a>
+<a href="#345" id="345">345</a>
+<a href="#346" id="346">346</a>
+<a href="#347" id="347">347</a>
+<a href="#348" id="348">348</a>
+<a href="#349" id="349">349</a>
+<a href="#350" id="350">350</a>
+<a href="#351" id="351">351</a>
+<a href="#352" id="352">352</a>
+<a href="#353" id="353">353</a>
+<a href="#354" id="354">354</a>
+<a href="#355" id="355">355</a>
+<a href="#356" id="356">356</a>
+<a href="#357" id="357">357</a>
+<a href="#358" id="358">358</a>
+<a href="#359" id="359">359</a>
+<a href="#360" id="360">360</a>
+<a href="#361" id="361">361</a>
+<a href="#362" id="362">362</a>
+<a href="#363" id="363">363</a>
+<a href="#364" id="364">364</a>
+<a href="#365" id="365">365</a>
+<a href="#366" id="366">366</a>
+<a href="#367" id="367">367</a>
+<a href="#368" id="368">368</a>
+<a href="#369" id="369">369</a>
+<a href="#370" id="370">370</a>
+<a href="#371" id="371">371</a>
+<a href="#372" id="372">372</a>
+<a href="#373" id="373">373</a>
+<a href="#374" id="374">374</a>
+<a href="#375" id="375">375</a>
+<a href="#376" id="376">376</a>
+<a href="#377" id="377">377</a>
+<a href="#378" id="378">378</a>
+<a href="#379" id="379">379</a>
+<a href="#380" id="380">380</a>
+<a href="#381" id="381">381</a>
+<a href="#382" id="382">382</a>
+<a href="#383" id="383">383</a>
+<a href="#384" id="384">384</a>
+<a href="#385" id="385">385</a>
+<a href="#386" id="386">386</a>
+<a href="#387" id="387">387</a>
+<a href="#388" id="388">388</a>
+<a href="#389" id="389">389</a>
+<a href="#390" id="390">390</a>
+<a href="#391" id="391">391</a>
+<a href="#392" id="392">392</a>
+<a href="#393" id="393">393</a>
+<a href="#394" id="394">394</a>
+<a href="#395" id="395">395</a>
+<a href="#396" id="396">396</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -300,18 +412,27 @@
 </span><span class="kw">use </span>std::any::Any;
 <span class="kw">use </span>std::collections::BTreeSet;
 <span class="kw">use </span>std::sync::{Arc, Weak};
+<span class="kw">use </span>std::time::Duration;
 
-<span class="kw">use </span>common_catalog::consts::{DEFAULT_SCHEMA_NAME, INFORMATION_SCHEMA_NAME, NUMBERS_TABLE_ID};
+<span class="kw">use </span>async_stream::try_stream;
+<span class="kw">use </span>common_catalog::consts::{
+    DEFAULT_CATALOG_NAME, DEFAULT_SCHEMA_NAME, INFORMATION_SCHEMA_NAME, NUMBERS_TABLE_ID,
+};
+<span class="kw">use </span>common_catalog::format_full_table_name;
 <span class="kw">use </span>common_error::ext::BoxedError;
 <span class="kw">use </span>common_meta::cache_invalidator::{CacheInvalidator, CacheInvalidatorRef, Context};
 <span class="kw">use </span>common_meta::error::Result <span class="kw">as </span>MetaResult;
 <span class="kw">use </span>common_meta::key::catalog_name::CatalogNameKey;
 <span class="kw">use </span>common_meta::key::schema_name::SchemaNameKey;
+<span class="kw">use </span>common_meta::key::table_info::TableInfoValue;
 <span class="kw">use </span>common_meta::key::table_name::TableNameKey;
 <span class="kw">use </span>common_meta::key::{TableMetadataManager, TableMetadataManagerRef};
 <span class="kw">use </span>common_meta::kv_backend::KvBackendRef;
 <span class="kw">use </span>common_meta::table_name::TableName;
-<span class="kw">use </span>futures_util::TryStreamExt;
+<span class="kw">use </span>futures_util::stream::BoxStream;
+<span class="kw">use </span>futures_util::{StreamExt, TryStreamExt};
+<span class="kw">use </span>moka::future::{Cache <span class="kw">as </span>AsyncCache, CacheBuilder};
+<span class="kw">use </span>moka::sync::Cache;
 <span class="kw">use </span>partition::manager::{PartitionRuleManager, PartitionRuleManagerRef};
 <span class="kw">use </span>snafu::prelude::<span class="kw-2">*</span>;
 <span class="kw">use </span>table::dist_table::DistTable;
@@ -319,9 +440,10 @@
 <span class="kw">use </span>table::table::numbers::{NumbersTable, NUMBERS_TABLE_NAME};
 <span class="kw">use </span>table::TableRef;
 
+<span class="kw">use </span><span class="kw">crate</span>::error::Error::{GetTableCache, TableCacheNotGet};
 <span class="kw">use </span><span class="kw">crate</span>::error::{
-    <span class="self">self </span><span class="kw">as </span>catalog_err, ListCatalogsSnafu, ListSchemasSnafu, <span class="prelude-ty">Result </span><span class="kw">as </span>CatalogResult,
-    TableMetadataManagerSnafu,
+    <span class="self">self </span><span class="kw">as </span>catalog_err, ListCatalogsSnafu, ListSchemasSnafu, ListTablesSnafu,
+    <span class="prelude-ty">Result </span><span class="kw">as </span>CatalogResult, TableCacheNotGetSnafu, TableMetadataManagerSnafu,
 };
 <span class="kw">use </span><span class="kw">crate</span>::information_schema::InformationSchemaProvider;
 <span class="kw">use </span><span class="kw">crate</span>::CatalogManager;
@@ -341,22 +463,44 @@
     table_metadata_manager: TableMetadataManagerRef,
     <span class="doccomment">/// A sub-CatalogManager that handles system tables
     </span>system_catalog: SystemCatalog,
+    table_cache: AsyncCache&lt;String, TableRef&gt;,
+}
+
+<span class="kw">fn </span>make_table(table_info_value: TableInfoValue) -&gt; CatalogResult&lt;TableRef&gt; {
+    <span class="kw">let </span>table_info = table_info_value
+        .table_info
+        .try_into()
+        .context(catalog_err::InvalidTableInfoInCatalogSnafu)<span class="question-mark">?</span>;
+    <span class="prelude-val">Ok</span>(DistTable::table(Arc::new(table_info)))
 }
 
 <span class="attr">#[async_trait::async_trait]
 </span><span class="kw">impl </span>CacheInvalidator <span class="kw">for </span>KvBackendCatalogManager {
-    <span class="kw">async fn </span>invalidate_table_name(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;</span>Context, table_name: TableName) -&gt; MetaResult&lt;()&gt; {
-        <span class="self">self</span>.cache_invalidator
-            .invalidate_table_name(ctx, table_name)
-            .<span class="kw">await
-    </span>}
-
     <span class="kw">async fn </span>invalidate_table_id(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;</span>Context, table_id: TableId) -&gt; MetaResult&lt;()&gt; {
         <span class="self">self</span>.cache_invalidator
             .invalidate_table_id(ctx, table_id)
             .<span class="kw">await
     </span>}
+
+    <span class="kw">async fn </span>invalidate_table_name(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;</span>Context, table_name: TableName) -&gt; MetaResult&lt;()&gt; {
+        <span class="kw">let </span>table_cache_key = format_full_table_name(
+            <span class="kw-2">&amp;</span>table_name.catalog_name,
+            <span class="kw-2">&amp;</span>table_name.schema_name,
+            <span class="kw-2">&amp;</span>table_name.table_name,
+        );
+        <span class="self">self</span>.cache_invalidator
+            .invalidate_table_name(ctx, table_name)
+            .<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="self">self</span>.table_cache.invalidate(<span class="kw-2">&amp;</span>table_cache_key).<span class="kw">await</span>;
+
+        <span class="prelude-val">Ok</span>(())
+    }
 }
+
+<span class="kw">const </span>CATALOG_CACHE_MAX_CAPACITY: u64 = <span class="number">128</span>;
+<span class="kw">const </span>TABLE_CACHE_MAX_CAPACITY: u64 = <span class="number">65536</span>;
+<span class="kw">const </span>TABLE_CACHE_TTL: Duration = Duration::from_secs(<span class="number">10 </span>* <span class="number">60</span>);
+<span class="kw">const </span>TABLE_CACHE_TTI: Duration = Duration::from_secs(<span class="number">5 </span>* <span class="number">60</span>);
 
 <span class="kw">impl </span>KvBackendCatalogManager {
     <span class="kw">pub fn </span>new(backend: KvBackendRef, cache_invalidator: CacheInvalidatorRef) -&gt; Arc&lt;<span class="self">Self</span>&gt; {
@@ -366,12 +510,16 @@
             cache_invalidator,
             system_catalog: SystemCatalog {
                 catalog_manager: me.clone(),
+                catalog_cache: Cache::new(CATALOG_CACHE_MAX_CAPACITY),
                 information_schema_provider: Arc::new(InformationSchemaProvider::new(
-                    <span class="comment">// The catalog name is not used in system_catalog, so let it empty
-                    </span><span class="string">""</span>.to_string(),
+                    DEFAULT_CATALOG_NAME.to_string(),
                     me.clone(),
                 )),
             },
+            table_cache: CacheBuilder::new(TABLE_CACHE_MAX_CAPACITY)
+                .time_to_live(TABLE_CACHE_TTL)
+                .time_to_idle(TABLE_CACHE_TTI)
+                .build(),
         })
     }
 
@@ -386,6 +534,10 @@
 
 <span class="attr">#[async_trait::async_trait]
 </span><span class="kw">impl </span>CatalogManager <span class="kw">for </span>KvBackendCatalogManager {
+    <span class="kw">fn </span>as_any(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="kw">dyn </span>Any {
+        <span class="self">self
+    </span>}
+
     <span class="kw">async fn </span>catalog_names(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; CatalogResult&lt;Vec&lt;String&gt;&gt; {
         <span class="kw">let </span>stream = <span class="self">self
             </span>.table_metadata_manager
@@ -420,18 +572,22 @@
     }
 
     <span class="kw">async fn </span>table_names(<span class="kw-2">&amp;</span><span class="self">self</span>, catalog: <span class="kw-2">&amp;</span>str, schema: <span class="kw-2">&amp;</span>str) -&gt; CatalogResult&lt;Vec&lt;String&gt;&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>tables = <span class="self">self
+        <span class="kw">let </span>stream = <span class="self">self
             </span>.table_metadata_manager
             .table_name_manager()
             .tables(catalog, schema)
+            .<span class="kw">await</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>tables = stream
+            .try_collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
             .<span class="kw">await
-            </span>.context(TableMetadataManagerSnafu)<span class="question-mark">?
+            </span>.map_err(BoxedError::new)
+            .context(ListTablesSnafu { catalog, schema })<span class="question-mark">?
             </span>.into_iter()
             .map(|(k, <span class="kw">_</span>)| k)
-            .collect::&lt;Vec&lt;String&gt;&gt;();
+            .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
         tables.extend_from_slice(<span class="kw-2">&amp;</span><span class="self">self</span>.system_catalog.table_names(schema));
 
-        <span class="prelude-val">Ok</span>(tables)
+        <span class="prelude-val">Ok</span>(tables.into_iter().collect())
     }
 
     <span class="kw">async fn </span>catalog_exists(<span class="kw-2">&amp;</span><span class="self">self</span>, catalog: <span class="kw-2">&amp;</span>str) -&gt; CatalogResult&lt;bool&gt; {
@@ -478,40 +634,102 @@
             <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(table));
         }
 
-        <span class="kw">let </span>key = TableNameKey::new(catalog, schema, table_name);
-        <span class="kw">let </span><span class="prelude-val">Some</span>(table_name_value) = <span class="self">self
-            </span>.table_metadata_manager
-            .table_name_manager()
-            .get(key)
-            .<span class="kw">await
-            </span>.context(TableMetadataManagerSnafu)<span class="question-mark">?
-        </span><span class="kw">else </span>{
-            <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>);
-        };
-        <span class="kw">let </span>table_id = table_name_value.table_id();
+        <span class="kw">let </span>init = <span class="kw">async </span>{
+            <span class="kw">let </span>table_name_key = TableNameKey::new(catalog, schema, table_name);
+            <span class="kw">let </span><span class="prelude-val">Some</span>(table_name_value) = <span class="self">self
+                </span>.table_metadata_manager
+                .table_name_manager()
+                .get(table_name_key)
+                .<span class="kw">await
+                </span>.context(TableMetadataManagerSnafu)<span class="question-mark">?
+            </span><span class="kw">else </span>{
+                <span class="kw">return </span>TableCacheNotGetSnafu {
+                    key: table_name_key.to_string(),
+                }
+                .fail();
+            };
+            <span class="kw">let </span>table_id = table_name_value.table_id();
 
-        <span class="kw">let </span><span class="prelude-val">Some</span>(table_info_value) = <span class="self">self
-            </span>.table_metadata_manager
-            .table_info_manager()
-            .get(table_id)
-            .<span class="kw">await
-            </span>.context(TableMetadataManagerSnafu)<span class="question-mark">?
-            </span>.map(|v| v.into_inner())
-        <span class="kw">else </span>{
-            <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>);
+            <span class="kw">let </span><span class="prelude-val">Some</span>(table_info_value) = <span class="self">self
+                </span>.table_metadata_manager
+                .table_info_manager()
+                .get(table_id)
+                .<span class="kw">await
+                </span>.context(TableMetadataManagerSnafu)<span class="question-mark">?
+                </span>.map(|v| v.into_inner())
+            <span class="kw">else </span>{
+                <span class="kw">return </span>TableCacheNotGetSnafu {
+                    key: table_name_key.to_string(),
+                }
+                .fail();
+            };
+            make_table(table_info_value)
         };
-        <span class="kw">let </span>table_info = Arc::new(
-            table_info_value
-                .table_info
-                .try_into()
-                .context(catalog_err::InvalidTableInfoInCatalogSnafu)<span class="question-mark">?</span>,
-        );
-        <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(DistTable::table(table_info)))
+
+        <span class="kw">match </span><span class="self">self
+            </span>.table_cache
+            .try_get_with_by_ref(<span class="kw-2">&amp;</span>format_full_table_name(catalog, schema, table_name), init)
+            .<span class="kw">await
+        </span>{
+            <span class="prelude-val">Ok</span>(table) =&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(table)),
+            <span class="prelude-val">Err</span>(err) =&gt; <span class="kw">match </span>err.as_ref() {
+                TableCacheNotGet { .. } =&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>),
+                <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(err),
+            },
+        }
+        .map_err(|err| GetTableCache {
+            err_msg: err.to_string(),
+        })
     }
 
-    <span class="kw">fn </span>as_any(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="kw">dyn </span>Any {
-        <span class="self">self
-    </span>}
+    <span class="kw">async fn </span>tables&lt;<span class="lifetime">'a</span>&gt;(
+        <span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="self">self</span>,
+        catalog: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str,
+        schema: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str,
+    ) -&gt; BoxStream&lt;<span class="lifetime">'a</span>, CatalogResult&lt;TableRef&gt;&gt; {
+        <span class="kw">let </span>sys_tables = <span class="macro">try_stream!</span>({
+            <span class="comment">// System tables
+            </span><span class="kw">let </span>sys_table_names = <span class="self">self</span>.system_catalog.table_names(schema);
+            <span class="kw">for </span>table_name <span class="kw">in </span>sys_table_names {
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(table) = <span class="self">self</span>.system_catalog.table(catalog, schema, <span class="kw-2">&amp;</span>table_name) {
+                    <span class="kw">yield </span>table;
+                }
+            }
+        });
+
+        <span class="kw">let </span>table_id_stream = <span class="self">self
+            </span>.table_metadata_manager
+            .table_name_manager()
+            .tables(catalog, schema)
+            .<span class="kw">await
+            </span>.map_ok(|(<span class="kw">_</span>, v)| v.table_id());
+        <span class="kw">const </span>BATCH_SIZE: usize = <span class="number">128</span>;
+        <span class="kw">let </span>user_tables = <span class="macro">try_stream!</span>({
+            <span class="comment">// Split table ids into chunks
+            </span><span class="kw">let </span><span class="kw-2">mut </span>table_id_chunks = table_id_stream.ready_chunks(BATCH_SIZE);
+
+            <span class="kw">while let </span><span class="prelude-val">Some</span>(table_ids) = table_id_chunks.next().<span class="kw">await </span>{
+                <span class="kw">let </span>table_ids = table_ids
+                    .into_iter()
+                    .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;, <span class="kw">_</span>&gt;&gt;()
+                    .map_err(BoxedError::new)
+                    .context(ListTablesSnafu { catalog, schema })<span class="question-mark">?</span>;
+
+                <span class="kw">let </span>table_info_values = <span class="self">self
+                    </span>.table_metadata_manager
+                    .table_info_manager()
+                    .batch_get(<span class="kw-2">&amp;</span>table_ids)
+                    .<span class="kw">await
+                    </span>.context(TableMetadataManagerSnafu)<span class="question-mark">?</span>;
+
+                <span class="kw">for </span>table_info_value <span class="kw">in </span>table_info_values.into_values() {
+                    <span class="kw">yield </span>make_table(table_info_value)<span class="question-mark">?</span>;
+                }
+            }
+        });
+
+        Box::pin(sys_tables.chain(user_tables))
+    }
 }
 
 <span class="comment">// TODO: This struct can hold a static map of all system tables when
@@ -523,6 +741,7 @@
 </span><span class="attr">#[derive(Clone)]
 </span><span class="kw">struct </span>SystemCatalog {
     catalog_manager: Weak&lt;KvBackendCatalogManager&gt;,
+    catalog_cache: Cache&lt;String, Arc&lt;InformationSchemaProvider&gt;&gt;,
     information_schema_provider: Arc&lt;InformationSchemaProvider&gt;,
 }
 
@@ -558,7 +777,12 @@
     <span class="kw">fn </span>table(<span class="kw-2">&amp;</span><span class="self">self</span>, catalog: <span class="kw-2">&amp;</span>str, schema: <span class="kw-2">&amp;</span>str, table_name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;TableRef&gt; {
         <span class="kw">if </span>schema == INFORMATION_SCHEMA_NAME {
             <span class="kw">let </span>information_schema_provider =
-                InformationSchemaProvider::new(catalog.to_string(), <span class="self">self</span>.catalog_manager.clone());
+                <span class="self">self</span>.catalog_cache.get_with_by_ref(catalog, <span class="kw">move </span>|| {
+                    Arc::new(InformationSchemaProvider::new(
+                        catalog.to_string(),
+                        <span class="self">self</span>.catalog_manager.clone(),
+                    ))
+                });
             information_schema_provider.table(table_name)
         } <span class="kw">else if </span>schema == DEFAULT_SCHEMA_NAME &amp;&amp; table_name == NUMBERS_TABLE_NAME {
             <span class="prelude-val">Some</span>(NumbersTable::table(NUMBERS_TABLE_ID))

@@ -94,7 +94,7 @@
 
 <span class="macro">lazy_static! </span>{
     <span class="kw">pub static </span><span class="kw-2">ref </span>PANIC_COUNTER: IntCounter =
-        <span class="macro">register_int_counter!</span>(<span class="string">"panic_counter"</span>, <span class="string">"panic_counter"</span>).unwrap();
+        <span class="macro">register_int_counter!</span>(<span class="string">"greptime_panic_counter"</span>, <span class="string">"panic_counter"</span>).unwrap();
 }
 
 <span class="kw">pub fn </span>set_panic_hook() {

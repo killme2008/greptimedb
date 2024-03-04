@@ -296,6 +296,11 @@
 <a href="#295" id="295">295</a>
 <a href="#296" id="296">296</a>
 <a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -316,7 +321,7 @@
 <span class="kw">use </span>futures::FutureExt;
 <span class="kw">use </span>moka::future::Cache;
 <span class="kw">use </span>moka::notification::ListenerFuture;
-<span class="kw">use </span>opendal::raw::oio::{Page, Read, ReadExt, Reader, WriteExt};
+<span class="kw">use </span>opendal::raw::oio::{ListExt, Read, ReadExt, Reader, WriteExt};
 <span class="kw">use </span>opendal::raw::{Accessor, OpDelete, OpList, OpRead, OpStat, OpWrite, RpRead};
 <span class="kw">use </span>opendal::{Error <span class="kw">as </span>OpendalError, ErrorKind, <span class="prelude-ty">Result</span>};
 
@@ -433,24 +438,22 @@
     </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>recover_cache(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(u64, u64)&gt; {
         <span class="kw">let </span>(<span class="kw">_</span>, <span class="kw-2">mut </span>pager) = <span class="self">self</span>.file_cache.list(<span class="string">"/"</span>, OpList::default()).<span class="kw">await</span><span class="question-mark">?</span>;
 
-        <span class="kw">while let </span><span class="prelude-val">Some</span>(entries) = pager.next().<span class="kw">await</span><span class="question-mark">? </span>{
-            <span class="kw">for </span>entry <span class="kw">in </span>entries {
-                <span class="kw">let </span>read_key = entry.path();
+        <span class="kw">while let </span><span class="prelude-val">Some</span>(entry) = pager.next().<span class="kw">await</span><span class="question-mark">? </span>{
+            <span class="kw">let </span>read_key = entry.path();
 
-                <span class="comment">// We can't retrieve the metadata from `[opendal::raw::oio::Entry]` directly,
-                // because it's private field.
-                </span><span class="kw">let </span>size = {
-                    <span class="kw">let </span>stat = <span class="self">self</span>.file_cache.stat(read_key, OpStat::default()).<span class="kw">await</span><span class="question-mark">?</span>;
+            <span class="comment">// We can't retrieve the metadata from `[opendal::raw::oio::Entry]` directly,
+            // because it's private field.
+            </span><span class="kw">let </span>size = {
+                <span class="kw">let </span>stat = <span class="self">self</span>.file_cache.stat(read_key, OpStat::default()).<span class="kw">await</span><span class="question-mark">?</span>;
 
-                    stat.into_metadata().content_length()
-                };
+                stat.into_metadata().content_length()
+            };
 
-                OBJECT_STORE_LRU_CACHE_ENTRIES.inc();
-                OBJECT_STORE_LRU_CACHE_BYTES.add(size <span class="kw">as </span>i64);
-                <span class="self">self</span>.mem_cache
-                    .insert(read_key.to_string(), ReadResult::Success(size <span class="kw">as </span>u32))
-                    .<span class="kw">await</span>;
-            }
+            OBJECT_STORE_LRU_CACHE_ENTRIES.inc();
+            OBJECT_STORE_LRU_CACHE_BYTES.add(size <span class="kw">as </span>i64);
+            <span class="self">self</span>.mem_cache
+                .insert(read_key.to_string(), ReadResult::Success(size <span class="kw">as </span>u32))
+                .<span class="kw">await</span>;
         }
 
         <span class="prelude-val">Ok</span>(<span class="self">self</span>.stat().<span class="kw">await</span>)
@@ -522,6 +525,22 @@
         }
     }
 
+    <span class="kw">async fn </span>try_write_cache&lt;I&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>reader: I::Reader, read_key: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;usize&gt;
+    <span class="kw">where
+        </span>I: Accessor,
+    {
+        <span class="kw">let </span>(<span class="kw">_</span>, <span class="kw-2">mut </span>writer) = <span class="self">self</span>.file_cache.write(read_key, OpWrite::new()).<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>total = <span class="number">0</span>;
+        <span class="kw">while let </span><span class="prelude-val">Some</span>(bytes) = reader.next().<span class="kw">await </span>{
+            <span class="kw">let </span>bytes = <span class="kw-2">&amp;</span>bytes<span class="question-mark">?</span>;
+            total += bytes.len();
+            writer.write(bytes).<span class="kw">await</span><span class="question-mark">?</span>;
+        }
+        <span class="comment">// Call `close` to ensure data is written.
+        </span>writer.close().<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(total)
+    }
+
     <span class="doccomment">/// Read the file from remote storage. If success, write the content into local cache.
     </span><span class="kw">async fn </span>read_remote&lt;I&gt;(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
@@ -535,24 +554,15 @@
     {
         OBJECT_STORE_LRU_CACHE_MISS.inc();
 
-        <span class="kw">let </span>inner_result = inner.read(path, args).<span class="kw">await</span>;
+        <span class="kw">let </span>(<span class="kw">_</span>, reader) = inner.read(path, args).<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>result = <span class="self">self</span>.try_write_cache::&lt;I&gt;(reader, read_key).<span class="kw">await</span>;
 
-        <span class="kw">match </span>inner_result {
-            <span class="prelude-val">Ok</span>((rp, <span class="kw-2">mut </span>reader)) =&gt; {
-                <span class="kw">let </span>(<span class="kw">_</span>, <span class="kw-2">mut </span>writer) = <span class="self">self</span>.file_cache.write(read_key, OpWrite::new()).<span class="kw">await</span><span class="question-mark">?</span>;
-
-                <span class="kw">while let </span><span class="prelude-val">Some</span>(bytes) = reader.next().<span class="kw">await </span>{
-                    writer.write(<span class="kw-2">&amp;</span>bytes<span class="question-mark">?</span>).<span class="kw">await</span><span class="question-mark">?</span>;
-                }
-
-                <span class="comment">// Call `close` to ensure data is written.
-                </span>writer.close().<span class="kw">await</span><span class="question-mark">?</span>;
-
-                <span class="kw">let </span>read_bytes = rp.metadata().content_length() <span class="kw">as </span>u32;
+        <span class="kw">match </span>result {
+            <span class="prelude-val">Ok</span>(read_bytes) =&gt; {
                 OBJECT_STORE_LRU_CACHE_ENTRIES.inc();
                 OBJECT_STORE_LRU_CACHE_BYTES.add(read_bytes <span class="kw">as </span>i64);
 
-                <span class="prelude-val">Ok</span>(ReadResult::Success(read_bytes))
+                <span class="prelude-val">Ok</span>(ReadResult::Success(read_bytes <span class="kw">as </span>u32))
             }
 
             <span class="prelude-val">Err</span>(e) <span class="kw">if </span>e.kind() == ErrorKind::NotFound =&gt; {

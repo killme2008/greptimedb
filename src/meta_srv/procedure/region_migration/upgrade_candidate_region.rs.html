@@ -535,6 +535,7 @@
 <a href="#534" id="534">534</a>
 <a href="#535" id="535">535</a>
 <a href="#536" id="536">536</a>
+<a href="#537" id="537">537</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -570,14 +571,14 @@
 <span class="attr">#[derive(Debug, Serialize, Deserialize)]
 </span><span class="kw">pub struct </span>UpgradeCandidateRegion {
     <span class="comment">// The optimistic retry times.
-    </span>optimistic_retry: usize,
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) optimistic_retry: usize,
     <span class="comment">// The retry initial interval.
-    </span>retry_initial_interval: Duration,
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) retry_initial_interval: Duration,
     <span class="comment">// The replay timeout of a instruction.
-    </span>replay_timeout: Duration,
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) replay_timeout: Duration,
     <span class="comment">// If it's true it requires the candidate region MUST replay the WAL to the latest entry id.
     // Otherwise, it will rollback to the old leader region.
-    </span>require_ready: bool,
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) require_ready: bool,
 }
 
 <span class="kw">impl </span>Default <span class="kw">for </span>UpgradeCandidateRegion {
@@ -773,6 +774,7 @@
             to_peer: Peer::empty(<span class="number">2</span>),
             region_id: RegionId::new(<span class="number">1024</span>, <span class="number">1</span>),
             cluster_id: <span class="number">0</span>,
+            replay_timeout: Duration::from_millis(<span class="number">1000</span>),
         }
     }
 
@@ -872,7 +874,7 @@
 
         <span class="macro">assert_matches!</span>(err, Error::RetryLater { .. });
         <span class="macro">assert!</span>(err.is_retryable());
-        <span class="macro">assert!</span>(err.to_string().contains(<span class="string">"test mocked"</span>));
+        <span class="macro">assert!</span>(<span class="macro">format!</span>(<span class="string">"{err:?}"</span>).contains(<span class="string">"test mocked"</span>));
     }
 
     <span class="attr">#[tokio::test]
@@ -934,7 +936,7 @@
 
         <span class="macro">assert_matches!</span>(err, Error::RetryLater { .. });
         <span class="macro">assert!</span>(err.is_retryable());
-        <span class="macro">assert!</span>(err.to_string().contains(<span class="string">"still replaying the wal"</span>));
+        <span class="macro">assert!</span>(<span class="macro">format!</span>(<span class="string">"{err:?}"</span>).contains(<span class="string">"still replaying the wal"</span>));
 
         <span class="comment">// Sets the `require_ready` to false.
         </span>state.require_ready = <span class="bool-val">false</span>;

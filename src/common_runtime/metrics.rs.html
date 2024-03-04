@@ -55,13 +55,13 @@
 
 <span class="macro">lazy_static! </span>{
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_RUNTIME_THREADS_ALIVE: IntGaugeVec = <span class="macro">register_int_gauge_vec!</span>(
-        <span class="string">"runtime_threads_alive"</span>,
+        <span class="string">"greptime_runtime_threads_alive"</span>,
         <span class="string">"runtime threads alive"</span>,
         <span class="kw-2">&amp;</span>[THREAD_NAME_LABEL]
     )
     .unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_RUNTIME_THREADS_IDLE: IntGaugeVec = <span class="macro">register_int_gauge_vec!</span>(
-        <span class="string">"runtime_threads_idle"</span>,
+        <span class="string">"greptime_runtime_threads_idle"</span>,
         <span class="string">"runtime threads idle"</span>,
         <span class="kw-2">&amp;</span>[THREAD_NAME_LABEL]
     )

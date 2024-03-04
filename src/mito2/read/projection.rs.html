@@ -389,6 +389,11 @@
 <a href="#388" id="388">388</a>
 <a href="#389" id="389">389</a>
 <a href="#390" id="390">390</a>
+<a href="#391" id="391">391</a>
+<a href="#392" id="392">392</a>
+<a href="#393" id="393">393</a>
+<a href="#394" id="394">394</a>
+<a href="#395" id="395">395</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -568,11 +573,15 @@
 
         <span class="comment">// Skips decoding pk if we don't need to output it.
         </span><span class="kw">let </span>pk_values = <span class="kw">if </span><span class="self">self</span>.has_tags {
-            <span class="self">self</span>.codec
-                .decode(batch.primary_key())
-                .map_err(BoxedError::new)
-                .context(ExternalSnafu)<span class="question-mark">?
-        </span>} <span class="kw">else </span>{
+            <span class="kw">match </span>batch.pk_values() {
+                <span class="prelude-val">Some</span>(v) =&gt; v.to_vec(),
+                <span class="prelude-val">None </span>=&gt; <span class="self">self
+                    </span>.codec
+                    .decode(batch.primary_key())
+                    .map_err(BoxedError::new)
+                    .context(ExternalSnafu)<span class="question-mark">?</span>,
+            }
+        } <span class="kw">else </span>{
             Vec::new()
         };
 
@@ -733,7 +742,8 @@
         <span class="macro">assert_eq!</span>([<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>], mapper.column_ids());
         <span class="macro">assert_eq!</span>([<span class="number">3</span>, <span class="number">4</span>], mapper.batch_fields());
 
-        <span class="kw">let </span>cache = CacheManager::new(<span class="number">0</span>, <span class="number">1024</span>, <span class="number">0</span>);
+        <span class="comment">// With vector cache.
+        </span><span class="kw">let </span>cache = CacheManager::builder().vector_cache_size(<span class="number">1024</span>).build();
         <span class="kw">let </span>batch = new_batch(<span class="number">0</span>, <span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">2</span>], <span class="kw-2">&amp;</span>[(<span class="number">3</span>, <span class="number">3</span>), (<span class="number">4</span>, <span class="number">4</span>)], <span class="number">3</span>);
         <span class="kw">let </span>record_batch = mapper.convert(<span class="kw-2">&amp;</span>batch, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>cache)).unwrap();
         <span class="kw">let </span>expect = <span class="string">"\

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["IntersectionFstApplier"],"type":["Dfa"]};
+window.SIDEBAR_ITEMS = {"struct":["IntersectionFstApplier"]};

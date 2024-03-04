@@ -752,6 +752,60 @@
 <a href="#751" id="751">751</a>
 <a href="#752" id="752">752</a>
 <a href="#753" id="753">753</a>
+<a href="#754" id="754">754</a>
+<a href="#755" id="755">755</a>
+<a href="#756" id="756">756</a>
+<a href="#757" id="757">757</a>
+<a href="#758" id="758">758</a>
+<a href="#759" id="759">759</a>
+<a href="#760" id="760">760</a>
+<a href="#761" id="761">761</a>
+<a href="#762" id="762">762</a>
+<a href="#763" id="763">763</a>
+<a href="#764" id="764">764</a>
+<a href="#765" id="765">765</a>
+<a href="#766" id="766">766</a>
+<a href="#767" id="767">767</a>
+<a href="#768" id="768">768</a>
+<a href="#769" id="769">769</a>
+<a href="#770" id="770">770</a>
+<a href="#771" id="771">771</a>
+<a href="#772" id="772">772</a>
+<a href="#773" id="773">773</a>
+<a href="#774" id="774">774</a>
+<a href="#775" id="775">775</a>
+<a href="#776" id="776">776</a>
+<a href="#777" id="777">777</a>
+<a href="#778" id="778">778</a>
+<a href="#779" id="779">779</a>
+<a href="#780" id="780">780</a>
+<a href="#781" id="781">781</a>
+<a href="#782" id="782">782</a>
+<a href="#783" id="783">783</a>
+<a href="#784" id="784">784</a>
+<a href="#785" id="785">785</a>
+<a href="#786" id="786">786</a>
+<a href="#787" id="787">787</a>
+<a href="#788" id="788">788</a>
+<a href="#789" id="789">789</a>
+<a href="#790" id="790">790</a>
+<a href="#791" id="791">791</a>
+<a href="#792" id="792">792</a>
+<a href="#793" id="793">793</a>
+<a href="#794" id="794">794</a>
+<a href="#795" id="795">795</a>
+<a href="#796" id="796">796</a>
+<a href="#797" id="797">797</a>
+<a href="#798" id="798">798</a>
+<a href="#799" id="799">799</a>
+<a href="#800" id="800">800</a>
+<a href="#801" id="801">801</a>
+<a href="#802" id="802">802</a>
+<a href="#803" id="803">803</a>
+<a href="#804" id="804">804</a>
+<a href="#805" id="805">805</a>
+<a href="#806" id="806">806</a>
+<a href="#807" id="807">807</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -786,6 +840,9 @@
 #[snafu(visibility(<span class="kw">pub</span>))]
 #[stack_trace_debug]
 </span><span class="kw">pub enum </span>Error {
+    <span class="attr">#[snafu(display(<span class="string">"The target peer is unavailable temporally: {}"</span>, peer_id))]
+    </span>PeerUnavailable { location: Location, peer_id: u64 },
+
     <span class="attr">#[snafu(display(<span class="string">"Another migration procedure is running for region: {}"</span>, region_id))]
     </span>MigrationRunning {
         location: Location,
@@ -859,6 +916,14 @@
     </span>ListSchemas {
         location: Location,
         catalog: String,
+        source: BoxedError,
+    },
+
+    <span class="attr">#[snafu(display(<span class="string">"Failed to list {}.{}'s tables"</span>, catalog, schema))]
+    </span>ListTables {
+        location: Location,
+        catalog: String,
+        schema: String,
         source: BoxedError,
     },
 
@@ -960,6 +1025,12 @@
     </span>InitExportMetricsTask {
         location: Location,
         source: servers::error::Error,
+    },
+    <span class="attr">#[snafu(display(<span class="string">"Failed to parse duration {}"</span>, duration))]
+    </span>ParseDuration {
+        duration: String,
+        <span class="attr">#[snafu(source)]
+        </span>error: humantime::DurationError,
     },
     <span class="attr">#[snafu(display(<span class="string">"Failed to parse address {}"</span>, addr))]
     </span>ParseAddr {
@@ -1075,6 +1146,13 @@
     <span class="attr">#[snafu(display(<span class="string">"Table info not found: {}"</span>, table_id))]
     </span>TableInfoNotFound {
         table_id: TableId,
+        location: Location,
+    },
+
+    <span class="attr">#[snafu(display(<span class="string">"Datanode table not found: {}, datanode: {}"</span>, table_id, datanode_id))]
+    </span>DatanodeTableNotFound {
+        table_id: TableId,
+        datanode_id: DatanodeId,
         location: Location,
     },
 
@@ -1208,6 +1286,15 @@
         source: common_procedure::Error,
     },
 
+    <span class="attr">#[snafu(display(<span class="string">"Failed to query procedure state"</span>))]
+    </span>QueryProcedure {
+        location: Location,
+        source: common_procedure::Error,
+    },
+
+    <span class="attr">#[snafu(display(<span class="string">"Procedure not found: {pid}"</span>))]
+    </span>ProcedureNotFound { location: Location, pid: String },
+
     <span class="attr">#[snafu(display(<span class="string">"Failed to submit procedure"</span>))]
     </span>SubmitProcedure {
         location: Location,
@@ -1277,6 +1364,13 @@
 
     <span class="attr">#[snafu(display(<span class="string">"Expected to retry later, reason: {}"</span>, reason))]
     </span>RetryLater { reason: String, location: Location },
+
+    <span class="attr">#[snafu(display(<span class="string">"Expected to retry later, reason: {}"</span>, reason))]
+    </span>RetryLaterWithSource {
+        reason: String,
+        location: Location,
+        source: BoxedError,
+    },
 
     <span class="attr">#[snafu(display(<span class="string">"Failed to update table metadata, err_msg: {}"</span>, err_msg))]
     </span>UpdateTableMetadata { err_msg: String, location: Location },
@@ -1353,12 +1447,20 @@
 
     <span class="attr">#[snafu(display(<span class="string">"Weight array is not set"</span>))]
     </span>NotSetWeightArray { location: Location },
+
+    <span class="attr">#[snafu(display(<span class="string">"Unexpected table route type: {}"</span>, err_msg))]
+    </span>UnexpectedLogicalRouteTable {
+        location: Location,
+        err_msg: String,
+        source: common_meta::error::Error,
+    },
 }
 
 <span class="kw">impl </span>Error {
     <span class="doccomment">/// Returns `true` if the error is retryable.
     </span><span class="kw">pub fn </span>is_retryable(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="macro">matches!</span>(<span class="self">self</span>, Error::RetryLater { .. })
+            || <span class="macro">matches!</span>(<span class="self">self</span>, Error::RetryLaterWithSource { .. })
     }
 }
 
@@ -1389,7 +1491,6 @@
             | Error::LockNotConfig { .. }
             | Error::ExceededRetryLimit { .. }
             | Error::SendShutdownSignal { .. }
-            | Error::ParseAddr { .. }
             | Error::SchemaAlreadyExists { .. }
             | Error::PusherNotFound { .. }
             | Error::PushMessage { .. }
@@ -1397,6 +1498,7 @@
             | Error::MailboxTimeout { .. }
             | Error::MailboxReceiver { .. }
             | Error::RetryLater { .. }
+            | Error::RetryLaterWithSource { .. }
             | Error::StartGrpc { .. }
             | Error::UpdateTableMetadata { .. }
             | Error::NoEnoughAvailableDatanode { .. }
@@ -1404,7 +1506,8 @@
             | Error::Join { .. }
             | Error::WeightArray { .. }
             | Error::NotSetWeightArray { .. }
-            | Error::Unsupported { .. } =&gt; StatusCode::Internal,
+            | Error::Unsupported { .. }
+            | Error::PeerUnavailable { .. } =&gt; StatusCode::Internal,
             Error::TableAlreadyExists { .. } =&gt; StatusCode::TableAlreadyExists,
             Error::EmptyKey { .. }
             | Error::MissingRequiredParameter { .. }
@@ -1414,10 +1517,13 @@
             | Error::InvalidStatKey { .. }
             | Error::InvalidInactiveRegionKey { .. }
             | Error::ParseNum { .. }
+            | Error::ParseAddr { .. }
+            | Error::ParseDuration { .. }
             | Error::UnsupportedSelectorType { .. }
             | Error::InvalidArguments { .. }
             | Error::InitExportMetricsTask { .. }
             | Error::InvalidHeartbeatRequest { .. }
+            | Error::ProcedureNotFound { .. }
             | Error::TooManyPartitions { .. } =&gt; StatusCode::InvalidArguments,
             Error::LeaseKeyFromUtf8 { .. }
             | Error::LeaseValueFromUtf8 { .. }
@@ -1426,6 +1532,7 @@
             | Error::InvalidRegionKeyFromUtf8 { .. }
             | Error::TableRouteNotFound { .. }
             | Error::TableInfoNotFound { .. }
+            | Error::DatanodeTableNotFound { .. }
             | Error::CorruptedTableRoute { .. }
             | Error::MoveValue { .. }
             | Error::InvalidUtf8Value { .. }
@@ -1442,18 +1549,18 @@
             Error::RequestDatanode { source, .. } =&gt; source.status_code(),
             Error::InvalidCatalogValue { source, .. }
             | Error::InvalidFullTableName { source, .. } =&gt; source.status_code(),
-            Error::SubmitProcedure { source, .. } | Error::WaitProcedure { source, .. } =&gt; {
-                source.status_code()
-            }
+            Error::SubmitProcedure { source, .. }
+            | Error::WaitProcedure { source, .. }
+            | Error::QueryProcedure { source, .. } =&gt; source.status_code(),
             Error::ShutdownServer { source, .. } | Error::StartHttp { source, .. } =&gt; {
                 source.status_code()
             }
             Error::StartProcedureManager { source, .. }
             | Error::StopProcedureManager { source, .. } =&gt; source.status_code(),
 
-            Error::ListCatalogs { source, .. } | Error::ListSchemas { source, .. } =&gt; {
-                source.status_code()
-            }
+            Error::ListCatalogs { source, .. }
+            | Error::ListSchemas { source, .. }
+            | Error::ListTables { source, .. } =&gt; source.status_code(),
             Error::StartTelemetryTask { source, .. } =&gt; source.status_code(),
 
             Error::RegionFailoverCandidatesNotFound { .. } =&gt; StatusCode::RuntimeResourcesExhausted,
@@ -1467,7 +1574,8 @@
             | Error::TableMetadataManager { source, .. }
             | Error::KvBackend { source, .. }
             | Error::UpdateTableRoute { source, .. }
-            | Error::GetFullTableInfo { source, .. } =&gt; source.status_code(),
+            | Error::GetFullTableInfo { source, .. }
+            | Error::UnexpectedLogicalRouteTable { source, .. } =&gt; source.status_code(),
 
             Error::InitMetadata { source, .. } | Error::InitDdlManager { source, .. } =&gt; {
                 source.status_code()

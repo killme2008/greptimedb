@@ -186,10 +186,6 @@
 <a href="#185" id="185">185</a>
 <a href="#186" id="186">186</a>
 <a href="#187" id="187">187</a>
-<a href="#188" id="188">188</a>
-<a href="#189" id="189">189</a>
-<a href="#190" id="190">190</a>
-<a href="#191" id="191">191</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -207,7 +203,6 @@
 </span><span class="kw">use </span>std::collections::HashMap;
 <span class="kw">use </span>std::sync::Arc;
 
-<span class="kw">use </span>common_catalog::consts::INFORMATION_SCHEMA_NAME;
 <span class="kw">use </span>common_catalog::format_full_table_name;
 <span class="kw">use </span>datafusion::common::{ResolvedTableReference, TableReference};
 <span class="kw">use </span>datafusion::datasource::provider_as_source;
@@ -222,7 +217,7 @@
 <span class="kw">pub struct </span>DfTableSourceProvider {
     catalog_manager: CatalogManagerRef,
     resolved_tables: HashMap&lt;String, Arc&lt;<span class="kw">dyn </span>TableSource&gt;&gt;,
-    disallow_cross_schema_query: bool,
+    disallow_cross_catalog_query: bool,
     default_catalog: String,
     default_schema: String,
 }
@@ -230,12 +225,12 @@
 <span class="kw">impl </span>DfTableSourceProvider {
     <span class="kw">pub fn </span>new(
         catalog_manager: CatalogManagerRef,
-        disallow_cross_schema_query: bool,
+        disallow_cross_catalog_query: bool,
         query_ctx: <span class="kw-2">&amp;</span>QueryContext,
     ) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             catalog_manager,
-            disallow_cross_schema_query,
+            disallow_cross_catalog_query,
             resolved_tables: HashMap::new(),
             default_catalog: query_ctx.current_catalog().to_owned(),
             default_schema: query_ctx.current_schema().to_owned(),
@@ -246,29 +241,18 @@
         <span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="self">self</span>,
         table_ref: TableReference&lt;<span class="lifetime">'a</span>&gt;,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;ResolvedTableReference&lt;<span class="lifetime">'a</span>&gt;&gt; {
-        <span class="kw">if </span><span class="self">self</span>.disallow_cross_schema_query {
+        <span class="kw">if </span><span class="self">self</span>.disallow_cross_catalog_query {
             <span class="kw">match </span><span class="kw-2">&amp;</span>table_ref {
                 TableReference::Bare { .. } =&gt; (),
-                TableReference::Partial { schema, .. } =&gt; {
-                    <span class="macro">ensure!</span>(
-                        schema.as_ref() == <span class="self">self</span>.default_schema
-                            || schema.as_ref() == INFORMATION_SCHEMA_NAME,
-                        QueryAccessDeniedSnafu {
-                            catalog: <span class="kw-2">&amp;</span><span class="self">self</span>.default_catalog,
-                            schema: schema.as_ref(),
-                        }
-                    );
-                }
+                TableReference::Partial { .. } =&gt; {}
                 TableReference::Full {
                     catalog, schema, ..
                 } =&gt; {
                     <span class="macro">ensure!</span>(
-                        catalog.as_ref() == <span class="self">self</span>.default_catalog
-                            &amp;&amp; (schema.as_ref() == <span class="self">self</span>.default_schema
-                                || schema.as_ref() == INFORMATION_SCHEMA_NAME),
+                        catalog.as_ref() == <span class="self">self</span>.default_catalog,
                         QueryAccessDeniedSnafu {
                             catalog: catalog.as_ref(),
-                            schema: schema.as_ref()
+                            schema: schema.as_ref(),
                         }
                     );
                 }
@@ -328,21 +312,21 @@
             table: Cow::Borrowed(<span class="string">"table_name"</span>),
         };
         <span class="kw">let </span>result = table_provider.resolve_table_ref(table_ref);
-        <span class="kw">let _ </span>= result.unwrap();
+        <span class="macro">assert!</span>(result.is_ok());
 
         <span class="kw">let </span>table_ref = TableReference::Partial {
             schema: Cow::Borrowed(<span class="string">"public"</span>),
             table: Cow::Borrowed(<span class="string">"table_name"</span>),
         };
         <span class="kw">let </span>result = table_provider.resolve_table_ref(table_ref);
-        <span class="kw">let _ </span>= result.unwrap();
+        <span class="macro">assert!</span>(result.is_ok());
 
         <span class="kw">let </span>table_ref = TableReference::Partial {
             schema: Cow::Borrowed(<span class="string">"wrong_schema"</span>),
             table: Cow::Borrowed(<span class="string">"table_name"</span>),
         };
         <span class="kw">let </span>result = table_provider.resolve_table_ref(table_ref);
-        <span class="macro">assert!</span>(result.is_err());
+        <span class="macro">assert!</span>(result.is_ok());
 
         <span class="kw">let </span>table_ref = TableReference::Full {
             catalog: Cow::Borrowed(<span class="string">"greptime"</span>),
@@ -350,7 +334,7 @@
             table: Cow::Borrowed(<span class="string">"table_name"</span>),
         };
         <span class="kw">let </span>result = table_provider.resolve_table_ref(table_ref);
-        <span class="kw">let _ </span>= result.unwrap();
+        <span class="macro">assert!</span>(result.is_ok());
 
         <span class="kw">let </span>table_ref = TableReference::Full {
             catalog: Cow::Borrowed(<span class="string">"wrong_catalog"</span>),
@@ -364,14 +348,15 @@
             schema: Cow::Borrowed(<span class="string">"information_schema"</span>),
             table: Cow::Borrowed(<span class="string">"columns"</span>),
         };
-        <span class="kw">let _ </span>= table_provider.resolve_table_ref(table_ref).unwrap();
+        <span class="kw">let </span>result = table_provider.resolve_table_ref(table_ref);
+        <span class="macro">assert!</span>(result.is_ok());
 
         <span class="kw">let </span>table_ref = TableReference::Full {
             catalog: Cow::Borrowed(<span class="string">"greptime"</span>),
             schema: Cow::Borrowed(<span class="string">"information_schema"</span>),
             table: Cow::Borrowed(<span class="string">"columns"</span>),
         };
-        <span class="kw">let _ </span>= table_provider.resolve_table_ref(table_ref).unwrap();
+        <span class="macro">assert!</span>(table_provider.resolve_table_ref(table_ref).is_ok());
 
         <span class="kw">let </span>table_ref = TableReference::Full {
             catalog: Cow::Borrowed(<span class="string">"dummy"</span>),
@@ -379,6 +364,13 @@
             table: Cow::Borrowed(<span class="string">"columns"</span>),
         };
         <span class="macro">assert!</span>(table_provider.resolve_table_ref(table_ref).is_err());
+
+        <span class="kw">let </span>table_ref = TableReference::Full {
+            catalog: Cow::Borrowed(<span class="string">"greptime"</span>),
+            schema: Cow::Borrowed(<span class="string">"greptime_private"</span>),
+            table: Cow::Borrowed(<span class="string">"columns"</span>),
+        };
+        <span class="macro">assert!</span>(table_provider.resolve_table_ref(table_ref).is_ok());
     }
 }
 </code></pre></div></section></main></body></html>

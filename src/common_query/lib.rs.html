@@ -70,6 +70,21 @@
 <a href="#69" id="69">69</a>
 <a href="#70" id="70">70</a>
 <a href="#71" id="71">71</a>
+<a href="#72" id="72">72</a>
+<a href="#73" id="73">73</a>
+<a href="#74" id="74">74</a>
+<a href="#75" id="75">75</a>
+<a href="#76" id="76">76</a>
+<a href="#77" id="77">77</a>
+<a href="#78" id="78">78</a>
+<a href="#79" id="79">79</a>
+<a href="#80" id="80">80</a>
+<a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -85,10 +100,12 @@
 // limitations under the License.
 
 </span><span class="kw">use </span>std::fmt::{Debug, Formatter};
+<span class="kw">use </span>std::sync::Arc;
 
 <span class="kw">use </span>api::greptime_proto::v1::add_column_location::LocationType;
 <span class="kw">use </span>api::greptime_proto::v1::AddColumnLocation <span class="kw">as </span>Location;
 <span class="kw">use </span>common_recordbatch::{RecordBatches, SendableRecordBatchStream};
+<span class="kw">use </span>physical_plan::PhysicalPlan;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 
 <span class="kw">pub mod </span>columnar_value;
@@ -104,7 +121,14 @@
 </span><span class="kw">pub enum </span>Output {
     AffectedRows(usize),
     RecordBatches(RecordBatches),
-    Stream(SendableRecordBatchStream),
+    Stream(SendableRecordBatchStream, <span class="prelude-ty">Option</span>&lt;Arc&lt;<span class="kw">dyn </span>PhysicalPlan&gt;&gt;),
+}
+
+<span class="kw">impl </span>Output {
+    <span class="comment">// helper function to build original `Output::Stream`
+    </span><span class="kw">pub fn </span>new_stream(stream: SendableRecordBatchStream) -&gt; <span class="self">Self </span>{
+        Output::Stream(stream, <span class="prelude-val">None</span>)
+    }
 }
 
 <span class="kw">impl </span>Debug <span class="kw">for </span>Output {
@@ -114,7 +138,13 @@
             Output::RecordBatches(recordbatches) =&gt; {
                 <span class="macro">write!</span>(f, <span class="string">"Output::RecordBatches({recordbatches:?})"</span>)
             }
-            Output::Stream(<span class="kw">_</span>) =&gt; <span class="macro">write!</span>(f, <span class="string">"Output::Stream(&lt;stream&gt;)"</span>),
+            Output::Stream(<span class="kw">_</span>, df) =&gt; {
+                <span class="kw">if </span>df.is_some() {
+                    <span class="macro">write!</span>(f, <span class="string">"Output::Stream(&lt;stream&gt;, Some&lt;physical_plan&gt;)"</span>)
+                } <span class="kw">else </span>{
+                    <span class="macro">write!</span>(f, <span class="string">"Output::Stream(&lt;stream&gt;)"</span>)
+                }
+            }
         }
     }
 }
@@ -132,7 +162,7 @@
         <span class="kw">match </span>value {
             AddColumnLocation::First =&gt; Location {
                 location_type: LocationType::First.into(),
-                after_column_name: <span class="string">""</span>.to_string(),
+                after_column_name: String::default(),
             },
             AddColumnLocation::After { column_name } =&gt; Location {
                 location_type: LocationType::After.into(),

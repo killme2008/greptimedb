@@ -51,6 +51,18 @@
 <a href="#50" id="50">50</a>
 <a href="#51" id="51">51</a>
 <a href="#52" id="52">52</a>
+<a href="#53" id="53">53</a>
+<a href="#54" id="54">54</a>
+<a href="#55" id="55">55</a>
+<a href="#56" id="56">56</a>
+<a href="#57" id="57">57</a>
+<a href="#58" id="58">58</a>
+<a href="#59" id="59">59</a>
+<a href="#60" id="60">60</a>
+<a href="#61" id="61">61</a>
+<a href="#62" id="62">62</a>
+<a href="#63" id="63">63</a>
+<a href="#64" id="64">64</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -69,36 +81,48 @@
 <span class="kw">use </span>prometheus::<span class="kw-2">*</span>;
 
 <span class="macro">lazy_static! </span>{
-    <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_PARSE_SQL_ELAPSED: Histogram =
-        <span class="macro">register_histogram!</span>(<span class="string">"query_parse_sql_elapsed"</span>, <span class="string">"query parse sql elapsed"</span>).unwrap();
-    <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_PARSE_PROMQL_ELAPSED: Histogram =
-        <span class="macro">register_histogram!</span>(<span class="string">"query_parse_promql_elapsed"</span>, <span class="string">"query parse promql elapsed"</span>).unwrap();
+    <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_PARSE_SQL_ELAPSED: Histogram = <span class="macro">register_histogram!</span>(
+        <span class="string">"greptime_query_parse_sql_elapsed"</span>,
+        <span class="string">"query parse sql elapsed"
+    </span>)
+    .unwrap();
+    <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_PARSE_PROMQL_ELAPSED: Histogram = <span class="macro">register_histogram!</span>(
+        <span class="string">"greptime_query_parse_promql_elapsed"</span>,
+        <span class="string">"query parse promql elapsed"
+    </span>)
+    .unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_OPTIMIZE_LOGICAL_ELAPSED: Histogram = <span class="macro">register_histogram!</span>(
-        <span class="string">"query_optimize_logicalplan_elapsed"</span>,
+        <span class="string">"greptime_query_optimize_logicalplan_elapsed"</span>,
         <span class="string">"query optimize logicalplan elapsed"
     </span>)
     .unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_OPTIMIZE_PHYSICAL_ELAPSED: Histogram = <span class="macro">register_histogram!</span>(
-        <span class="string">"query_optimize_physicalplan_elapsed"</span>,
+        <span class="string">"greptime_query_optimize_physicalplan_elapsed"</span>,
         <span class="string">"query optimize physicalplan elapsed"
     </span>)
     .unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_CREATE_PHYSICAL_ELAPSED: Histogram = <span class="macro">register_histogram!</span>(
-        <span class="string">"query_create_physicalplan_elapsed"</span>,
+        <span class="string">"greptime_query_create_physicalplan_elapsed"</span>,
         <span class="string">"query create physicalplan elapsed"
     </span>)
     .unwrap();
-    <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_EXEC_PLAN_ELAPSED: Histogram =
-        <span class="macro">register_histogram!</span>(<span class="string">"query_execute_plan_elapsed"</span>, <span class="string">"query execute plan elapsed"</span>).unwrap();
+    <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_EXEC_PLAN_ELAPSED: Histogram = <span class="macro">register_histogram!</span>(
+        <span class="string">"greptime_query_execute_plan_elapsed"</span>,
+        <span class="string">"query execute plan elapsed"
+    </span>)
+    .unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_MERGE_SCAN_POLL_ELAPSED: Histogram = <span class="macro">register_histogram!</span>(
-        <span class="string">"query_merge_scan_poll_elapsed"</span>,
+        <span class="string">"greptime_query_merge_scan_poll_elapsed"</span>,
         <span class="string">"query merge scan poll elapsed"
     </span>)
     .unwrap();
-    <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_MERGE_SCAN_REGIONS: Histogram =
-        <span class="macro">register_histogram!</span>(<span class="string">"query_merge_scan_regions"</span>, <span class="string">"query merge scan regions"</span>).unwrap();
+    <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_MERGE_SCAN_REGIONS: Histogram = <span class="macro">register_histogram!</span>(
+        <span class="string">"greptime_query_merge_scan_regions"</span>,
+        <span class="string">"query merge scan regions"
+    </span>)
+    .unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_MERGE_SCAN_ERRORS_TOTAL: IntCounter = <span class="macro">register_int_counter!</span>(
-        <span class="string">"query_merge_scan_errors_total"</span>,
+        <span class="string">"greptime_query_merge_scan_errors_total"</span>,
         <span class="string">"query merge scan errors total"
     </span>)
     .unwrap();

@@ -44,6 +44,9 @@
 <a href="#43" id="43">43</a>
 <a href="#44" id="44">44</a>
 <a href="#45" id="45">45</a>
+<a href="#46" id="46">46</a>
+<a href="#47" id="47">47</a>
+<a href="#48" id="48">48</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -63,27 +66,30 @@
 
 <span class="macro">lazy_static! </span>{
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_GRPC_CREATE_TABLE: Histogram =
-        <span class="macro">register_histogram!</span>(<span class="string">"grpc_create_table"</span>, <span class="string">"grpc create table"</span>).unwrap();
-    <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_GRPC_PROMQL_RANGE_QUERY: Histogram =
-        <span class="macro">register_histogram!</span>(<span class="string">"grpc_promql_range_query"</span>, <span class="string">"grpc promql range query"</span>).unwrap();
+        <span class="macro">register_histogram!</span>(<span class="string">"greptime_grpc_create_table"</span>, <span class="string">"grpc create table"</span>).unwrap();
+    <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_GRPC_PROMQL_RANGE_QUERY: Histogram = <span class="macro">register_histogram!</span>(
+        <span class="string">"greptime_grpc_promql_range_query"</span>,
+        <span class="string">"grpc promql range query"
+    </span>)
+    .unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_GRPC_INSERT: Histogram =
-        <span class="macro">register_histogram!</span>(<span class="string">"grpc_insert"</span>, <span class="string">"grpc insert"</span>).unwrap();
+        <span class="macro">register_histogram!</span>(<span class="string">"greptime_grpc_insert"</span>, <span class="string">"grpc insert"</span>).unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_GRPC_DELETE: Histogram =
-        <span class="macro">register_histogram!</span>(<span class="string">"grpc_delete"</span>, <span class="string">"grpc delete"</span>).unwrap();
+        <span class="macro">register_histogram!</span>(<span class="string">"greptime_grpc_delete"</span>, <span class="string">"grpc delete"</span>).unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_GRPC_SQL: Histogram =
-        <span class="macro">register_histogram!</span>(<span class="string">"grpc_sql"</span>, <span class="string">"grpc sql"</span>).unwrap();
+        <span class="macro">register_histogram!</span>(<span class="string">"greptime_grpc_sql"</span>, <span class="string">"grpc sql"</span>).unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_GRPC_LOGICAL_PLAN: Histogram =
-        <span class="macro">register_histogram!</span>(<span class="string">"grpc_logical_plan"</span>, <span class="string">"grpc logical plan"</span>).unwrap();
+        <span class="macro">register_histogram!</span>(<span class="string">"greptime_grpc_logical_plan"</span>, <span class="string">"grpc logical plan"</span>).unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_GRPC_ALTER: Histogram =
-        <span class="macro">register_histogram!</span>(<span class="string">"grpc_alter"</span>, <span class="string">"grpc alter"</span>).unwrap();
+        <span class="macro">register_histogram!</span>(<span class="string">"greptime_grpc_alter"</span>, <span class="string">"grpc alter"</span>).unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_GRPC_DROP_TABLE: Histogram =
-        <span class="macro">register_histogram!</span>(<span class="string">"grpc_drop_table"</span>, <span class="string">"grpc drop table"</span>).unwrap();
+        <span class="macro">register_histogram!</span>(<span class="string">"greptime_grpc_drop_table"</span>, <span class="string">"grpc drop table"</span>).unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_GRPC_TRUNCATE_TABLE: Histogram =
-        <span class="macro">register_histogram!</span>(<span class="string">"grpc_truncate_table"</span>, <span class="string">"grpc truncate table"</span>).unwrap();
+        <span class="macro">register_histogram!</span>(<span class="string">"greptime_grpc_truncate_table"</span>, <span class="string">"grpc truncate table"</span>).unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_GRPC_DO_GET: Histogram =
-        <span class="macro">register_histogram!</span>(<span class="string">"grpc_do_get"</span>, <span class="string">"grpc do get"</span>).unwrap();
+        <span class="macro">register_histogram!</span>(<span class="string">"greptime_grpc_do_get"</span>, <span class="string">"grpc do get"</span>).unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_REGION_REQUEST_GRPC: HistogramVec = <span class="macro">register_histogram_vec!</span>(
-        <span class="string">"grpc_region_request"</span>,
+        <span class="string">"greptime_grpc_region_request"</span>,
         <span class="string">"grpc region request"</span>,
         <span class="kw-2">&amp;</span>[<span class="string">"request_type"</span>]
     )
