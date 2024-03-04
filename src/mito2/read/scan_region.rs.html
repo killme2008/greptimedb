@@ -303,6 +303,17 @@
 <a href="#302" id="302">302</a>
 <a href="#303" id="303">303</a>
 <a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
+<a href="#308" id="308">308</a>
+<a href="#309" id="309">309</a>
+<a href="#310" id="310">310</a>
+<a href="#311" id="311">311</a>
+<a href="#312" id="312">312</a>
+<a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -320,6 +331,7 @@
 </span><span class="doccomment">//! Scans a region according to the scan request.
 
 </span><span class="kw">use </span>std::sync::Arc;
+<span class="kw">use </span>std::time::Instant;
 
 <span class="kw">use </span>common_recordbatch::SendableRecordBatchStream;
 <span class="kw">use </span>common_telemetry::{debug, warn};
@@ -429,6 +441,8 @@
     </span>parallelism: ScanParallism,
     <span class="doccomment">/// Whether to ignore inverted index.
     </span>ignore_inverted_index: bool,
+    <span class="doccomment">/// Start time of the scan task.
+    </span>start_time: <span class="prelude-ty">Option</span>&lt;Instant&gt;,
 }
 
 <span class="kw">impl </span>ScanRegion {
@@ -446,6 +460,7 @@
             cache_manager,
             parallelism: ScanParallism::default(),
             ignore_inverted_index: <span class="bool-val">false</span>,
+            start_time: <span class="prelude-val">None</span>,
         }
     }
 
@@ -457,8 +472,14 @@
     </span>}
 
     <span class="attr">#[must_use]
-    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>ignore_inverted_index(<span class="kw-2">mut </span><span class="self">self</span>, ignore: bool) -&gt; <span class="self">Self </span>{
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>with_ignore_inverted_index(<span class="kw-2">mut </span><span class="self">self</span>, ignore: bool) -&gt; <span class="self">Self </span>{
         <span class="self">self</span>.ignore_inverted_index = ignore;
+        <span class="self">self
+    </span>}
+
+    <span class="attr">#[must_use]
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>with_start_time(<span class="kw-2">mut </span><span class="self">self</span>, now: Instant) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.start_time = <span class="prelude-val">Some</span>(now);
         <span class="self">self
     </span>}
 
@@ -528,7 +549,8 @@
             .with_files(files)
             .with_cache(<span class="self">self</span>.cache_manager)
             .with_index_applier(index_applier)
-            .with_parallelism(<span class="self">self</span>.parallelism);
+            .with_parallelism(<span class="self">self</span>.parallelism)
+            .with_start_time(<span class="self">self</span>.start_time);
 
         <span class="prelude-val">Ok</span>(seq_scan)
     }

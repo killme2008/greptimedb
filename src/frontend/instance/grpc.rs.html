@@ -230,6 +230,11 @@
 <a href="#229" id="229">229</a>
 <a href="#230" id="230">230</a>
 <a href="#231" id="231">231</a>
+<a href="#232" id="232">232</a>
+<a href="#233" id="233">233</a>
+<a href="#234" id="234">234</a>
+<a href="#235" id="235">235</a>
+<a href="#236" id="236">236</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -263,7 +268,8 @@
     Error, IncompleteGrpcRequestSnafu, NotSupportedSnafu, PermissionSnafu, <span class="prelude-ty">Result</span>,
     TableOperationSnafu,
 };
-<span class="kw">use </span><span class="kw">crate</span>::instance::Instance;
+<span class="kw">use </span><span class="kw">crate</span>::instance::{attach_timer, Instance};
+<span class="kw">use </span><span class="kw">crate</span>::metrics::{GRPC_HANDLE_PROMQL_ELAPSED, GRPC_HANDLE_SQL_ELAPSED};
 
 <span class="attr">#[async_trait]
 </span><span class="kw">impl </span>GrpcQueryHandler <span class="kw">for </span>Instance {
@@ -291,6 +297,7 @@
                 })<span class="question-mark">?</span>;
                 <span class="kw">match </span>query {
                     Query::Sql(sql) =&gt; {
+                        <span class="kw">let </span>timer = GRPC_HANDLE_SQL_ELAPSED.start_timer();
                         <span class="kw">let </span><span class="kw-2">mut </span>result = SqlQueryHandler::do_query(<span class="self">self</span>, <span class="kw-2">&amp;</span>sql, ctx.clone()).<span class="kw">await</span>;
                         <span class="macro">ensure!</span>(
                             result.len() == <span class="number">1</span>,
@@ -298,8 +305,9 @@
                                 feat: <span class="string">"execute multiple statements in SQL query string through GRPC interface"
                             </span>}
                         );
-                        result.remove(<span class="number">0</span>)<span class="question-mark">?
-                    </span>}
+                        <span class="kw">let </span>output = result.remove(<span class="number">0</span>)<span class="question-mark">?</span>;
+                        attach_timer(output, timer)
+                    }
                     Query::LogicalPlan(<span class="kw">_</span>) =&gt; {
                         <span class="kw">return </span>NotSupportedSnafu {
                             feat: <span class="string">"Execute LogicalPlan in Frontend"</span>,
@@ -307,6 +315,7 @@
                         .fail();
                     }
                     Query::PromRangeQuery(promql) =&gt; {
+                        <span class="kw">let </span>timer = GRPC_HANDLE_PROMQL_ELAPSED.start_timer();
                         <span class="kw">let </span>prom_query = PromQuery {
                             query: promql.query,
                             start: promql.start,
@@ -321,8 +330,9 @@
                                 feat: <span class="string">"execute multiple statements in PromQL query string through GRPC interface"
                             </span>}
                         );
-                        result.remove(<span class="number">0</span>)<span class="question-mark">?
-                    </span>}
+                        <span class="kw">let </span>output = result.remove(<span class="number">0</span>)<span class="question-mark">?</span>;
+                        attach_timer(output, timer)
+                    }
                 }
             }
             Request::Ddl(request) =&gt; {

@@ -425,7 +425,7 @@
     AddSystemTimeOverflowSnafu, MultipleStatementsSnafu, ParseFloatSnafu, ParseTimestampSnafu,
     QueryParseSnafu, <span class="prelude-ty">Result</span>, UnimplementedSnafu,
 };
-<span class="kw">use </span><span class="kw">crate</span>::metrics::{METRIC_PARSE_PROMQL_ELAPSED, METRIC_PARSE_SQL_ELAPSED};
+<span class="kw">use </span><span class="kw">crate</span>::metrics::{PARSE_PROMQL_ELAPSED, PARSE_SQL_ELAPSED};
 
 <span class="kw">const </span>DEFAULT_LOOKBACK: u64 = <span class="number">5 </span>* <span class="number">60</span>; <span class="comment">// 5m
 </span><span class="kw">pub const </span>DEFAULT_LOOKBACK_STRING: <span class="kw-2">&amp;</span>str = <span class="string">"5m"</span>;
@@ -508,7 +508,7 @@
 <span class="kw">impl </span>QueryLanguageParser {
     <span class="doccomment">/// Try to parse SQL with GreptimeDB dialect, return the statement when success.
     </span><span class="kw">pub fn </span>parse_sql(sql: <span class="kw-2">&amp;</span>str, _query_ctx: <span class="kw-2">&amp;</span>QueryContextRef) -&gt; <span class="prelude-ty">Result</span>&lt;QueryStatement&gt; {
-        <span class="kw">let </span>_timer = METRIC_PARSE_SQL_ELAPSED.start_timer();
+        <span class="kw">let </span>_timer = PARSE_SQL_ELAPSED.start_timer();
         <span class="kw">let </span><span class="kw-2">mut </span>statement =
             ParserContext::create_with_dialect(sql, <span class="kw-2">&amp;</span>GreptimeDbDialect {}, ParseOptions::default())
                 .map_err(BoxedError::new)
@@ -525,7 +525,7 @@
 
     <span class="doccomment">/// Try to parse PromQL, return the statement when success.
     </span><span class="kw">pub fn </span>parse_promql(query: <span class="kw-2">&amp;</span>PromQuery, _query_ctx: <span class="kw-2">&amp;</span>QueryContextRef) -&gt; <span class="prelude-ty">Result</span>&lt;QueryStatement&gt; {
-        <span class="kw">let </span>_timer = METRIC_PARSE_PROMQL_ELAPSED.start_timer();
+        <span class="kw">let </span>_timer = PARSE_PROMQL_ELAPSED.start_timer();
 
         <span class="kw">let </span>expr = promql_parser::parser::parse(<span class="kw-2">&amp;</span>query.query)
             .map_err(|msg| BoxedError::new(PlainError::new(msg, StatusCode::InvalidArguments)))

@@ -281,6 +281,24 @@
 <a href="#280" id="280">280</a>
 <a href="#281" id="281">281</a>
 <a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
+<a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -406,7 +424,7 @@
         <span class="macro">vec!</span>[<span class="number">0.005</span>, <span class="number">0.01</span>, <span class="number">0.05</span>, <span class="number">0.1</span>, <span class="number">0.5</span>, <span class="number">1.0</span>, <span class="number">5.0</span>, <span class="number">10.0</span>, <span class="number">60.0</span>, <span class="number">300.0</span>]
     )
     .unwrap();
-    <span class="doccomment">/// Counter of rows read.
+    <span class="doccomment">/// Counter of rows read from different source.
     </span><span class="kw">pub static </span><span class="kw-2">ref </span>READ_ROWS_TOTAL: IntCounterVec =
         <span class="macro">register_int_counter_vec!</span>(<span class="string">"greptime_mito_read_rows_total"</span>, <span class="string">"mito read rows total"</span>, <span class="kw-2">&amp;</span>[TYPE_LABEL]).unwrap();
     <span class="doccomment">/// Counter of filtered rows during merge.
@@ -420,6 +438,24 @@
         <span class="macro">register_int_counter_vec!</span>(<span class="string">"greptime_mito_precise_filter_rows_total"</span>, <span class="string">"mito precise filter rows total"</span>, <span class="kw-2">&amp;</span>[TYPE_LABEL]).unwrap();
     <span class="kw">pub static </span><span class="kw-2">ref </span>READ_ROWS_IN_ROW_GROUP_TOTAL: IntCounterVec =
         <span class="macro">register_int_counter_vec!</span>(<span class="string">"greptime_mito_read_rows_in_row_group_total"</span>, <span class="string">"mito read rows in row group total"</span>, <span class="kw-2">&amp;</span>[TYPE_LABEL]).unwrap();
+    <span class="doccomment">/// Histogram for the number of SSTs to scan per query.
+    </span><span class="kw">pub static </span><span class="kw-2">ref </span>READ_SST_COUNT: Histogram = <span class="macro">register_histogram!</span>(
+        <span class="string">"greptime_mito_read_sst_count"</span>,
+        <span class="string">"Number of SSTs to scan in a scan task"</span>,
+        <span class="macro">vec!</span>[<span class="number">1.0</span>, <span class="number">4.0</span>, <span class="number">8.0</span>, <span class="number">16.0</span>, <span class="number">32.0</span>, <span class="number">64.0</span>, <span class="number">256.0</span>, <span class="number">1024.0</span>],
+    ).unwrap();
+    <span class="doccomment">/// Histogram for the number of rows returned per query.
+    </span><span class="kw">pub static </span><span class="kw-2">ref </span>READ_ROWS_RETURN: Histogram = <span class="macro">register_histogram!</span>(
+        <span class="string">"greptime_mito_read_rows_return"</span>,
+        <span class="string">"Number of rows returned in a scan task"</span>,
+        exponential_buckets(<span class="number">100.0</span>, <span class="number">10.0</span>, <span class="number">8</span>).unwrap(),
+    ).unwrap();
+    <span class="doccomment">/// Histogram for the number of batches returned per query.
+    </span><span class="kw">pub static </span><span class="kw-2">ref </span>READ_BATCHES_RETURN: Histogram = <span class="macro">register_histogram!</span>(
+        <span class="string">"greptime_mito_read_batches_return"</span>,
+        <span class="string">"Number of rows returned in a scan task"</span>,
+        exponential_buckets(<span class="number">100.0</span>, <span class="number">10.0</span>, <span class="number">7</span>).unwrap(),
+    ).unwrap();
     <span class="comment">// ------- End of query metrics.
 
     // Cache related metrics.

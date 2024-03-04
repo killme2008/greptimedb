@@ -6,7 +6,7 @@
     next_sequence: <a class="type" href="../../store_api/storage/types/type.SequenceNumber.html" title="type store_api::storage::types::SequenceNumber">SequenceNumber</a>,
     next_entry_id: <a class="type" href="../wal/type.EntryId.html" title="type mito2::wal::EntryId">EntryId</a>,
     wal_entry: WalEntry,
-    wal_options: WalOptions,
+    wal_options: <a class="enum" href="../../common_wal/options/enum.WalOptions.html" title="enum common_wal::options::WalOptions">WalOptions</a>,
     notifiers: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="struct" href="struct.WriteNotify.html" title="struct mito2::region_write_ctx::WriteNotify">WriteNotify</a>&gt;,
     failed: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
     pub(crate) put_num: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
@@ -21,7 +21,7 @@
 </div><span id="structfield.wal_entry" class="structfield section-header"><a href="#structfield.wal_entry" class="anchor field">§</a><code>wal_entry: WalEntry</code></span><div class="docblock"><p>Valid WAL entry to write.</p>
 <p>We keep [WalEntry] instead of mutations to avoid taking mutations
 out of the context to construct the wal entry when we write to the wal.</p>
-</div><span id="structfield.wal_options" class="structfield section-header"><a href="#structfield.wal_options" class="anchor field">§</a><code>wal_options: WalOptions</code></span><div class="docblock"><p>Wal options of the region being written to.</p>
+</div><span id="structfield.wal_options" class="structfield section-header"><a href="#structfield.wal_options" class="anchor field">§</a><code>wal_options: <a class="enum" href="../../common_wal/options/enum.WalOptions.html" title="enum common_wal::options::WalOptions">WalOptions</a></code></span><div class="docblock"><p>Wal options of the region being written to.</p>
 </div><span id="structfield.notifiers" class="structfield section-header"><a href="#structfield.notifiers" class="anchor field">§</a><code>notifiers: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="struct" href="struct.WriteNotify.html" title="struct mito2::region_write_ctx::WriteNotify">WriteNotify</a>&gt;</code></span><div class="docblock"><p>Notifiers to send write results to waiters.</p>
 <p>The i-th notify is for i-th mutation.</p>
 </div><span id="structfield.failed" class="structfield section-header"><a href="#structfield.failed" class="anchor field">§</a><code>failed: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span><div class="docblock"><p>The write operation is failed and we should not write to the mutable memtable.</p>
@@ -30,7 +30,7 @@ out of the context to construct the wal entry when we write to the wal.</p>
 </div><h2 id="implementations" class="section-header">Implementations<a href="#implementations" class="anchor">§</a></h2><div id="implementations-list"><details class="toggle implementors-toggle" open><summary><section id="impl-RegionWriteCtx" class="impl"><a class="src rightside" href="../../src/mito2/region_write_ctx.rs.html#104-218">source</a><a href="#impl-RegionWriteCtx" class="anchor">§</a><h3 class="code-header">impl <a class="struct" href="struct.RegionWriteCtx.html" title="struct mito2::region_write_ctx::RegionWriteCtx">RegionWriteCtx</a></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.new" class="method"><a class="src rightside" href="../../src/mito2/region_write_ctx.rs.html#106-131">source</a><h4 class="code-header">pub(crate) fn <a href="#method.new" class="fn">new</a>(
     region_id: <a class="struct" href="../../store_api/storage/descriptors/struct.RegionId.html" title="struct store_api::storage::descriptors::RegionId">RegionId</a>,
     version_control: &amp;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/sync/struct.Arc.html" title="struct alloc::sync::Arc">Arc</a>&lt;<a class="struct" href="../region/version/struct.VersionControl.html" title="struct mito2::region::version::VersionControl">VersionControl</a>&gt;,
-    wal_options: WalOptions
+    wal_options: <a class="enum" href="../../common_wal/options/enum.WalOptions.html" title="enum common_wal::options::WalOptions">WalOptions</a>
 ) -&gt; <a class="struct" href="struct.RegionWriteCtx.html" title="struct mito2::region_write_ctx::RegionWriteCtx">RegionWriteCtx</a></h4></section></summary><div class="docblock"><p>Returns an empty context.</p>
 </div></details><details class="toggle method-toggle" open><summary><section id="method.push_mutation" class="method"><a class="src rightside" href="../../src/mito2/region_write_ctx.rs.html#134-155">source</a><h4 class="code-header">pub(crate) fn <a href="#method.push_mutation" class="fn">push_mutation</a>(
     &amp;mut self,

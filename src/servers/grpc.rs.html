@@ -192,6 +192,12 @@
 <a href="#191" id="191">191</a>
 <a href="#192" id="192">192</a>
 <a href="#193" id="193">193</a>
+<a href="#194" id="194">194</a>
+<a href="#195" id="195">195</a>
+<a href="#196" id="196">196</a>
+<a href="#197" id="197">197</a>
+<a href="#198" id="198">198</a>
+<a href="#199" id="199">199</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -237,6 +243,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::error::{
     AlreadyStartedSnafu, InternalSnafu, <span class="prelude-ty">Result</span>, StartGrpcSnafu, TcpBindSnafu, TcpIncomingSnafu,
 };
+<span class="kw">use </span><span class="kw">crate</span>::metrics::MetricsMiddlewareLayer;
 <span class="kw">use </span><span class="kw">crate</span>::server::Server;
 
 <span class="kw">type </span>TonicResult&lt;T&gt; = std::result::Result&lt;T, Status&gt;;
@@ -362,7 +369,12 @@
             (incoming, addr)
         };
 
+        <span class="kw">let </span>metrics_layer = tower::ServiceBuilder::new()
+            .layer(MetricsMiddlewareLayer)
+            .into_inner();
+
         <span class="kw">let </span>builder = tonic::transport::Server::builder()
+            .layer(metrics_layer)
             .add_routes(routes)
             .add_service(<span class="self">self</span>.create_healthcheck_service())
             .add_service(<span class="self">self</span>.create_reflection_service());

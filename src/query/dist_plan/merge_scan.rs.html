@@ -363,8 +363,6 @@
 <a href="#362" id="362">362</a>
 <a href="#363" id="363">363</a>
 <a href="#364" id="364">364</a>
-<a href="#365" id="365">365</a>
-<a href="#366" id="366">366</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -414,9 +412,7 @@
 <span class="kw">use </span>tokio::time::Instant;
 
 <span class="kw">use </span><span class="kw">crate</span>::error::ConvertSchemaSnafu;
-<span class="kw">use </span><span class="kw">crate</span>::metrics::{
-    METRIC_MERGE_SCAN_ERRORS_TOTAL, METRIC_MERGE_SCAN_POLL_ELAPSED, METRIC_MERGE_SCAN_REGIONS,
-};
+<span class="kw">use </span><span class="kw">crate</span>::metrics::{MERGE_SCAN_ERRORS_TOTAL, MERGE_SCAN_POLL_ELAPSED, MERGE_SCAN_REGIONS};
 <span class="kw">use </span><span class="kw">crate</span>::region_query::RegionQueryHandlerRef;
 
 <span class="attr">#[derive(Debug, Hash, PartialEq, Eq, Clone)]
@@ -537,7 +533,7 @@
         <span class="kw">let </span>tracing_context = TracingContext::from_json(context.session_id().as_str());
 
         <span class="kw">let </span>stream = Box::pin(<span class="macro">stream!</span>({
-            METRIC_MERGE_SCAN_REGIONS.observe(regions.len() <span class="kw">as </span>f64);
+            MERGE_SCAN_REGIONS.observe(regions.len() <span class="kw">as </span>f64);
             <span class="kw">let </span>_finish_timer = metric.finish_time().timer();
             <span class="kw">let </span><span class="kw-2">mut </span>ready_timer = metric.ready_time().timer();
             <span class="kw">let </span><span class="kw-2">mut </span>first_consume_timer = <span class="prelude-val">Some</span>(metric.first_consume_time().timer());
@@ -555,7 +551,7 @@
                     .do_get(request)
                     .<span class="kw">await
                     </span>.map_err(|e| {
-                        METRIC_MERGE_SCAN_ERRORS_TOTAL.inc();
+                        MERGE_SCAN_ERRORS_TOTAL.inc();
                         BoxedError::new(e)
                     })
                     .context(ExternalSnafu)<span class="question-mark">?</span>;
@@ -594,7 +590,7 @@
                     metric.record_greptime_exec_cost(value <span class="kw">as </span>usize);
                 }
 
-                METRIC_MERGE_SCAN_POLL_ELAPSED.observe(poll_duration.as_secs_f64());
+                MERGE_SCAN_POLL_ELAPSED.observe(poll_duration.as_secs_f64());
             }
         }));
 

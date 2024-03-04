@@ -630,6 +630,17 @@
 <a href="#629" id="629">629</a>
 <a href="#630" id="630">630</a>
 <a href="#631" id="631">631</a>
+<a href="#632" id="632">632</a>
+<a href="#633" id="633">633</a>
+<a href="#634" id="634">634</a>
+<a href="#635" id="635">635</a>
+<a href="#636" id="636">636</a>
+<a href="#637" id="637">637</a>
+<a href="#638" id="638">638</a>
+<a href="#639" id="639">639</a>
+<a href="#640" id="640">640</a>
+<a href="#641" id="641">641</a>
+<a href="#642" id="642">642</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -679,6 +690,8 @@
 <span class="kw">use </span>operator::delete::DeleterRef;
 <span class="kw">use </span>operator::insert::InserterRef;
 <span class="kw">use </span>operator::statement::StatementExecutor;
+<span class="kw">use </span>prometheus::HistogramTimer;
+<span class="kw">use </span>query::metrics::OnDone;
 <span class="kw">use </span>query::parser::{PromQuery, QueryLanguageParser, QueryStatement};
 <span class="kw">use </span>query::plan::LogicalPlan;
 <span class="kw">use </span>query::query_engine::options::{validate_catalog_and_schema, QueryOptions};
@@ -717,7 +730,6 @@
 };
 <span class="kw">use </span><span class="kw">crate</span>::frontend::{FrontendOptions, TomlSerializable};
 <span class="kw">use </span><span class="kw">crate</span>::heartbeat::HeartbeatTask;
-<span class="kw">use </span><span class="kw">crate</span>::metrics;
 <span class="kw">use </span><span class="kw">crate</span>::script::ScriptExecutor;
 
 <span class="attr">#[async_trait]
@@ -908,7 +920,6 @@
     <span class="kw">type </span>Error = Error;
 
     <span class="kw">async fn </span>do_query(<span class="kw-2">&amp;</span><span class="self">self</span>, query: <span class="kw-2">&amp;</span>str, query_ctx: QueryContextRef) -&gt; Vec&lt;<span class="prelude-ty">Result</span>&lt;Output&gt;&gt; {
-        <span class="kw">let </span>_timer = metrics::METRIC_HANDLE_SQL_ELAPSED.start_timer();
         <span class="kw">let </span>query_interceptor_opt = <span class="self">self</span>.plugins.get::&lt;SqlQueryInterceptorRef&lt;Error&gt;&gt;();
         <span class="kw">let </span>query_interceptor = query_interceptor_opt.as_ref();
         <span class="kw">let </span>query = <span class="kw">match </span>query_interceptor.pre_parsing(query, query_ctx.clone()) {
@@ -968,7 +979,6 @@
     }
 
     <span class="kw">async fn </span>do_exec_plan(<span class="kw-2">&amp;</span><span class="self">self</span>, plan: LogicalPlan, query_ctx: QueryContextRef) -&gt; <span class="prelude-ty">Result</span>&lt;Output&gt; {
-        <span class="kw">let </span>_timer = metrics::METRIC_EXEC_PLAN_ELAPSED.start_timer();
         <span class="comment">// plan should be prepared before exec
         // we'll do check there
         </span><span class="self">self</span>.query_engine
@@ -1030,6 +1040,19 @@
     }
 }
 
+<span class="doccomment">/// Attaches a timer to the output and observes it once the output is exhausted.
+</span><span class="kw">pub fn </span>attach_timer(output: Output, timer: HistogramTimer) -&gt; Output {
+    <span class="kw">match </span>output {
+        Output::AffectedRows(<span class="kw">_</span>) | Output::RecordBatches(<span class="kw">_</span>) =&gt; output,
+        Output::Stream(stream, plan) =&gt; {
+            <span class="kw">let </span>stream = OnDone::new(stream, <span class="kw">move </span>|| {
+                timer.observe_duration();
+            });
+            Output::Stream(Box::pin(stream), plan)
+        }
+    }
+}
+
 <span class="attr">#[async_trait]
 </span><span class="kw">impl </span>PrometheusHandler <span class="kw">for </span>Instance {
     <span class="kw">async fn </span>do_query(
@@ -1037,7 +1060,6 @@
         query: <span class="kw-2">&amp;</span>PromQuery,
         query_ctx: QueryContextRef,
     ) -&gt; server_error::Result&lt;Output&gt; {
-        <span class="kw">let </span>_timer = metrics::METRIC_HANDLE_PROMQL_ELAPSED.start_timer();
         <span class="kw">let </span>interceptor = <span class="self">self
             </span>.plugins
             .get::&lt;PromQueryInterceptorRef&lt;server_error::Error&gt;&gt;();

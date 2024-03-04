@@ -50,6 +50,16 @@
 <a href="#49" id="49">49</a>
 <a href="#50" id="50">50</a>
 <a href="#51" id="51">51</a>
+<a href="#52" id="52">52</a>
+<a href="#53" id="53">53</a>
+<a href="#54" id="54">54</a>
+<a href="#55" id="55">55</a>
+<a href="#56" id="56">56</a>
+<a href="#57" id="57">57</a>
+<a href="#58" id="58">58</a>
+<a href="#59" id="59">59</a>
+<a href="#60" id="60">60</a>
+<a href="#61" id="61">61</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -68,22 +78,32 @@
 <span class="kw">use </span>prometheus::<span class="kw-2">*</span>;
 
 <span class="macro">lazy_static! </span>{
-    <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_HANDLE_SQL_ELAPSED: Histogram =
-        <span class="macro">register_histogram!</span>(<span class="string">"greptime_frontend_handle_sql_elapsed"</span>, <span class="string">"frontend handle sql elapsed"</span>).unwrap();
-    <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_HANDLE_PROMQL_ELAPSED: Histogram = <span class="macro">register_histogram!</span>(
-        <span class="string">"greptime_frontend_handle_promql_elapsed"</span>,
-        <span class="string">"frontend handle promql elapsed"
-    </span>)
+    <span class="doccomment">/// Timer of handling query in RPC handler.
+    </span><span class="kw">pub static </span><span class="kw-2">ref </span>GRPC_HANDLE_QUERY_ELAPSED: HistogramVec = <span class="macro">register_histogram_vec!</span>(
+        <span class="string">"greptime_frontend_grpc_handle_query_elapsed"</span>,
+        <span class="string">"Elapsed time of handling queries in RPC handler"</span>,
+        <span class="kw-2">&amp;</span>[<span class="string">"type"</span>],
+        <span class="macro">vec!</span>[<span class="number">0.005</span>, <span class="number">0.01</span>, <span class="number">0.05</span>, <span class="number">0.1</span>, <span class="number">0.5</span>, <span class="number">1.0</span>, <span class="number">5.0</span>, <span class="number">10.0</span>, <span class="number">60.0</span>, <span class="number">300.0</span>]
+    )
     .unwrap();
-    <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_EXEC_PLAN_ELAPSED: Histogram =
-        <span class="macro">register_histogram!</span>(<span class="string">"greptime_frontend_exec_plan_elapsed"</span>, <span class="string">"frontend exec plan elapsed"</span>).unwrap();
-    <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_HANDLE_SCRIPTS_ELAPSED: Histogram = <span class="macro">register_histogram!</span>(
-        <span class="string">"greptime_frontend_handle_scripts_elapsed"</span>,
-        <span class="string">"frontend handle scripts elapsed"
-    </span>)
+    <span class="kw">pub static </span><span class="kw-2">ref </span>GRPC_HANDLE_SQL_ELAPSED: Histogram = GRPC_HANDLE_QUERY_ELAPSED
+        .with_label_values(<span class="kw-2">&amp;</span>[<span class="string">"sql"</span>]);
+    <span class="kw">pub static </span><span class="kw-2">ref </span>GRPC_HANDLE_PROMQL_ELAPSED: Histogram = GRPC_HANDLE_QUERY_ELAPSED
+        .with_label_values(<span class="kw-2">&amp;</span>[<span class="string">"promql"</span>]);
+
+    <span class="doccomment">/// Timer of handling scripts in the script handler.
+    </span><span class="kw">pub static </span><span class="kw-2">ref </span>HANDLE_SCRIPT_ELAPSED: HistogramVec = <span class="macro">register_histogram_vec!</span>(
+        <span class="string">"greptime_frontend_handle_script_elapsed"</span>,
+        <span class="string">"Elapsed time of handling scripts in the script handler"</span>,
+        <span class="kw-2">&amp;</span>[<span class="string">"type"</span>],
+        <span class="macro">vec!</span>[<span class="number">0.005</span>, <span class="number">0.01</span>, <span class="number">0.05</span>, <span class="number">0.1</span>, <span class="number">0.5</span>, <span class="number">1.0</span>, <span class="number">5.0</span>, <span class="number">10.0</span>, <span class="number">60.0</span>, <span class="number">300.0</span>]
+    )
     .unwrap();
-    <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_RUN_SCRIPT_ELAPSED: Histogram =
-        <span class="macro">register_histogram!</span>(<span class="string">"greptime_frontend_run_script_elapsed"</span>, <span class="string">"frontend run script elapsed"</span>).unwrap();
+    <span class="kw">pub static </span><span class="kw-2">ref </span>INSERT_SCRIPTS_ELAPSED: Histogram = HANDLE_SCRIPT_ELAPSED
+        .with_label_values(<span class="kw-2">&amp;</span>[<span class="string">"insert"</span>]);
+    <span class="kw">pub static </span><span class="kw-2">ref </span>EXECUTE_SCRIPT_ELAPSED: Histogram = HANDLE_SCRIPT_ELAPSED
+        .with_label_values(<span class="kw-2">&amp;</span>[<span class="string">"execute"</span>]);
+
     <span class="doccomment">/// The samples count of Prometheus remote write.
     </span><span class="kw">pub static </span><span class="kw-2">ref </span>PROM_STORE_REMOTE_WRITE_SAMPLES: IntCounter = <span class="macro">register_int_counter!</span>(
         <span class="string">"greptime_frontend_prometheus_remote_write_samples"</span>,

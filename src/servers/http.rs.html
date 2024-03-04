@@ -1035,39 +1035,6 @@
 <a href="#1034" id="1034">1034</a>
 <a href="#1035" id="1035">1035</a>
 <a href="#1036" id="1036">1036</a>
-<a href="#1037" id="1037">1037</a>
-<a href="#1038" id="1038">1038</a>
-<a href="#1039" id="1039">1039</a>
-<a href="#1040" id="1040">1040</a>
-<a href="#1041" id="1041">1041</a>
-<a href="#1042" id="1042">1042</a>
-<a href="#1043" id="1043">1043</a>
-<a href="#1044" id="1044">1044</a>
-<a href="#1045" id="1045">1045</a>
-<a href="#1046" id="1046">1046</a>
-<a href="#1047" id="1047">1047</a>
-<a href="#1048" id="1048">1048</a>
-<a href="#1049" id="1049">1049</a>
-<a href="#1050" id="1050">1050</a>
-<a href="#1051" id="1051">1051</a>
-<a href="#1052" id="1052">1052</a>
-<a href="#1053" id="1053">1053</a>
-<a href="#1054" id="1054">1054</a>
-<a href="#1055" id="1055">1055</a>
-<a href="#1056" id="1056">1056</a>
-<a href="#1057" id="1057">1057</a>
-<a href="#1058" id="1058">1058</a>
-<a href="#1059" id="1059">1059</a>
-<a href="#1060" id="1060">1060</a>
-<a href="#1061" id="1061">1061</a>
-<a href="#1062" id="1062">1062</a>
-<a href="#1063" id="1063">1063</a>
-<a href="#1064" id="1064">1064</a>
-<a href="#1065" id="1065">1065</a>
-<a href="#1066" id="1066">1066</a>
-<a href="#1067" id="1067">1067</a>
-<a href="#1068" id="1068">1068</a>
-<a href="#1069" id="1069">1069</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -1086,7 +1053,7 @@
 <span class="kw">use </span>std::fmt::Display;
 <span class="kw">use </span>std::net::SocketAddr;
 <span class="kw">use </span>std::sync::Mutex <span class="kw">as </span>StdMutex;
-<span class="kw">use </span>std::time::{Duration, Instant};
+<span class="kw">use </span>std::time::Duration;
 
 <span class="kw">use </span>aide::axum::{routing <span class="kw">as </span>apirouting, ApiRouter, IntoApiResponse};
 <span class="kw">use </span>aide::openapi::{Info, OpenApi, Server <span class="kw">as </span>OpenAPIServer};
@@ -1094,11 +1061,9 @@
 <span class="kw">use </span>async_trait::async_trait;
 <span class="kw">use </span>auth::UserProviderRef;
 <span class="kw">use </span>axum::error_handling::HandleErrorLayer;
-<span class="kw">use </span>axum::extract::{DefaultBodyLimit, MatchedPath};
-<span class="kw">use </span>axum::http::Request;
-<span class="kw">use </span>axum::middleware::{<span class="self">self</span>, Next};
+<span class="kw">use </span>axum::extract::DefaultBodyLimit;
 <span class="kw">use </span>axum::response::{Html, IntoResponse, Json, Response};
-<span class="kw">use </span>axum::{routing, BoxError, Extension, Router};
+<span class="kw">use </span>axum::{middleware, routing, BoxError, Extension, Router};
 <span class="kw">use </span>common_base::readable_size::ReadableSize;
 <span class="kw">use </span>common_base::Plugins;
 <span class="kw">use </span>common_error::status_code::StatusCode;
@@ -1131,9 +1096,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::http::prometheus::{
     format_query, instant_query, label_values_query, labels_query, range_query, series_query,
 };
-<span class="kw">use </span><span class="kw">crate</span>::metrics::{
-    HTTP_TRACK_METRICS, METRIC_HTTP_REQUESTS_ELAPSED, METRIC_HTTP_REQUESTS_TOTAL,
-};
+<span class="kw">use </span><span class="kw">crate</span>::metrics::http_metrics_layer;
 <span class="kw">use </span><span class="kw">crate</span>::metrics_handler::MetricsHandler;
 <span class="kw">use </span><span class="kw">crate</span>::prometheus_handler::PrometheusHandlerRef;
 <span class="kw">use </span><span class="kw">crate</span>::query_handler::sql::ServerSqlQueryHandlerRef;
@@ -1669,7 +1632,7 @@
         }
 
         <span class="comment">// Add a layer to collect HTTP metrics for axum.
-        </span>router = router.route_layer(middleware::from_fn(track_metrics));
+        </span>router = router.route_layer(middleware::from_fn(http_metrics_layer));
 
         router
     }
@@ -1795,35 +1758,6 @@
             .route(<span class="string">"/config"</span>, apirouting::get(handler::config))
             .with_state(state)
     }
-}
-
-<span class="doccomment">/// A middleware to record metrics for HTTP.
-</span><span class="comment">// Based on https://github.com/tokio-rs/axum/blob/axum-v0.6.16/examples/prometheus-metrics/src/main.rs
-</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>track_metrics&lt;B&gt;(req: Request&lt;B&gt;, next: Next&lt;B&gt;) -&gt; <span class="kw">impl </span>IntoResponse {
-    <span class="kw">let </span>_timer = HTTP_TRACK_METRICS
-        .with_label_values(<span class="kw-2">&amp;</span>[<span class="string">"value"</span>])
-        .start_timer();
-    <span class="kw">let </span>start = Instant::now();
-    <span class="kw">let </span>path = <span class="kw">if let </span><span class="prelude-val">Some</span>(matched_path) = req.extensions().get::&lt;MatchedPath&gt;() {
-        matched_path.as_str().to_owned()
-    } <span class="kw">else </span>{
-        req.uri().path().to_owned()
-    };
-    <span class="kw">let </span>method = req.method().clone();
-
-    <span class="kw">let </span>response = next.run(req).<span class="kw">await</span>;
-
-    <span class="kw">let </span>latency = start.elapsed().as_secs_f64();
-    <span class="kw">let </span>status = response.status().as_u16().to_string();
-    <span class="kw">let </span>method_str = method.to_string();
-
-    <span class="kw">let </span>labels = [method_str.as_str(), path.as_str(), status.as_str()];
-    METRIC_HTTP_REQUESTS_TOTAL.with_label_values(<span class="kw-2">&amp;</span>labels).inc();
-    METRIC_HTTP_REQUESTS_ELAPSED
-        .with_label_values(<span class="kw-2">&amp;</span>labels)
-        .observe(latency);
-
-    response
 }
 
 <span class="kw">pub const </span>HTTP_SERVER: <span class="kw-2">&amp;</span>str = <span class="string">"HTTP_SERVER"</span>;

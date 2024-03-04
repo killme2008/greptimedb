@@ -63,6 +63,43 @@
 <a href="#62" id="62">62</a>
 <a href="#63" id="63">63</a>
 <a href="#64" id="64">64</a>
+<a href="#65" id="65">65</a>
+<a href="#66" id="66">66</a>
+<a href="#67" id="67">67</a>
+<a href="#68" id="68">68</a>
+<a href="#69" id="69">69</a>
+<a href="#70" id="70">70</a>
+<a href="#71" id="71">71</a>
+<a href="#72" id="72">72</a>
+<a href="#73" id="73">73</a>
+<a href="#74" id="74">74</a>
+<a href="#75" id="75">75</a>
+<a href="#76" id="76">76</a>
+<a href="#77" id="77">77</a>
+<a href="#78" id="78">78</a>
+<a href="#79" id="79">79</a>
+<a href="#80" id="80">80</a>
+<a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
+<a href="#91" id="91">91</a>
+<a href="#92" id="92">92</a>
+<a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -77,54 +114,91 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-</span><span class="kw">use </span>lazy_static::lazy_static;
+</span><span class="kw">use </span>std::pin::Pin;
+<span class="kw">use </span>std::task::{Context, Poll};
+
+<span class="kw">use </span>common_recordbatch::{RecordBatch, RecordBatchStream, SendableRecordBatchStream};
+<span class="kw">use </span>datatypes::schema::SchemaRef;
+<span class="kw">use </span>futures::Stream;
+<span class="kw">use </span>futures_util::ready;
+<span class="kw">use </span>lazy_static::lazy_static;
 <span class="kw">use </span>prometheus::<span class="kw-2">*</span>;
 
 <span class="macro">lazy_static! </span>{
-    <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_PARSE_SQL_ELAPSED: Histogram = <span class="macro">register_histogram!</span>(
-        <span class="string">"greptime_query_parse_sql_elapsed"</span>,
-        <span class="string">"query parse sql elapsed"
-    </span>)
+    <span class="doccomment">/// Timer of different stages in query.
+    </span><span class="kw">pub static </span><span class="kw-2">ref </span>QUERY_STAGE_ELAPSED: HistogramVec = <span class="macro">register_histogram_vec!</span>(
+        <span class="string">"greptime_query_stage_elapsed"</span>,
+        <span class="string">"query engine time elapsed during each stage"</span>,
+        <span class="kw-2">&amp;</span>[<span class="string">"stage"</span>],
+        <span class="macro">vec!</span>[<span class="number">0.005</span>, <span class="number">0.01</span>, <span class="number">0.05</span>, <span class="number">0.1</span>, <span class="number">0.5</span>, <span class="number">1.0</span>, <span class="number">5.0</span>, <span class="number">10.0</span>, <span class="number">60.0</span>, <span class="number">300.0</span>]
+    )
     .unwrap();
-    <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_PARSE_PROMQL_ELAPSED: Histogram = <span class="macro">register_histogram!</span>(
-        <span class="string">"greptime_query_parse_promql_elapsed"</span>,
-        <span class="string">"query parse promql elapsed"
-    </span>)
-    .unwrap();
-    <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_OPTIMIZE_LOGICAL_ELAPSED: Histogram = <span class="macro">register_histogram!</span>(
-        <span class="string">"greptime_query_optimize_logicalplan_elapsed"</span>,
-        <span class="string">"query optimize logicalplan elapsed"
-    </span>)
-    .unwrap();
-    <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_OPTIMIZE_PHYSICAL_ELAPSED: Histogram = <span class="macro">register_histogram!</span>(
-        <span class="string">"greptime_query_optimize_physicalplan_elapsed"</span>,
-        <span class="string">"query optimize physicalplan elapsed"
-    </span>)
-    .unwrap();
-    <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_CREATE_PHYSICAL_ELAPSED: Histogram = <span class="macro">register_histogram!</span>(
-        <span class="string">"greptime_query_create_physicalplan_elapsed"</span>,
-        <span class="string">"query create physicalplan elapsed"
-    </span>)
-    .unwrap();
-    <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_EXEC_PLAN_ELAPSED: Histogram = <span class="macro">register_histogram!</span>(
-        <span class="string">"greptime_query_execute_plan_elapsed"</span>,
-        <span class="string">"query execute plan elapsed"
-    </span>)
-    .unwrap();
-    <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_MERGE_SCAN_POLL_ELAPSED: Histogram = <span class="macro">register_histogram!</span>(
-        <span class="string">"greptime_query_merge_scan_poll_elapsed"</span>,
-        <span class="string">"query merge scan poll elapsed"
-    </span>)
-    .unwrap();
-    <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_MERGE_SCAN_REGIONS: Histogram = <span class="macro">register_histogram!</span>(
+    <span class="kw">pub static </span><span class="kw-2">ref </span>PARSE_SQL_ELAPSED: Histogram = QUERY_STAGE_ELAPSED
+        .with_label_values(<span class="kw-2">&amp;</span>[<span class="string">"parse_sql"</span>]);
+    <span class="kw">pub static </span><span class="kw-2">ref </span>PARSE_PROMQL_ELAPSED: Histogram = QUERY_STAGE_ELAPSED
+        .with_label_values(<span class="kw-2">&amp;</span>[<span class="string">"parse_promql"</span>]);
+    <span class="kw">pub static </span><span class="kw-2">ref </span>OPTIMIZE_LOGICAL_ELAPSED: Histogram = QUERY_STAGE_ELAPSED
+        .with_label_values(<span class="kw-2">&amp;</span>[<span class="string">"optimize_logicalplan"</span>]);
+    <span class="kw">pub static </span><span class="kw-2">ref </span>OPTIMIZE_PHYSICAL_ELAPSED: Histogram = QUERY_STAGE_ELAPSED
+        .with_label_values(<span class="kw-2">&amp;</span>[<span class="string">"optimize_physicalplan"</span>]);
+    <span class="kw">pub static </span><span class="kw-2">ref </span>CREATE_PHYSICAL_ELAPSED: Histogram = QUERY_STAGE_ELAPSED
+        .with_label_values(<span class="kw-2">&amp;</span>[<span class="string">"create_physicalplan"</span>]);
+    <span class="kw">pub static </span><span class="kw-2">ref </span>EXEC_PLAN_ELAPSED: Histogram = QUERY_STAGE_ELAPSED
+        .with_label_values(<span class="kw-2">&amp;</span>[<span class="string">"execute_plan"</span>]);
+    <span class="kw">pub static </span><span class="kw-2">ref </span>MERGE_SCAN_POLL_ELAPSED: Histogram = QUERY_STAGE_ELAPSED
+        .with_label_values(<span class="kw-2">&amp;</span>[<span class="string">"merge_scan_poll"</span>]);
+
+    <span class="kw">pub static </span><span class="kw-2">ref </span>MERGE_SCAN_REGIONS: Histogram = <span class="macro">register_histogram!</span>(
         <span class="string">"greptime_query_merge_scan_regions"</span>,
         <span class="string">"query merge scan regions"
     </span>)
     .unwrap();
-    <span class="kw">pub static </span><span class="kw-2">ref </span>METRIC_MERGE_SCAN_ERRORS_TOTAL: IntCounter = <span class="macro">register_int_counter!</span>(
+    <span class="kw">pub static </span><span class="kw-2">ref </span>MERGE_SCAN_ERRORS_TOTAL: IntCounter = <span class="macro">register_int_counter!</span>(
         <span class="string">"greptime_query_merge_scan_errors_total"</span>,
         <span class="string">"query merge scan errors total"
     </span>)
     .unwrap();
+}
+
+<span class="doccomment">/// A stream to call the callback once a RecordBatch stream is done.
+</span><span class="kw">pub struct </span>OnDone&lt;F&gt; {
+    stream: SendableRecordBatchStream,
+    callback: <span class="prelude-ty">Option</span>&lt;F&gt;,
+}
+
+<span class="kw">impl</span>&lt;F&gt; OnDone&lt;F&gt; {
+    <span class="doccomment">/// Attaches a `callback` to invoke once the `stream` is terminated.
+    </span><span class="kw">pub fn </span>new(stream: SendableRecordBatchStream, callback: F) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            stream,
+            callback: <span class="prelude-val">Some</span>(callback),
+        }
+    }
+}
+
+<span class="kw">impl</span>&lt;F: FnOnce() + Unpin&gt; RecordBatchStream <span class="kw">for </span>OnDone&lt;F&gt; {
+    <span class="kw">fn </span>schema(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; SchemaRef {
+        <span class="self">self</span>.stream.schema()
+    }
+}
+
+<span class="kw">impl</span>&lt;F: FnOnce() + Unpin&gt; Stream <span class="kw">for </span>OnDone&lt;F&gt; {
+    <span class="kw">type </span>Item = common_recordbatch::error::Result&lt;RecordBatch&gt;;
+
+    <span class="kw">fn </span>poll_next(<span class="kw-2">mut </span><span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">'_</span>&gt;) -&gt; Poll&lt;<span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt;&gt; {
+        <span class="kw">match </span><span class="macro">ready!</span>(Pin::new(<span class="kw-2">&amp;mut </span><span class="self">self</span>.stream).poll_next(cx)) {
+            <span class="prelude-val">Some</span>(rb) =&gt; Poll::Ready(<span class="prelude-val">Some</span>(rb)),
+            <span class="prelude-val">None </span>=&gt; {
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(callback) = <span class="self">self</span>.callback.take() {
+                    callback();
+                }
+                Poll::Ready(<span class="prelude-val">None</span>)
+            }
+        }
+    }
+
+    <span class="kw">fn </span>size_hint(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (usize, <span class="prelude-ty">Option</span>&lt;usize&gt;) {
+        <span class="self">self</span>.stream.size_hint()
+    }
 }
 </code></pre></div></section></main></body></html>

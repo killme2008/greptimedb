@@ -81,7 +81,7 @@
         name: <span class="kw-2">&amp;</span>str,
         script: <span class="kw-2">&amp;</span>str,
     ) -&gt; servers::error::Result&lt;()&gt; {
-        <span class="kw">let </span>_timer = metrics::METRIC_HANDLE_SCRIPTS_ELAPSED.start_timer();
+        <span class="kw">let </span>_timer = metrics::INSERT_SCRIPTS_ELAPSED.start_timer();
         <span class="self">self</span>.script_executor
             .insert_script(query_ctx, name, script)
             .<span class="kw">await
@@ -93,7 +93,7 @@
         name: <span class="kw-2">&amp;</span>str,
         params: HashMap&lt;String, String&gt;,
     ) -&gt; servers::error::Result&lt;Output&gt; {
-        <span class="kw">let </span>_timer = metrics::METRIC_RUN_SCRIPT_ELAPSED.start_timer();
+        <span class="kw">let </span>_timer = metrics::EXECUTE_SCRIPT_ELAPSED.start_timer();
         <span class="self">self</span>.script_executor
             .execute_script(query_ctx, name, params)
             .<span class="kw">await

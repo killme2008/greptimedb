@@ -469,6 +469,9 @@
 <a href="#468" id="468">468</a>
 <a href="#469" id="469">469</a>
 <a href="#470" id="470">470</a>
+<a href="#471" id="471">471</a>
+<a href="#472" id="472">472</a>
+<a href="#473" id="473">473</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -510,7 +513,7 @@
 };
 <span class="kw">use </span><span class="kw">crate</span>::memtable::merge_tree::MergeTreeConfig;
 <span class="kw">use </span><span class="kw">crate</span>::memtable::{BoxedBatchIterator, KeyValues};
-<span class="kw">use </span><span class="kw">crate</span>::metrics::{MERGE_TREE_READ_STAGE_ELAPSED, READ_STAGE_ELAPSED};
+<span class="kw">use </span><span class="kw">crate</span>::metrics::{MERGE_TREE_READ_STAGE_ELAPSED, READ_ROWS_TOTAL, READ_STAGE_ELAPSED};
 <span class="kw">use </span><span class="kw">crate</span>::read::Batch;
 <span class="kw">use </span><span class="kw">crate</span>::row_converter::{McmpRowCodec, RowCodec, SortField};
 
@@ -868,6 +871,9 @@
 
 <span class="kw">impl </span>Drop <span class="kw">for </span>TreeIter {
     <span class="kw">fn </span>drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        READ_ROWS_TOTAL
+            .with_label_values(<span class="kw-2">&amp;</span>[<span class="string">"merge_tree_memtable"</span>])
+            .inc_by(<span class="self">self</span>.metrics.rows_fetched <span class="kw">as </span>u64);
         MERGE_TREE_READ_STAGE_ELAPSED
             .with_label_values(<span class="kw-2">&amp;</span>[<span class="string">"fetch_next_partition"</span>])
             .observe(<span class="self">self</span>.metrics.fetch_partition_elapsed.as_secs_f64());

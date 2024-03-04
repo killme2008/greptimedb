@@ -610,6 +610,20 @@
 <a href="#609" id="609">609</a>
 <a href="#610" id="610">610</a>
 <a href="#611" id="611">611</a>
+<a href="#612" id="612">612</a>
+<a href="#613" id="613">613</a>
+<a href="#614" id="614">614</a>
+<a href="#615" id="615">615</a>
+<a href="#616" id="616">616</a>
+<a href="#617" id="617">617</a>
+<a href="#618" id="618">618</a>
+<a href="#619" id="619">619</a>
+<a href="#620" id="620">620</a>
+<a href="#621" id="621">621</a>
+<a href="#622" id="622">622</a>
+<a href="#623" id="623">623</a>
+<a href="#624" id="624">624</a>
+<a href="#625" id="625">625</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Greptime Team
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -665,6 +679,7 @@
 };
 <span class="kw">use </span><span class="kw">crate</span>::executor::QueryExecutor;
 <span class="kw">use </span><span class="kw">crate</span>::logical_optimizer::LogicalOptimizer;
+<span class="kw">use </span><span class="kw">crate</span>::metrics::{OnDone, QUERY_STAGE_ELAPSED};
 <span class="kw">use </span><span class="kw">crate</span>::physical_optimizer::PhysicalOptimizer;
 <span class="kw">use </span><span class="kw">crate</span>::physical_planner::PhysicalPlanner;
 <span class="kw">use </span><span class="kw">crate</span>::physical_wrapper::PhysicalPlanWrapperRef;
@@ -719,6 +734,10 @@
                 name: <span class="macro">format!</span>(<span class="string">"DML op {}"</span>, dml.op),
             }
         );
+
+        <span class="kw">let </span>_timer = QUERY_STAGE_ELAPSED
+            .with_label_values(<span class="kw-2">&amp;</span>[dml.op.name()])
+            .start_timer();
 
         <span class="kw">let </span>default_catalog = <span class="kw-2">&amp;</span>query_ctx.current_catalog().to_owned();
         <span class="kw">let </span>default_schema = <span class="kw-2">&amp;</span>query_ctx.current_schema().to_owned();
@@ -914,7 +933,7 @@
 <span class="kw">impl </span>LogicalOptimizer <span class="kw">for </span>DatafusionQueryEngine {
     <span class="attr">#[tracing::instrument(skip_all)]
     </span><span class="kw">fn </span>optimize(<span class="kw-2">&amp;</span><span class="self">self</span>, context: <span class="kw-2">&amp;</span>QueryEngineContext, plan: <span class="kw-2">&amp;</span>LogicalPlan) -&gt; <span class="prelude-ty">Result</span>&lt;LogicalPlan&gt; {
-        <span class="kw">let </span>_timer = metrics::METRIC_OPTIMIZE_LOGICAL_ELAPSED.start_timer();
+        <span class="kw">let </span>_timer = metrics::OPTIMIZE_LOGICAL_ELAPSED.start_timer();
         <span class="kw">match </span>plan {
             LogicalPlan::DfPlan(df_plan) =&gt; {
                 <span class="comment">// Optimized by extension rules
@@ -948,7 +967,7 @@
         ctx: <span class="kw-2">&amp;mut </span>QueryEngineContext,
         logical_plan: <span class="kw-2">&amp;</span>LogicalPlan,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;Arc&lt;<span class="kw">dyn </span>PhysicalPlan&gt;&gt; {
-        <span class="kw">let </span>_timer = metrics::METRIC_CREATE_PHYSICAL_ELAPSED.start_timer();
+        <span class="kw">let </span>_timer = metrics::CREATE_PHYSICAL_ELAPSED.start_timer();
         <span class="kw">match </span>logical_plan {
             LogicalPlan::DfPlan(df_plan) =&gt; {
                 <span class="kw">let </span>state = ctx.state();
@@ -982,7 +1001,7 @@
         ctx: <span class="kw-2">&amp;mut </span>QueryEngineContext,
         plan: Arc&lt;<span class="kw">dyn </span>PhysicalPlan&gt;,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;Arc&lt;<span class="kw">dyn </span>PhysicalPlan&gt;&gt; {
-        <span class="kw">let </span>_timer = metrics::METRIC_OPTIMIZE_PHYSICAL_ELAPSED.start_timer();
+        <span class="kw">let </span>_timer = metrics::OPTIMIZE_PHYSICAL_ELAPSED.start_timer();
 
         <span class="kw">let </span>state = ctx.state();
         <span class="kw">let </span>config = state.config_options();
@@ -1030,16 +1049,22 @@
         ctx: <span class="kw-2">&amp;</span>QueryEngineContext,
         plan: <span class="kw-2">&amp;</span>Arc&lt;<span class="kw">dyn </span>PhysicalPlan&gt;,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;SendableRecordBatchStream&gt; {
-        <span class="kw">let </span>_timer = metrics::METRIC_EXEC_PLAN_ELAPSED.start_timer();
+        <span class="kw">let </span>exec_timer = metrics::EXEC_PLAN_ELAPSED.start_timer();
         <span class="kw">let </span>task_ctx = ctx.build_task_ctx();
 
         <span class="kw">match </span>plan.output_partitioning().partition_count() {
             <span class="number">0 </span>=&gt; <span class="prelude-val">Ok</span>(Box::pin(EmptyRecordBatchStream::new(plan.schema()))),
-            <span class="number">1 </span>=&gt; <span class="prelude-val">Ok</span>(plan
-                .execute(<span class="number">0</span>, task_ctx)
-                .context(error::ExecutePhysicalPlanSnafu)
-                .map_err(BoxedError::new)
-                .context(QueryExecutionSnafu))<span class="question-mark">?</span>,
+            <span class="number">1 </span>=&gt; {
+                <span class="kw">let </span>stream = plan
+                    .execute(<span class="number">0</span>, task_ctx)
+                    .context(error::ExecutePhysicalPlanSnafu)
+                    .map_err(BoxedError::new)
+                    .context(QueryExecutionSnafu)<span class="question-mark">?</span>;
+                <span class="kw">let </span>stream = OnDone::new(stream, <span class="kw">move </span>|| {
+                    exec_timer.observe_duration();
+                });
+                <span class="prelude-val">Ok</span>(Box::pin(stream))
+            }
             <span class="kw">_ </span>=&gt; {
                 <span class="kw">let </span>df_plan = Arc::new(DfPhysicalPlanAdapter(plan.clone()));
                 <span class="comment">// merge into a single partition
@@ -1056,6 +1081,9 @@
                     .map_err(BoxedError::new)
                     .context(QueryExecutionSnafu)<span class="question-mark">?</span>;
                 stream.set_metrics2(df_plan);
+                <span class="kw">let </span>stream = OnDone::new(Box::pin(stream), <span class="kw">move </span>|| {
+                    exec_timer.observe_duration();
+                });
                 <span class="prelude-val">Ok</span>(Box::pin(stream))
             }
         }
