@@ -16,7 +16,7 @@ use std::sync::Arc;
 use std::{fs, path};
 
 use async_trait::async_trait;
-use cache::{default_cache_registry_builder, TABLE_CACHE_NAME};
+use cache::default_cache_registry_builder;
 use catalog::kvbackend::KvBackendCatalogManager;
 use clap::Parser;
 use common_catalog::consts::{MIN_USER_FLOW_ID, MIN_USER_TABLE_ID};
@@ -56,13 +56,12 @@ use servers::export_metrics::ExportMetricsOption;
 use servers::http::HttpOptions;
 use servers::tls::{TlsMode, TlsOption};
 use servers::Mode;
-use snafu::{OptionExt, ResultExt};
+use snafu::ResultExt;
 
 use crate::error::{
-    CacheRequiredSnafu, CreateDirSnafu, IllegalConfigSnafu, InitDdlManagerSnafu, InitMetadataSnafu,
-    InitTimezoneSnafu, Result, ShutdownDatanodeSnafu, ShutdownFrontendSnafu, StartDatanodeSnafu,
-    StartFrontendSnafu, StartProcedureManagerSnafu, StartWalOptionsAllocatorSnafu,
-    StopProcedureManagerSnafu,
+    CreateDirSnafu, IllegalConfigSnafu, InitDdlManagerSnafu, InitMetadataSnafu, InitTimezoneSnafu,
+    Result, ShutdownDatanodeSnafu, ShutdownFrontendSnafu, StartDatanodeSnafu, StartFrontendSnafu,
+    StartProcedureManagerSnafu, StartWalOptionsAllocatorSnafu, StopProcedureManagerSnafu,
 };
 use crate::options::{GlobalOptions, Options};
 use crate::App;
@@ -389,11 +388,13 @@ impl StartCommand {
         .context(StartFrontendSnafu)?;
 
         let cache_registry = Arc::new(default_cache_registry_builder(kv_backend.clone()).build());
-        let table_cache = cache_registry.get().context(CacheRequiredSnafu {
-            name: TABLE_CACHE_NAME,
-        })?;
-        let catalog_manager =
-            KvBackendCatalogManager::new(dn_opts.mode, None, kv_backend.clone(), table_cache).await;
+        let catalog_manager = KvBackendCatalogManager::new(
+            dn_opts.mode,
+            None,
+            kv_backend.clone(),
+            cache_registry.clone(),
+        )
+        .await;
 
         let builder =
             DatanodeBuilder::new(dn_opts, fe_plugins.clone()).with_kv_backend(kv_backend.clone());

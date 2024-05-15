@@ -19,6 +19,8 @@ mod udf;
 
 use std::sync::Arc;
 
+use datafusion::catalog::CatalogProviderList;
+use datafusion::logical_expr::LogicalPlan;
 use datatypes::prelude::ConcreteDataType;
 pub use expr::build_filter_from_timestamp;
 
@@ -26,6 +28,7 @@ pub use self::accumulator::{Accumulator, AggregateFunctionCreator, AggregateFunc
 pub use self::expr::{DfExpr, Expr};
 pub use self::udaf::AggregateFunction;
 pub use self::udf::ScalarUdf;
+use crate::error::Result;
 use crate::function::{ReturnTypeFunction, ScalarFunctionImplementation};
 use crate::logical_plan::accumulator::*;
 use crate::signature::{Signature, Volatility};
@@ -68,6 +71,18 @@ pub fn create_aggregate_function(
         creator,
     )
 }
+
+/// The datafusion `[LogicalPlan]` decoder.
+#[async_trait::async_trait]
+pub trait SubstraitPlanDecoder {
+    async fn decode(
+        &self,
+        message: bytes::Bytes,
+        catalog_list: Arc<dyn CatalogProviderList>,
+    ) -> Result<LogicalPlan>;
+}
+
+pub type SubstraitPlanDecoderRef = Arc<dyn SubstraitPlanDecoder + Send + Sync>;
 
 #[cfg(test)]
 mod tests {

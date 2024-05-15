@@ -22,7 +22,7 @@ pub use flow::{new_table_flownode_set_cache, TableFlownodeSetCache, TableFlownod
 pub use registry::{CacheRegistry, CacheRegistryBuilder, CacheRegistryRef};
 pub use table::{
     new_composite_table_route_cache, new_table_info_cache, new_table_name_cache,
-    new_table_route_cache, CompositeTableRoute, CompositeTableRouteCache,
+    new_table_route_cache, new_view_info_cache, CompositeTableRoute, CompositeTableRouteCache,
     CompositeTableRouteCacheRef, TableInfoCache, TableInfoCacheRef, TableNameCache,
-    TableNameCacheRef, TableRouteCache, TableRouteCacheRef,
+    TableNameCacheRef, TableRouteCache, TableRouteCacheRef, ViewInfoCache, ViewInfoCacheRef,
 };

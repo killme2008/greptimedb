@@ -16,7 +16,7 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use async_trait::async_trait;
-use cache::{default_cache_registry_builder, TABLE_CACHE_NAME};
+use cache::default_cache_registry_builder;
 use catalog::kvbackend::{CachedMetaKvBackendBuilder, KvBackendCatalogManager, MetaKvBackend};
 use clap::Parser;
 use client::client_manager::DatanodeClients;
@@ -248,6 +248,7 @@ impl StartCommand {
             .cache_tti(cache_tti)
             .build();
         let cached_meta_backend = Arc::new(cached_meta_backend);
+
         let cache_registry_builder =
             default_cache_registry_builder(Arc::new(MetaKvBackend::new(meta_client.clone())));
         let cache_registry = Arc::new(
@@ -255,14 +256,12 @@ impl StartCommand {
                 .add_cache(cached_meta_backend.clone())
                 .build(),
         );
-        let table_cache = cache_registry.get().context(error::CacheRequiredSnafu {
-            name: TABLE_CACHE_NAME,
-        })?;
+
         let catalog_manager = KvBackendCatalogManager::new(
             opts.mode,
             Some(meta_client.clone()),
             cached_meta_backend.clone(),
-            table_cache,
+            cache_registry.clone(),
         )
         .await;
 

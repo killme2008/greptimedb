@@ -172,15 +172,21 @@ impl CreateViewProcedure {
                     view_name: self.creator.data.table_ref().to_string(),
                 })?;
             let new_logical_plan = self.creator.data.task.raw_logical_plan().clone();
+            let table_names = self.creator.data.task.table_names();
+
             manager
-                .update_view_info(view_id, &current_view_info, new_logical_plan)
+                .update_view_info(view_id, &current_view_info, new_logical_plan, table_names)
                 .await?;
 
             info!("Updated view metadata for view {view_id}");
         } else {
             let raw_view_info = self.view_info().clone();
             manager
-                .create_view_metadata(raw_view_info, self.creator.data.task.raw_logical_plan())
+                .create_view_metadata(
+                    raw_view_info,
+                    self.creator.data.task.raw_logical_plan(),
+                    self.creator.data.task.table_names(),
+                )
                 .await?;
 
             info!(

@@ -37,6 +37,15 @@ use datafusion::sql::TableReference;
 use datafusion_expr::utils::conjunction;
 use datatypes::arrow::datatypes::DataType as ArrowDataType;
 use itertools::Itertools;
+use promql::extension_plan::{
+    build_special_time_expr, EmptyMetric, HistogramFold, InstantManipulate, Millisecond,
+    RangeManipulate, ScalarCalculate, SeriesDivide, SeriesNormalize, UnionDistinctOn,
+};
+use promql::functions::{
+    AbsentOverTime, AvgOverTime, Changes, CountOverTime, Delta, Deriv, HoltWinters, IDelta,
+    Increase, LastOverTime, MaxOverTime, MinOverTime, PredictLinear, PresentOverTime,
+    QuantileOverTime, Rate, Resets, StddevOverTime, StdvarOverTime, SumOverTime,
+};
 use promql_parser::label::{MatchOp, Matcher, Matchers, METRIC_NAME};
 use promql_parser::parser::{
     token, AggregateExpr, BinModifier, BinaryExpr as PromBinaryExpr, Call, EvalStmt,
@@ -47,22 +56,13 @@ use promql_parser::parser::{
 use snafu::{ensure, OptionExt, ResultExt};
 use table::table::adapter::DfTableProviderAdapter;
 
-use crate::error::{
+use crate::promql::error::{
     CatalogSnafu, ColumnNotFoundSnafu, CombineTableColumnMismatchSnafu, DataFusionPlanningSnafu,
     ExpectRangeSelectorSnafu, FunctionInvalidArgumentSnafu, MultiFieldsNotSupportedSnafu,
-    MultipleMetricMatchersSnafu, MultipleVectorSnafu, NoMetricMatcherSnafu, Result,
-    TableNameNotFoundSnafu, TimeIndexNotFoundSnafu, UnexpectedPlanExprSnafu, UnexpectedTokenSnafu,
-    UnknownTableSnafu, UnsupportedExprSnafu, UnsupportedMatcherOpSnafu,
+    MultipleMetricMatchersSnafu, MultipleVectorSnafu, NoMetricMatcherSnafu, PromqlPlanNodeSnafu,
+    Result, TableNameNotFoundSnafu, TimeIndexNotFoundSnafu, UnexpectedPlanExprSnafu,
+    UnexpectedTokenSnafu, UnknownTableSnafu, UnsupportedExprSnafu, UnsupportedMatcherOpSnafu,
     UnsupportedVectorMatchSnafu, ValueNotFoundSnafu, ZeroRangeSelectorSnafu,
-};
-use crate::extension_plan::{
-    build_special_time_expr, EmptyMetric, HistogramFold, InstantManipulate, Millisecond,
-    RangeManipulate, ScalarCalculate, SeriesDivide, SeriesNormalize, UnionDistinctOn,
-};
-use crate::functions::{
-    AbsentOverTime, AvgOverTime, Changes, CountOverTime, Delta, Deriv, HoltWinters, IDelta,
-    Increase, LastOverTime, MaxOverTime, MinOverTime, PredictLinear, PresentOverTime,
-    QuantileOverTime, Rate, Resets, StddevOverTime, StdvarOverTime, SumOverTime,
 };
 
 /// `time()` function in PromQL.
@@ -1469,16 +1469,19 @@ impl PromPlanner {
             },
         );
         let scalar_plan = LogicalPlan::Extension(Extension {
-            node: Arc::new(ScalarCalculate::new(
-                self.ctx.start,
-                self.ctx.end,
-                self.ctx.interval,
-                input,
-                self.ctx.time_index_column.as_ref().unwrap(),
-                &self.ctx.tag_columns,
-                &self.ctx.field_columns[0],
-                self.ctx.table_name.as_deref(),
-            )?),
+            node: Arc::new(
+                ScalarCalculate::new(
+                    self.ctx.start,
+                    self.ctx.end,
+                    self.ctx.interval,
+                    input,
+                    self.ctx.time_index_column.as_ref().unwrap(),
+                    &self.ctx.tag_columns,
+                    &self.ctx.field_columns[0],
+                    self.ctx.table_name.as_deref(),
+                )
+                .context(PromqlPlanNodeSnafu)?,
+            ),
         });
         // scalar plan have no tag columns
         self.ctx.tag_columns.clear();
