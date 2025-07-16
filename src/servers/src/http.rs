@@ -82,6 +82,7 @@ use crate::query_handler::{
 };
 use crate::server::Server;
 
+pub mod auth_extractor;
 pub mod authorize;
 #[cfg(feature = "dashboard")]
 mod dashboard;

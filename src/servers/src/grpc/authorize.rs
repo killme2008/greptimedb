@@ -22,7 +22,8 @@ use tonic::body::BoxBody;
 use tonic::server::NamedService;
 use tower::{Layer, Service};
 
-use crate::http::authorize::{extract_catalog_and_schema, extract_username_and_password};
+use crate::common::auth::Authenticator;
+use crate::http::authorize::extract_catalog_and_schema;
 
 #[derive(Clone)]
 pub struct AuthMiddlewareLayer {
@@ -83,7 +84,7 @@ where
         let user_provider = self.user_provider.clone();
 
         Box::pin(async move {
-            if let Err(status) = do_auth(&mut req, user_provider).await {
+            if let Err(status) = common_do_auth(&mut req, user_provider).await {
                 return Ok(status.into_http());
             }
             inner.call(req).await
@@ -91,35 +92,64 @@ where
     }
 }
 
-async fn do_auth<T>(
+/// New gRPC authentication function using the common auth system.
+/// This replaces the old `do_auth` function with the unified authentication approach.
+async fn common_do_auth<T>(
     req: &mut http::Request<T>,
     user_provider: Option<UserProviderRef>,
 ) -> Result<(), tonic::Status> {
+    // Convert generic request to BoxBody request for credential extraction
+    // For now, we'll use the old extraction method but the new authentication logic
     let (catalog, schema) = extract_catalog_and_schema(req);
-
-    let query_ctx = QueryContext::with_channel(&catalog, &schema, Channel::Grpc);
+    let _query_ctx = QueryContext::with_channel(&catalog, &schema, Channel::Grpc);
 
     let Some(user_provider) = user_provider else {
-        query_ctx.set_current_user(auth::userinfo_by_name(None));
-        let _ = req.extensions_mut().insert(query_ctx);
+        // No auth needed.
         return Ok(());
     };
 
-    let (username, password) = extract_username_and_password(req)
-        .map_err(|e| tonic::Status::invalid_argument(e.to_string()))?;
+    let auth_header = req
+        .headers()
+        .get(http::header::AUTHORIZATION)
+        .and_then(|h| h.to_str().ok());
 
-    let id = auth::Identity::UserId(&username, None);
-    let pwd = auth::Password::PlainText(password);
+    if let Some(auth_header) = auth_header {
+        // Parse authorization header using common credentials
+        match crate::common::auth::credentials::parse_authorization_header(auth_header) {
+            Ok(credentials) => {
+                let context = crate::common::auth::AuthContext {
+                    catalog,
+                    schema,
+                    require_auth: true,
+                };
 
-    let user_info = user_provider
-        .auth(id, pwd, &catalog, &schema)
-        .await
-        .map_err(|e| tonic::Status::unauthenticated(e.to_string()))?;
+                // Create auth provider and authenticate
+                let auth_provider =
+                    crate::common::auth::provider::CachingAuthProvider::new(Some(user_provider));
+                match auth_provider.authenticate(credentials, &context).await {
+                    Ok(user_info) => {
+                        req.extensions_mut().insert(user_info);
+                        return Ok(());
+                    }
+                    Err(e) => {
+                        return Err(tonic::Status::unauthenticated(format!(
+                            "Authentication failed: {}",
+                            e
+                        )));
+                    }
+                }
+            }
+            Err(_) => {
+                return Err(tonic::Status::unauthenticated(
+                    "Invalid authorization header",
+                ));
+            }
+        }
+    }
 
-    query_ctx.set_current_user(user_info);
-    let _ = req.extensions_mut().insert(query_ctx);
-
-    Ok(())
+    Err(tonic::Status::unauthenticated(
+        "Missing authorization header",
+    ))
 }
 
 #[cfg(test)]
@@ -133,7 +163,7 @@ mod tests {
     use hyper::Request;
     use session::context::QueryContext;
 
-    use crate::grpc::authorize::do_auth;
+    use crate::grpc::authorize::common_do_auth;
     use crate::http::header::GreptimeDbName;
 
     #[tokio::test]
@@ -146,7 +176,7 @@ mod tests {
         req.headers_mut()
             .insert("authorization", authorization_val.parse().unwrap());
 
-        let auth_result = do_auth(&mut req, Some(user_provider.clone())).await;
+        let auth_result = common_do_auth(&mut req, Some(user_provider.clone())).await;
 
         assert!(auth_result.is_ok());
         check_req(&req, "greptime", "public", "greptime");
@@ -157,7 +187,7 @@ mod tests {
         req.headers_mut()
             .insert("authorization", authorization_val.parse().unwrap());
 
-        let auth_result = do_auth(&mut req, Some(user_provider)).await;
+        let auth_result = common_do_auth(&mut req, Some(user_provider)).await;
         assert!(auth_result.is_err());
     }
 
@@ -166,19 +196,19 @@ mod tests {
         let mut req = Request::new(());
         req.headers_mut()
             .insert("authentication", "pwd".parse().unwrap());
-        let auth_result = do_auth(&mut req, None).await;
+        let auth_result = common_do_auth(&mut req, None).await;
         assert!(auth_result.is_ok());
         check_req(&req, "greptime", "public", "greptime");
 
         let mut req = Request::new(());
-        let auth_result = do_auth(&mut req, None).await;
+        let auth_result = common_do_auth(&mut req, None).await;
         assert!(auth_result.is_ok());
         check_req(&req, "greptime", "public", "greptime");
 
         let mut req = Request::new(());
         req.headers_mut()
             .insert(GreptimeDbName::name(), "catalog-schema".parse().unwrap());
-        let auth_result = do_auth(&mut req, None).await;
+        let auth_result = common_do_auth(&mut req, None).await;
         assert!(auth_result.is_ok());
         check_req(&req, "catalog", "schema", "greptime");
     }

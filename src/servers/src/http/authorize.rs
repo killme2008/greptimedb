@@ -30,6 +30,7 @@ use headers::Header;
 use session::context::QueryContextBuilder;
 use snafu::{ensure, OptionExt, ResultExt};
 
+use crate::common::auth::CommonAuthState;
 use crate::error::{
     self, InvalidAuthHeaderInvisibleASCIISnafu, InvalidAuthHeaderSnafu, InvalidParameterSnafu,
     NotFoundInfluxAuthSnafu, Result, UnsupportedAuthSchemeSnafu, UrlDecodeSnafu,
@@ -49,6 +50,58 @@ pub struct AuthState {
 impl AuthState {
     pub fn new(user_provider: Option<UserProviderRef>) -> Self {
         Self { user_provider }
+    }
+}
+
+/// New authentication function using the common auth system.
+/// This will gradually replace `inner_auth` as we migrate to the common system.
+pub async fn common_auth(
+    auth_state: CommonAuthState,
+    mut req: axum::extract::Request,
+) -> std::result::Result<axum::extract::Request, Response> {
+    use session::context::Channel;
+
+    use crate::common::auth::{Authenticator, CredentialExtractor};
+    use crate::http::auth_extractor::HttpCredentialExtractor;
+
+    let extractor = HttpCredentialExtractor::new();
+
+    // Extract auth context first
+    let context = extractor.extract_auth_context(&req);
+
+    // Extract credentials
+    let credentials = match extractor.extract_credentials(&req) {
+        Ok(creds) => creds,
+        Err(e) => {
+            warn!("Failed to extract credentials: {}", e);
+            return Err(err_response(e));
+        }
+    };
+
+    // Authenticate using the common provider
+    let auth_provider =
+        crate::common::auth::provider::CachingAuthProvider::new(auth_state.user_provider());
+    match auth_provider.authenticate(credentials, &context).await {
+        Ok(user_info) => {
+            // Extract timezone from request
+            let timezone = HttpCredentialExtractor::extract_timezone(&req);
+
+            // Create query context using the common system
+            let query_ctx = crate::common::auth::provider::create_authenticated_query_context(
+                user_info,
+                &context,
+                Channel::HttpSql,
+                Some(timezone),
+            );
+
+            // Insert query context into request extensions
+            let _ = req.extensions_mut().insert(query_ctx);
+            Ok(req)
+        }
+        Err(e) => {
+            warn!("HTTP authentication failed: {}", e);
+            Err(err_response(e))
+        }
     }
 }
 

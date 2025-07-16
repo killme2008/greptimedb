@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod federated;
+pub mod auth_extractor;
+pub mod federated;
 pub mod handler;
-mod helper;
+pub mod helper;
 pub mod server;
 pub mod writer;

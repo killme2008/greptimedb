@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+mod auth_extractor;
 mod authorize;
 pub mod builder;
 mod cancellation;

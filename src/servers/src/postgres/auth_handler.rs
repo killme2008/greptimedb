@@ -15,10 +15,9 @@
 use std::fmt::Debug;
 use std::sync::Exclusive;
 
-use ::auth::{userinfo_by_name, Identity, Password, UserInfoRef, UserProviderRef};
+use ::auth::{userinfo_by_name, UserInfoRef, UserProviderRef};
 use async_trait::async_trait;
 use common_catalog::parse_catalog_and_schema_from_db_string;
-use common_error::ext::ErrorExt;
 use futures::{Sink, SinkExt};
 use pgwire::api::auth::StartupHandler;
 use pgwire::api::{auth, ClientInfo, PgWireConnectionState};
@@ -27,10 +26,10 @@ use pgwire::messages::response::ErrorResponse;
 use pgwire::messages::startup::Authentication;
 use pgwire::messages::{PgWireBackendMessage, PgWireFrontendMessage};
 use session::Session;
-use snafu::IntoError;
 
-use crate::error::{AuthSnafu, Result};
-use crate::metrics::METRIC_AUTH_FAILURE;
+use crate::common::auth::CredentialExtractor;
+use crate::error::Result;
+use crate::postgres::auth_extractor::{create_postgres_auth_data, PostgresAuthenticator};
 use crate::postgres::types::PgErrorCode;
 use crate::postgres::PostgresServerHandlerInner;
 use crate::query_handler::sql::ServerSqlQueryHandlerRef;
@@ -74,41 +73,29 @@ impl LoginInfo {
 }
 
 impl PgLoginVerifier {
-    async fn auth(&self, login: &LoginInfo, password: &str) -> Result<Option<UserInfoRef>> {
-        let user_provider = match &self.user_provider {
-            Some(provider) => provider,
-            None => return Ok(None),
-        };
+    /// PostgreSQL authentication function using the common auth system.
+    async fn common_auth(&self, login: &LoginInfo, password: &str) -> Result<Option<UserInfoRef>> {
+        // Create PostgreSQL auth data
+        let postgres_auth_data = create_postgres_auth_data(
+            login.user.clone(),
+            login.catalog.clone().or_else(|| login.schema.clone()),
+            password.to_string(),
+            login.host.clone(),
+        );
 
-        let user_name = match &login.user {
-            Some(name) => name,
-            None => return Ok(None),
-        };
-        let catalog = match &login.catalog {
-            Some(name) => name,
-            None => return Ok(None),
-        };
-        let schema = match &login.schema {
-            Some(name) => name,
-            None => return Ok(None),
-        };
+        // Use common authenticator
+        let authenticator = PostgresAuthenticator::new(self.user_provider.clone());
 
-        match user_provider
-            .auth(
-                Identity::UserId(user_name, None),
-                Password::PlainText(password.to_string().into()),
-                catalog,
-                schema,
-            )
+        // Extract auth context from the auth data
+        let extractor = crate::postgres::auth_extractor::PostgresCredentialExtractor::new();
+        let context = extractor.extract_auth_context(&postgres_auth_data);
+
+        match authenticator
+            .authenticate_postgres(&postgres_auth_data, &context)
             .await
         {
-            Err(e) => {
-                METRIC_AUTH_FAILURE
-                    .with_label_values(&[e.status_code().as_ref()])
-                    .inc();
-                Err(AuthSnafu.into_error(e))
-            }
-            Ok(user_info) => Ok(Some(user_info)),
+            Ok(user_info) => Ok(user_info),
+            Err(e) => Err(e),
         }
     }
 }
@@ -192,8 +179,11 @@ impl StartupHandler for PostgresServerHandlerInner {
 
                 let login_info = LoginInfo::from_client_info(client);
 
-                // do authenticate
-                let auth_result = self.login_verifier.auth(&login_info, &pwd.password).await;
+                // do authenticate using the new common auth system
+                let auth_result = self
+                    .login_verifier
+                    .common_auth(&login_info, &pwd.password)
+                    .await;
 
                 if let Ok(Some(user_info)) = auth_result {
                     self.session.set_user_info(user_info);

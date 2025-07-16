@@ -18,13 +18,13 @@ use std::sync::atomic::{AtomicU32, Ordering};
 use std::sync::Arc;
 use std::time::Duration;
 
-use ::auth::{Identity, Password, UserProviderRef};
+use ::auth::UserProviderRef;
 use async_trait::async_trait;
 use chrono::{NaiveDate, NaiveDateTime};
 use common_catalog::parse_optional_catalog_and_schema_from_db_string;
 use common_error::ext::ErrorExt;
 use common_query::Output;
-use common_telemetry::{debug, error, tracing, warn};
+use common_telemetry::{debug, tracing, warn};
 use datafusion_common::ParamValues;
 use datafusion_expr::LogicalPlan;
 use datatypes::prelude::ConcreteDataType;
@@ -46,6 +46,7 @@ use tokio::io::AsyncWrite;
 
 use crate::error::{self, DataFrameSnafu, InvalidPrepareStatementSnafu, Result};
 use crate::metrics::METRIC_AUTH_FAILURE;
+use crate::mysql::auth_extractor::{MysqlAuthData, MysqlAuthenticator};
 use crate::mysql::helper::{
     self, fix_placeholder_types, format_placeholder, replace_placeholders, transform_placeholders,
 };
@@ -366,54 +367,45 @@ impl<W: AsyncWrite + Send + Sync + Unpin> AsyncMysqlShim<W> for MysqlInstanceShi
         salt: &[u8],
         auth_data: &[u8],
     ) -> bool {
-        // if not specified then **greptime** will be used
-        let username = String::from_utf8_lossy(username);
-
-        let mut user_info = None;
+        let username = String::from_utf8_lossy(username).to_string();
         let addr = self
             .session
             .conn_info()
             .client_addr
             .map(|addr| addr.to_string());
-        if let Some(user_provider) = &self.user_provider {
-            let user_id = Identity::UserId(&username, addr.as_deref());
 
-            let password = match auth_plugin {
-                MYSQL_NATIVE_PASSWORD => Password::MysqlNativePassword(auth_data, salt),
-                MYSQL_CLEAR_PASSWORD => {
-                    // The raw bytes received could be represented in C-like string, ended in '\0'.
-                    // We must "trim" it to get the real password string.
-                    let password = if let &[password @ .., 0] = &auth_data {
-                        password
-                    } else {
-                        auth_data
-                    };
-                    Password::PlainText(String::from_utf8_lossy(password).to_string().into())
-                }
-                other => {
-                    error!("Unsupported mysql auth plugin: {}", other);
-                    return false;
-                }
-            };
-            match user_provider.authenticate(user_id, password).await {
-                Ok(userinfo) => {
-                    user_info = Some(userinfo);
-                }
-                Err(e) => {
-                    METRIC_AUTH_FAILURE
-                        .with_label_values(&[e.status_code().as_ref()])
-                        .inc();
-                    warn!(e; "Failed to auth");
-                    return false;
-                }
-            };
+        // Create MySQL auth data for the common authenticator
+        let mysql_auth_data = MysqlAuthData {
+            username: username.clone(),
+            auth_plugin: auth_plugin.to_string(),
+            auth_data: auth_data.to_vec(),
+            salt: salt.to_vec(),
+            client_addr: addr,
+        };
+
+        // Use common authenticator
+        let authenticator = MysqlAuthenticator::new(self.user_provider.clone());
+
+        // Extract auth context (default for MySQL)
+        let context = crate::common::auth::AuthContext {
+            catalog: "greptime".to_string(),
+            schema: "public".to_string(),
+            require_auth: self.user_provider.is_some(),
+        };
+
+        match authenticator
+            .authenticate_mysql(&mysql_auth_data, &context)
+            .await
+        {
+            Ok(user_info) => {
+                self.session.set_user_info(user_info);
+                true
+            }
+            Err(e) => {
+                warn!("Failed to authenticate MySQL user: {}", e);
+                false
+            }
         }
-        let user_info =
-            user_info.unwrap_or_else(|| auth::userinfo_by_name(Some(username.to_string())));
-
-        self.session.set_user_info(user_info);
-
-        true
     }
 
     async fn on_prepare<'a>(
