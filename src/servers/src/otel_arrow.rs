@@ -54,7 +54,13 @@ impl ArrowMetricsService for OtelArrowServiceHandler<OpenTelemetryProtocolHandle
         let (headers, _, mut incoming_requests) = request.into_parts();
 
         let query_ctx = context_auth::create_query_context_from_grpc_metadata(&headers)?;
-        context_auth::check_auth(self.user_provider.clone(), &headers, query_ctx.clone()).await?;
+        context_auth::check_auth(
+            self.user_provider.clone(),
+            &headers,
+            query_ctx.clone(),
+            "otel_arrow/arrow_metrics",
+        )
+        .await?;
 
         let handler = self.handler.clone();
 

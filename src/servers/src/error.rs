@@ -328,8 +328,8 @@ pub enum Error {
         source: auth::error::Error,
     },
 
-    #[snafu(display("Not found http or grpc authorization header"))]
-    NotFoundAuthHeader {},
+    #[snafu(display("Not found http or grpc authorization header, uri: {}", uri))]
+    NotFoundAuthHeader { uri: String },
 
     #[snafu(display("Not found influx http authorization info"))]
     NotFoundInfluxAuth {},

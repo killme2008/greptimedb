@@ -257,11 +257,14 @@ impl From<AuthScheme> for api::v1::auth_header::AuthScheme {
 type Credential<'a> = &'a str;
 
 fn auth_header<B>(req: &Request<B>) -> Result<AuthScheme> {
+    let uri = req.uri();
     let auth_header = req
         .headers()
         .get(AUTHORIZATION_HEADER)
         .or_else(|| req.headers().get(http::header::AUTHORIZATION))
-        .context(error::NotFoundAuthHeaderSnafu)?
+        .with_context(|| error::NotFoundAuthHeaderSnafu {
+            uri: uri.to_string(),
+        })?
         .to_str()
         .context(InvalidAuthHeaderInvisibleASCIISnafu)?;
 

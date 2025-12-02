@@ -83,7 +83,13 @@ impl GreptimeRequestHandler {
 
         let header = request.header.as_ref();
         let query_ctx = create_query_context(Channel::Grpc, header, hints)?;
-        let user_info = context_auth::auth(self.user_provider.clone(), header, &query_ctx).await?;
+        let user_info = context_auth::auth(
+            self.user_provider.clone(),
+            header,
+            &query_ctx,
+            "grpc/greptime",
+        )
+        .await?;
         query_ctx.set_current_user(user_info);
 
         let handler = self.handler.clone();

@@ -83,6 +83,7 @@ pub async fn check_auth(
     user_provider: Option<UserProviderRef>,
     headers: &MetadataMap,
     query_ctx: QueryContextRef,
+    uri: &str,
 ) -> TonicResult<bool> {
     if user_provider.is_none() {
         return Ok(true);
@@ -103,7 +104,7 @@ pub async fn check_auth(
     .transpose()?
     .map(|x: crate::http::authorize::AuthScheme| x.into());
 
-    let auth_schema = auth_schema.context(NotFoundAuthHeaderSnafu)?;
+    let auth_schema = auth_schema.context(NotFoundAuthHeaderSnafu { uri })?;
     let header = RequestHeader {
         authorization: Some(AuthHeader {
             auth_scheme: Some(auth_schema),
@@ -113,7 +114,7 @@ pub async fn check_auth(
         ..Default::default()
     };
 
-    match auth(user_provider, Some(&header), &query_ctx).await {
+    match auth(user_provider, Some(&header), &query_ctx, uri).await {
         Ok(user_info) => {
             query_ctx.set_current_user(user_info);
             Ok(true)
@@ -127,6 +128,7 @@ pub async fn auth(
     user_provider: Option<UserProviderRef>,
     header: Option<&RequestHeader>,
     query_ctx: &QueryContextRef,
+    uri: &str,
 ) -> Result<UserInfoRef> {
     let Some(user_provider) = user_provider else {
         return Ok(auth::userinfo_by_name(None));
@@ -139,7 +141,7 @@ pub async fn auth(
                 .as_ref()
                 .and_then(|x| x.auth_scheme.clone())
         })
-        .context(NotFoundAuthHeaderSnafu)?;
+        .context(NotFoundAuthHeaderSnafu { uri })?;
 
     match auth_scheme {
         AuthScheme::Basic(api::v1::Basic { username, password }) => user_provider

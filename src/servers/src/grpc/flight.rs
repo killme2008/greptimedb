@@ -218,7 +218,13 @@ impl FlightCraft for GreptimeRequestHandler {
         let limiter = extensions.get::<RequestMemoryLimiter>().cloned();
 
         let query_ctx = context_auth::create_query_context_from_grpc_metadata(&headers)?;
-        context_auth::check_auth(self.user_provider.clone(), &headers, query_ctx.clone()).await?;
+        context_auth::check_auth(
+            self.user_provider.clone(),
+            &headers,
+            query_ctx.clone(),
+            "arrow_flight/do_put",
+        )
+        .await?;
 
         const MAX_PENDING_RESPONSES: usize = 32;
         let (tx, rx) = mpsc::channel::<TonicResult<DoPutResponse>>(MAX_PENDING_RESPONSES);
