@@ -13,7 +13,7 @@
 // limitations under the License.
 
 mod convert;
-mod distance;
+pub mod distance;
 mod elem_avg;
 mod elem_product;
 mod elem_sum;
@@ -135,6 +135,12 @@ where
             results.push((self.func)(v0, v1)?);
         }
 
+        // Handle empty results by returning an empty array of the appropriate type
+        if results.is_empty() {
+            let result_array =
+                datafusion::arrow::array::new_empty_array(args.return_field.data_type());
+            return Ok(ColumnarValue::Array(result_array));
+        }
         let results = ScalarValue::iter_to_array(results.into_iter())?;
         Ok(ColumnarValue::Array(results))
     }
@@ -189,6 +195,12 @@ where
             }
         }
 
+        // Handle empty results by returning an empty array of the appropriate type
+        if results.is_empty() {
+            let result_array =
+                datafusion::arrow::array::new_empty_array(args.return_field.data_type());
+            return Ok(ColumnarValue::Array(result_array));
+        }
         let results = ScalarValue::iter_to_array(results.into_iter())?;
         Ok(ColumnarValue::Array(results))
     }
@@ -216,6 +228,12 @@ where
             results.push((self.func)(&v)?);
         }
 
+        // Handle empty results by returning an empty array of the appropriate type
+        if results.is_empty() {
+            let result_array =
+                datafusion::arrow::array::new_empty_array(args.return_field.data_type());
+            return Ok(ColumnarValue::Array(result_array));
+        }
         let results = ScalarValue::iter_to_array(results.into_iter())?;
         Ok(ColumnarValue::Array(results))
     }

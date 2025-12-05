@@ -18,7 +18,7 @@ use arrow_schema::extension::{EXTENSION_TYPE_METADATA_KEY, EXTENSION_TYPE_NAME_K
 use datatypes::schema::{
     COMMENT_KEY, ColumnDefaultConstraint, ColumnSchema, FULLTEXT_KEY, FulltextAnalyzer,
     FulltextBackend, FulltextOptions, INVERTED_INDEX_KEY, SKIPPING_INDEX_KEY, SkippingIndexOptions,
-    SkippingIndexType,
+    SkippingIndexType, VECTOR_INDEX_KEY,
 };
 use greptime_proto::v1::{
     Analyzer, FulltextBackend as PbFulltextBackend, SkippingIndexType as PbSkippingIndexType,
@@ -35,6 +35,8 @@ const FULLTEXT_GRPC_KEY: &str = "fulltext";
 const INVERTED_INDEX_GRPC_KEY: &str = "inverted_index";
 /// Key used to store skip index options in gRPC column options.
 const SKIPPING_INDEX_GRPC_KEY: &str = "skipping_index";
+/// Key used to store vector index options in gRPC column options.
+const VECTOR_INDEX_GRPC_KEY: &str = "vector_index";
 
 /// Tries to construct a `ColumnSchema` from the given  `ColumnDef`.
 pub fn try_as_column_schema(column_def: &ColumnDef) -> Result<ColumnSchema> {
@@ -68,6 +70,9 @@ pub fn try_as_column_schema(column_def: &ColumnDef) -> Result<ColumnSchema> {
         }
         if let Some(skipping_index) = options.options.get(SKIPPING_INDEX_GRPC_KEY) {
             metadata.insert(SKIPPING_INDEX_KEY.to_string(), skipping_index.to_owned());
+        }
+        if let Some(vector_index) = options.options.get(VECTOR_INDEX_GRPC_KEY) {
+            metadata.insert(VECTOR_INDEX_KEY.to_string(), vector_index.to_owned());
         }
         if let Some(extension_name) = options.options.get(EXTENSION_TYPE_NAME_KEY) {
             metadata.insert(EXTENSION_TYPE_NAME_KEY.to_string(), extension_name.clone());
@@ -148,6 +153,11 @@ pub fn options_from_column_schema(column_schema: &ColumnSchema) -> Option<Column
         options
             .options
             .insert(SKIPPING_INDEX_GRPC_KEY.to_string(), skipping_index.clone());
+    }
+    if let Some(vector_index) = column_schema.metadata().get(VECTOR_INDEX_KEY) {
+        options
+            .options
+            .insert(VECTOR_INDEX_GRPC_KEY.to_string(), vector_index.clone());
     }
     if let Some(extension_name) = column_schema.metadata().get(EXTENSION_TYPE_NAME_KEY) {
         options

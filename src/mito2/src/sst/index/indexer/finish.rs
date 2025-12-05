@@ -21,6 +21,7 @@ use crate::sst::index::puffin_manager::SstPuffinWriter;
 use crate::sst::index::statistics::{ByteCount, RowCount};
 use crate::sst::index::{
     BloomFilterOutput, FulltextIndexOutput, IndexOutput, Indexer, InvertedIndexOutput,
+    VectorIndexOutput,
 };
 
 impl Indexer {
@@ -49,6 +50,12 @@ impl Indexer {
         }
 
         let success = self.do_finish_bloom_filter(&mut writer, &mut output).await;
+        if !success {
+            self.do_abort().await;
+            return IndexOutput::default();
+        }
+
+        let success = self.do_finish_vector_index(&mut writer, &mut output).await;
         if !success {
             self.do_abort().await;
             return IndexOutput::default();
@@ -264,6 +271,61 @@ impl Indexer {
     ) {
         debug!(
             "Bloom filter created, region_id: {}, file_id: {}, written_bytes: {}, written_rows: {}, columns: {:?}",
+            self.region_id, self.file_id, byte_count, row_count, column_ids
+        );
+
+        output.index_size = byte_count;
+        output.row_count = row_count;
+        output.columns = column_ids;
+    }
+
+    async fn do_finish_vector_index(
+        &mut self,
+        puffin_writer: &mut SstPuffinWriter,
+        index_output: &mut IndexOutput,
+    ) -> bool {
+        let Some(mut indexer) = self.vector_indexer.take() else {
+            return true;
+        };
+
+        let column_ids = indexer.column_ids().collect();
+        let err = match indexer.finish(puffin_writer).await {
+            Ok((row_count, byte_count)) => {
+                self.fill_vector_index_output(
+                    &mut index_output.vector_index,
+                    row_count,
+                    byte_count,
+                    column_ids,
+                );
+                return true;
+            }
+            Err(err) => err,
+        };
+
+        if cfg!(any(test, feature = "test")) {
+            panic!(
+                "Failed to finish vector index, region_id: {}, file_id: {}, err: {:?}",
+                self.region_id, self.file_id, err
+            );
+        } else {
+            warn!(
+                err; "Failed to finish vector index, region_id: {}, file_id: {}",
+                self.region_id, self.file_id,
+            );
+        }
+
+        false
+    }
+
+    fn fill_vector_index_output(
+        &mut self,
+        output: &mut VectorIndexOutput,
+        row_count: RowCount,
+        byte_count: ByteCount,
+        column_ids: Vec<ColumnId>,
+    ) {
+        debug!(
+            "Vector index created, region_id: {}, file_id: {}, written_bytes: {}, written_rows: {}, columns: {:?}",
             self.region_id, self.file_id, byte_count, row_count, column_ids
         );
 

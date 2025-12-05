@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod cos;
-mod dot;
-mod l2sq;
+pub mod cos;
+pub mod dot;
+pub mod l2sq;
 
 use std::borrow::Cow;
 use std::fmt::Display;
