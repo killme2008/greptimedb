@@ -1038,6 +1038,27 @@ pub enum Error {
         location: Location,
     },
 
+    #[snafu(display("Failed to build vector index: {}", reason))]
+    VectorIndexBuild {
+        reason: String,
+        #[snafu(implicit)]
+        location: Location,
+    },
+
+    #[snafu(display("Failed to finish vector index: {}", reason))]
+    VectorIndexFinish {
+        reason: String,
+        #[snafu(implicit)]
+        location: Location,
+    },
+
+    #[snafu(display("Failed to apply vector index: {}", reason))]
+    ApplyVectorIndex {
+        reason: String,
+        #[snafu(implicit)]
+        location: Location,
+    },
+
     #[snafu(display("Manual compaction is override by following operations."))]
     ManualCompactionOverride {},
 
@@ -1319,6 +1340,10 @@ impl ErrorExt for Error {
 
             PushBloomFilterValue { source, .. } | BloomFilterFinish { source, .. } => {
                 source.status_code()
+            }
+
+            VectorIndexBuild { .. } | VectorIndexFinish { .. } | ApplyVectorIndex { .. } => {
+                StatusCode::Internal
             }
 
             ManualCompactionOverride {} => StatusCode::Cancelled,

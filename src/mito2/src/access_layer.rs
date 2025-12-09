@@ -32,7 +32,9 @@ use store_api::storage::{FileId, RegionId, SequenceNumber};
 use crate::cache::CacheManagerRef;
 use crate::cache::file_cache::{FileCacheRef, FileType, IndexKey};
 use crate::cache::write_cache::SstUploadRequest;
-use crate::config::{BloomFilterConfig, FulltextIndexConfig, IndexConfig, InvertedIndexConfig};
+use crate::config::{
+    BloomFilterConfig, FulltextIndexConfig, IndexConfig, InvertedIndexConfig, VectorIndexConfig,
+};
 use crate::error::{CleanDirSnafu, DeleteIndexSnafu, DeleteSstSnafu, OpenDalSnafu, Result};
 use crate::metrics::{COMPACTION_STAGE_ELAPSED, FLUSH_ELAPSED};
 use crate::read::{FlatSource, Source};
@@ -296,6 +298,7 @@ impl AccessLayer {
                 inverted_index_config: request.inverted_index_config,
                 fulltext_index_config: request.fulltext_index_config,
                 bloom_filter_index_config: request.bloom_filter_index_config,
+                vector_index_config: request.vector_index_config,
             };
             // We disable write cache on file system but we still use atomic write.
             // TODO(yingwen): If we support other non-fs stores without the write cache, then
@@ -450,6 +453,7 @@ pub struct SstWriteRequest {
     pub inverted_index_config: InvertedIndexConfig,
     pub fulltext_index_config: FulltextIndexConfig,
     pub bloom_filter_index_config: BloomFilterConfig,
+    pub vector_index_config: VectorIndexConfig,
 }
 
 /// Cleaner to remove temp files on the atomic write dir.

@@ -213,7 +213,7 @@ impl RegionServer {
     }
 
     /// Returns a table provider for the region. Will set snapshot sequence if available in the context.
-    async fn table_provider(
+    pub(crate) async fn table_provider(
         &self,
         region_id: RegionId,
         ctx: Option<QueryContextRef>,

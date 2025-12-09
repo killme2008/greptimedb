@@ -28,6 +28,7 @@ common-datasource.workspace = true
 common-decimal.workspace = true
 common-error.workspace = true
 common-grpc.workspace = true
+common-function.workspace = true
 common-macro.workspace = true
 common-meta.workspace = true
 common-query.workspace = true
@@ -65,6 +66,7 @@ partition.workspace = true
 puffin.workspace = true
 rand.workspace = true
 rayon = "1.10"
+roaring = "0.10"
 regex.workspace = true
 rskafka = { workspace = true, optional = true }
 rstest = { workspace = true, optional = true }
@@ -82,6 +84,7 @@ tokio.workspace = true
 tokio-stream.workspace = true
 tokio-util.workspace = true
 tracing.workspace = true
+usearch = "2.21"
 uuid.workspace = true
 
 [dev-dependencies]

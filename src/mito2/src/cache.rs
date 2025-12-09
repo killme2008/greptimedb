@@ -41,6 +41,9 @@ use store_api::storage::{ConcreteDataType, FileId, RegionId, TimeSeriesRowSelect
 use crate::cache::cache_size::parquet_meta_size;
 use crate::cache::file_cache::{FileType, IndexKey};
 use crate::cache::index::inverted_index::{InvertedIndexCache, InvertedIndexCacheRef};
+use crate::cache::index::vector_index::{
+    VectorIndexCacheExt, VectorIndexCacheRef, new_vector_index_cache,
+};
 use crate::cache::write_cache::WriteCacheRef;
 use crate::metrics::{CACHE_BYTES, CACHE_EVICTION, CACHE_HIT, CACHE_MISS};
 use crate::read::Batch;
@@ -263,6 +266,15 @@ impl CacheStrategy {
             CacheStrategy::Compaction(_) | CacheStrategy::Disabled => None,
         }
     }
+
+    /// Calls [CacheManager::vector_index_cache()].
+    /// It returns None if the strategy is [CacheStrategy::Compaction] or [CacheStrategy::Disabled].
+    pub fn vector_index_cache(&self) -> Option<&VectorIndexCacheRef> {
+        match self {
+            CacheStrategy::EnableAll(cache_manager) => cache_manager.vector_index_cache(),
+            CacheStrategy::Compaction(_) | CacheStrategy::Disabled => None,
+        }
+    }
 }
 
 /// Manages cached data for the engine.
@@ -288,6 +300,8 @@ pub struct CacheManager {
     selector_result_cache: Option<SelectorResultCache>,
     /// Cache for index result.
     index_result_cache: Option<IndexResultCache>,
+    /// Cache for vector index.
+    vector_index_cache: Option<VectorIndexCacheRef>,
 }
 
 pub type CacheManagerRef = Arc<CacheManager>;
@@ -417,6 +431,10 @@ impl CacheManager {
             cache.remove(&file_id.to_string());
         }
 
+        if let Some(cache) = &self.vector_index_cache {
+            cache.invalidate_file(file_id.file_id());
+        }
+
         if let Some(write_cache) = &self.write_cache {
             write_cache
                 .remove(IndexKey::new(
@@ -472,6 +490,10 @@ impl CacheManager {
     pub(crate) fn index_result_cache(&self) -> Option<&IndexResultCache> {
         self.index_result_cache.as_ref()
     }
+
+    pub(crate) fn vector_index_cache(&self) -> Option<&VectorIndexCacheRef> {
+        self.vector_index_cache.as_ref()
+    }
 }
 
 /// Increases selector cache miss metrics.
@@ -497,6 +519,7 @@ pub struct CacheManagerBuilder {
     puffin_metadata_size: u64,
     write_cache: Option<WriteCacheRef>,
     selector_result_cache_size: u64,
+    vector_index_cache_size: u64,
 }
 
 impl CacheManagerBuilder {
@@ -557,6 +580,12 @@ impl CacheManagerBuilder {
     /// Sets selector result cache size.
     pub fn selector_result_cache_size(mut self, bytes: u64) -> Self {
         self.selector_result_cache_size = bytes;
+        self
+    }
+
+    /// Sets vector index cache size.
+    pub fn vector_index_cache_size(mut self, bytes: u64) -> Self {
+        self.vector_index_cache_size = bytes;
         self
     }
 
@@ -644,6 +673,8 @@ impl CacheManagerBuilder {
                 })
                 .build()
         });
+        let vector_index_cache = (self.vector_index_cache_size != 0)
+            .then(|| Arc::new(new_vector_index_cache(self.vector_index_cache_size)));
         CacheManager {
             sst_meta_cache,
             vector_cache,
@@ -654,6 +685,7 @@ impl CacheManagerBuilder {
             puffin_metadata_cache: Some(Arc::new(puffin_metadata_cache)),
             selector_result_cache,
             index_result_cache,
+            vector_index_cache,
         }
     }
 }

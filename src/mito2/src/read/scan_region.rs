@@ -57,11 +57,12 @@ use crate::read::seq_scan::SeqScan;
 use crate::read::series_scan::SeriesScan;
 use crate::read::stream::ScanBatchStream;
 use crate::read::unordered_scan::UnorderedScan;
+use crate::read::vector_scan::VectorScan;
 use crate::read::{Batch, BoxedRecordBatchStream, RecordBatch, Source};
 use crate::region::options::MergeMode;
 use crate::region::version::VersionRef;
 use crate::sst::FormatType;
-use crate::sst::file::FileHandle;
+use crate::sst::file::{FileHandle, RegionFileId};
 use crate::sst::index::bloom_filter::applier::{
     BloomFilterIndexApplierBuilder, BloomFilterIndexApplierRef,
 };
@@ -69,8 +70,10 @@ use crate::sst::index::fulltext_index::applier::FulltextIndexApplierRef;
 use crate::sst::index::fulltext_index::applier::builder::FulltextIndexApplierBuilder;
 use crate::sst::index::inverted_index::applier::InvertedIndexApplierRef;
 use crate::sst::index::inverted_index::applier::builder::InvertedIndexApplierBuilder;
-use crate::sst::parquet::file_range::PreFilterMode;
+use crate::sst::index::vector_index::applier::{VectorIndexApplier, VectorIndexApplierRef};
+use crate::sst::parquet::file_range::{FileRangeContext, PreFilterMode};
 use crate::sst::parquet::reader::ReaderMetrics;
+use crate::sst::parquet::row_selection::RowGroupSelection;
 
 /// Parallel scan channel size for flat format.
 const FLAT_SCAN_CHANNEL_SIZE: usize = 2;
@@ -83,6 +86,8 @@ pub(crate) enum Scanner {
     Unordered(UnorderedScan),
     /// Per-series scan.
     Series(SeriesScan),
+    /// Vector KNN scan.
+    Vector(VectorScan),
 }
 
 impl Scanner {
@@ -93,6 +98,7 @@ impl Scanner {
             Scanner::Seq(seq_scan) => seq_scan.build_stream(),
             Scanner::Unordered(unordered_scan) => unordered_scan.build_stream().await,
             Scanner::Series(series_scan) => series_scan.build_stream().await,
+            Scanner::Vector(vector_scan) => vector_scan.build_stream().await,
         }
     }
 
@@ -102,6 +108,7 @@ impl Scanner {
             Scanner::Seq(x) => x.scan_all_partitions(),
             Scanner::Unordered(x) => x.scan_all_partitions(),
             Scanner::Series(x) => x.scan_all_partitions(),
+            Scanner::Vector(x) => x.scan_all_partitions(),
         }
     }
 }
@@ -114,6 +121,7 @@ impl Scanner {
             Scanner::Seq(seq_scan) => seq_scan.input().num_files(),
             Scanner::Unordered(unordered_scan) => unordered_scan.input().num_files(),
             Scanner::Series(series_scan) => series_scan.input().num_files(),
+            Scanner::Vector(vector_scan) => vector_scan.input().num_files(),
         }
     }
 
@@ -123,6 +131,7 @@ impl Scanner {
             Scanner::Seq(seq_scan) => seq_scan.input().num_memtables(),
             Scanner::Unordered(unordered_scan) => unordered_scan.input().num_memtables(),
             Scanner::Series(series_scan) => series_scan.input().num_memtables(),
+            Scanner::Vector(vector_scan) => vector_scan.input().num_memtables(),
         }
     }
 
@@ -132,6 +141,7 @@ impl Scanner {
             Scanner::Seq(seq_scan) => seq_scan.input().file_ids(),
             Scanner::Unordered(unordered_scan) => unordered_scan.input().file_ids(),
             Scanner::Series(series_scan) => series_scan.input().file_ids(),
+            Scanner::Vector(vector_scan) => vector_scan.input().file_ids(),
         }
     }
 
@@ -144,6 +154,7 @@ impl Scanner {
             Scanner::Seq(seq_scan) => seq_scan.prepare(request).unwrap(),
             Scanner::Unordered(unordered_scan) => unordered_scan.prepare(request).unwrap(),
             Scanner::Series(series_scan) => series_scan.prepare(request).unwrap(),
+            Scanner::Vector(vector_scan) => vector_scan.prepare(request).unwrap(),
         }
     }
 }
@@ -217,6 +228,8 @@ pub(crate) struct ScanRegion {
     ignore_fulltext_index: bool,
     /// Whether to ignore bloom filter.
     ignore_bloom_filter: bool,
+    /// Whether to ignore vector index.
+    ignore_vector_index: bool,
     /// Start time of the scan task.
     start_time: Option<Instant>,
     /// Whether to filter out the deleted rows.
@@ -244,6 +257,7 @@ impl ScanRegion {
             ignore_inverted_index: false,
             ignore_fulltext_index: false,
             ignore_bloom_filter: false,
+            ignore_vector_index: false,
             start_time: None,
             filter_deleted: true,
             #[cfg(feature = "enterprise")]
@@ -292,6 +306,13 @@ impl ScanRegion {
         self
     }
 
+    /// Sets whether to ignore vector index.
+    #[must_use]
+    pub(crate) fn with_ignore_vector_index(mut self, ignore: bool) -> Self {
+        self.ignore_vector_index = ignore;
+        self
+    }
+
     #[must_use]
     pub(crate) fn with_start_time(mut self, now: Instant) -> Self {
         self.start_time = Some(now);
@@ -312,7 +333,10 @@ impl ScanRegion {
 
     /// Returns a [Scanner] to scan the region.
     pub(crate) async fn scanner(self) -> Result<Scanner> {
-        if self.use_series_scan() {
+        // Vector search takes highest priority when requested
+        if self.use_vector_scan() {
+            self.vector_scan().await.map(Scanner::Vector)
+        } else if self.use_series_scan() {
             self.series_scan().await.map(Scanner::Series)
         } else if self.use_unordered_scan() {
             // If table is append only and there is no series row selector, we use unordered scan in query.
@@ -326,7 +350,12 @@ impl ScanRegion {
     /// Returns a [RegionScanner] to scan the region.
     #[tracing::instrument(level = tracing::Level::DEBUG, skip_all)]
     pub(crate) async fn region_scanner(self) -> Result<RegionScannerRef> {
-        if self.use_series_scan() {
+        // Vector search takes highest priority when requested
+        if self.use_vector_scan() {
+            self.vector_scan()
+                .await
+                .map(|scanner| Box::new(scanner) as _)
+        } else if self.use_series_scan() {
             self.series_scan()
                 .await
                 .map(|scanner| Box::new(scanner) as _)
@@ -355,6 +384,18 @@ impl ScanRegion {
     pub(crate) async fn series_scan(self) -> Result<SeriesScan> {
         let input = self.scan_input().await?;
         Ok(SeriesScan::new(input))
+    }
+
+    /// Scans using vector index for KNN search.
+    pub(crate) async fn vector_scan(self) -> Result<VectorScan> {
+        let input = self.scan_input().await?;
+        Ok(VectorScan::new(input))
+    }
+
+    /// Returns true if the scan should use vector index for KNN search.
+    fn use_vector_scan(&self) -> bool {
+        // Use vector scan when vector_search hint is present in the request
+        self.request.vector_search.is_some()
     }
 
     /// Returns true if the region can use unordered scan for current request.
@@ -483,6 +524,7 @@ impl ScanRegion {
             self.build_fulltext_index_applier(&non_field_filters),
             self.build_fulltext_index_applier(&field_filters),
         ];
+        let vector_index_applier = self.build_vector_index_applier();
         let predicate = PredicateGroup::new(&self.version.metadata, &self.request.filters)?;
 
         if flat_format {
@@ -499,6 +541,7 @@ impl ScanRegion {
             .with_inverted_index_appliers(inverted_index_appliers)
             .with_bloom_filter_index_appliers(bloom_filter_appliers)
             .with_fulltext_index_appliers(fulltext_index_appliers)
+            .with_vector_index_applier(vector_index_applier)
             .with_parallel_scan_channel_size(self.parallel_scan_channel_size)
             .with_max_concurrent_scan_files(self.max_concurrent_scan_files)
             .with_start_time(self.start_time)
@@ -652,6 +695,35 @@ impl ScanRegion {
         .flatten()
         .map(Arc::new)
     }
+
+    /// Build the vector index applier from vector search request.
+    fn build_vector_index_applier(&self) -> Option<VectorIndexApplierRef> {
+        if self.ignore_vector_index {
+            return None;
+        }
+
+        let vector_search = self.request.vector_search.as_ref()?;
+
+        let file_cache = self.cache_strategy.write_cache().map(|w| w.file_cache());
+        let puffin_metadata_cache = self.cache_strategy.puffin_metadata_cache().cloned();
+        let vector_index_cache = self.cache_strategy.vector_index_cache().cloned();
+
+        let applier = VectorIndexApplier::new(
+            self.access_layer.table_dir().to_string(),
+            self.access_layer.path_type(),
+            self.access_layer.object_store().clone(),
+            self.access_layer.puffin_manager_factory().clone(),
+            vector_search.column_id,
+            vector_search.query_vector.clone(),
+            vector_search.k,
+            vector_search.metric,
+        )
+        .with_file_cache(file_cache)
+        .with_puffin_metadata_cache(puffin_metadata_cache)
+        .with_vector_index_cache(vector_index_cache);
+
+        Some(Arc::new(applier))
+    }
 }
 
 /// Returns true if the time range of a SST `file` matches the `predicate`.
@@ -693,6 +765,8 @@ pub struct ScanInput {
     inverted_index_appliers: [Option<InvertedIndexApplierRef>; 2],
     bloom_filter_index_appliers: [Option<BloomFilterIndexApplierRef>; 2],
     fulltext_index_appliers: [Option<FulltextIndexApplierRef>; 2],
+    /// Vector index applier for KNN search.
+    pub(crate) vector_index_applier: Option<VectorIndexApplierRef>,
     /// Start time of the query.
     pub(crate) query_start: Option<Instant>,
     /// The region is using append mode.
@@ -732,6 +806,7 @@ impl ScanInput {
             inverted_index_appliers: [None, None],
             bloom_filter_index_appliers: [None, None],
             fulltext_index_appliers: [None, None],
+            vector_index_applier: None,
             query_start: None,
             append_mode: false,
             filter_deleted: true,
@@ -835,6 +910,16 @@ impl ScanInput {
         appliers: [Option<FulltextIndexApplierRef>; 2],
     ) -> Self {
         self.fulltext_index_appliers = appliers;
+        self
+    }
+
+    /// Sets vector index applier for KNN search.
+    #[must_use]
+    pub(crate) fn with_vector_index_applier(
+        mut self,
+        applier: Option<VectorIndexApplierRef>,
+    ) -> Self {
+        self.vector_index_applier = applier;
         self
     }
 
@@ -973,18 +1058,81 @@ impl ScanInput {
             .pre_filter_mode(filter_mode)
             .build_reader_input(reader_metrics)
             .await;
+
+        let (file_range_ctx, selection) =
+            self.handle_read_result(res, file.region_id(), file.file_id())?;
+        let Some(file_range_ctx) = file_range_ctx else {
+            return Ok(FileRangeBuilder::default());
+        };
+        Ok(FileRangeBuilder::new(Arc::new(file_range_ctx), selection))
+    }
+
+    /// Builds file range context for vector scan without predicate-based row group pruning.
+    ///
+    /// Unlike `prune_file`, this method:
+    /// - Does NOT apply predicate-based row group pruning (minmax, bloom filter, etc.)
+    /// - Returns a context that can read all row groups
+    /// - Predicates will be applied as post-filter after reading
+    ///
+    /// This is necessary because vector index returns exact row IDs, and predicate-based
+    /// row group pruning would incorrectly filter out row groups containing vector candidates.
+    pub(crate) async fn prune_file_for_vector_scan(
+        &self,
+        file: &FileHandle,
+        reader_metrics: &mut ReaderMetrics,
+    ) -> Result<FileRangeBuilder> {
+        let filter_mode = pre_filter_mode(self.append_mode, self.merge_mode);
+        let res = self
+            .access_layer
+            .read_sst(file.clone())
+            // NOTE: No .predicate() - skip predicate-based row group pruning
+            // NOTE: No index appliers - skip index-based pruning
+            // Vector scan will use vector index results to determine which rows to read,
+            // and apply predicates as post-filter in memory.
+            .projection(Some(self.mapper.column_ids().to_vec()))
+            .cache(self.cache_strategy.clone())
+            .expected_metadata(Some(self.mapper.metadata().clone()))
+            .flat_format(self.flat_format)
+            .compaction(self.compaction)
+            .pre_filter_mode(filter_mode)
+            .build_reader_input(reader_metrics)
+            .await;
+
+        let (file_range_ctx, _selection) =
+            self.handle_read_result(res, file.region_id(), file.file_id())?;
+        let Some(file_range_ctx) = file_range_ctx else {
+            return Ok(FileRangeBuilder::default());
+        };
+
+        // Return with empty selection - VectorScan will build its own selection from row IDs
+        Ok(FileRangeBuilder::new(
+            Arc::new(file_range_ctx),
+            RowGroupSelection::default(),
+        ))
+    }
+
+    /// Handles the result of reading SST file, including error handling and schema compatibility.
+    ///
+    /// Returns `Ok(None)` if the file should be skipped (e.g., file not found with ignore flag).
+    fn handle_read_result(
+        &self,
+        res: Result<(FileRangeContext, RowGroupSelection)>,
+        region_id: RegionId,
+        file_id: RegionFileId,
+    ) -> Result<(Option<FileRangeContext>, RowGroupSelection)> {
         let (mut file_range_ctx, selection) = match res {
             Ok(x) => x,
             Err(e) => {
                 if e.is_object_not_found() && self.ignore_file_not_found {
-                    error!(e; "File to scan does not exist, region_id: {}, file: {}", file.region_id(), file.file_id());
-                    return Ok(FileRangeBuilder::default());
+                    error!(e; "File to scan does not exist, region_id: {}, file: {}", region_id, file_id);
+                    return Ok((None, RowGroupSelection::default()));
                 } else {
                     return Err(e);
                 }
             }
         };
 
+        // Handle schema compatibility
         let need_compat = !compat::has_same_columns_and_pk_encoding(
             self.mapper.metadata(),
             file_range_ctx.read_format().metadata(),
@@ -1010,7 +1158,8 @@ impl ScanInput {
             };
             file_range_ctx.set_compat_batch(compat);
         }
-        Ok(FileRangeBuilder::new(Arc::new(file_range_ctx), selection))
+
+        Ok((Some(file_range_ctx), selection))
     }
 
     /// Scans the input source in another task and sends batches to the sender.

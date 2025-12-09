@@ -248,6 +248,8 @@ pub enum IndexType {
     FulltextIndex,
     /// Bloom Filter index
     BloomFilterIndex,
+    /// Vector index (HNSW)
+    VectorIndex,
 }
 
 /// Metadata of indexes created for a specific column in an SST file.
@@ -287,6 +289,11 @@ impl FileMeta {
     pub fn bloom_filter_index_available(&self) -> bool {
         self.available_indexes
             .contains(&IndexType::BloomFilterIndex)
+    }
+
+    /// Returns true if the file has a vector index.
+    pub fn vector_index_available(&self) -> bool {
+        self.available_indexes.contains(&IndexType::VectorIndex)
     }
 
     pub fn index_file_size(&self) -> u64 {

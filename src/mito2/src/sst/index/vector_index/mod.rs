@@ -12,18 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod analyzer;
-mod commutativity;
-mod merge_scan;
-mod merge_sort;
-mod planner;
-mod predicate_extractor;
-mod region_pruner;
-mod vector_scan;
+//! Vector index module for HNSW-based approximate nearest neighbor search.
 
-pub use analyzer::{DistPlannerAnalyzer, DistPlannerOptions};
-pub use merge_scan::{MergeScanExec, MergeScanLogicalPlan};
-pub use planner::{DistExtensionPlanner, MergeSortExtensionPlanner, VectorScanExtensionPlanner};
-pub use predicate_extractor::PredicateExtractor;
-pub use region_pruner::ConstraintPruner;
-pub use vector_scan::{VectorScanLogicalPlan, metric_to_u32, u32_to_metric};
+pub(crate) mod applier;
+pub(crate) mod creator;
+pub(crate) mod engine;
+pub(crate) mod util;
+
+/// The blob type identifier for vector index in puffin files.
+pub(crate) const INDEX_BLOB_TYPE: &str = "greptime-vector-index-v1";
