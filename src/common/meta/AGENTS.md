@@ -35,4 +35,6 @@ and durable DDL procedures. Metasrv process and service wiring live in
 cargo nextest run -p common-meta
 ```
 
-Backend-specific coverage may also need `pg_kvbackend` or `mysql_kvbackend`.
+RDS backend coverage needs the `pg_kvbackend` / `mysql_kvbackend` feature and
+`GT_POSTGRES_ENDPOINTS` / `GT_MYSQL_ENDPOINTS`; without the env var those tests
+skip silently and still report success.

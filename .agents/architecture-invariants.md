@@ -33,7 +33,8 @@ vice versa.
   original compatibility RFC describes a superseded case format and is not the
   current runbook.
 - Wire types are generated from the external `greptime-proto` crate; change the
-  format there first, then bump the dependency (see invariant 6's pattern).
+  format there first, then bump its git `rev` in the root `Cargo.toml`. It is a
+  plain git dependency, not a patched crates.io one — invariant 6 does not apply.
 
 ## 2. Respect crate layering and dependency direction
 

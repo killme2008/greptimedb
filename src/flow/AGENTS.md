@@ -13,14 +13,14 @@ materialized views. It has two execution paths:
 - **Batching mode** (the actively developed path): splits data
   into time windows and periodically runs aggregation SQL through the frontend,
   writing results back to a sink table.
-- **Streaming mode** (the legacy dataflow path): an incremental DFIR/dataflow
-  compute graph that processes row-level diffs.
+- **Streaming mode** (the older dataflow path): an incremental DFIR/dataflow
+  compute graph that processes row-level diffs. Still selected for new flows.
 
 Users cannot select a mode directly: `flow_type` is a reserved internal option.
 `StatementExecutor::determine_flow_type` in `src/operator/src/statement/ddl.rs`
-owns current mode selection. `FlowDualEngine` defaults missing internal
-`flow_type` metadata to batching for compatibility. Read those paths before
-changing routing rules.
+owns mode selection. `FlowDualEngine` defaults missing internal `flow_type`
+metadata to batching for compatibility. Read those paths before changing
+routing rules.
 
 ## Module map
 

@@ -78,9 +78,9 @@ cargo nextest run -p metric-engine
   writes; operate on logical region ids.
 - TSID must be stable for the same tag set — it is a hash over sorted tag names
   + values and may be stored in `__tsid` or encoded into `__primary_key`.
-- Metadata reads use an LRU cache. Metadata writes take the per-region cache
-  write lock and invalidate the cache after the Mito2 write succeeds; preserve
-  that ordering when adding a metadata mutation path.
+- Metadata reads are cached. Writes invalidate under the per-region cache lock
+  after the Mito2 write succeeds; preserve that ordering when adding a metadata
+  mutation path.
 - Always convert ids via `utils::to_data_region_id` / `to_metadata_region_id`.
 
 ## Maintenance contract
