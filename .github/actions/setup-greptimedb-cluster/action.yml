@@ -45,6 +45,7 @@ runs:
           --install \
           --create-namespace \
           greptimedb-operator greptime/greptimedb-operator \
+          --version 0.6.3 \
           -n greptimedb-admin \
           --wait \
           --wait-for-jobs
@@ -69,6 +70,7 @@ runs:
         --set datanode.replicas=${{ inputs.datanode-replicas }} \
         --set meta.replicas=${{ inputs.meta-replicas }} \
         greptime/greptimedb-cluster \
+        --version 0.8.39 \
         --create-namespace \
         -n my-greptimedb \
         --values "${BASE_VALUES}" \
